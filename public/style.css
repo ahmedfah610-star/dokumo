@@ -289,7 +289,16 @@ footer p { font-size:0.72rem; color:rgba(255,255,255,0.3); }
 .btn-cv-pay:hover { background:var(--accent2); }
 .btn-cv-download { flex:1; background:var(--gold); color:#fff; border:none; padding:13px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; }
 
-/* CV Form */
+/* CV photo box */
+.cvf-photo-box {
+  width:80px; height:80px; border:2px dashed var(--border);
+  background:var(--white); cursor:pointer; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; overflow:hidden;
+  transition:border-color 0.2s; flex-shrink:0;
+}
+.cvf-photo-box:hover { border-color:var(--accent2); }
+
+/* CV section header */
 .cvf-section { font-size:0.67rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent2); margin:20px 0 10px; display:flex; align-items:center; justify-content:space-between; }
 .cvf-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .cvf-group { margin-bottom:8px; }
