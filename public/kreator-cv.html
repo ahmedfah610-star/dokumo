@@ -601,6 +601,37 @@ function pickTemplate(id) {
 }
 
 // ---- INIT ----
+
+// Check if coming from translate CV flow
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('from') === 'translate') {
+    try {
+      const imported = sessionStorage.getItem('dokumo_cv_import');
+      if (imported) {
+        const d = JSON.parse(imported);
+        sessionStorage.removeItem('dokumo_cv_import');
+        Object.assign(cvData, {
+          imie: d.imie || '',
+          nazwisko: d.nazwisko || '',
+          stanowisko: d.stanowisko || '',
+          email: d.email || '',
+          tel: d.tel || '',
+          adres: d.adres || '',
+          linkedin: d.linkedin || '',
+          www: d.www || '',
+          podsumowanie: d.podsumowanie || '',
+          umiejetnosci: d.umiejetnosci || '',
+          zainteresowania: d.zainteresowania || '',
+        });
+        if (Array.isArray(d.doswiadczenie) && d.doswiadczenie.length) cvData.doswiadczenie = d.doswiadczenie;
+        if (Array.isArray(d.wyksztalcenie) && d.wyksztalcenie.length) cvData.wyksztalcenie = d.wyksztalcenie;
+        if (Array.isArray(d.jezyki) && d.jezyki.length) cvData.jezyki = d.jezyki;
+      }
+    } catch(e) {}
+  }
+})();
+
 renderCVForm();
 updateCVPreview();
 
