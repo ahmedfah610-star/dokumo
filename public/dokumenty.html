@@ -759,9 +759,12 @@ function renderGrid(filterCatId = 'all') {
           <div class="doc-card-desc">${doc.desc}</div>
           <div class="doc-card-footer">
             <span class="doc-card-price">${doc.price} zł</span>
-            <button class="btn-add${inCart ? ' added' : ''}" onclick="toggleCart('${doc.id}')">
-              ${inCart ? '✓ Dodano' : '+ Dodaj'}
-            </button>
+            <div style="display:flex;gap:8px">
+              <button class="btn-add${inCart ? ' added' : ''}" onclick="event.stopPropagation();toggleCart('${doc.id}')">
+                ${inCart ? '✓ Dodano' : '+ Dodaj'}
+              </button>
+              <button class="btn-generate-doc" onclick="openDocPage('${doc.id}')">Generuj →</button>
+            </div>
           </div>
         </div>`;
     }).join('');
