@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="cv-templates.js"></script>
 <style>
 /* ── KREATOR LAYOUT ── */
@@ -47,6 +48,28 @@ body { overflow:hidden; }
 .cv-tpl-thumb { height:120px; overflow:hidden; }
 .cv-tpl-name { padding:8px 10px; font-size:0.72rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink2); background:var(--bg); border-top:1px solid var(--border); }
 
+/* ── IMPORT MODAL ── */
+.import-modal-overlay { position:fixed; inset:0; z-index:900; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+.import-modal-overlay.open { opacity:1; pointer-events:all; }
+.import-modal { background:var(--white); width:480px; max-width:90vw; padding:32px; position:relative; }
+.import-modal h2 { font-family:'Instrument Serif',serif; font-size:1.5rem; margin-bottom:6px; }
+.import-modal p.import-sub { font-size:0.8rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+.import-drop-zone { border:2px dashed var(--border); padding:40px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--bg); }
+.import-drop-zone:hover, .import-drop-zone.dragover { border-color:var(--accent2); background:#f0f8f5; }
+.import-drop-zone .drop-icon { font-size:2.5rem; margin-bottom:10px; }
+.import-drop-zone .drop-hint { margin:0; font-size:0.8rem; color:var(--muted); }
+.import-drop-zone strong { color:var(--ink); }
+.import-progress { display:none; margin-top:20px; }
+.import-progress.show { display:block; }
+.import-progress-bar-wrap { height:4px; background:var(--border); margin:10px 0; }
+.import-progress-bar { height:4px; background:var(--accent2); width:0%; transition:width 0.5s; }
+.import-progress-text { font-size:0.75rem; color:var(--muted); }
+.import-error { display:none; margin-top:12px; padding:10px 14px; background:#fef2f2; border:1px solid #fca5a5; font-size:0.78rem; color:#991b1b; }
+.import-error.show { display:block; }
+.btn-import-pdf { display:flex; align-items:center; gap:7px; background:var(--accent2); color:#fff; border:none; padding:8px 14px; font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; }
+.btn-import-pdf:hover { background:var(--accent); }
+.import-modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
+
 /* ── BOTTOM BAR (subtle) ── */
 .cv-pay-bar { position:fixed; bottom:0; left:0; width:380px; background:rgba(247,245,240,0.97); backdrop-filter:blur(8px); border-top:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px; z-index:100; }
 .cv-pay-bar-left { font-size:0.72rem; color:var(--muted); line-height:1.4; }
@@ -66,6 +89,9 @@ body { overflow:hidden; }
     <button class="btn-back" onclick="window.location.href='dokumenty.html'">← Wróć</button>
     <a href="index.html" class="logo" style="font-size:1.3rem">Doku<span>mo</span> · Kreator CV</a>
     <div class="cv-nav-right">
+      <button class="btn-import-pdf" onclick="openImportModal()">
+        <span>📄</span> Importuj CV z PDF
+      </button>
       <button class="btn-choose-tpl" onclick="openTplDrawer()">
         <span class="tpl-preview-dot" id="tplDot" style="background:#1a3a2e"></span>
         Wybierz szablon ▾
@@ -96,6 +122,35 @@ body { overflow:hidden; }
   </div>
 </div>
 
+<!-- IMPORT CV MODAL -->
+<div class="import-modal-overlay" id="importModalOverlay">
+  <div class="import-modal">
+    <button class="import-modal-close" onclick="closeImportModal()">✕</button>
+    <h2>Przetłumacz CV na angielski</h2>
+    <p class="import-sub">Wgraj swoje CV w PDF — AI wyciągnie dane, przetłumaczy na angielski i automatycznie wypełni kreator. Następnie wybierz szablon i pobierz gotowe CV po angielsku.</p>
+
+    <div class="import-drop-zone" id="importDropZone"
+      onclick="document.getElementById('importPdfInput').click()"
+      ondragover="handleDragOver(event)"
+      ondragleave="handleDragLeave(event)"
+      ondrop="handleDrop(event)">
+      <div class="drop-icon">📋</div>
+      <p class="drop-hint"><strong>Kliknij lub przeciągnij plik PDF</strong></p>
+      <p class="drop-hint" style="margin-top:4px;font-size:0.72rem">Obsługiwane: PDF · maks. 10 MB</p>
+    </div>
+    <input type="file" id="importPdfInput" accept="application/pdf" style="display:none" onchange="handlePdfFile(this.files[0])">
+
+    <div class="import-progress" id="importProgress">
+      <div class="import-progress-text" id="importProgressText">Wczytuję plik PDF...</div>
+      <div class="import-progress-bar-wrap">
+        <div class="import-progress-bar" id="importProgressBar"></div>
+      </div>
+    </div>
+
+    <div class="import-error" id="importError"></div>
+  </div>
+</div>
+
 <!-- PAY BAR (subtle, bottom-left) -->
 <div class="cv-pay-bar" id="cvPayBar">
   <div class="cv-pay-bar-left">
@@ -108,6 +163,208 @@ body { overflow:hidden; }
 </div>
 
 <script>
+// ======================================================
+// IMPORT CV Z PDF
+// ======================================================
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function openImportModal() {
+  document.getElementById('importModalOverlay').classList.add('open');
+  resetImportUI();
+}
+function closeImportModal() {
+  document.getElementById('importModalOverlay').classList.remove('open');
+}
+
+function resetImportUI() {
+  const prog = document.getElementById('importProgress');
+  const err = document.getElementById('importError');
+  const bar = document.getElementById('importProgressBar');
+  prog.classList.remove('show');
+  err.classList.remove('show');
+  bar.style.width = '0%';
+  document.getElementById('importPdfInput').value = '';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('importDropZone').classList.add('dragover');
+}
+function handleDragLeave(e) {
+  document.getElementById('importDropZone').classList.remove('dragover');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('importDropZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') {
+    handlePdfFile(file);
+  } else {
+    showImportError('Proszę wgrać plik PDF.');
+  }
+}
+
+async function handlePdfFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    showImportError('Plik jest za duży (maks. 10 MB).');
+    return;
+  }
+
+  showImportProgress('Wczytuję plik PDF...', 15);
+
+  try {
+    // Step 1: extract text with PDF.js
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      fullText += content.items.map(item => item.str).join(' ') + '\n';
+    }
+
+    if (!fullText.trim()) {
+      showImportError('Nie udało się wyciągnąć tekstu z PDF. Upewnij się, że plik nie jest skanem obrazkowym.');
+      return;
+    }
+
+    showImportProgress('Tłumaczę i strukturyzuję dane przez AI...', 45);
+
+    // Step 2: send to Gemini via existing proxy
+    const prompt = `You are a professional CV parser and translator. Extract ALL information from the following CV text and return it as a single valid JSON object. Translate ALL text content to ENGLISH (names of people, cities, and proper nouns should stay as-is; everything else translate). 
+
+Return ONLY a raw JSON object (no markdown, no backticks, no explanation) with this exact structure:
+{
+  "imie": "first name",
+  "nazwisko": "last name",
+  "stanowisko": "job title in English",
+  "email": "email",
+  "tel": "phone",
+  "adres": "city, country in English",
+  "linkedin": "linkedin url",
+  "www": "website url",
+  "podsumowanie": "professional summary in English (2-4 sentences)",
+  "doswiadczenie": [
+    {"firma": "company name", "stanowisko": "job title in English", "od": "start date", "do": "end date or Present", "opis": "responsibilities in English"}
+  ],
+  "wyksztalcenie": [
+    {"szkola": "school/university name", "kierunek": "field of study in English", "od": "start year", "do": "end year", "opis": ""}
+  ],
+  "umiejetnosci": "comma-separated skills in English",
+  "jezyki": [
+    {"jezyk": "language name in English", "poziom": "level (A1/A2/B1/B2/C1/C2/Native)"}
+  ],
+  "zainteresowania": "interests in English, comma-separated"
+}
+
+CV TEXT:
+${fullText.substring(0, 8000)}`;
+
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!response.ok) throw new Error('API error ' + response.status);
+
+    showImportProgress('Przetwarzam odpowiedź AI...', 80);
+
+    const data = await response.json();
+    const rawText = data.text || data.result || '';
+
+    // Parse JSON from response
+    let parsed;
+    try {
+      // Strip possible markdown fences
+      const clean = rawText.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Try to find JSON object in text
+      const match = rawText.match(/\{[\s\S]*\}/);
+      if (match) {
+        parsed = JSON.parse(match[0]);
+      } else {
+        throw new Error('Nie udało się sparsować odpowiedzi AI.');
+      }
+    }
+
+    showImportProgress('Wypełniam formularz...', 95);
+
+    // Step 3: fill cvData
+    cvData.imie = parsed.imie || '';
+    cvData.nazwisko = parsed.nazwisko || '';
+    cvData.stanowisko = parsed.stanowisko || '';
+    cvData.email = parsed.email || '';
+    cvData.tel = parsed.tel || '';
+    cvData.adres = parsed.adres || '';
+    cvData.linkedin = parsed.linkedin || '';
+    cvData.www = parsed.www || '';
+    cvData.podsumowanie = parsed.podsumowanie || '';
+    cvData.umiejetnosci = parsed.umiejetnosci || '';
+    cvData.zainteresowania = parsed.zainteresowania || '';
+
+    if (Array.isArray(parsed.doswiadczenie) && parsed.doswiadczenie.length > 0) {
+      cvData.doswiadczenie = parsed.doswiadczenie.map(e => ({
+        firma: e.firma || '',
+        stanowisko: e.stanowisko || '',
+        od: e.od || '',
+        do: e.do || '',
+        opis: e.opis || ''
+      }));
+    }
+
+    if (Array.isArray(parsed.wyksztalcenie) && parsed.wyksztalcenie.length > 0) {
+      cvData.wyksztalcenie = parsed.wyksztalcenie.map(e => ({
+        szkola: e.szkola || '',
+        kierunek: e.kierunek || '',
+        od: e.od || '',
+        do: e.do || '',
+        opis: e.opis || ''
+      }));
+    }
+
+    if (Array.isArray(parsed.jezyki) && parsed.jezyki.length > 0) {
+      cvData.jezyki = parsed.jezyki.map(l => ({
+        jezyk: l.jezyk || '',
+        poziom: l.poziom || 'B2'
+      }));
+    }
+
+    showImportProgress('Gotowe! ✓', 100);
+
+    // Step 4: render and close
+    setTimeout(() => {
+      renderCVForm();
+      updateCVPreview();
+      closeImportModal();
+    }, 700);
+
+  } catch(err) {
+    console.error('Import error:', err);
+    showImportError('Wystąpił błąd: ' + (err.message || 'Spróbuj ponownie.'));
+  }
+}
+
+function showImportProgress(text, percent) {
+  const prog = document.getElementById('importProgress');
+  const err = document.getElementById('importError');
+  prog.classList.add('show');
+  err.classList.remove('show');
+  document.getElementById('importProgressText').textContent = text;
+  document.getElementById('importProgressBar').style.width = percent + '%';
+}
+
+function showImportError(msg) {
+  const prog = document.getElementById('importProgress');
+  const err = document.getElementById('importError');
+  prog.classList.remove('show');
+  err.classList.add('show');
+  err.textContent = '⚠ ' + msg;
+}
+
 // ======================================================
 // KREATOR CV
 // ======================================================
