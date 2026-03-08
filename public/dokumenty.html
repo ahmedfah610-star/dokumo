@@ -6,6 +6,7 @@
 <title>Dokumo – Katalog dokumentów</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 /* generator.css – style formularza generowania dokumentów */
 
@@ -329,10 +330,53 @@ select.gf-input { cursor: pointer; }
   .gf-header { flex-direction: column; }
   .gf-price { align-self: flex-start; }
 }
+/* ── TRANSLATE CV MODAL ── */
+.tcv-overlay { position:fixed; inset:0; z-index:900; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+.tcv-overlay.open { opacity:1; pointer-events:all; }
+.tcv-modal { background:var(--white); width:500px; max-width:92vw; padding:36px 32px 32px; position:relative; }
+.tcv-modal h2 { font-family:'Instrument Serif',serif; font-size:1.55rem; margin-bottom:6px; }
+.tcv-modal .tcv-sub { font-size:0.8rem; color:var(--muted); margin-bottom:22px; line-height:1.6; }
+.tcv-drop { border:2px dashed var(--border); padding:44px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--bg); }
+.tcv-drop:hover, .tcv-drop.dragover { border-color:var(--accent2); background:#edf7f2; }
+.tcv-drop-icon { font-size:2.8rem; margin-bottom:10px; }
+.tcv-drop p { margin:0; font-size:0.8rem; color:var(--muted); }
+.tcv-drop strong { color:var(--ink); font-size:0.9rem; }
+.tcv-progress { display:none; margin-top:22px; }
+.tcv-progress.show { display:block; }
+.tcv-progress-label { font-size:0.76rem; color:var(--muted); margin-bottom:8px; }
+.tcv-bar-wrap { height:5px; background:var(--border); border-radius:3px; }
+.tcv-bar { height:5px; background:var(--accent2); border-radius:3px; width:0%; transition:width 0.5s ease; }
+.tcv-error { display:none; margin-top:14px; padding:10px 14px; background:#fef2f2; border:1px solid #fca5a5; font-size:0.78rem; color:#991b1b; border-radius:2px; }
+.tcv-error.show { display:block; }
+.tcv-close { position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted); line-height:1; }
 
 </style>
 </head>
 <body>
+
+<!-- TRANSLATE CV MODAL -->
+<div class="tcv-overlay" id="tcvOverlay">
+  <div class="tcv-modal">
+    <button class="tcv-close" onclick="closeTranslateCVModal()">✕</button>
+    <h2>Tłumacz CV na angielski</h2>
+    <p class="tcv-sub">Wgraj swoje CV w PDF — AI wyciągnie wszystkie dane, przetłumaczy na angielski i automatycznie wypełni kreator. Wybierz szablon i pobierz gotowe CV po angielsku za 5 zł.</p>
+    <div class="tcv-drop" id="tcvDrop"
+      onclick="document.getElementById('tcvInput').click()"
+      ondragover="tcvDragOver(event)"
+      ondragleave="tcvDragLeave(event)"
+      ondrop="tcvDrop(event)">
+      <div class="tcv-drop-icon">📋</div>
+      <p><strong>Kliknij lub przeciągnij plik PDF</strong></p>
+      <p style="margin-top:5px;font-size:0.72rem">Obsługiwane: PDF · maks. 10 MB</p>
+    </div>
+    <input type="file" id="tcvInput" accept="application/pdf" style="display:none" onchange="tcvHandleFile(this.files[0])">
+    <div class="tcv-progress" id="tcvProgress">
+      <div class="tcv-progress-label" id="tcvProgressLabel">Wczytuję PDF...</div>
+      <div class="tcv-bar-wrap"><div class="tcv-bar" id="tcvBar"></div></div>
+    </div>
+    <div class="tcv-error" id="tcvError"></div>
+  </div>
+</div>
 
 <!-- CART OVERLAY & SIDEBAR -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
@@ -409,10 +453,10 @@ select.gf-input { cursor: pointer; }
 <footer>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
   <p>© 2026 Dokumo · Dokumenty biznesowe</p>
-  <p>kontakt@dokumo.pl</p>
+  <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670c080913060c132703080c120a0849170b">[email&#160;protected]</a></p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const STRIPE_LINK = 'https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00';
 
 const DOCS = [
@@ -745,6 +789,15 @@ function renderGrid(filterCatId = 'all') {
       <div class="doc-card-footer">
         <span class="doc-card-price">5 zł</span>
         <span class="doc-card-btn cv-btn">Stwórz CV →</span>
+      </div>
+    </div>
+    <div class="doc-card cv-card" onclick="openTranslateCVModal()">
+      <div class="doc-card-icon">🌐</div>
+      <div class="doc-card-name">Tłumacz CV na angielski</div>
+      <div class="doc-card-desc">Wgraj CV w PDF — AI przetłumaczy i wypełni kreator. Pobierz gotowe po angielsku.</div>
+      <div class="doc-card-footer">
+        <span class="doc-card-price">5 zł</span>
+        <span class="doc-card-btn cv-btn">Tłumacz CV →</span>
       </div>
     </div>`;
 
@@ -1144,13 +1197,107 @@ function downloadAll() {
 
 function redoForm() {
   // Wróć do pierwszego dokumentu kolejki
-  queueIdx = 0;
-  generatedDocs = {};
-  if (docQueue.length > 0) {
-    buildSubpage(getDoc(docQueue[0]), docQueue[0]);
-    document.getElementById('subpage').scrollTop = 0;
-  } else {
-    closeSubpage();
+  queueIndex = 0;
+  docQueue = [];
+  openDocPage(docQueue[0]);
+}
+
+// ── TRANSLATE CV ─────────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function openTranslateCVModal() {
+  document.getElementById('tcvOverlay').classList.add('open');
+  tcvReset();
+}
+function closeTranslateCVModal() {
+  document.getElementById('tcvOverlay').classList.remove('open');
+}
+function tcvReset() {
+  document.getElementById('tcvProgress').classList.remove('show');
+  document.getElementById('tcvError').classList.remove('show');
+  document.getElementById('tcvBar').style.width = '0%';
+  document.getElementById('tcvInput').value = '';
+}
+function tcvDragOver(e) {
+  e.preventDefault();
+  document.getElementById('tcvDrop').classList.add('dragover');
+}
+function tcvDragLeave(e) {
+  document.getElementById('tcvDrop').classList.remove('dragover');
+}
+function tcvDrop(e) {
+  e.preventDefault();
+  document.getElementById('tcvDrop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') tcvHandleFile(file);
+  else tcvError('Proszę wgrać plik PDF.');
+}
+function tcvSetProgress(label, pct) {
+  document.getElementById('tcvProgress').classList.add('show');
+  document.getElementById('tcvError').classList.remove('show');
+  document.getElementById('tcvProgressLabel').textContent = label;
+  document.getElementById('tcvBar').style.width = pct + '%';
+}
+function tcvError(msg) {
+  document.getElementById('tcvProgress').classList.remove('show');
+  const el = document.getElementById('tcvError');
+  el.classList.add('show');
+  el.textContent = '⚠ ' + msg;
+}
+async function tcvHandleFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { tcvError('Plik za duży (maks. 10 MB).'); return; }
+  tcvSetProgress('Wczytuję plik PDF...', 15);
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const c = await page.getTextContent();
+      text += c.items.map(x => x.str).join(' ') + '\n';
+    }
+    if (!text.trim()) { tcvError('Brak tekstu w PDF. Plik może być skanem — wgraj PDF z warstwą tekstową.'); return; }
+    tcvSetProgress('Tłumaczę na angielski przez AI...', 45);
+    const prompt = `You are a professional CV parser and translator. Extract ALL information from the CV text below and return it as a single valid JSON object. Translate ALL content to English (personal names, cities and proper nouns stay as-is). Return ONLY raw JSON, no markdown, no backticks, no explanation.
+
+JSON structure:
+{
+  "imie": "first name",
+  "nazwisko": "last name",
+  "stanowisko": "job title in English",
+  "email": "email",
+  "tel": "phone",
+  "adres": "city, country",
+  "linkedin": "linkedin url or empty",
+  "www": "website or empty",
+  "podsumowanie": "professional summary in English, 2-4 sentences",
+  "doswiadczenie": [{"firma":"","stanowisko":"","od":"","do":"","opis":"responsibilities in English"}],
+  "wyksztalcenie": [{"szkola":"","kierunek":"field in English","od":"","do":"","opis":""}],
+  "umiejetnosci": "comma-separated skills in English",
+  "jezyki": [{"jezyk":"language in English","poziom":"A1/A2/B1/B2/C1/C2/Native"}],
+  "zainteresowania": "interests in English"
+}
+
+CV TEXT:
+${text.substring(0, 8000)}`;
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    if (!res.ok) throw new Error('API error ' + res.status);
+    tcvSetProgress('Przetwarzam odpowiedź...', 80);
+    const data = await res.json();
+    const raw = (data.text || data.result || '').replace(/```json|```/g,'').trim();
+    let parsed;
+    try { parsed = JSON.parse(raw); }
+    catch(e) { const m = raw.match(/\{[\s\S]*\}/); if(m) parsed=JSON.parse(m[0]); else throw new Error('Nie udało się sparsować JSON.'); }
+    tcvSetProgress('Przekierowuję do kreatora...', 100);
+    sessionStorage.setItem('dokumo_cv_import', JSON.stringify(parsed));
+    setTimeout(() => { window.location.href = 'kreator-cv.html?from=translate'; }, 600);
+  } catch(err) {
+    tcvError('Błąd: ' + (err.message || 'Spróbuj ponownie.'));
   }
 }
 
