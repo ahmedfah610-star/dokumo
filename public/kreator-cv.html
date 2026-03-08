@@ -124,6 +124,10 @@ const CV_TEMPLATES = [
   { id:'rose',         name:'Rose',         color1:'#9d174d', color2:'#ec4899',  thumb:'linear-gradient(135deg,#9d174d,#ec4899)' },
   { id:'slate',        name:'Slate',        color1:'#334155', color2:'#64748b',  thumb:'linear-gradient(135deg,#334155,#64748b)' },
   { id:'ocean',        name:'Ocean',        color1:'#1e40af', color2:'#38bdf8',  thumb:'linear-gradient(135deg,#1e40af,#38bdf8)' },
+  { id:'diagonal',     name:'Diagonal',     color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(160deg,#1a3a2e 50%,#f5f5f0 50%)' },
+  { id:'shield',       name:'Shield',       color1:'#1a2744', color2:'#e8e4dc',  thumb:'linear-gradient(160deg,#1a2744 55%,#e8e4dc 55%)' },
+  { id:'arrow',        name:'Arrow',        color1:'#7c2d12', color2:'#fb923c',  thumb:'linear-gradient(160deg,#7c2d12 50%,#fff7f0 50%)' },
+  { id:'split',        name:'Split',        color1:'#4a044e', color2:'#d8b4fe',  thumb:'linear-gradient(160deg,#4a044e 50%,#faf5ff 50%)' },
 ];
 
 let cvData = {
@@ -787,8 +791,217 @@ function buildCVHTML(tpl) {
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
     </div>`;
 
+
+  // ── DIAGONAL (ukośne cięcie jak na screenie) ──────────────
+  if (tpl === 'diagonal') return `
+    <div style="font-family:Arial,sans-serif;background:#f5f5f0;min-height:842px;position:relative;overflow:hidden">
+      <!-- Dark header with diagonal cut -->
+      <div style="position:relative;background:#1a3a2e;height:170px;overflow:hidden">
+        <div style="position:absolute;bottom:-1px;left:0;right:0;height:60px;background:#f5f5f0;clip-path:polygon(0 100%,100% 100%,100% 40%,0 100%)"></div>
+        <div style="position:absolute;bottom:-1px;left:0;right:0;height:60px;background:#f5f5f0;clip-path:polygon(0 60%,100% 0,100% 100%,0 100%);opacity:0.15"></div>
+        <div style="padding:28px 32px 0;display:flex;align-items:center;gap:20px;position:relative;z-index:2">
+          ${d.zdjecie?`<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.35);flex-shrink:0">${photo}</div>`:''}
+          <div>
+            <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1">${name}</div>
+            ${d.stanowisko?`<div style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
+          </div>
+        </div>
+      </div>
+      <!-- Content -->
+      <div style="display:grid;grid-template-columns:200px 1fr;padding:16px 32px 28px;gap:24px">
+        <!-- Left col -->
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Dane kontaktowe</div>
+          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:9.5px;color:#555;margin-bottom:5px;display:flex;align-items:flex-start;gap:5px"><span style="color:#1a3a2e;flex-shrink:0">›</span>${x}</div>`).join('')}
+          ${d.wyksztalcenie.some(e=>e.szkola)?`
+          <div style="margin-top:18px">
+            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Wykształcenie</div>
+            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+              <div style="margin-bottom:10px">
+                <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:2px"><div style="width:7px;height:7px;border-radius:50%;background:#1a3a2e;flex-shrink:0;margin-top:3px"></div><div style="font-size:10px;font-weight:700;color:#222">${e.kierunek||''}</div></div>
+                <div style="font-size:9.5px;color:#555;padding-left:13px">${e.szkola}</div>
+                <div style="font-size:9px;color:#999;padding-left:13px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>`).join('')}
+          </div>`:''}
+          ${skills.length?`
+          <div style="margin-top:18px">
+            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Umiejętności</div>
+            ${skills.map(s=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">${s}</div>`).join('')}
+          </div>`:''}
+          ${d.jezyki.some(l=>l.jezyk)?`
+          <div style="margin-top:18px">
+            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Języki</div>
+            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
+          </div>`:''}
+        </div>
+        <!-- Right col -->
+        <div>
+          ${d.podsumowanie?`
+          <div style="margin-bottom:20px">
+            <div style="font-size:13px;font-weight:700;color:#1a3a2e;margin-bottom:6px;border-bottom:2px solid #1a3a2e;padding-bottom:4px">Podsumowanie</div>
+            <div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div>
+          </div>`:''}
+          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1a3a2e;margin-bottom:10px;border-bottom:2px solid #1a3a2e;padding-bottom:4px">Doświadczenie zawodowe</div>
+            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+              <div style="margin-bottom:14px">
+                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#1a3a2e">${e.firma||''}</span></div>
+                <div style="font-size:9px;color:#aaa;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+                ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#1a3a2e;flex-shrink:0">•</span>${l}</div>`).join('')}</div>`:''}
+              </div>`).join('')}
+          </div>`:''}
+        </div>
+      </div>
+      <div style="text-align:center;font-size:7.5px;color:#bbb;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+    </div>`;
+
+  // ── SHIELD (ciemna sidebar z trójkątem wyciętym) ──────────
+  if (tpl === 'shield') return `
+    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px;display:flex">
+      <!-- Sidebar with arrow/shield cut -->
+      <div style="width:215px;flex-shrink:0;position:relative;background:#1a2744;overflow:visible">
+        <div style="background:#1a2744;min-height:842px;padding:28px 20px;display:flex;flex-direction:column;position:relative;z-index:1">
+          <!-- Arrow-shaped cut at right edge -->
+          <div style="position:absolute;top:0;right:-20px;bottom:0;width:40px;background:#fff;clip-path:polygon(50% 50%,0 0,0 100%);z-index:2"></div>
+          ${d.zdjecie?`<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid rgba(255,255,255,0.25)">${photo}</div>`:''}
+          <div style="font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.2;margin-bottom:4px">${name}</div>
+          ${d.stanowisko?`<div style="font-size:8.5px;color:rgba(255,255,255,0.55);text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px">${d.stanowisko}</div>`:''}
+          <div style="font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Kontakt</div>
+          ${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
+          ${skills.length?`<div style="font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:16px 0 8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:4px">· ${s}</div>`).join('')}`:''}
+          ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:16px 0 8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
+        </div>
+      </div>
+      <!-- Main content -->
+      <div style="flex:1;padding:30px 28px 28px 36px">
+        ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Podsumowanie</div><div style="font-size:10px;line-height:1.75;color:#555">${d.podsumowanie}</div></div>`:''}
+        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+        <div style="margin-bottom:18px">
+          <div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:10px">Doświadczenie zawodowe</div>
+          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+            <div style="margin-bottom:13px">
+              <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#1a2744">${e.firma||''}</span></div>
+              <div style="font-size:9px;color:#aaa;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#1a2744">•</span>${l}</div>`).join('')}</div>`:''}
+            </div>`).join('')}
+        </div>`:''}
+        ${d.wyksztalcenie.some(e=>e.szkola)?`
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
+          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+            <div style="margin-bottom:10px;display:flex;gap:10px">
+              <div style="width:7px;height:7px;border-radius:50%;background:#1a2744;flex-shrink:0;margin-top:4px"></div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
+                <div style="font-size:9.5px;color:#555">${e.szkola}</div>
+                <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>
+            </div>`).join('')}
+        </div>`:''}
+        ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Referencje</div><div style="font-size:9.5px;color:#555">${d.zainteresowania}</div></div>`:''}
+        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      </div>
+    </div>`;
+
+  // ── ARROW (pomarańczowy, ukośny nagłówek + strzałka) ──────
+  if (tpl === 'arrow') return `
+    <div style="font-family:Arial,sans-serif;background:#fff7f0;min-height:842px">
+      <div style="position:relative;overflow:hidden;background:#fff7f0">
+        <!-- Large diagonal shape -->
+        <div style="position:absolute;top:0;left:0;width:260px;height:180px;background:#7c2d12;clip-path:polygon(0 0,100% 0,80% 100%,0 100%)"></div>
+        <div style="position:absolute;top:0;left:200px;width:100px;height:180px;background:#fb923c;clip-path:polygon(0 0,100% 0,80% 100%,0 100%)"></div>
+        <!-- Content overlay -->
+        <div style="position:relative;z-index:2;padding:28px 32px;display:flex;align-items:center;gap:18px;height:180px">
+          ${d.zdjecie?`<div style="width:88px;height:88px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.4);flex-shrink:0">${photo}</div>`:''}
+          <div>
+            <div style="font-size:27px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1">${name}</div>
+            ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.75);margin-top:6px;letter-spacing:2px;text-transform:uppercase">${d.stanowisko}</div>`:''}
+          </div>
+          <div style="margin-left:auto;text-align:right">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<div style="font-size:9px;color:rgba(255,255,255,0.8);margin-bottom:3px">${x}</div>`).join('')}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 185px;padding:20px 32px 28px;gap:24px">
+        <div>
+          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;color:#7c2d12;border-bottom:2px solid #fb923c;padding-bottom:4px;margin-bottom:8px">Podsumowanie</div><div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div></div>`:''}
+          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+          <div style="margin-bottom:18px">
+            <div style="font-size:12px;font-weight:700;color:#7c2d12;border-bottom:2px solid #fb923c;padding-bottom:4px;margin-bottom:10px">Doświadczenie zawodowe</div>
+            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+              <div style="margin-bottom:13px">
+                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#7c2d12">${e.firma||''}</span></div>
+                <div style="font-size:9px;color:#fb923c;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+                ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#fb923c">•</span>${l}</div>`).join('')}</div>`:''}
+              </div>`).join('')}
+          </div>`:''}
+          ${d.wyksztalcenie.some(e=>e.szkola)?`
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#7c2d12;border-bottom:2px solid #fb923c;padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
+            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+              <div style="margin-bottom:10px;padding-left:10px;border-left:3px solid #fb923c">
+                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
+                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
+              </div>`).join('')}
+          </div>`:''}
+        </div>
+        <div>
+          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#7c2d1215;border-left:2px solid #fb923c;margin-bottom:3px;color:#333">${s}</div>`).join('')}</div>`:''}
+          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
+        </div>
+      </div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+    </div>`;
+
+  // ── SPLIT (fioletowy, pionowy podział ukośny) ─────────────
+  if (tpl === 'split') return `
+    <div style="font-family:Arial,sans-serif;background:#faf5ff;min-height:842px;position:relative;overflow:hidden">
+      <!-- Diagonal split background -->
+      <div style="position:absolute;top:0;left:0;width:250px;bottom:0;background:#4a044e;clip-path:polygon(0 0,100% 0,75% 100%,0 100%)"></div>
+      <div style="position:absolute;top:0;left:160px;width:120px;bottom:0;background:#7e22ce;clip-path:polygon(0 0,100% 0,60% 100%,0 100%);opacity:0.6"></div>
+      <!-- Content grid -->
+      <div style="position:relative;z-index:2;display:grid;grid-template-columns:190px 1fr;min-height:842px">
+        <!-- Left: dark col -->
+        <div style="padding:28px 16px 28px 22px;display:flex;flex-direction:column">
+          ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid rgba(255,255,255,0.3)">${photo}</div>`:''}
+          <div style="font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.2;margin-bottom:4px">${name}</div>
+          ${d.stanowisko?`<div style="font-size:8.5px;color:rgba(255,255,255,0.55);text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px">${d.stanowisko}</div>`:''}
+          <div style="font-size:7.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:7px">Kontakt</div>
+          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.7);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
+          ${skills.length?`<div style="font-size:7.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:14px 0 7px">Umiejętności</div>${skills.map(s=>`<div style="font-size:8.5px;margin-bottom:5px"><span style="display:inline-block;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);padding:2px 8px;border-radius:3px">${s}</span></div>`).join('')}`:''}
+          ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:7.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:14px 0 7px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.75);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
+        </div>
+        <!-- Right: light col -->
+        <div style="padding:28px 24px 28px 16px">
+          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Podsumowanie</div><div style="font-size:10px;line-height:1.75;color:#555">${d.podsumowanie}</div></div>`:''}
+          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+          <div style="margin-bottom:18px">
+            <div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:10px">Doświadczenie zawodowe</div>
+            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+              <div style="margin-bottom:13px">
+                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#7e22ce">${e.firma||''}</span></div>
+                <div style="font-size:9px;color:#a855f7;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+                ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#a855f7">•</span>${l}</div>`).join('')}</div>`:''}
+              </div>`).join('')}
+          </div>`:''}
+          ${d.wyksztalcenie.some(e=>e.szkola)?`
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
+            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+              <div style="margin-bottom:10px">
+                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
+                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
+              </div>`).join('')}
+          </div>`:''}
+          ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Referencje</div><div style="font-size:9.5px;color:#555">${d.zainteresowania}</div></div>`:''}
+          <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #ede9fe;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+        </div>
+      </div>
+    </div>`;
+
   return '';
 }
+
 
 function downloadCV() {
   const el = document.getElementById('cvPreviewInner');
