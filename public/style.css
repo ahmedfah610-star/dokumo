@@ -117,12 +117,29 @@ nav {
 .btn-add-cart:hover { background:var(--accent2); }
 .btn-add-cart.added { background:var(--accent2); opacity:0.7; }
 
+.btn-add {
+  background: transparent; color: var(--ink2); border: 1px solid var(--border);
+  padding: 7px 14px; font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:600;
+  letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-add:hover { border-color:var(--accent2); color:var(--accent2); }
+.btn-add.added { background:var(--accent2); color:#fff; border-color:var(--accent2); opacity:0.85; }
+
+.btn-generate-doc {
+  background: var(--accent); color:#fff; border:none;
+  padding: 7px 14px; font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-generate-doc:hover { background:var(--accent2); }
+
 /* CV CARD */
-.doc-card.cv-card { background:var(--accent); border-color:var(--accent); cursor:pointer; }
-.doc-card.cv-card .doc-card-cat { color:rgba(255,255,255,0.5); }
-.doc-card.cv-card .doc-card-name { color:#fff; }
-.doc-card.cv-card .doc-card-desc { color:rgba(255,255,255,0.65); }
-.doc-card.cv-card .doc-card-footer { border-top-color:rgba(255,255,255,0.15); }
+.doc-card.cv-card { background: var(--white); border: 1.5px solid var(--accent2); cursor:pointer; }
+.doc-card.cv-card .doc-card-icon { color: var(--accent2); }
+.doc-card.cv-card .doc-card-name { color: var(--accent2); }
+.doc-card.cv-card .doc-card-desc { color: var(--muted); }
+.doc-card.cv-card .doc-card-footer { border-top-color: rgba(45,107,82,0.15); }
 .doc-card.cv-card .doc-price { color:#fff; }
 .doc-card.cv-card .doc-price-unit { color:rgba(255,255,255,0.5); }
 .btn-cv-open {
