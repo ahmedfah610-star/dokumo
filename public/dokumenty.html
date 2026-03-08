@@ -6,6 +6,7 @@
 <title>Dokumo – Katalog dokumentów</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="generator.css">
 </head>
 <body>
 
@@ -92,7 +93,7 @@ const STRIPE_LINK = 'https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00';
 
 const DOCS = [
   // E-COMMERCE
-  { id:'regulamin', cat:'ecommerce', icon:'🛒', name:'Regulamin sklepu internetowego', desc:'Obowiązkowy regulamin zgodny z ustawą o prawach konsumenta.', price:19,
+  { id:'regulamin', cat:'ecommerce', icon:'🛒', name:'Regulamin sklepu internetowego', desc:'Obowiązkowy regulamin zgodny z ustawą o prawach konsumenta.', price:9.99,
     fields:[
       {s:'Dane firmy (sprzedawcy)'},
       {id:'firma',l:'Pełna nazwa firmy',p:'MójSklep Sp. z o.o.',r:true},
@@ -136,7 +137,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz bardzo szczegółowy i profesjonalny regulamin sklepu internetowego zgodny z polskim prawem. Dane sprzedawcy: ${v.firma||'[?]'} (${v.forma_prawna||'[?]'}), NIP: ${v.nip||'[?]'}, REGON: ${v.regon||'[?]'}, KRS: ${v.krs||'brak'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, godziny obsługi: ${v.godziny||'[?]'}. URL sklepu: ${v.url||'[?]'}, sprzedawane produkty: ${v.branza||'[?]'}. Produkty cyfrowe: ${v.produkty_cyfrowe||'nie'}. Konto użytkownika: ${v.konto_uzytkownika||'[?]'}. Metody płatności: ${v.metody_platnosci||'[?]'}, operator: ${v.operator_platnosci||'[?]'}, za pobraniem: ${v.platnosc_pobranie||'nie'}, raty: ${v.raty||'nie'}. Dostawa: ${v.firmy_kurierskie||'[?]'}, czas: ${v.czas_dostawy||'[?]'}, koszt: ${v.koszt_dostawy||'[?]'}, darmowa od: ${v.darmowa_dostawa||'[?]'}, zagranica: ${v.dostawa_zagranica||'nie'}. Zwroty: termin ${v.termin_zwrotu||'14 dni'}, koszty zwrotu ponosi ${v.koszty_zwrotu||'kupujący'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wyjątki: ${v.wyjatki_zwrotu||'brak'}. Reklamacje: podstawa ${v.podstawa_reklamacji||'rękojmia'}, czas rozpatrzenia ${v.czas_reklamacji||'14 dni'}. Newsletter: ${v.newsletter||'nie'}. Program lojalnościowy: ${v.program_lojalnosciowy||'nie'}. ODR: ${v.sad_polubowny||'tak'}. Dodatkowe: ${v.extra||'brak'}. Regulamin musi być zgodny z: ustawą o prawach konsumenta z 30.05.2014, ustawą o świadczeniu usług drogą elektroniczną, Kodeksem Cywilnym, RODO, ustawą o ochronie danych osobowych. Zawrzyj wszystkie wymagane sekcje: §1 Postanowienia ogólne i definicje, §2 Rodzaje i zakres świadczonych usług, §3 Rejestracja i konto użytkownika, §4 Składanie i realizacja zamówień, §5 Ceny i metody płatności, §6 Dostawa, §7 Prawo odstąpienia od umowy (formularz odstąpienia), §8 Reklamacje i rękojmia, §9 Ochrona danych osobowych, §10 Pliki cookies, §11 Postanowienia końcowe. Zacznij od razu od treści regulaminu bez żadnego komentarza.`
   },
-  { id:'polityka_rodo', cat:'ecommerce', icon:'🔒', name:'Polityka prywatności RODO', desc:'Polityka prywatności zgodna z RODO dla sklepu lub strony internetowej.', price:19,
+  { id:'polityka_rodo', cat:'ecommerce', icon:'🔒', name:'Polityka prywatności RODO', desc:'Polityka prywatności zgodna z RODO dla sklepu lub strony internetowej.', price:9.99,
     fields:[
       {s:'Administrator danych'},
       {id:'firma',l:'Pełna nazwa firmy (Administrator danych)',p:'MójSklep Sp. z o.o.',r:true},
@@ -179,7 +180,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz bardzo szczegółową i profesjonalną politykę prywatności zgodną z RODO (Rozporządzenie UE 2016/679) oraz polską ustawą o ochronie danych osobowych. Administrator: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, strona: ${v.url||'[?]'}. IOD: ${v.iod||'nie wyznaczono'}${v.iod_email?', email IOD: '+v.iod_email:''}. Cele przetwarzania: realizacja zamówień (${v.cel_sprzedaz||'tak'}), newsletter (${v.cel_newsletter||'nie'}), marketing (${v.cel_marketing||'nie'}), księgowość (${v.cel_ksiegowosc||'tak'}), kontakt/reklamacje (${v.cel_kontakt||'tak'}), inne: ${v.cel_inne||'brak'}. Zbierane dane: ${v.dane_kategorie||'podstawowe dane kontaktowe i adresowe'}. Dane wrażliwe: ${v.dane_wrazliwe||'nie'}. Dzieci: ${v.dane_dzieci||'nie'}. Narzędzia: Google Analytics (${v.google_analytics||'nie'}), Facebook Pixel (${v.facebook_pixel||'nie'}), inne: ${v.inne_narzedzia||'brak'}. Operator płatności: ${v.operator_platnosci||'[?]'}. Firmy kurierskie: ${v.firma_kurierska||'[?]'}. Inne podmioty: ${v.podmioty_inne||'brak'}. Transfer poza EOG: ${v.transfer_poza_ue||'nie'}. Cookies: ${v.cookies||'tak'}, rodzaje: ${v.cookies_rodzaje||'niezbędne, analityczne, marketingowe'}. Retencja zamówień: ${v.okres_przechowywania||'5 lat'}, newsletter: ${v.okres_newsletter||'do wycofania zgody'}. Prawa: dostęp (${v.prawo_dostepu||'tak'}), przenoszalność (${v.prawo_przenosnosci||'tak'}), odpowiedź w ${v.czas_odpowiedzi||'30 dni'}. Skarga do UODO: ${v.skarga_uodo||'tak'}. Zawrzyj wszystkie wymagane sekcje: 1. Administrator danych i kontakt, 2. Inspektor Ochrony Danych, 3. Cele i podstawy prawne przetwarzania (osobno dla każdego celu z podaniem konkretnego artykułu RODO), 4. Kategorie przetwarzanych danych, 5. Odbiorcy danych i podmioty przetwarzające, 6. Transfer danych poza EOG, 7. Okres przechowywania danych (osobno dla każdego celu), 8. Prawa osób (dostęp, sprostowanie, usunięcie, ograniczenie, przenoszalność, sprzeciw, cofnięcie zgody), 9. Pliki cookies i podobne technologie, 10. Bezpieczeństwo danych, 11. Zmiany polityki prywatności, 12. Prawo skargi do UODO (adres: ul. Stawki 2, 00-193 Warszawa). Zacznij od razu od treści dokumentu bez żadnego komentarza.`
   },
-  { id:'polityka_zwrotow', cat:'ecommerce', icon:'↩', name:'Polityka zwrotów i reklamacji', desc:'Zasady zwrotów, wymian i reklamacji zgodne z prawem konsumenckim.', price:15,
+  { id:'polityka_zwrotow', cat:'ecommerce', icon:'↩', name:'Polityka zwrotów i reklamacji', desc:'Zasady zwrotów, wymian i reklamacji zgodne z prawem konsumenckim.', price:7.99,
     fields:[
       {s:'Dane firmy'},
       {id:'firma',l:'Nazwa firmy',p:'MójSklep Sp. z o.o.',r:true},
@@ -219,7 +220,7 @@ const DOCS = [
   },
 
   // B2B / FREELANCER
-  { id:'umowa_b2b', cat:'b2b', icon:'🤝', name:'Umowa o współpracy B2B', desc:'Umowa między firmami określająca zakres usług, wynagrodzenie i odpowiedzialność.', price:19,
+  { id:'umowa_b2b', cat:'b2b', icon:'🤝', name:'Umowa o współpracy B2B', desc:'Umowa między firmami określająca zakres usług, wynagrodzenie i odpowiedzialność.', price:9.99,
     fields:[
       {s:'Zleceniodawca (zamawiający)'},
       {id:'zlec_firma',l:'Nazwa firmy',p:'ABC Sp. z o.o.',r:true},{id:'zlec_nip',l:'NIP',p:'1234567890'},
@@ -238,7 +239,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz umowę o współpracy B2B. Zleceniodawca: ${v.zlec_firma||'[?]'}, NIP: ${v.zlec_nip||'[?]'}, adres: ${v.zlec_adres||'[?]'}. Zleceniobiorca: ${v.wyk_firma||'[?]'}, NIP: ${v.wyk_nip||'[?]'}, adres: ${v.wyk_adres||'[?]'}. Zakres: ${v.zakres||'[?]'}. Wynagrodzenie: ${v.wynagrodzenie||'[?]'}. Płatność: ${v.termin||14} dni. Czas: ${v.czas||'nieokreślony'}. Wypowiedzenie: ${v.wypowiedzenie||'1 miesiąc'}. Inne: ${v.extra||'brak'}. Zacznij od treści umowy.`
   },
-  { id:'nda', cat:'b2b', icon:'🔐', name:'Umowa NDA (poufność)', desc:'Umowa o zachowaniu poufności chroniąca know-how i dane biznesowe.', price:15,
+  { id:'nda', cat:'b2b', icon:'🔐', name:'Umowa NDA (poufność)', desc:'Umowa o zachowaniu poufności chroniąca know-how i dane biznesowe.', price:6.99,
     fields:[
       {s:'Strona ujawniająca'},
       {id:'str1_nazwa',l:'Nazwa firmy / imię nazwisko',p:'ABC Sp. z o.o.',r:true},
@@ -256,7 +257,7 @@ const DOCS = [
   },
 
   // HR
-  { id:'umowa_pracy', cat:'hr', icon:'👔', name:'Umowa o pracę', desc:'Umowa o pracę zgodna z Kodeksem Pracy z wszystkimi wymaganymi elementami.', price:15,
+  { id:'umowa_pracy', cat:'hr', icon:'👔', name:'Umowa o pracę', desc:'Umowa o pracę zgodna z Kodeksem Pracy z wszystkimi wymaganymi elementami.', price:7.99,
     fields:[
       {s:'Pracodawca'},
       {id:'pracodawca',l:'Nazwa firmy',p:'ABC Sp. z o.o.',r:true},{id:'nip',l:'NIP',p:'1234567890'},
@@ -274,7 +275,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz umowę o pracę. Pracodawca: ${v.pracodawca||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres_p||'[?]'}. Pracownik: ${v.pracownik||'[?]'}, PESEL: ${v.pesel||'[?]'}, adres: ${v.adres_pr||'[?]'}. Stanowisko: ${v.stanowisko||'[?]'}. Wymiar: ${v.wymiar||'pełny etat'}. Wynagrodzenie: ${v.wynagrodzenie||'[?]'} zł brutto. Data: ${v.data_start||'[?]'}. Rodzaj: ${v.rodzaj||'czas nieokreślony'}. Miejsce: ${v.miejsce||'[?]'}. Zgodna z Kodeksem Pracy. Zacznij od treści umowy.`
   },
-  { id:'umowa_zlecenie', cat:'hr', icon:'📄', name:'Umowa zlecenie', desc:'Umowa zlecenie zgodna z Kodeksem Cywilnym z informacją o ZUS i podatku.', price:15,
+  { id:'umowa_zlecenie', cat:'hr', icon:'📄', name:'Umowa zlecenie', desc:'Umowa zlecenie zgodna z Kodeksem Cywilnym z informacją o ZUS i podatku.', price:6.99,
     fields:[
       {s:'Zleceniodawca'},
       {id:'zlec',l:'Nazwa firmy',p:'ABC Sp. z o.o.',r:true},{id:'nip',l:'NIP',p:'1234567890'},
@@ -290,7 +291,7 @@ const DOCS = [
   },
 
   // NAJEM
-  { id:'umowa_najmu', cat:'najem', icon:'🏠', name:'Umowa najmu mieszkania', desc:'Kompletna umowa najmu z wszystkimi wymaganymi elementami prawnymi.', price:19,
+  { id:'umowa_najmu', cat:'najem', icon:'🏠', name:'Umowa najmu mieszkania', desc:'Kompletna umowa najmu z wszystkimi wymaganymi elementami prawnymi.', price:9.99,
     fields:[
       {s:'Wynajmujący (właściciel)'},
       {id:'wyn_imie',l:'Imię i nazwisko',p:'Jan Kowalski',r:true},{id:'wyn_pesel',l:'PESEL',p:'75010112345'},
@@ -313,7 +314,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz umowę najmu mieszkania. Wynajmujący: ${v.wyn_imie||'[?]'}, PESEL: ${v.wyn_pesel||'[?]'}, adres: ${v.wyn_adres||'[?]'}. Najemca: ${v.naj_imie||'[?]'}, PESEL: ${v.naj_pesel||'[?]'}, adres: ${v.naj_adres||'[?]'}. Mieszkanie: ${v.m_adres||'[?]'}, ${v.m_metraz||'[?]'} m², ${v.m_pokoje||'[?]'} pokoje. Czynsz: ${v.czynsz||'[?]'} zł, kaucja: ${v.kaucja||'[?]'} zł, opłaty: ${v.oplaty||'wg liczników'}. Okres: od ${v.data_od||'[?]'}, ${v.czas||'nieokreślony'}, wypowiedzenie: ${v.wypowiedzenie||'1 miesiąc'}. Zwierzęta: ${v.zwierzeta||'nie'}, palenie: ${v.palenie||'zakaz'}. Inne: ${v.extra||'brak'}. Zacznij od treści umowy.`
   },
-  { id:'protokol', cat:'najem', icon:'📋', name:'Protokół zdawczo-odbiorczy', desc:'Protokół przekazania mieszkania przy wprowadzeniu lub wyprowadzeniu.', price:15,
+  { id:'protokol', cat:'najem', icon:'📋', name:'Protokół zdawczo-odbiorczy', desc:'Protokół przekazania mieszkania przy wprowadzeniu lub wyprowadzeniu.', price:6.99,
     fields:[
       {s:'Dane stron'},
       {id:'wyn',l:'Wynajmujący',p:'Jan Kowalski',r:true},{id:'naj',l:'Najemca',p:'Anna Nowak',r:true},
@@ -333,7 +334,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz protokół zdawczo-odbiorczy mieszkania. Wynajmujący: ${v.wyn||'[?]'}, najemca: ${v.naj||'[?]'}. Adres: ${v.adres||'[?]'}, data: ${v.data||'[?]'}, rodzaj: ${v.typ||'przekazanie'}. Liczniki: prąd ${v.prad||'[?]'} kWh, gaz ${v.gaz||'[?]'} m³, woda zimna ${v.woda_z||'[?]'} m³, ciepła ${v.woda_c||'[?]'} m³. Stan: ${v.stan||'dobry'}, ściany: ${v.uwagi_sciany||'ok'}, podłogi: ${v.uwagi_podlogi||'ok'}, okna: ${v.uwagi_okna||'ok'}. Klucze: ${v.klucze||'[?]'}. Wyposażenie: ${v.wyposazenie||'[?]'}. Uwagi: ${v.extra||'brak'}. Zacznij od treści protokołu.`
   },
-  { id:'wypowiedzenie_najmu', cat:'najem', icon:'📝', name:'Wypowiedzenie umowy najmu', desc:'Formalne wypowiedzenie z zachowaniem wymaganego okresu wypowiedzenia.', price:10,
+  { id:'wypowiedzenie_najmu', cat:'najem', icon:'📝', name:'Wypowiedzenie umowy najmu', desc:'Formalne wypowiedzenie z zachowaniem wymaganego okresu wypowiedzenia.', price:5.99,
     fields:[
       {s:'Składający wypowiedzenie'},
       {id:'strona',l:'Kto wypowiada?',type:'select',opts:['Najemca','Wynajmujący'],r:true},
@@ -350,7 +351,7 @@ const DOCS = [
   },
 
   // FINANSE
-  { id:'biznesplan', cat:'finanse', icon:'🏦', name:'Biznesplan dla banku', desc:'Profesjonalny biznesplan pod kredyt inwestycyjny z analizą finansową.', price:25,
+  { id:'biznesplan', cat:'finanse', icon:'🏦', name:'Biznesplan dla banku', desc:'Profesjonalny biznesplan pod kredyt inwestycyjny z analizą finansową.', price:9.99,
     fields:[
       {s:'Firma'},
       {id:'firma',l:'Nazwa firmy',p:'MójBiznes Sp. z o.o.',r:true},{id:'branza',l:'Branża',p:'e-commerce, sprzedaż online',r:true},
@@ -367,7 +368,7 @@ const DOCS = [
     ],
     prompt:(v)=>`Napisz profesjonalny biznesplan dla banku pod kredyt inwestycyjny. Firma: ${v.firma||'[?]'}, branża: ${v.branza||'[?]'}, adres: ${v.adres||'[?]'}. Kwota kredytu: ${v.kwota||'[?]'} zł, cel: ${v.cel||'[?]'}. Opis: ${v.opis||'[?]'}. Rynek: ${v.rynek||'[?]'}. Przychód: ${v.przychod||'[?]'} zł, zysk: ${v.zysk||'[?]'} zł, prognoza: ${v.prognoza||'[?]'}. Zawrzyj: streszczenie, opis firmy, analizę rynku, plan finansowy, harmonogram spłat. Zacznij od treści.`
   },
-  { id:'swot', cat:'finanse', icon:'📊', name:'Analiza SWOT firmy', desc:'Szczegółowa analiza mocnych/słabych stron, szans i zagrożeń z rekomendacjami.', price:15,
+  { id:'swot', cat:'finanse', icon:'📊', name:'Analiza SWOT firmy', desc:'Szczegółowa analiza mocnych/słabych stron, szans i zagrożeń z rekomendacjami.', price:6.99,
     fields:[
       {s:'Firma'},
       {id:'firma',l:'Nazwa firmy',p:'MójBiznes Sp. z o.o.',r:true},
@@ -381,7 +382,7 @@ const DOCS = [
   },
 
   // STARTUP
-  { id:'umowa_spolnikow', cat:'startup', icon:'🚀', name:'Umowa wspólników (co-founders)', desc:'Umowa regulująca udziały, role, vesting i zasady wyjścia ze spółki.', price:25,
+  { id:'umowa_spolnikow', cat:'startup', icon:'🚀', name:'Umowa wspólników (co-founders)', desc:'Umowa regulująca udziały, role, vesting i zasady wyjścia ze spółki.', price:9.99,
     fields:[
       {s:'Spółka'},
       {id:'spolka',l:'Nazwa spółki',p:'FinTech Sp. z o.o.',r:true},{id:'branza',l:'Branża / produkt',p:'aplikacja mobilna do oszczędzania',r:true,full:true},
@@ -540,285 +541,9 @@ function closeSubpage() {
   queueIdx = 0;
 }
 
-function buildSubpage(doc, docId) {
-  // Check prefill
-  const prefillFields = doc.fields.filter(f => f.id && sharedData[f.id]);
-  const hasPrefill = prefillFields.length > 0;
 
-  // Build sections + fields
-  let sections = [];
-  let currentSection = { title: null, fields: [] };
-  doc.fields.forEach(f => {
-    if (f.s) {
-      if (currentSection.fields.length || currentSection.title) sections.push(currentSection);
-      currentSection = { title: f.s, fields: [] };
-    } else {
-      currentSection.fields.push(f);
-    }
-  });
-  sections.push(currentSection);
-
-  const fieldsHTML = sections.map(sec => `
-    ${sec.title ? `<div class="gen-section-title">${sec.title}</div>` : ''}
-    <div class="gen-fields-grid">
-      ${sec.fields.map(f => {
-        const val = sharedData[f.id] || '';
-        const ftype = f.type || f.t || 'text';
-        const fopts = f.opts || f.o || [];
-        let input = '';
-        if (ftype === 'textarea') {
-          input = `<textarea class="gen-input" id="spf-${f.id}" placeholder="${f.p||''}" rows="3">${val}</textarea>`;
-        } else if (ftype === 'select') {
-          input = `<select class="gen-input" id="spf-${f.id}">${fopts.map(o=>`<option${val===o?' selected':''}>${o}</option>`).join('')}</select>`;
-        } else {
-          input = `<input class="gen-input" type="${ftype}" id="spf-${f.id}" placeholder="${f.p||''}" value="${val}">`;
-        }
-        return `<div class="gen-field${f.full?' gen-full':''}">
-          <label class="gen-label">${f.l}${f.r ? ' <span class="gen-req">*</span>' : ''}</label>
-          ${input}
-        </div>`;
-      }).join('')}
-    </div>
-  `).join('');
-
-  const isLast = queueIdx >= docQueue.length - 1;
-  const nextDoc = !isLast ? getDoc(docQueue[queueIdx + 1]) : null;
-  const queueBar = docQueue.length > 1 ? `
-    <div class="gen-queue-bar">
-      ${docQueue.map((id, i) => {
-        const d = getDoc(id);
-        const cls = i < queueIdx ? 'done' : i === queueIdx ? 'active' : '';
-        return `<div class="gen-queue-step ${cls}">
-          <div class="gen-queue-num">${i < queueIdx ? '✓' : i+1}</div>
-          <div class="gen-queue-name">${d.name}</div>
-        </div>${i < docQueue.length-1 ? '<div class="gen-queue-line"></div>' : ''}`;
-      }).join('')}
-    </div>` : '';
-
-  document.getElementById('subpageBody').innerHTML = `
-    <div class="gen-layout">
-
-      <!-- LEFT: form -->
-      <div class="gen-left">
-        ${queueBar}
-
-        <div class="gen-doc-header">
-          <span class="gen-doc-icon">${doc.icon}</span>
-          <div>
-            <h1 class="gen-doc-title">${doc.name}</h1>
-            <p class="gen-doc-desc">${doc.desc}</p>
-          </div>
-          <div class="gen-doc-price">${doc.price}<span>zł</span></div>
-        </div>
-
-        ${hasPrefill ? `
-        <div class="gen-prefill-notice">
-          <span class="gen-prefill-icon">✦</span>
-          <span>${prefillFields.length} pól uzupełnionych automatycznie z poprzedniego dokumentu</span>
-        </div>` : ''}
-
-        <div id="spForm">
-          <div class="gen-error" id="spError" style="display:none"></div>
-          ${fieldsHTML}
-          <div class="gen-submit-row">
-            <button class="gen-btn-submit" onclick="generateDoc('${docId}')">
-              Generuj dokument
-              <span class="gen-btn-arrow">→</span>
-            </button>
-            <span class="gen-submit-note">zajmuje ~20 sekund</span>
-          </div>
-        </div>
-
-        <div id="spLoading" style="display:none">
-          <div class="gen-loading">
-            <div class="gen-loading-dots"><span></span><span></span><span></span></div>
-            <div class="gen-loading-text">Generuję <strong>${doc.name}</strong>…</div>
-            <div class="gen-loading-sub">Zazwyczaj 15–30 sekund</div>
-          </div>
-        </div>
-
-        <div id="spResult" style="display:none">
-          <div class="gen-result-badge">✓ Dokument gotowy</div>
-          <div class="gen-result-actions">
-            <button class="gen-btn-copy" id="spCopyBtn" onclick="copyResult()">Kopiuj tekst</button>
-            <button class="gen-btn-download" onclick="downloadResult('${docId}')">Pobierz .txt</button>
-            <button class="gen-btn-redo" onclick="redoForm()">Edytuj dane</button>
-          </div>
-          ${nextDoc ? `<button class="gen-btn-next" onclick="goNextDoc()">Następny dokument: ${nextDoc.icon} ${nextDoc.name} →</button>` : ''}
-          <div class="gen-disclaimer">Dokument stanowi wzór do samodzielnej edycji. Zalecamy weryfikację przed podpisaniem.</div>
-        </div>
-      </div>
-
-      <!-- RIGHT: document preview -->
-      <div class="gen-right">
-        <div class="gen-preview-label">Podgląd dokumentu</div>
-        <div class="gen-preview-box" id="spResultContent">
-          <div class="gen-preview-placeholder">
-            <div class="gen-preview-lines">
-              ${Array(14).fill(0).map((_,i)=>`<div class="gen-preview-line" style="width:${[95,88,92,70,95,82,78,88,65,90,85,72,88,60][i]||80}%"></div>`).join('')}
-            </div>
-            <p>Tutaj pojawi się wygenerowany dokument</p>
-          </div>
-        </div>
-      </div>
-
-    </div>`;
-}
-
-async function generateDoc(docId) {
-  const doc = getDoc(docId);
-
-  // Gather values + save to sharedData
-  const vals = {};
-  doc.fields.forEach(f => {
-    if (!f.s && f.id) {
-      const el = document.getElementById('spf-' + f.id);
-      if (el) { vals[f.id] = el.value.trim(); sharedData[f.id] = vals[f.id]; }
-    }
-  });
-
-  const missing = doc.fields.filter(f => f.r && f.id && !vals[f.id]);
-  const errEl = document.getElementById('spError');
-  if (missing.length) {
-    errEl.textContent = 'Uzupełnij wymagane pola: ' + missing.map(f=>f.l).join(', ');
-    errEl.style.display = 'block';
-    errEl.scrollIntoView({behavior:'smooth', block:'center'});
-    return;
-  }
-  errEl.style.display = 'none';
-
-  document.getElementById('spForm').style.display = 'none';
-  document.getElementById('spLoading').style.display = 'block';
-
-  try {
-    const response = await fetch('/api/generate', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ prompt: doc.prompt(vals) + '\n\nPisz po polsku. Styl: formalny. NIE pisz wstępu ani komentarza – tylko treść dokumentu.' })
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Błąd serwera');
-    let text = data.text || '';
-    if (!text) throw new Error('Pusta odpowiedź');
-    if (text.startsWith('```')) text = text.slice(text.indexOf('\n')+1);
-    if (text.endsWith('```')) text = text.slice(0, text.lastIndexOf('```'));
-    text = text.trim();
-
-    document.getElementById('spLoading').style.display = 'none';
-    const previewBox = document.getElementById('spResultContent');
-    previewBox.textContent = text;
-    previewBox.classList.add('has-content');
-    document.getElementById('spResult').style.display = 'block';
-    document.getElementById('spResult').scrollIntoView({behavior:'smooth'});
-
-  } catch(err) {
-    document.getElementById('spLoading').style.display = 'none';
-    document.getElementById('spForm').style.display = 'block';
-    const errEl = document.getElementById('spError');
-    errEl.textContent = 'Błąd: ' + err.message;
-    errEl.style.display = 'block';
-  }
-}
-
-function goNextDoc() {
-  queueIdx++;
-  if (queueIdx < docQueue.length) {
-    const doc = getDoc(docQueue[queueIdx]);
-    buildSubpage(doc, docQueue[queueIdx]);
-    document.getElementById('subpage').scrollTop = 0;
-  } else {
-    closeSubpage();
-  }
-}
-
-function redoForm() {
-  document.getElementById('spResult').style.display = 'none';
-  document.getElementById('spForm').style.display = 'block';
-}
-
-function copyResult() {
-  const text = document.getElementById('spResultContent').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('spCopyBtn');
-    btn.textContent = '✓ Skopiowano!';
-    setTimeout(() => btn.textContent = '📋 Kopiuj', 2000);
-  });
-}
-
-function downloadResult(docId) {
-  const text = document.getElementById('spResultContent').textContent;
-  const name = getDoc(docId)?.name || 'dokument';
-  const blob2 = new Blob([text], {type:'text/plain;charset=utf-8'});
-  const url = URL.createObjectURL(blob2);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name.replace(/\s+/g,'_') + '.txt';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ---- KARTA CV W GRIDZIE ----
-const CAT_LABELS = {ecommerce:'E-commerce',b2b:'B2B / Freelancer',hr:'HR / Praca',najem:'Najem',finanse:'Finanse',startup:'Startup'};
-let currentCat = 'all';
-
-function renderGrid() {
-  const grid = document.getElementById('docsGrid');
-  const cvCard = `
-    <div class="doc-card cv-card" onclick="window.location.href='kreator-cv.html'">
-      <div class="doc-card-body">
-        <span class="doc-card-icon">📄</span>
-        <div class="doc-card-cat">Kreator CV</div>
-        <div class="doc-card-name">Kreator CV z podglądem na żywo</div>
-        <div class="doc-card-desc">4 szablony, podgląd w czasie rzeczywistym, gotowy PDF do pobrania.</div>
-      </div>
-      <div class="doc-card-footer">
-        <div><span class="doc-price">5</span><span class="doc-price-unit">zł</span></div>
-        <button class="btn-cv-open" onclick="event.stopPropagation();window.location.href='kreator-cv.html'">Otwórz →</button>
-      </div>
-    </div>`;
-
-  const docCards = DOCS
-    .filter(doc => currentCat === 'all' || doc.cat === currentCat)
-    .map(doc => {
-      const inCart = cart.some(c => c.id === doc.id);
-      return `
-        <div class="doc-card${inCart?' in-cart':''}" id="card-${doc.id}">
-          <div class="doc-card-body" onclick="openDocPage('${doc.id}')">
-            <span class="doc-card-icon">${doc.icon}</span>
-            <div class="doc-card-cat">${CAT_LABELS[doc.cat]||doc.cat}</div>
-            <div class="doc-card-name">${doc.name}</div>
-            <div class="doc-card-desc">${doc.desc}</div>
-          </div>
-          <div class="doc-card-footer">
-            <div><span class="doc-price">${doc.price}</span><span class="doc-price-unit">zł</span></div>
-            <button class="btn-add-cart${inCart?' added':''}" onclick="toggleCart('${doc.id}')">
-              ${inCart?'✓ Dodano':'+ Dodaj'}
-            </button>
-          </div>
-        </div>`;
-    }).join('');
-
-  grid.innerHTML = (currentCat === 'all' ? cvCard : '') + docCards;
-}
-
-function filterCat(cat, btn) {
-  currentCat = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderGrid();
-}
-
-// Override toggleCart to also re-render grid
-const _origToggleCart = toggleCart;
-window.toggleCart = function(docId) {
-  _origToggleCart(docId);
-  renderGrid();
-  updateCartUI();
-};
-
-// INIT
-renderGrid();
-updateCartUI();
+// generator.js loaded separately
 </script>
+<script src="generator.js"></script>
 </body>
 </html>
