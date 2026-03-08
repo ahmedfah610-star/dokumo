@@ -353,3 +353,153 @@ textarea.cvf-input { resize:vertical; min-height:56px; line-height:1.5; }
    ===================================================== */
 
 /* Layout: lewa (formularz) + prawa (podgląd) */
+
+/* ── PASEK POSTĘPU KOLEJKI ── */
+.gf-progress-bar {
+  height: 3px;
+  background: var(--border);
+  margin-bottom: 8px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.gf-progress-fill {
+  height: 100%;
+  background: var(--accent2);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.gf-progress-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 36px;
+}
+
+/* ── PRZEJŚCIE DO NASTĘPNEGO DOKUMENTU ── */
+.gf-next-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: rgba(45,107,82,0.07);
+  border: 1px solid rgba(45,107,82,0.18);
+  font-size: 0.88rem;
+  color: var(--ink);
+  animation: gf-slide-in 0.3s ease;
+}
+.gf-next-check {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent2);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+@keyframes gf-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── EKRAN PŁATNOŚCI ── */
+.pay-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 56px 0 80px;
+  max-width: 500px;
+}
+.pay-all-check {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.pay-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+}
+.pay-sub { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+.pay-summary {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--white);
+}
+.pay-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border2);
+}
+.pay-item:last-child { border-bottom: none; }
+.pay-discount { color: var(--accent2); font-size: 0.82rem; }
+.pay-total {
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--bg2);
+}
+.pay-total span:last-child {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+/* ── POBIERANIE ── */
+.pay-download-section {
+  width: 100%;
+  border: 1px solid rgba(45,107,82,0.25);
+  background: rgba(45,107,82,0.04);
+  padding: 20px;
+  animation: gf-slide-in 0.35s ease;
+}
+.pay-confirmed {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 12px;
+}
+.pay-download-hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; }
+.pay-download-list { display: flex; flex-direction: column; gap: 8px; }
+.pay-download-btn {
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  padding: 10px 18px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.04em;
+}
+.pay-download-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.pay-download-all {
+  margin-top: 10px;
+  background: var(--accent2);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+.pay-download-all:hover { opacity: 0.88; }
