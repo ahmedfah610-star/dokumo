@@ -543,14 +543,16 @@ function closeSubpage() {
 function buildSubpage(doc, docId) {
   // Queue progress
   const qEl = document.getElementById('queueProgress');
-  if (docQueue.length > 1) {
-    qEl.innerHTML = docQueue.map((id, i) => {
-      const d = getDoc(id);
-      let cls = i < queueIdx ? 'done' : i === queueIdx ? 'active' : '';
-      return `${i>0?'<div class="queue-step-sep"></div>':''}<div class="queue-step ${cls}" title="${d.name}">${i+1}</div>`;
-    }).join('');
-  } else {
-    qEl.innerHTML = '';
+  if (qEl) {
+    if (docQueue.length > 1) {
+      qEl.innerHTML = docQueue.map((id, i) => {
+        const d = getDoc(id);
+        let cls = i < queueIdx ? 'done' : i === queueIdx ? 'active' : '';
+        return `${i>0?'<div class="queue-step-sep"></div>':''}<div class="queue-step ${cls}" title="${d.name}">${i+1}</div>`;
+      }).join('');
+    } else {
+      qEl.innerHTML = '';
+    }
   }
 
   // Check prefill
@@ -584,7 +586,7 @@ function buildSubpage(doc, docId) {
   const isLast = queueIdx >= docQueue.length - 1;
   const nextDoc = !isLast ? getDoc(docQueue[queueIdx + 1]) : null;
 
-  document.getElementById('subpageContent').innerHTML = `
+  document.getElementById('subpageBody').innerHTML = `
     <div class="sp-header">
       <span class="sp-doc-icon">${doc.icon}</span>
       <h1 class="sp-doc-title">${doc.name}</h1>
@@ -765,11 +767,12 @@ function filterCat(cat, btn) {
 }
 
 // Override toggleCart to also re-render grid
-const _origToggle = toggleCart;
-function toggleCart(docId) {
-  _origToggle(docId);
+const _origToggleCart = toggleCart;
+window.toggleCart = function(docId) {
+  _origToggleCart(docId);
   renderGrid();
-}
+  updateCartUI();
+};
 
 // INIT
 renderGrid();
