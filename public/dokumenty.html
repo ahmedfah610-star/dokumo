@@ -541,97 +541,132 @@ function closeSubpage() {
 }
 
 function buildSubpage(doc, docId) {
-  // Queue progress
-  const qEl = document.getElementById('queueProgress');
-  if (qEl) {
-    if (docQueue.length > 1) {
-      qEl.innerHTML = docQueue.map((id, i) => {
-        const d = getDoc(id);
-        let cls = i < queueIdx ? 'done' : i === queueIdx ? 'active' : '';
-        return `${i>0?'<div class="queue-step-sep"></div>':''}<div class="queue-step ${cls}" title="${d.name}">${i+1}</div>`;
-      }).join('');
-    } else {
-      qEl.innerHTML = '';
-    }
-  }
-
   // Check prefill
   const prefillFields = doc.fields.filter(f => f.id && sharedData[f.id]);
   const hasPrefill = prefillFields.length > 0;
 
-  // Build fields HTML
-  let fieldsHTML = '';
+  // Build sections + fields
+  let sections = [];
+  let currentSection = { title: null, fields: [] };
   doc.fields.forEach(f => {
     if (f.s) {
-      fieldsHTML += `</div><span class="sp-section-label">${f.s}</span><div class="sp-grid">`;
-      return;
-    }
-    const val = sharedData[f.id] || '';
-    const fullClass = f.full ? ' sp-full' : '';
-    let input = '';
-    const ftype = f.type || f.t || 'text';
-    const fopts = f.opts || f.o || [];
-    if (ftype === 'textarea') {
-      input = `<textarea id="spf-${f.id}" placeholder="${f.p||''}">${val}</textarea>`;
-    } else if (ftype === 'select') {
-      input = `<select id="spf-${f.id}">${fopts.map(o=>`<option${val===o?' selected':''}>${o}</option>`).join('')}</select>`;
+      if (currentSection.fields.length || currentSection.title) sections.push(currentSection);
+      currentSection = { title: f.s, fields: [] };
     } else {
-      input = `<input type="${ftype}" id="spf-${f.id}" placeholder="${f.p||''}" value="${val}">`;
+      currentSection.fields.push(f);
     }
-    fieldsHTML += `<div class="sp-field${fullClass}">
-      <label>${f.l}${f.r?'<span class="req"> *</span>':''}</label>${input}</div>`;
   });
-  fieldsHTML = '<div class="sp-grid">' + fieldsHTML + '</div>';
+  sections.push(currentSection);
+
+  const fieldsHTML = sections.map(sec => `
+    ${sec.title ? `<div class="gen-section-title">${sec.title}</div>` : ''}
+    <div class="gen-fields-grid">
+      ${sec.fields.map(f => {
+        const val = sharedData[f.id] || '';
+        const ftype = f.type || f.t || 'text';
+        const fopts = f.opts || f.o || [];
+        let input = '';
+        if (ftype === 'textarea') {
+          input = `<textarea class="gen-input" id="spf-${f.id}" placeholder="${f.p||''}" rows="3">${val}</textarea>`;
+        } else if (ftype === 'select') {
+          input = `<select class="gen-input" id="spf-${f.id}">${fopts.map(o=>`<option${val===o?' selected':''}>${o}</option>`).join('')}</select>`;
+        } else {
+          input = `<input class="gen-input" type="${ftype}" id="spf-${f.id}" placeholder="${f.p||''}" value="${val}">`;
+        }
+        return `<div class="gen-field${f.full?' gen-full':''}">
+          <label class="gen-label">${f.l}${f.r ? ' <span class="gen-req">*</span>' : ''}</label>
+          ${input}
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
 
   const isLast = queueIdx >= docQueue.length - 1;
   const nextDoc = !isLast ? getDoc(docQueue[queueIdx + 1]) : null;
+  const queueBar = docQueue.length > 1 ? `
+    <div class="gen-queue-bar">
+      ${docQueue.map((id, i) => {
+        const d = getDoc(id);
+        const cls = i < queueIdx ? 'done' : i === queueIdx ? 'active' : '';
+        return `<div class="gen-queue-step ${cls}">
+          <div class="gen-queue-num">${i < queueIdx ? '✓' : i+1}</div>
+          <div class="gen-queue-name">${d.name}</div>
+        </div>${i < docQueue.length-1 ? '<div class="gen-queue-line"></div>' : ''}`;
+      }).join('')}
+    </div>` : '';
 
   document.getElementById('subpageBody').innerHTML = `
-    <div class="sp-header">
-      <span class="sp-doc-icon">${doc.icon}</span>
-      <h1 class="sp-doc-title">${doc.name}</h1>
-      <p class="sp-doc-desc">${doc.desc}</p>
-      <div class="sp-price-tag">
-        <span class="sp-price-num">${doc.price}</span>
-        <span class="sp-price-label">zł</span>
+    <div class="gen-layout">
+
+      <!-- LEFT: form -->
+      <div class="gen-left">
+        ${queueBar}
+
+        <div class="gen-doc-header">
+          <span class="gen-doc-icon">${doc.icon}</span>
+          <div>
+            <h1 class="gen-doc-title">${doc.name}</h1>
+            <p class="gen-doc-desc">${doc.desc}</p>
+          </div>
+          <div class="gen-doc-price">${doc.price}<span>zł</span></div>
+        </div>
+
+        ${hasPrefill ? `
+        <div class="gen-prefill-notice">
+          <span class="gen-prefill-icon">✦</span>
+          <span>${prefillFields.length} pól uzupełnionych automatycznie z poprzedniego dokumentu</span>
+        </div>` : ''}
+
+        <div id="spForm">
+          <div class="gen-error" id="spError" style="display:none"></div>
+          ${fieldsHTML}
+          <div class="gen-submit-row">
+            <button class="gen-btn-submit" onclick="generateDoc('${docId}')">
+              Generuj dokument
+              <span class="gen-btn-arrow">→</span>
+            </button>
+            <span class="gen-submit-note">zajmuje ~20 sekund</span>
+          </div>
+        </div>
+
+        <div id="spLoading" style="display:none">
+          <div class="gen-loading">
+            <div class="gen-loading-dots"><span></span><span></span><span></span></div>
+            <div class="gen-loading-text">Generuję <strong>${doc.name}</strong>…</div>
+            <div class="gen-loading-sub">Zazwyczaj 15–30 sekund</div>
+          </div>
+        </div>
+
+        <div id="spResult" style="display:none">
+          <div class="gen-result-badge">✓ Dokument gotowy</div>
+          <div class="gen-result-actions">
+            <button class="gen-btn-copy" id="spCopyBtn" onclick="copyResult()">Kopiuj tekst</button>
+            <button class="gen-btn-download" onclick="downloadResult('${docId}')">Pobierz .txt</button>
+            <button class="gen-btn-redo" onclick="redoForm()">Edytuj dane</button>
+          </div>
+          ${nextDoc ? `<button class="gen-btn-next" onclick="goNextDoc()">Następny dokument: ${nextDoc.icon} ${nextDoc.name} →</button>` : ''}
+          <div class="gen-disclaimer">Dokument stanowi wzór do samodzielnej edycji. Zalecamy weryfikację przed podpisaniem.</div>
+        </div>
       </div>
-      ${docQueue.length > 1 ? `<div style="font-size:0.75rem;color:var(--muted);margin-top:8px;font-weight:400">Dokument ${queueIdx+1} z ${docQueue.length}</div>` : ''}
-    </div>
 
-    ${hasPrefill ? `<div class="prefill-notice">✓ <span>Wstępnie wypełniono <strong>${prefillFields.length} pól</strong> na podstawie poprzedniego dokumentu. Sprawdź i popraw jeśli potrzeba.</span></div>` : ''}
-
-    <div class="sp-form" id="spForm">
-      <div class="sp-error" id="spError"></div>
-      ${fieldsHTML}
-      <button class="btn-generate" onclick="generateDoc('${docId}')">Wygeneruj dokument →</button>
-    </div>
-
-    <div class="sp-loading" id="spLoading">
-      <div class="sp-spinner"></div>
-      <h3>Generuję dokument...</h3>
-      <p>Zazwyczaj 15–30 sekund</p>
-    </div>
-
-    <div class="sp-result" id="spResult">
-      <div class="sp-result-header">
-        <div class="sp-result-dot"></div>
-        <span class="sp-result-label">${doc.name} — gotowy ✓</span>
+      <!-- RIGHT: document preview -->
+      <div class="gen-right">
+        <div class="gen-preview-label">Podgląd dokumentu</div>
+        <div class="gen-preview-box" id="spResultContent">
+          <div class="gen-preview-placeholder">
+            <div class="gen-preview-lines">
+              ${Array(14).fill(0).map((_,i)=>`<div class="gen-preview-line" style="width:${[95,88,92,70,95,82,78,88,65,90,85,72,88,60][i]||80}%"></div>`).join('')}
+            </div>
+            <p>Tutaj pojawi się wygenerowany dokument</p>
+          </div>
+        </div>
       </div>
-      <div class="sp-result-content" id="spResultContent"></div>
-      <div class="sp-result-actions">
-        <button class="btn-action" id="spCopyBtn" onclick="copyResult()">📋 Kopiuj</button>
-        <button class="btn-action" onclick="downloadResult('${docId}')">⬇ Pobierz .txt</button>
-      </div>
-      ${nextDoc ? `<button class="btn-next-doc" id="btnNext" onclick="goNextDoc()">Następny: ${nextDoc.icon} ${nextDoc.name} →</button>` : ''}
-      <button class="btn-redo" onclick="redoForm()">← Edytuj dane i generuj ponownie</button>
-      <div class="sp-disclaimer">⚠ Dokument stanowi wzór do samodzielnej edycji. Przed podpisaniem zalecamy jego weryfikację.</div>
+
     </div>`;
-
 }
 
 async function generateDoc(docId) {
   const doc = getDoc(docId);
-  const errEl = document.getElementById('spError');
 
   // Gather values + save to sharedData
   const vals = {};
@@ -643,8 +678,14 @@ async function generateDoc(docId) {
   });
 
   const missing = doc.fields.filter(f => f.r && f.id && !vals[f.id]);
-  if (missing.length) { errEl.textContent = 'Uzupełnij: ' + missing.map(f=>f.l).join(', '); errEl.classList.add('show'); return; }
-  errEl.classList.remove('show');
+  const errEl = document.getElementById('spError');
+  if (missing.length) {
+    errEl.textContent = 'Uzupełnij wymagane pola: ' + missing.map(f=>f.l).join(', ');
+    errEl.style.display = 'block';
+    errEl.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  errEl.style.display = 'none';
 
   document.getElementById('spForm').style.display = 'none';
   document.getElementById('spLoading').style.display = 'block';
@@ -664,17 +705,18 @@ async function generateDoc(docId) {
     text = text.trim();
 
     document.getElementById('spLoading').style.display = 'none';
-    document.getElementById('spResultContent').textContent = text;
+    const previewBox = document.getElementById('spResultContent');
+    previewBox.textContent = text;
+    previewBox.classList.add('has-content');
     document.getElementById('spResult').style.display = 'block';
-    const btnNext = document.getElementById('btnNext');
-    if (btnNext) btnNext.style.display = 'block';
     document.getElementById('spResult').scrollIntoView({behavior:'smooth'});
 
   } catch(err) {
     document.getElementById('spLoading').style.display = 'none';
     document.getElementById('spForm').style.display = 'block';
+    const errEl = document.getElementById('spError');
     errEl.textContent = 'Błąd: ' + err.message;
-    errEl.classList.add('show');
+    errEl.style.display = 'block';
   }
 }
 
