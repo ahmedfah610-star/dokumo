@@ -453,6 +453,7 @@ select.gf-input { cursor: pointer; }
         <div class="nav-profile-email" id="navProfileEmail"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
       </div>
@@ -1553,7 +1554,28 @@ function logoutUser() {
   updateNavAuth();
   window.location.href = 'index.html';
 }
-document.addEventListener('DOMContentLoaded', updateNavAuth);
+
+function updateNavBadge() {
+  const old = document.getElementById('navSubBadge');
+  if (old) old.remove();
+  const profile = document.getElementById('navProfile');
+  if (!profile || !getUser()) return;
+  const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
+  const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  const badge = document.createElement('div');
+  badge.id = 'navSubBadge';
+  if (isPro) {
+    badge.style.cssText = 'font-family:Syne,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#16a34a;color:#fff;padding:2px 7px;cursor:default;align-self:center;';
+    badge.textContent = 'PRO';
+  } else {
+    badge.style.cssText = 'font-family:Syne,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:transparent;border:1.5px solid #c8963c;color:#92400e;padding:2px 7px;cursor:pointer;align-self:center;';
+    badge.textContent = 'Kup PRO';
+    badge.onclick = () => window.location.href = 'subskrypcja.html';
+  }
+  const avatar = document.getElementById('navAvatar');
+  if (avatar) profile.insertBefore(badge, avatar);
+}
+document.addEventListener('DOMContentLoaded', () => { updateNavAuth(); updateNavBadge(); });
 </script>
 
 </body>
