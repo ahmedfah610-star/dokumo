@@ -122,14 +122,22 @@
 
 <script>
 function handleOAuth(provider) {
-  // Placeholder — do podłączenia z Firebase Auth / Supabase
   const btn = event.currentTarget;
   btn.style.opacity = '0.6';
   btn.style.pointerEvents = 'none';
   btn.querySelector('.oauth-btn-label').textContent = 'Łączenie…';
 
   setTimeout(() => {
-    // Symulacja sukcesu — zastąp prawdziwą integracją OAuth
+    // Placeholder — zastąp prawdziwą integracją Google OAuth / Firebase
+    // Symulacja zalogowanego użytkownika:
+    const mockUser = {
+      name: 'Jan Kowalski',
+      email: 'jan@gmail.com',
+      photo: '',
+      provider: provider
+    };
+    localStorage.setItem('dokumo_user', JSON.stringify(mockUser));
+
     document.getElementById('kontoDefault').style.display = 'none';
     const success = document.getElementById('kontoSuccess');
     success.style.display = 'block';
@@ -138,6 +146,12 @@ function handleOAuth(provider) {
     setTimeout(() => { window.location.href = 'dokumenty.html'; }, 2000);
   }, 1200);
 }
+
+// Jeśli już zalogowany — przekieruj od razu
+window.addEventListener('DOMContentLoaded', () => {
+  const user = localStorage.getItem('dokumo_user');
+  if (user) { window.location.href = 'dokumenty.html'; }
+});
 </script>
 
 </body>
