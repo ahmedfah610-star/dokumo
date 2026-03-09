@@ -635,3 +635,78 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
   .cv-form-col { width:400px; }
   .cv-pay-bar { width:400px; }
 }
+
+/* ── WYNIK GENEROWANIA — PODGLĄD + POBIERANIE ── */
+.doc-result-card {
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--white);
+  margin-bottom:24px;
+  animation:gf-slide-in 0.3s ease;
+}
+.doc-result-header {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+}
+.doc-result-icon { font-size:1.6rem; line-height:1; }
+.doc-result-name {
+  font-family:'Syne',sans-serif; font-size:0.92rem;
+  font-weight:700; color:var(--ink);
+}
+.doc-result-badge {
+  font-size:0.68rem; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--accent2); margin-top:3px;
+}
+
+/* Scrollable text preview */
+.doc-result-preview {
+  max-height:340px;
+  overflow-y:auto;
+  padding:20px 20px;
+  border-bottom:1px solid var(--border);
+  background:#fafaf8;
+}
+.doc-result-text {
+  font-family:'DM Mono',monospace;
+  font-size:0.78rem;
+  line-height:1.75;
+  color:var(--ink);
+  white-space:pre-wrap;
+  word-break:break-word;
+  margin:0;
+}
+
+/* Download buttons row */
+.doc-result-downloads { padding:16px 18px; }
+.doc-result-dl-label {
+  font-size:0.65rem; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:12px;
+}
+.doc-result-dl-btns {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+}
+.doc-dl-btn {
+  display:flex; flex-direction:column; align-items:center;
+  gap:6px; padding:14px 8px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  cursor:pointer; transition:all 0.18s;
+  font-family:'Syne',sans-serif;
+  font-size:0.78rem; font-weight:600;
+  color:var(--ink2); text-align:center;
+  -webkit-appearance:none;
+}
+.doc-dl-btn small { font-size:0.65rem; color:var(--muted); font-weight:400; }
+.doc-dl-icon { font-size:1.5rem; line-height:1; }
+.doc-dl-btn:hover { border-color:var(--accent2); color:var(--accent2); background:rgba(45,107,82,0.04); }
+.doc-dl-txt:hover { border-color:#6b7280; color:#374151; background:#f9fafb; }
+.doc-dl-pdf:hover { border-color:#dc2626; color:#dc2626; background:#fef2f2; }
+.doc-dl-word:hover { border-color:#2563eb; color:#2563eb; background:#eff6ff; }
+
+@media (max-width:480px) {
+  .doc-result-dl-btns { grid-template-columns:repeat(3,1fr); gap:6px; }
+  .doc-dl-btn { padding:10px 4px; font-size:0.72rem; }
+  .doc-result-preview { max-height:240px; }
+}
