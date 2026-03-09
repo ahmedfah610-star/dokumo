@@ -746,13 +746,13 @@ function buildSectionBodyHTML(sec) {
           <div class="cvf-grid2">
             <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label>
               <div class="cvf-autocomplete-wrap">
-                <input class="cvf-input" id="szkola-${i}" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
+                <input class="cvf-input" id="szkola-${i}" onfocus="showUniSuggest(${i},this.value)" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
                 <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
               </div>
             </div>
             <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label>
               <div class="cvf-autocomplete-wrap">
-                <input class="cvf-input" id="kierunek-${i}" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
+                <input class="cvf-input" id="kierunek-${i}" onfocus="showKierunekSuggest(${i},this.value)" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
                 <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
               </div>
             </div>
@@ -798,11 +798,12 @@ function buildSectionBodyHTML(sec) {
 function showUniSuggest(i, val) {
   const list = document.getElementById('uni-list-' + i);
   if (!list) return;
-  if (!val || val.length < 1) { list.classList.remove('show'); return; }
-  const q = val.toLowerCase();
-  const matches = POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 7);
+  const q = (val || '').toLowerCase();
+  const matches = q.length === 0
+    ? POLISH_UNIVERSITIES.slice(0, 7)
+    : POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 7);
   if (!matches.length) { list.classList.remove('show'); return; }
-  list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onclick="pickUni(${i},'${u.replace(/'/g,"\\'")}')">${u}</div>`).join('');
+  list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onclick="pickUni(${i},'${u.replace(/'/g,"\\'")}')">  ${u}</div>`).join('');
   list.classList.add('show');
 }
 function pickUni(i, val) {
@@ -818,9 +819,10 @@ function pickUni(i, val) {
 function showKierunekSuggest(i, val) {
   const list = document.getElementById('kierunek-list-' + i);
   if (!list) return;
-  if (!val || val.length < 1) { list.classList.remove('show'); return; }
-  const q = val.toLowerCase();
-  const matches = KIERUNKI_SUGGESTIONS.filter(k => k.toLowerCase().includes(q)).slice(0, 7);
+  const q = (val || '').toLowerCase();
+  const matches = q.length === 0
+    ? KIERUNKI_SUGGESTIONS.slice(0, 7)
+    : KIERUNKI_SUGGESTIONS.filter(k => k.toLowerCase().includes(q)).slice(0, 7);
   if (!matches.length) { list.classList.remove('show'); return; }
   list.innerHTML = matches.map(k => `<div class="cvf-autocomplete-item" onclick="pickKierunek(${i},'${k.replace(/'/g,"\\'")}')">${k}</div>`).join('');
   list.classList.add('show');
@@ -1263,14 +1265,30 @@ function getTplPreviewHTML(t) {
 function renderTplGrid() {
   const grid = document.getElementById('cvTplGrid');
   renderColorPicker();
-  grid.innerHTML = CV_TEMPLATES.map(t => `
-    <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" onclick="pickTemplate('${t.id}')">
-      <div class="cv-tpl-thumb" style="height:120px;overflow:hidden">
-        ${getTplPreviewHTML(t)}
+
+  // Group templates by style category
+  const groups = [
+    { label: 'Klasyczne',    ids: ['timeline', 'sidebar', 'bold', 'midnight'] },
+    { label: 'Nowoczesne',   ids: ['teal', 'slate', 'ocean', 'diagonal'] },
+    { label: 'Kreatywne',    ids: ['creative', 'coral', 'rose', 'split'] },
+    { label: 'Wyraziste',    ids: ['shield', 'arrow'] },
+  ];
+
+  let html = '';
+  groups.forEach(group => {
+    const cards = CV_TEMPLATES.filter(t => group.ids.includes(t.id));
+    if (!cards.length) return;
+    html += `<div class="cv-tpl-section-label">${group.label}</div>`;
+    html += cards.map(t => `
+      <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" onclick="pickTemplate('${t.id}')">
+        <div class="cv-tpl-thumb" style="height:120px;overflow:hidden">
+          ${getTplPreviewHTML(t)}
+        </div>
+        <div class="cv-tpl-name">${t.name}</div>
       </div>
-      <div class="cv-tpl-name">${t.name}</div>
-    </div>
-  `).join('');
+    `).join('');
+  });
+  grid.innerHTML = html;
 }
 function pickTemplate(id) {
   cvTemplate = id;
