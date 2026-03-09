@@ -1269,10 +1269,20 @@ function downloadAll() {
 }
 
 function redoForm() {
-  // Wróć do pierwszego dokumentu kolejki
-  queueIndex = 0;
-  docQueue = [];
-  openDocPage(docQueue[0]);
+  // Wróć do formularza pierwszego dokumentu ZACHOWUJĄC wpisane dane
+  queueIdx = 0;
+  const firstDocId = docQueue[0];
+  if (!firstDocId) { closeSubpage(); return; }
+
+  const doc = getDoc(firstDocId);
+  if (!doc) { closeSubpage(); return; }
+
+  // Odbuduj formularz — dane są w sharedData więc pola będą wypełnione
+  buildSubpage(doc, firstDocId);
+  document.getElementById('subpage').scrollTop = 0;
+
+  // Wyczysć poprzednio wygenerowane dokumenty żeby można było generować od nowa
+  generatedDocs = {};
 }
 
 // ── TRANSLATE CV ─────────────────────────────────────────────
