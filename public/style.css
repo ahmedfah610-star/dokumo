@@ -440,8 +440,9 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .cv-tpl-card:hover { border-color:var(--accent2); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.1); }
 .cv-tpl-card.active { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
 .cv-tpl-card.active::after { content:'✓'; position:absolute; top:7px; right:7px; background:var(--accent); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; z-index:2; }
-.cv-tpl-thumb { height:120px; overflow:hidden; }
+.cv-tpl-thumb { height:120px; overflow:hidden; pointer-events:none; user-select:none; }
 .cv-tpl-name { padding:8px 10px; font-size:0.7rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink2); background:var(--white); border-top:1px solid var(--border); }
+.cv-tpl-section-label { grid-column:1/-1; font-size:0.63rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); padding:10px 0 4px; border-bottom:1px solid var(--border); margin-bottom:2px; }
 
 /* Import modal */
 .import-modal-overlay { position:fixed; inset:0; z-index:900; background:rgba(0,0,0,0.5); display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
