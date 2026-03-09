@@ -163,6 +163,11 @@ body { overflow:hidden; }
       <h3>Wybierz szablon</h3>
       <button onclick="closeTplDrawer()">✕</button>
     </div>
+    <!-- COLOR THEME PICKER -->
+    <div style="padding:14px 22px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:0.64rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Kolor motywu</div>
+      <div id="colorThemePicker" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+    </div>
     <div class="cv-tpl-grid" id="cvTplGrid"></div>
   </div>
 </div>
@@ -526,6 +531,30 @@ const KIERUNKI_SUGGESTIONS = [
   'Rolnictwo','Leśnictwo','Geodezja i Kartografia','Inżynieria Środowiska'
 ];
 
+const TOP_LANGS = ['Angielski','Niemiecki','Francuski','Hiszpański','Włoski','Rosyjski','Chiński','Ukraiński','Niderlandzki','Portugalski'];
+
+function addLangChip(lang) {
+  // Check if this language is already in the list (empty slot or duplicate)
+  const existing = cvData.jezyki.find(l => l.jezyk.toLowerCase() === lang.toLowerCase());
+  if (existing) return;
+  // Find first empty slot or add new
+  const empty = cvData.jezyki.find(l => !l.jezyk);
+  if (empty) {
+    empty.jezyk = lang;
+  } else {
+    cvData.jezyki.push({ jezyk: lang, poziom: 'B2' });
+  }
+  // Re-render the jezyki section body
+  const item = document.querySelector('.acc-item[data-section="jezyki"]');
+  if (item) {
+    const body = item.querySelector('.acc-body');
+    if (body) {
+      body.innerHTML = buildSectionBodyHTML('jezyki');
+    }
+  }
+  updateCVPreview();
+}
+
 const SKILLS_SUGGESTIONS = {
   all: ['Microsoft Office','Excel','Word','PowerPoint','Python','JavaScript','SQL','Photoshop',
     'Illustrator','Figma','AutoCAD','SAP','Salesforce','Google Analytics','Jira','Slack',
@@ -717,7 +746,11 @@ function buildSectionBodyHTML(sec) {
           ${i>0 ? `<button class="acc-remove-x" onclick="removeCVLang(${i})">✕</button>` : '<div style="width:28px"></div>'}
         </div>`).join('')}
     </div>
-    <button class="acc-add-more" onclick="addCVLang()">＋ Dodaj język</button>`;
+    <button class="acc-add-more" onclick="addCVLang()">＋ Dodaj język</button>
+    <p class="acc-hint" style="margin-top:10px">Popularne języki — kliknij aby dodać:</p>
+    <div class="cvf-suggestions" id="langSuggestions">
+      ${TOP_LANGS.map(l => `<span class="cvf-chip" onclick="addLangChip('${l}')">${l}</span>`).join('')}
+    </div>`;
 
   if (sec === 'zainteresowania') return `
     <input class="cvf-input" id="interestsInput" oninput="cvData.zainteresowania=this.value;updateCVPreview();updateInterestChips()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, muzyka...">
@@ -823,6 +856,7 @@ function buildCustomSectionHTML(sec) {
 function addCustomSection() {
   const id = 'cs_' + Date.now();
   cvCustomSections.push({ id, title: 'Nowa sekcja', content: '' });
+  cvOpenSections.add('custom-' + id); // auto-open new section
   renderCVForm();
   updateCVPreview();
 }
@@ -979,8 +1013,60 @@ function openTplDrawer() {
 function closeTplDrawer() {
   document.getElementById('cvTplOverlay').classList.remove('open');
 }
+// Color themes
+const COLOR_THEMES = [
+  { name:'Zieleń (domyślny)', c1:'#1a3a2e', c2:'#2d6b52' },
+  { name:'Granat',   c1:'#1a2744', c2:'#2c4a8a' },
+  { name:'Czerń',    c1:'#111111', c2:'#444444' },
+  { name:'Czerwień', c1:'#c0392b', c2:'#e74c3c' },
+  { name:'Morski',   c1:'#0f766e', c2:'#14b8a6' },
+  { name:'Ocean',    c1:'#1e40af', c2:'#3b82f6' },
+  { name:'Fiolet',   c1:'#6b21a8', c2:'#a855f7' },
+  { name:'Róż',      c1:'#9d174d', c2:'#ec4899' },
+  { name:'Koralik',  c1:'#c2410c', c2:'#fb923c' },
+  { name:'Szary',    c1:'#334155', c2:'#64748b' },
+];
+let cvCustomColor = null; // null = use template default
+
+function renderColorPicker() {
+  const el = document.getElementById('colorThemePicker');
+  if (!el) return;
+  const currentTpl = CV_TEMPLATES.find(t => t.id === cvTemplate);
+  const defaultC1 = currentTpl ? currentTpl.color1 : '#1a3a2e';
+  el.innerHTML = COLOR_THEMES.map(theme => {
+    const isActive = cvCustomColor
+      ? cvCustomColor.c1 === theme.c1
+      : theme.c1 === defaultC1;
+    return `<button title="${theme.name}" onclick="setColorTheme('${theme.c1}','${theme.c2}')"
+      style="width:28px;height:28px;border-radius:50%;background:${theme.c1};border:${isActive?'3px solid #fff':'2px solid transparent'};
+      box-shadow:${isActive?'0 0 0 2px '+theme.c1:'0 1px 4px rgba(0,0,0,0.2)'};
+      cursor:pointer;transition:all 0.15s;flex-shrink:0"></button>`;
+  }).join('');
+  // Also add "default" reset option
+  const hasCustom = !!cvCustomColor;
+  el.innerHTML += `<button title="Domyślny kolor szablonu" onclick="resetColorTheme()"
+    style="width:28px;height:28px;border-radius:50%;background:transparent;border:2px dashed #ccc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#aaa;${!hasCustom?'border-color:#666;color:#333':''}"
+    >↺</button>`;
+}
+
+function setColorTheme(c1, c2) {
+  cvCustomColor = { c1, c2 };
+  updateCVPreview();
+  renderColorPicker();
+  document.getElementById('tplDot').style.background = c1;
+}
+
+function resetColorTheme() {
+  cvCustomColor = null;
+  const t = CV_TEMPLATES.find(x => x.id === cvTemplate);
+  if (t) document.getElementById('tplDot').style.background = t.color1;
+  updateCVPreview();
+  renderColorPicker();
+}
+
 function renderTplGrid() {
   const grid = document.getElementById('cvTplGrid');
+  renderColorPicker();
   grid.innerHTML = CV_TEMPLATES.map(t => `
     <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" onclick="pickTemplate('${t.id}')">
       <div class="cv-tpl-thumb">
