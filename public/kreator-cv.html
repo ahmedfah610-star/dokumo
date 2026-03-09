@@ -803,7 +803,7 @@ function showUniSuggest(i, val) {
     ? POLISH_UNIVERSITIES.slice(0, 7)
     : POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 7);
   if (!matches.length) { list.classList.remove('show'); return; }
-  list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onclick="pickUni(${i},'${u.replace(/'/g,"\\'")}')">  ${u}</div>`).join('');
+  list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onmousedown="event.preventDefault();pickUni(${i},'${u.replace(/'/g,"\\'")}')">  ${u}</div>`).join('');
   list.classList.add('show');
 }
 function pickUni(i, val) {
@@ -824,7 +824,7 @@ function showKierunekSuggest(i, val) {
     ? KIERUNKI_SUGGESTIONS.slice(0, 7)
     : KIERUNKI_SUGGESTIONS.filter(k => k.toLowerCase().includes(q)).slice(0, 7);
   if (!matches.length) { list.classList.remove('show'); return; }
-  list.innerHTML = matches.map(k => `<div class="cvf-autocomplete-item" onclick="pickKierunek(${i},'${k.replace(/'/g,"\\'")}')">${k}</div>`).join('');
+  list.innerHTML = matches.map(k => `<div class="cvf-autocomplete-item" onmousedown="event.preventDefault();pickKierunek(${i},'${k.replace(/'/g,"\\'")}')">${k}</div>`).join('');
   list.classList.add('show');
 }
 function pickKierunek(i, val) {
@@ -836,7 +836,7 @@ function pickKierunek(i, val) {
   updateCVPreview();
 }
 
-document.addEventListener('click', e => {
+document.addEventListener('mousedown', e => {
   document.querySelectorAll('.cvf-autocomplete-list').forEach(l => {
     if (!l.contains(e.target)) l.classList.remove('show');
   });
@@ -1266,7 +1266,6 @@ function renderTplGrid() {
   const grid = document.getElementById('cvTplGrid');
   renderColorPicker();
 
-  // Group templates by style category
   const groups = [
     { label: 'Klasyczne',    ids: ['timeline', 'sidebar', 'bold', 'midnight'] },
     { label: 'Nowoczesne',   ids: ['teal', 'slate', 'ocean', 'diagonal'] },
@@ -1280,15 +1279,19 @@ function renderTplGrid() {
     if (!cards.length) return;
     html += `<div class="cv-tpl-section-label">${group.label}</div>`;
     html += cards.map(t => `
-      <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" onclick="pickTemplate('${t.id}')">
-        <div class="cv-tpl-thumb" style="height:120px;overflow:hidden">
-          ${getTplPreviewHTML(t)}
-        </div>
+      <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" data-tpl="${t.id}">
+        <div class="cv-tpl-thumb">${getTplPreviewHTML(t)}</div>
         <div class="cv-tpl-name">${t.name}</div>
       </div>
     `).join('');
   });
   grid.innerHTML = html;
+
+  // Use event delegation - click anywhere on grid picks the card
+  grid.onclick = function(e) {
+    const card = e.target.closest('[data-tpl]');
+    if (card) pickTemplate(card.dataset.tpl);
+  };
 }
 function pickTemplate(id) {
   cvTemplate = id;
