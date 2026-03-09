@@ -162,9 +162,7 @@ body { overflow:hidden; }
     <div class="cv-form-col" id="cvFormPanel"></div>
     <div class="cv-preview-col" id="cvPreviewCol">
       <div class="cv-preview-label">Podgląd na żywo · A4</div>
-      <div class="cv-preview-wrapper" id="cvPreviewWrapper">
-        <div class="cv-preview-doc" id="cvPreviewInner"></div>
-      </div>
+      <div class="cv-preview-doc" id="cvPreviewInner"></div>
     </div>
   </div>
 
@@ -470,25 +468,17 @@ function switchCVTab(tab) {
 function scaleMobilePreview() {
   const previewDoc = document.getElementById('cvPreviewInner');
   const previewCol = document.getElementById('cvPreviewCol');
-  const wrapper = document.getElementById('cvPreviewWrapper');
   if (!previewDoc || !previewCol || window.innerWidth >= 768) return;
-  const padding = 12;
-  const colWidth = previewCol.clientWidth - padding * 2;
+  const colWidth = previewCol.clientWidth;
   const scale = colWidth / 595;
-  const scaledHeight = 842 * scale;
-  // Scale from center top
   previewDoc.style.width = '595px';
-  previewDoc.style.transform = `scale(${scale})`;
+  previewDoc.style.transform = `translateX(-50%) scale(${scale})`;
   previewDoc.style.transformOrigin = 'top center';
-  // Wrapper holds the scaled height
-  if (wrapper) {
-    wrapper.style.width = '100%';
-    wrapper.style.height = (scaledHeight + padding) + 'px';
-    wrapper.style.display = 'flex';
-    wrapper.style.justifyContent = 'center';
-    wrapper.style.alignItems = 'flex-start';
-    wrapper.style.overflow = 'hidden';
-  }
+  previewDoc.style.position = 'relative';
+  previewDoc.style.left = '50%';
+  previewDoc.style.marginTop = '0';
+  // Set col height so it scrolls properly
+  previewCol.style.minHeight = (842 * scale + 40) + 'px';
 }
 
 window.addEventListener('resize', () => {
@@ -496,16 +486,13 @@ window.addEventListener('resize', () => {
     const formCol = document.getElementById('cvFormPanel');
     const previewCol = document.getElementById('cvPreviewCol');
     if (formCol) formCol.style.display = '';
-    if (previewCol) previewCol.style.display = '';
+    if (previewCol) { previewCol.style.display = ''; previewCol.style.minHeight = ''; }
     const previewDoc = document.getElementById('cvPreviewInner');
-    const wrapper = document.getElementById('cvPreviewWrapper');
     if (previewDoc) {
       previewDoc.style.transform = '';
       previewDoc.style.width = '';
-    }
-    if (wrapper) {
-      wrapper.style.height = '';
-      wrapper.style.display = '';
+      previewDoc.style.position = '';
+      previewDoc.style.left = '';
     }
   } else {
     scaleMobilePreview();
