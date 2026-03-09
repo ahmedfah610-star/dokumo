@@ -1079,8 +1079,14 @@ async function generateDoc(docId) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: doc.prompt(vals) + '\n\nPisz po polsku. Styl: formalny, prawniczy. NIE pisz wstępu ani komentarza – tylko treść dokumentu.' })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Błąd serwera');
+    const rawText = await res.text();
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch(e) {
+      if (!res.ok) throw new Error('Błąd serwera (' + res.status + '). Sprawdź czy klucz GEMINI_API_KEY jest ustawiony w Vercel → Settings → Environment Variables.');
+      throw new Error('Nieoczekiwana odpowiedź serwera.');
+    }
+    if (!res.ok) throw new Error(data.error || 'Błąd serwera ' + res.status);
     let text = data.text || '';
     if (!text) throw new Error('Pusta odpowiedź');
     if (text.startsWith('```')) text = text.slice(text.indexOf('\n')+1);
@@ -1126,35 +1132,53 @@ async function generateDoc(docId) {
 function showPaymentScreen() {
   const docs = Object.entries(generatedDocs);
 
-  const itemsHTML = docs.map(([id, d]) => `
-    <div class="pay-item">
-      <span>${getDoc(id)?.icon || '📄'} ${d.name}</span>
-      <span style="color:var(--accent2)">✓ Gotowe</span>
-    </div>`).join('');
+  // Build per-doc result cards with text preview + download buttons
+  const docCardsHTML = docs.map(([id, d]) => {
+    const icon = getDoc(id)?.icon || '📄';
+    // Format text for display — split into paragraphs
+    const previewText = d.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `
+    <div class="doc-result-card" id="result-${id}">
+      <div class="doc-result-header">
+        <div class="doc-result-icon">${icon}</div>
+        <div>
+          <div class="doc-result-name">${d.name}</div>
+          <div class="doc-result-badge">✓ Wygenerowany</div>
+        </div>
+      </div>
+
+      <div class="doc-result-preview" id="preview-${id}">
+        <pre class="doc-result-text">${previewText}</pre>
+      </div>
+
+      <div class="doc-result-downloads">
+        <div class="doc-result-dl-label">Pobierz jako:</div>
+        <div class="doc-result-dl-btns">
+          <button class="doc-dl-btn doc-dl-txt" onclick="downloadAs('${id}','txt')">
+            <span class="doc-dl-icon">📄</span>
+            <span>Notatnik<br><small>.txt</small></span>
+          </button>
+          <button class="doc-dl-btn doc-dl-pdf" onclick="downloadAs('${id}','pdf')">
+            <span class="doc-dl-icon">📕</span>
+            <span>PDF<br><small>.pdf</small></span>
+          </button>
+          <button class="doc-dl-btn doc-dl-word" onclick="downloadAs('${id}','docx')">
+            <span class="doc-dl-icon">📘</span>
+            <span>Word<br><small>.docx</small></span>
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 
   document.getElementById('subpageBody').innerHTML = `
     <div class="gf-wrap">
       <div class="pay-screen">
-
         <div class="pay-all-check">✓</div>
         <h2 class="pay-title">${docs.length === 1 ? 'Dokument gotowy!' : `Wszystkie ${docs.length} dokumenty gotowe!`}</h2>
-        <p class="pay-sub">Pobierz swoje dokumenty — pliki .txt gotowe do edycji.</p>
-
-        <div class="pay-summary">
-          ${itemsHTML}
-        </div>
-
-        <div class="pay-download-section" id="payDownloadSection">
-          <div class="pay-download-list">
-            ${docs.map(([id, d]) => `
-              <button class="pay-download-btn" onclick="downloadSingle('${id}')">
-                ⬇ Pobierz: ${d.name}
-              </button>`).join('')}
-          </div>
-          ${docs.length > 1 ? `<button class="pay-download-all" onclick="downloadAll()">⬇ Pobierz wszystkie (.zip)</button>` : ''}
-        </div>
-
-        <button class="gf-btn-redo" onclick="redoForm()" style="margin-top:16px">← Popraw dane</button>
+        <p class="pay-sub">Przejrzyj treść i pobierz w wybranym formacie.</p>
+        ${docCardsHTML}
+        <button class="gf-btn-redo" onclick="redoForm()">← Popraw dane</button>
         <p class="gf-disclaimer">Dokumenty stanowią wzory do samodzielnej edycji. Zalecamy weryfikację przed podpisaniem.</p>
       </div>
     </div>`;
@@ -1171,20 +1195,76 @@ function goToPayment() {
 }
 
 // ── POBIERANIE ───────────────────────────────────────────────
-function downloadSingle(docId) {
+function downloadAs(docId, format) {
   const d = generatedDocs[docId];
   if (!d) return;
-  const blob = new Blob([d.text], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = d.name.replace(/\s+/g,'_') + '.txt'; a.click();
-  URL.revokeObjectURL(url);
+  const safeName = d.name.replace(/[\s/\\:*?"<>|]+/g,'_');
+
+  if (format === 'txt') {
+    const blob = new Blob([d.text], { type: 'text/plain;charset=utf-8' });
+    triggerDownload(URL.createObjectURL(blob), safeName + '.txt');
+
+  } else if (format === 'pdf') {
+    // Generate PDF using browser print
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <title>${d.name}</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.7;
+               margin: 2.5cm; color: #111; }
+        h1 { font-size: 16pt; margin-bottom: 24pt; }
+        pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 11pt; }
+        @media print { body { margin: 2cm; } }
+      </style>
+      </head><body>
+      <pre>${d.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+      <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+    win.document.close();
+
+  } else if (format === 'docx') {
+    // Generate basic RTF file that Word opens natively
+    const rtf = buildRTF(d.text, d.name);
+    const blob = new Blob([rtf], { type: 'application/rtf' });
+    triggerDownload(URL.createObjectURL(blob), safeName + '.rtf');
+  }
 }
 
+function triggerDownload(url, filename) {
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function buildRTF(text, title) {
+  // Build an RTF document readable by Word, LibreOffice, WordPad
+  const escape = s => s
+    .replace(/\\/g, '\\\\')
+    .replace(/[{}]/g, c => '\\' + c)
+    .replace(/[\u0080-\uFFFF]/g, c => {
+      const code = c.charCodeAt(0);
+      return code > 32767
+        ? '{\\uc1\\u' + (code - 65536) + '?}'
+        : '\\u' + code + '?';
+    });
+  const lines = text.split('\n');
+  const rtfLines = lines.map(l => {
+    const escaped = escape(l);
+    if (!escaped.trim()) return '\\par';
+    return escaped + '\\par';
+  }).join('\n');
+  return '{\\rtf1\\ansi\\deff0' +
+    '{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}' +
+    '{\\colortbl ;\\red17\\green17\\blue17;}' +
+    '\\f0\\fs24\\cf1\\sl360\\slmult1 ' +
+    '{\\b\\fs28 ' + escape(title) + '}\\par\\par ' +
+    rtfLines + '}';
+}
+
+function downloadSingle(docId) { downloadAs(docId, 'txt'); }
 function downloadAll() {
-  // Pobiera każdy plik osobno (bez zip — brak biblioteki)
   Object.entries(generatedDocs).forEach(([id], i) => {
-    setTimeout(() => downloadSingle(id), i * 400);
+    setTimeout(() => downloadAs(id, 'txt'), i * 400);
   });
 }
 
@@ -1281,7 +1361,9 @@ ${text.substring(0, 8000)}`;
     });
     if (!res.ok) throw new Error('API error ' + res.status);
     tcvSetProgress('Przetwarzam odpowiedź...', 80);
-    const data = await res.json();
+    const rawText2 = await res.text();
+    let data;
+    try { data = JSON.parse(rawText2); } catch(e) { throw new Error('Błąd połączenia z API Gemini. Sprawdź klucz GEMINI_API_KEY w Vercel.'); }
     const raw = (data.text || data.result || '').replace(/```json|```/g,'').trim();
     let parsed;
     try { parsed = JSON.parse(raw); }
