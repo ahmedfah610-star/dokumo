@@ -1136,7 +1136,28 @@ async function generateDoc(docId) {
 
     // Zapisz wygenerowany dokument
     generatedDocs[docId] = { text, name: doc.name, price: doc.price };
-    try { sessionStorage.setItem('dokumo_docs', JSON.stringify(generatedDocs)); } catch(e) {}
+
+    // Zapisz do "Moje dokumenty" w localStorage
+    try {
+      const DOC_META_LOCAL = {
+        regulamin:{cat:'ecommerce',icon:'🛒',label:'E-commerce'}, polityka_rodo:{cat:'ecommerce',icon:'🔒',label:'E-commerce'},
+        polityka_zwrotow:{cat:'ecommerce',icon:'↩',label:'E-commerce'}, umowa_b2b:{cat:'b2b',icon:'🤝',label:'B2B'},
+        nda:{cat:'b2b',icon:'🔐',label:'B2B'}, umowa_pracy:{cat:'hr',icon:'👔',label:'HR'},
+        umowa_zlecenie:{cat:'hr',icon:'📄',label:'HR'}, umowa_najmu:{cat:'najem',icon:'🏠',label:'Najem'},
+        protokol:{cat:'najem',icon:'📋',label:'Najem'}, wypowiedzenie_najmu:{cat:'najem',icon:'📝',label:'Najem'},
+        biznesplan:{cat:'finanse',icon:'🏦',label:'Finanse'}, swot:{cat:'finanse',icon:'📊',label:'Finanse'},
+        umowa_spolnikow:{cat:'startup',icon:'🚀',label:'Startup'},
+      };
+      const meta = DOC_META_LOCAL[docId] || {cat:'inne',icon:'📄',label:'Inne'};
+      const myDocs = JSON.parse(localStorage.getItem('dokumo_my_docs') || '[]');
+      myDocs.unshift({
+        id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        typeId: docId, name: doc.name, text, cat: meta.cat,
+        icon: meta.icon, catLabel: meta.label, status: 'generated',
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      });
+      localStorage.setItem('dokumo_my_docs', JSON.stringify(myDocs));
+    } catch(e) {}
 
     document.getElementById('gfLoading').style.display = 'none';
 
