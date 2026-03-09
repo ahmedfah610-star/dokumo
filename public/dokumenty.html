@@ -378,6 +378,15 @@ select.gf-input { cursor: pointer; }
   </div>
 </div>
 
+<!-- BOTTOM CART BAR (mobile) -->
+<div class="bottom-cart-bar" id="bottomCartBar">
+  <div class="bottom-cart-bar-left">
+    <strong id="bottomCartTotal">0,00 zł</strong>
+    <span id="bottomCartCount">0 dokumentów</span>
+  </div>
+  <button class="bottom-cart-bar-btn" onclick="openCart()">🛒 Koszyk</button>
+</div>
+
 <!-- CART OVERLAY & SIDEBAR -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 <div class="cart-sidebar" id="cartSidebar">
@@ -865,6 +874,19 @@ function updateCartUI() {
   const count = cart.length;
   document.getElementById('cartCount').textContent = count;
 
+  // Update bottom mobile bar
+  const bar = document.getElementById('bottomCartBar');
+  if (bar) {
+    bar.classList.toggle('visible', count > 0);
+    const subtotalB = cart.reduce((s,d)=>s+d.price,0);
+    const discountB = count>=3 ? Math.round(subtotalB*0.15) : 0;
+    const totalB = subtotalB - discountB;
+    const el = document.getElementById('bottomCartTotal');
+    const el2 = document.getElementById('bottomCartCount');
+    if(el) el.textContent = totalB.toFixed(2).replace('.',',') + ' zł';
+    if(el2) el2.textContent = count + ' ' + (count===1?'dokument':count<5?'dokumenty':'dokumentów');
+  }
+
   const hasDiscount = count >= 3;
   document.getElementById('discountBanner').classList.toggle('show', hasDiscount);
 
@@ -1304,4 +1326,3 @@ ${text.substring(0, 8000)}`;
 </script>
 </body>
 </html>
-
