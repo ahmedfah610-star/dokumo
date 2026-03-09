@@ -842,9 +842,7 @@ function toggleCart(docId) {
     cart.push(getDoc(docId));
     // Pop animation
     const cnt = document.getElementById('cartCount');
-    cnt.classList.remove('pop');
-    void cnt.offsetWidth;
-    cnt.classList.add('pop');
+    if(cnt){cnt.classList.remove('pop');void cnt.offsetWidth;cnt.classList.add('pop');}
   }
   updateCartUI();
   // Update card
@@ -859,7 +857,7 @@ function toggleCart(docId) {
 
 function updateCartUI() {
   const count = cart.length;
-  document.getElementById('cartCount').textContent = count;
+  const _cnt = document.getElementById('cartCount'); if(_cnt) _cnt.textContent = count;
 
   // Update bottom mobile bar
   const bar = document.getElementById('bottomCartBar');
@@ -1297,5 +1295,8 @@ ${text.substring(0, 8000)}`;
 }
 
 </script>
+<!-- hidden compatibility elements -->
+<span id="cartCount" style="display:none">0</span>
+<span id="navDiscountBadge" style="display:none"></span>
 </body>
 </html>
