@@ -359,7 +359,7 @@ select.gf-input { cursor: pointer; }
   <div class="tcv-modal">
     <button class="tcv-close" onclick="closeTranslateCVModal()">✕</button>
     <h2>Tłumacz CV na angielski</h2>
-    <p class="tcv-sub">Wgraj swoje CV w PDF — AI wyciągnie wszystkie dane, przetłumaczy na angielski i automatycznie wypełni kreator. Wybierz szablon i pobierz gotowe CV po angielsku za 5 zł.</p>
+    <p class="tcv-sub">Wgraj swoje CV w PDF — AI wyciągnie wszystkie dane, przetłumaczy na angielski i automatycznie wypełni kreator. Wybierz szablon i pobierz gotowe CV po angielsku.</p>
     <div class="tcv-drop" id="tcvDrop"
       onclick="document.getElementById('tcvInput').click()"
       ondragover="tcvDragOver(event)"
@@ -381,7 +381,7 @@ select.gf-input { cursor: pointer; }
 <!-- BOTTOM CART BAR (mobile) -->
 <div class="bottom-cart-bar" id="bottomCartBar">
   <div class="bottom-cart-bar-left">
-    <strong id="bottomCartTotal">0,00 zł</strong>
+    
     <span id="bottomCartCount">0 dokumentów</span>
   </div>
   <button class="bottom-cart-bar-btn" onclick="openCart()">🛒 Koszyk</button>
@@ -406,9 +406,9 @@ select.gf-input { cursor: pointer; }
       <p>🎉 <strong>-15% zastosowano</strong> — masz 3 lub więcej dokumentów!</p>
     </div>
     <div id="cartTotals" style="display:none">
-      <div class="cart-total-row"><span>Suma</span><span id="cartSubtotal">0 zł</span></div>
+      
       <div class="cart-total-row green" id="cartDiscountRow" style="display:none"><span>Rabat -15%</span><span id="cartDiscountAmt"></span></div>
-      <div class="cart-total-row main"><span>Do zapłaty</span><span id="cartTotal">0 zł</span></div>
+      
     </div>
     <button class="btn-checkout" id="checkoutBtn" onclick="startCheckout()" disabled>Generuj dokumenty →</button>
     <p class="cart-note">Dokumenty generowane są po kliknięciu przycisku</p>
@@ -445,7 +445,7 @@ select.gf-input { cursor: pointer; }
   <div style="margin-bottom:32px">
     <span class="section-eyebrow">Katalog dokumentów</span>
     <h2 class="section-title">Wybierz co potrzebujesz.</h2>
-    <p class="section-sub">Dodaj 3+ dokumenty — automatycznie <strong>-15%</strong>. Kreator CV dostępny osobno za 5 zł.</p>
+    <p class="section-sub">Wybierz dokument i wypełnij formularz — gotowy plik w 60 sekund.</p>
   </div>
   <div class="category-filter" id="catFilter">
     <button class="cat-btn active" onclick="filterCat('all',this)">Wszystkie</button>
@@ -796,7 +796,6 @@ function renderGrid(filterCatId = 'all') {
       <div class="doc-card-name">Kreator CV</div>
       <div class="doc-card-desc">Profesjonalne CV w 10 szablonach. Gotowe do pobrania jako PDF.</div>
       <div class="doc-card-footer">
-        <span class="doc-card-price">5 zł</span>
         <span class="doc-card-btn cv-btn">Stwórz CV →</span>
       </div>
     </div>
@@ -805,7 +804,6 @@ function renderGrid(filterCatId = 'all') {
       <div class="doc-card-name">Tłumacz CV na angielski</div>
       <div class="doc-card-desc">Wgraj CV w PDF — AI przetłumaczy i wypełni kreator. Pobierz gotowe po angielsku.</div>
       <div class="doc-card-footer">
-        <span class="doc-card-price">5 zł</span>
         <span class="doc-card-btn cv-btn">Tłumacz CV →</span>
       </div>
     </div>`;
@@ -820,13 +818,7 @@ function renderGrid(filterCatId = 'all') {
           <div class="doc-card-name">${doc.name}</div>
           <div class="doc-card-desc">${doc.desc}</div>
           <div class="doc-card-footer">
-            <span class="doc-card-price">${doc.price} zł</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn-add${inCart ? ' added' : ''}" onclick="event.stopPropagation();toggleCart('${doc.id}')">
-                ${inCart ? '✓ Dodano' : '+ Dodaj'}
-              </button>
-              <button class="btn-generate-doc" onclick="openDocPage('${doc.id}')">Generuj →</button>
-            </div>
+            <button class="btn-generate-full" onclick="event.stopPropagation();openDocPage('${doc.id}')">Generuj →</button>
           </div>
         </div>`;
     }).join('');
@@ -883,7 +875,7 @@ function updateCartUI() {
     const totalB = subtotalB - discountB;
     const el = document.getElementById('bottomCartTotal');
     const el2 = document.getElementById('bottomCartCount');
-    if(el) el.textContent = totalB.toFixed(2).replace('.',',') + ' zł';
+    if(el) el.textContent = '';
     if(el2) el2.textContent = count + ' ' + (count===1?'dokument':count<5?'dokumenty':'dokumentów');
   }
 
@@ -901,7 +893,7 @@ function updateCartUI() {
     if (count < 3) {
       const pct = (count / 3) * 100;
       html += `<div class="progress-to-discount">
-        <div>Dodaj jeszcze <strong>${3 - count} ${3-count===1?'dokument':'dokumenty'}</strong>, aby otrzymać <strong style="color:var(--discount)">-15% zniżki</strong></div>
+        <div>Dodaj jeszcze <strong>${3 - count} ${3-count===1?'dokument':'dokumenty'}</strong></div>
         <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
       </div>`;
     } else {
@@ -915,7 +907,7 @@ function updateCartUI() {
           <div class="cart-item-name">${doc.name}</div>
           <div class="cart-item-cat">${catLabel(doc.cat)}</div>
         </div>
-        <span class="cart-item-price">${doc.price} zł</span>
+        
         <button class="cart-item-remove" onclick="toggleCart('${doc.id}')">✕</button>
       </div>`).join('');
 
@@ -927,9 +919,7 @@ function updateCartUI() {
   const discount = hasDiscount ? Math.round(subtotal * 0.15) : 0;
   const total = subtotal - discount;
 
-  let totalsHTML = `<div class="cart-row"><span>Suma</span><span>${subtotal} zł</span></div>`;
-  if (discount > 0) totalsHTML += `<div class="cart-row discount"><span>🏷 Zniżka -15%</span><span>-${discount} zł</span></div>`;
-  totalsHTML += `<div class="cart-row total"><span>Do zapłaty</span><span class="cart-total-num">${total} zł</span></div>`;
+  let totalsHTML = '';
   document.getElementById('cartTotals').innerHTML = totalsHTML;
 
   document.getElementById('checkoutBtn').disabled = count === 0;
@@ -1037,7 +1027,7 @@ function buildSubpage(doc, docId) {
             <p class="gf-desc">${doc.desc}</p>
           </div>
         </div>
-        <div class="gf-price">${doc.price}<span> zł</span></div>
+
       </div>
 
       ${hasPrefill ? `<div class="gf-prefill">✦ &nbsp;${prefillFields.length} pól uzupełnionych z poprzedniego dokumentu</div>` : ''}
@@ -1142,15 +1132,11 @@ async function generateDoc(docId) {
 // ── EKRAN PŁATNOŚCI ───────────────────────────────────────────
 function showPaymentScreen() {
   const docs = Object.entries(generatedDocs);
-  const subtotal = docs.reduce((s, [id]) => s + (getDoc(id)?.price || 0), 0);
-  const hasDiscount = docs.length >= 3;
-  const discount = hasDiscount ? +(subtotal * 0.15).toFixed(2) : 0;
-  const total = +(subtotal - discount).toFixed(2);
 
   const itemsHTML = docs.map(([id, d]) => `
     <div class="pay-item">
       <span>${getDoc(id)?.icon || '📄'} ${d.name}</span>
-      <span>${getDoc(id)?.price} zł</span>
+      <span style="color:var(--accent2)">✓ Gotowe</span>
     </div>`).join('');
 
   document.getElementById('subpageBody').innerHTML = `
@@ -1159,25 +1145,17 @@ function showPaymentScreen() {
 
         <div class="pay-all-check">✓</div>
         <h2 class="pay-title">${docs.length === 1 ? 'Dokument gotowy!' : `Wszystkie ${docs.length} dokumenty gotowe!`}</h2>
-        <p class="pay-sub">Zapłać i pobierz od razu — pliki .txt gotowe do edycji.</p>
+        <p class="pay-sub">Pobierz swoje dokumenty — pliki .txt gotowe do edycji.</p>
 
         <div class="pay-summary">
           ${itemsHTML}
-          ${hasDiscount ? `<div class="pay-item pay-discount"><span>🏷 Rabat -15% (3+ dokumenty)</span><span>−${discount} zł</span></div>` : ''}
-          <div class="pay-item pay-total"><span>Do zapłaty</span><span>${total} zł</span></div>
         </div>
 
-        <button class="gf-btn-pay" onclick="goToPayment()">
-          Zapłać ${total} zł →
-        </button>
-
-        <div class="pay-download-section" id="payDownloadSection" style="display:none">
-          <div class="pay-confirmed">✓ Płatność potwierdzona</div>
-          <p class="pay-download-hint">Pobierz swoje dokumenty:</p>
+        <div class="pay-download-section" id="payDownloadSection">
           <div class="pay-download-list">
             ${docs.map(([id, d]) => `
               <button class="pay-download-btn" onclick="downloadSingle('${id}')">
-                ⬇ ${d.name}
+                ⬇ Pobierz: ${d.name}
               </button>`).join('')}
           </div>
           ${docs.length > 1 ? `<button class="pay-download-all" onclick="downloadAll()">⬇ Pobierz wszystkie (.zip)</button>` : ''}
