@@ -157,6 +157,22 @@
 }
 .gf-input:focus { border-bottom-color: var(--accent2); }
 .gf-input::placeholder { color: var(--muted); }
+
+/* ── CHIPS MULTI-SELECT ── */
+.gf-chips-wrap { margin-bottom: 4px; }
+.gf-chips-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.gf-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 10px; font-size: 0.72rem; font-family: 'Syne', sans-serif;
+  font-weight: 600; letter-spacing: 0.04em;
+  border: 1.5px solid var(--border); background: var(--white);
+  color: var(--ink2); cursor: pointer; transition: all 0.15s;
+  user-select: none; -webkit-user-select: none; border-radius: 2px;
+}
+.gf-chip:hover { border-color: var(--accent2); color: var(--accent2); }
+.gf-chip.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+.gf-chip.active::before { content: "\2713  "; font-size: 0.65rem; }
+
 textarea.gf-input {
   resize: vertical;
   min-height: 72px;
@@ -483,12 +499,12 @@ const DOCS = [
       {id:'produkty_cyfrowe',l:'Czy sprzedajesz produkty cyfrowe (e-booki, pliki, kursy)?',t:'select',o:['Nie','Tak – pliki do pobrania','Tak – dostęp online / subskrypcja']},
       {id:'konto_uzytkownika',l:'Czy sklep posiada konto użytkownika?',t:'select',o:['Tak, zakup wymaga rejestracji','Tak, ale zakup możliwy bez rejestracji','Nie, tylko zakupy bez rejestracji']},
       {s:'Płatności'},
-      {id:'metody_platnosci',l:'Dostępne metody płatności',p:'BLIK, karta płatnicza, przelew tradycyjny, PayPal',r:true},
-      {id:'operator_platnosci',l:'Operator płatności',p:'Przelewy24 / Stripe / PayU / Paynow'},
+      {id:'metody_platnosci',l:'Dostępne metody płatności',t:'chips',o:['BLIK','Karta płatnicza','Przelew tradycyjny','PayPal','Apple Pay','Google Pay','Płatność przy odbiorze'],p:'lub wpisz własne...',r:true},
+      {id:'operator_platnosci',l:'Operator płatności',t:'chips',o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia','Dotpay'],p:'lub wpisz własny...'},
       {id:'platnosc_pobranie',l:'Płatność przy odbiorze (za pobraniem)?',t:'select',o:['Nie','Tak']},
       {id:'raty',l:'Płatności ratalne?',t:'select',o:['Nie','Tak – Twisto / PayPo / inne']},
       {s:'Dostawa'},
-      {id:'firmy_kurierskie',l:'Firmy dostawcze',p:'InPost Paczkomat, DPD, DHL, Poczta Polska'},
+      {id:'firmy_kurierskie',l:'Firmy dostawcze',t:'chips',o:['InPost Paczkomat','InPost Kurier','DPD','DHL','Poczta Polska','GLS','FedEx','Orlen Paczka'],p:'lub wpisz własne...'},
       {id:'czas_dostawy',l:'Czas realizacji / dostawy',p:'1–3 dni robocze'},
       {id:'koszt_dostawy',l:'Koszt dostawy',p:'od 9,99 zł – zależy od wybranej opcji'},
       {id:'darmowa_dostawa',l:'Darmowa dostawa od kwoty',p:'199 zł (lub wpisz "brak")'},
@@ -534,14 +550,14 @@ const DOCS = [
       {s:'Narzędzia i podmioty trzecie'},
       {id:'google_analytics',l:'Google Analytics / Google Tag Manager?',t:'select',o:['Nie','Tak']},
       {id:'facebook_pixel',l:'Facebook Pixel / Meta Ads?',t:'select',o:['Nie','Tak']},
-      {id:'inne_narzedzia',l:'Inne narzędzia marketingowe / analityczne',p:'np. HotJar, TikTok Pixel, Google Ads...'},
-      {id:'operator_platnosci',l:'Operator płatności (przekazywanie danych)',p:'Przelewy24, PayU, Stripe – podaj nazwy'},
-      {id:'firma_kurierska',l:'Firmy kurierskie / logistyczne',p:'InPost, DPD, DHL'},
+      {id:'inne_narzedzia',l:'Inne narzędzia marketingowe / analityczne',t:'chips',o:['Hotjar','HubSpot','Mailchimp','Allegro Ads','TikTok Pixel','LinkedIn Insight Tag','Klaviyo','Google Ads'],p:'lub wpisz własne...'},
+      {id:'operator_platnosci',l:'Operator płatności (przekazywanie danych)',t:'chips',o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'],p:'lub wpisz własny...'},
+      {id:'firma_kurierska',l:'Firmy kurierskie / logistyczne',t:'chips',o:['InPost Paczkomat','InPost Kurier','DPD','DHL','Poczta Polska','GLS','FedEx','Orlen Paczka'],p:'lub wpisz własne...'},
       {id:'podmioty_inne',l:'Inne podmioty przetwarzające dane',p:'firma księgowa, hosting, system CRM...',t:'textarea'},
       {id:'transfer_poza_ue',l:'Czy przekazujesz dane poza Europejski Obszar Gospodarczy (EOG)?',t:'select',o:['Nie','Tak (np. serwery USA – Google, Meta)']},
       {s:'Cookies i retencja danych'},
       {id:'cookies',l:'Czy używasz plików cookies?',t:'select',o:['Tak','Nie']},
-      {id:'cookies_rodzaje',l:'Rodzaje cookies',p:'niezbędne, analityczne, marketingowe, funkcjonalne'},
+      {id:'cookies_rodzaje',l:'Rodzaje cookies',t:'chips',o:['Niezbędne','Analityczne','Marketingowe','Funkcjonalne','Preferencyjne','Podmiotów trzecich'],p:'lub wpisz własne...'},
       {id:'okres_przechowywania',l:'Jak długo przechowujesz dane zamówień?',t:'select',o:['5 lat (obowiązek podatkowy)','3 lata','10 lat']},
       {id:'okres_newsletter',l:'Jak długo przechowujesz dane do newslettera?',t:'select',o:['Do czasu wycofania zgody','2 lata bez aktywności']},
       {s:'Prawa użytkowników'},
@@ -602,7 +618,7 @@ const DOCS = [
       {id:'wyk_nip',l:'NIP',p:'0987654321'},
       {id:'wyk_adres',l:'Adres',p:'ul. Różana 2, Kraków',full:true},
       {s:'Warunki'},
-      {id:'zakres',l:'Zakres usług',p:'tworzenie stron internetowych, projektowanie graficzne',r:true,full:true},
+      {id:'zakres',l:'Zakres usług',t:'chips',o:['Tworzenie stron www','SEO','Kampanie Google Ads','Social media','Grafika i branding','Copywriting','Programowanie','Doradztwo IT','Marketing emailowy','Obsługa księgowa'],p:'lub opisz własny zakres...',r:true,full:true},
       {id:'wynagrodzenie',l:'Wynagrodzenie',p:'5000 zł netto miesięcznie / 150 zł/h',r:true},
       {id:'termin',l:'Termin płatności (dni)',p:'14',type:'number'},
       {id:'czas',l:'Czas trwania umowy',p:'12 miesięcy / czas nieokreślony'},
@@ -1002,11 +1018,18 @@ function buildSubpage(doc, docId) {
       const val = sharedData[f.id] || '';
       const ftype = f.type || f.t || 'text';
       const fopts = f.opts || f.o || [];
-      let inp = ftype === 'textarea'
-        ? `<textarea class="gf-input" id="spf-${f.id}" placeholder="${f.p||''}" rows="3">${val}</textarea>`
-        : ftype === 'select'
-        ? `<select class="gf-input" id="spf-${f.id}">${fopts.map(o=>`<option${val===o?' selected':''}>${o}</option>`).join('')}</select>`
-        : `<input class="gf-input" type="${ftype}" id="spf-${f.id}" placeholder="${f.p||''}" value="${val}">`;
+      let inp;
+      if (ftype === 'textarea') {
+        inp = '<textarea class="gf-input" id="spf-' + f.id + '" placeholder="' + (f.p||'') + '" rows="3">' + val + '</textarea>';
+      } else if (ftype === 'select') {
+        inp = '<select class="gf-input" id="spf-' + f.id + '">' + fopts.map(o=>'<option'+(val===o?' selected':'')+'>'+o+'</option>').join('') + '</select>';
+      } else if (ftype === 'chips') {
+        const activeParts = val ? val.split(',').map(x=>x.trim()) : [];
+        const chipsHTML = fopts.map(o=>'<button type="button" class="gf-chip'+(activeParts.includes(o)?' active':'')+'" onclick="toggleChip(\''+f.id+'\',this,\''+o.replace(/'/g,"\\'")+'\')">' + o + '</button>').join('');
+        inp = '<div class="gf-chips-wrap"><div class="gf-chips-row">' + chipsHTML + '</div><input class="gf-input" id="spf-' + f.id + '" placeholder="' + (f.p||'lub wpisz własne...') + '" value="' + val + '"></div>';
+      } else {
+        inp = '<input class="gf-input" type="' + ftype + '" id="spf-' + f.id + '" placeholder="' + (f.p||'') + '" value="' + val + '">';
+      }
       return `<div class="gf-field${f.full?' gf-full':''}">
         <label class="gf-label">${f.l}${f.r?'<span class="gf-req"> *</span>':''}</label>
         ${inp}</div>`;
@@ -1200,6 +1223,19 @@ function goToPayment() {
 }
 
 // ── POBIERANIE ───────────────────────────────────────────────
+function toggleChip(fieldId, btn, value) {
+  btn.classList.toggle('active');
+  const inp = document.getElementById('spf-' + fieldId);
+  if (!inp) return;
+  let parts = inp.value ? inp.value.split(',').map(x => x.trim()).filter(Boolean) : [];
+  if (btn.classList.contains('active')) {
+    if (!parts.includes(value)) parts.push(value);
+  } else {
+    parts = parts.filter(x => x !== value);
+  }
+  inp.value = parts.join(', ');
+}
+
 function downloadAs(docId, format) {
   const d = generatedDocs[docId];
   if (!d) return;
