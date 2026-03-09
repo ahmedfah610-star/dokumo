@@ -1245,29 +1245,30 @@ function toggleChip(fieldId, btn, value) {
 function downloadAs(docId, format) {
   const d = generatedDocs[docId];
   if (!d) return;
-  const safeName = d.name.replace(/[\s/\\:*?"<>|]+/g,'_');
+  const safeName = d.name.replace(/[\s\/\\:*?"<>|]+/g,'_');
 
   if (format === 'txt') {
     const blob = new Blob([d.text], { type: 'text/plain;charset=utf-8' });
     triggerDownload(URL.createObjectURL(blob), safeName + '.txt');
 
   } else if (format === 'pdf') {
-    // Generate PDF using browser print
     const win = window.open('', '_blank');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-      <title>${d.name}</title>
-      <style>
-        body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.7;
-               margin: 2.5cm; color: #111; }
-        h1 { font-size: 16pt; margin-bottom: 24pt; }
-        pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 11pt; }
-        @media print { body { margin: 2cm; } }
-      </style>
-      </head><body>
-      <pre>${d.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
-      <script>window.onload=function(){window.print();}<\/script>
-    </body></html>\`);
+    const safeText = d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    win.document.write(
+      '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + d.name + '</title>' +
+      '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}' +
+      'pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}' +
+      '@media print{body{margin:2cm}}</style></head><body>' +
+      '<pre>' + safeText + '</pre>' +
+      '<scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt>' +
+      '</body></html>'
+    );
     win.document.close();
+
+  } else if (format === 'docx') {
+    const rtf = buildRTF(d.text, d.name);
+    const blob = new Blob([rtf], { type: 'application/rtf' });
+    triggerDownload(URL.createObjectURL(blob), safeName + '.rtf');
   }
 }
 
@@ -1308,18 +1309,7 @@ function updateNavAuth() {
 }
 function logoutUser() {
   clearUser();
-  updateNavAuth();
   window.location.href = 'index.html';
-}
-    </body></html>\`);
-    win.document.close();
-
-  } else if (format === 'docx') {
-    // Generate basic RTF file that Word opens natively
-    const rtf = buildRTF(d.text, d.name);
-    const blob = new Blob([rtf], { type: 'application/rtf' });
-    triggerDownload(URL.createObjectURL(blob), safeName + '.rtf');
-  }
 }
 
 function triggerDownload(url, filename) {
