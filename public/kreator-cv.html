@@ -798,10 +798,8 @@ body { overflow:hidden; }
 }
 
 /* ── DANE OSOBOWE CARD ── */
-.acc-personal {
-  background:var(--white);
-  border-bottom:2px solid var(--border);
-  padding:20px 18px 22px;
+.acc-personal-inner {
+  padding:2px 0 4px;
 }
 .acc-personal-top { display:flex; align-items:center; gap:16px; }
 .acc-photo {
@@ -1514,12 +1512,12 @@ const INTERESTS_SUGGESTIONS = [
 let cvOpenSections = new Set(['doswiadczenie']);
 
 const SEC_LABELS = {
-  podsumowanie: 'Podsumowanie zawodowe',
-  doswiadczenie: 'Doświadczenie zawodowe',
-  wyksztalcenie: 'Wykształcenie',
-  umiejetnosci: 'Umiejętności',
-  jezyki: 'Języki',
-  zainteresowania: 'Hobby i zainteresowania'
+  get podsumowanie() { return L('professionalSummary'); },
+  get doswiadczenie() { return L('workExperience'); },
+  get wyksztalcenie()  { return L('educationSection'); },
+  get umiejetnosci()   { return L('skillsSection'); },
+  get jezyki()         { return L('languagesSection'); },
+  get zainteresowania(){ return L('interestsSection'); }
 };
 
 function getSectionSummary(sec) {
@@ -1571,88 +1569,166 @@ let cvCurrentLang = 'pl';
 // All section header translations
 const CV_LABELS = {
   pl: {
-    experience: 'Doświadczenie zawodowe',
-    education:  'Wykształcenie',
-    skills:     'Umiejętności',
-    languages:  'Języki',
-    summary:    'Podsumowanie',
-    profile:    'Profil zawodowy',
-    interests:  'Hobby i zainteresowania',
-    contact:    'Dane kontaktowe',
-    present:    'Obecnie',
-    consent:    'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.',
+    experience: 'Doświadczenie zawodowe', education: 'Wykształcenie',
+    skills: 'Umiejętności', languages: 'Języki', summary: 'Podsumowanie',
+    profile: 'Profil zawodowy', interests: 'Hobby i zainteresowania',
+    contact: 'Dane kontaktowe', present: 'Obecnie',
+    consent: 'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.',
+    // UI labels
+    personalData: 'Dane osobowe', professionalSummary: 'Podsumowanie zawodowe',
+    workExperience: 'Doświadczenie zawodowe', educationSection: 'Wykształcenie',
+    skillsSection: 'Umiejętności', languagesSection: 'Języki', interestsSection: 'Hobby i zainteresowania',
+    firstName: 'Imię', lastName: 'Nazwisko', position: 'Stanowisko / tytuł zawodowy',
+    email: 'Email', phone: 'Telefon', city: 'Adres / Miasto', linkedin: 'LinkedIn',
+    company: 'Firma', jobTitle: 'Stanowisko', from: 'Od', to: 'Do', duties: 'Obowiązki',
+    school: 'Uczelnia / szkoła', field: 'Kierunek / tytuł',
+    addMore: '＋ Dodaj kolejne', addLang: '＋ Dodaj język', addSection: '＋ Dodaj własną sekcję',
+    sectionName: 'Nazwa sekcji', sectionContent: 'Treść sekcji...',
+    remove: '✕ Usuń', removePhoto: '✕ Usuń zdjęcie',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: 'Oddzielaj przecinkami · klikaj propozycje:',
+    summaryPlaceholder: 'Krótki opis swoich kompetencji i celów zawodowych (2–4 zdania)...',
+    companyPlaceholder: 'Google Polska', jobPlaceholder: 'Marketing Manager',
+    currentlyPlaceholder: 'obecnie', schoolPlaceholder: 'Uniwersytet Warszawski',
+    fieldPlaceholder: 'Finanse i Rachunkowość', langPlaceholder: 'Angielski',
+    fillBelow: 'Uzupełnij dane poniżej',
   },
   en: {
-    experience: 'Work Experience',
-    education:  'Education',
-    skills:     'Skills',
-    languages:  'Languages',
-    summary:    'Summary',
-    profile:    'Professional Profile',
-    interests:  'Interests & Hobbies',
-    contact:    'Contact',
-    present:    'Present',
-    consent:    'I consent to the processing of my personal data for recruitment purposes.',
+    experience: 'Work Experience', education: 'Education',
+    skills: 'Skills', languages: 'Languages', summary: 'Summary',
+    profile: 'Professional Profile', interests: 'Interests & Hobbies',
+    contact: 'Contact', present: 'Present',
+    consent: 'I consent to the processing of my personal data for recruitment purposes.',
+    personalData: 'Personal Details', professionalSummary: 'Professional Summary',
+    workExperience: 'Work Experience', educationSection: 'Education',
+    skillsSection: 'Skills', languagesSection: 'Languages', interestsSection: 'Interests & Hobbies',
+    firstName: 'First Name', lastName: 'Last Name', position: 'Job Title',
+    email: 'Email', phone: 'Phone', city: 'City / Address', linkedin: 'LinkedIn',
+    company: 'Company', jobTitle: 'Position', from: 'From', to: 'To', duties: 'Responsibilities',
+    school: 'University / School', field: 'Degree / Field of study',
+    addMore: '＋ Add another', addLang: '＋ Add language', addSection: '＋ Add custom section',
+    sectionName: 'Section name', sectionContent: 'Section content...',
+    remove: '✕ Remove', removePhoto: '✕ Remove photo',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: 'Separate with commas · click suggestions:',
+    summaryPlaceholder: 'Brief description of your skills and career goals (2–4 sentences)...',
+    companyPlaceholder: 'Google', jobPlaceholder: 'Marketing Manager',
+    currentlyPlaceholder: 'present', schoolPlaceholder: 'University of Warsaw',
+    fieldPlaceholder: 'Finance and Accounting', langPlaceholder: 'English',
+    fillBelow: 'Fill in details below',
   },
   de: {
-    experience: 'Berufserfahrung',
-    education:  'Ausbildung',
-    skills:     'Kenntnisse',
-    languages:  'Sprachen',
-    summary:    'Zusammenfassung',
-    profile:    'Profil',
-    interests:  'Interessen & Hobbys',
-    contact:    'Kontakt',
-    present:    'Heute',
-    consent:    'Ich stimme der Verarbeitung meiner personenbezogenen Daten für Rekrutierungszwecke zu.',
+    experience: 'Berufserfahrung', education: 'Ausbildung',
+    skills: 'Kenntnisse', languages: 'Sprachen', summary: 'Zusammenfassung',
+    profile: 'Profil', interests: 'Interessen & Hobbys',
+    contact: 'Kontakt', present: 'Heute',
+    consent: 'Ich stimme der Verarbeitung meiner personenbezogenen Daten für Rekrutierungszwecke zu.',
+    personalData: 'Persönliche Daten', professionalSummary: 'Berufliches Profil',
+    workExperience: 'Berufserfahrung', educationSection: 'Ausbildung',
+    skillsSection: 'Kenntnisse', languagesSection: 'Sprachen', interestsSection: 'Interessen & Hobbys',
+    firstName: 'Vorname', lastName: 'Nachname', position: 'Berufsbezeichnung',
+    email: 'E-Mail', phone: 'Telefon', city: 'Stadt / Adresse', linkedin: 'LinkedIn',
+    company: 'Unternehmen', jobTitle: 'Position', from: 'Von', to: 'Bis', duties: 'Aufgaben',
+    school: 'Universität / Schule', field: 'Studiengang / Abschluss',
+    addMore: '＋ Weiteres hinzufügen', addLang: '＋ Sprache hinzufügen', addSection: '＋ Eigenen Abschnitt',
+    sectionName: 'Abschnittsname', sectionContent: 'Inhalt...',
+    remove: '✕ Entfernen', removePhoto: '✕ Foto entfernen',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: 'Mit Komma trennen · Vorschläge anklicken:',
+    summaryPlaceholder: 'Kurze Beschreibung Ihrer Kompetenzen und Karriereziele (2–4 Sätze)...',
+    companyPlaceholder: 'Google Deutschland', jobPlaceholder: 'Marketing Manager',
+    currentlyPlaceholder: 'heute', schoolPlaceholder: 'Universität Berlin',
+    fieldPlaceholder: 'Betriebswirtschaft', langPlaceholder: 'Englisch',
+    fillBelow: 'Daten unten ausfüllen',
   },
   uk: {
-    experience: 'Досвід роботи',
-    education:  'Освіта',
-    skills:     'Навички',
-    languages:  'Мови',
-    summary:    'Резюме',
-    profile:    'Профіль',
-    interests:  'Інтереси та хобі',
-    contact:    'Контакти',
-    present:    'Зараз',
-    consent:    'Я даю згоду на обробку моїх персональних даних для цілей рекрутингу.',
+    experience: 'Досвід роботи', education: 'Освіта',
+    skills: 'Навички', languages: 'Мови', summary: 'Резюме',
+    profile: 'Профіль', interests: 'Інтереси та хобі',
+    contact: 'Контакти', present: 'Зараз',
+    consent: 'Я даю згоду на обробку моїх персональних даних для цілей рекрутингу.',
+    personalData: 'Особисті дані', professionalSummary: 'Професійне резюме',
+    workExperience: 'Досвід роботи', educationSection: 'Освіта',
+    skillsSection: 'Навички', languagesSection: 'Мови', interestsSection: 'Інтереси та хобі',
+    firstName: "Ім'я", lastName: 'Прізвище', position: 'Посада / назва',
+    email: 'Email', phone: 'Телефон', city: 'Місто / адреса', linkedin: 'LinkedIn',
+    company: 'Компанія', jobTitle: 'Посада', from: 'З', to: 'По', duties: "Обов'язки",
+    school: 'Університет / школа', field: 'Спеціальність / ступінь',
+    addMore: '＋ Додати ще', addLang: '＋ Додати мову', addSection: '＋ Власний розділ',
+    sectionName: 'Назва розділу', sectionContent: 'Зміст...',
+    remove: '✕ Видалити', removePhoto: '✕ Видалити фото',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: 'Розділяйте комами · клікайте на підказки:',
+    summaryPlaceholder: "Короткий опис ваших компетенцій і кар'єрних цілей (2–4 речення)...",
+    companyPlaceholder: 'Google', jobPlaceholder: 'Менеджер з маркетингу',
+    currentlyPlaceholder: 'зараз', schoolPlaceholder: 'Університет',
+    fieldPlaceholder: 'Фінанси та бухгалтерія', langPlaceholder: 'Англійська',
+    fillBelow: 'Заповніть дані нижче',
   },
   es: {
-    experience: 'Experiencia laboral',
-    education:  'Educación',
-    skills:     'Habilidades',
-    languages:  'Idiomas',
-    summary:    'Perfil',
-    profile:    'Perfil profesional',
-    interests:  'Intereses y aficiones',
-    contact:    'Contacto',
-    present:    'Presente',
-    consent:    'Doy mi consentimiento para el tratamiento de mis datos personales con fines de contratación.',
+    experience: 'Experiencia laboral', education: 'Educación',
+    skills: 'Habilidades', languages: 'Idiomas', summary: 'Perfil',
+    profile: 'Perfil profesional', interests: 'Intereses y aficiones',
+    contact: 'Contacto', present: 'Presente',
+    consent: 'Doy mi consentimiento para el tratamiento de mis datos personales con fines de contratación.',
+    personalData: 'Datos personales', professionalSummary: 'Perfil profesional',
+    workExperience: 'Experiencia laboral', educationSection: 'Educación',
+    skillsSection: 'Habilidades', languagesSection: 'Idiomas', interestsSection: 'Intereses y aficiones',
+    firstName: 'Nombre', lastName: 'Apellido', position: 'Cargo / título profesional',
+    email: 'Email', phone: 'Teléfono', city: 'Ciudad / dirección', linkedin: 'LinkedIn',
+    company: 'Empresa', jobTitle: 'Cargo', from: 'Desde', to: 'Hasta', duties: 'Responsabilidades',
+    school: 'Universidad / escuela', field: 'Carrera / título',
+    addMore: '＋ Añadir otro', addLang: '＋ Añadir idioma', addSection: '＋ Sección personalizada',
+    sectionName: 'Nombre de sección', sectionContent: 'Contenido...',
+    remove: '✕ Eliminar', removePhoto: '✕ Eliminar foto',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: 'Separar con comas · haz clic en sugerencias:',
+    summaryPlaceholder: 'Breve descripción de tus competencias y objetivos (2–4 frases)...',
+    companyPlaceholder: 'Google', jobPlaceholder: 'Director de Marketing',
+    currentlyPlaceholder: 'presente', schoolPlaceholder: 'Universidad',
+    fieldPlaceholder: 'Finanzas y Contabilidad', langPlaceholder: 'Inglés',
+    fillBelow: 'Completa los datos abajo',
   },
   cs: {
-    experience: 'Pracovní zkušenosti',
-    education:  'Vzdělání',
-    skills:     'Dovednosti',
-    languages:  'Jazyky',
-    summary:    'Souhrn',
-    profile:    'Profesní profil',
-    interests:  'Zájmy a koníčky',
-    contact:    'Kontakt',
-    present:    'Současnost',
-    consent:    'Souhlasím se zpracováním svých osobních údajů pro účely náboru.',
+    experience: 'Pracovní zkušenosti', education: 'Vzdělání',
+    skills: 'Dovednosti', languages: 'Jazyky', summary: 'Souhrn',
+    profile: 'Profesní profil', interests: 'Zájmy a koníčky',
+    contact: 'Kontakt', present: 'Současnost',
+    consent: 'Souhlasím se zpracováním svých osobních údajů pro účely náboru.',
+    personalData: 'Osobní údaje', professionalSummary: 'Profesní souhrn',
+    workExperience: 'Pracovní zkušenosti', educationSection: 'Vzdělání',
+    skillsSection: 'Dovednosti', languagesSection: 'Jazyky', interestsSection: 'Zájmy a koníčky',
+    firstName: 'Jméno', lastName: 'Příjmení', position: 'Pracovní pozice',
+    email: 'E-mail', phone: 'Telefon', city: 'Město / adresa', linkedin: 'LinkedIn',
+    company: 'Společnost', jobTitle: 'Pozice', from: 'Od', to: 'Do', duties: 'Povinnosti',
+    school: 'Univerzita / škola', field: 'Obor / titul',
+    addMore: '＋ Přidat další', addLang: '＋ Přidat jazyk', addSection: '＋ Vlastní sekce',
+    sectionName: 'Název sekce', sectionContent: 'Obsah...',
+    remove: '✕ Odstranit', removePhoto: '✕ Odstranit foto',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: 'Oddělujte čárkami · klikněte na návrhy:',
+    summaryPlaceholder: 'Stručný popis vašich kompetencí a kariérních cílů (2–4 věty)...',
+    companyPlaceholder: 'Google', jobPlaceholder: 'Marketing Manager',
+    currentlyPlaceholder: 'současnost', schoolPlaceholder: 'Univerzita Karlova',
+    fieldPlaceholder: 'Finance a účetnictví', langPlaceholder: 'Angličtina',
+    fillBelow: 'Vyplňte údaje níže',
   },
   nl: {
-    experience: 'Werkervaring',
-    education:  'Opleiding',
-    skills:     'Vaardigheden',
-    languages:  'Talen',
-    summary:    'Samenvatting',
-    profile:    'Professioneel profiel',
-    interests:  "Interesses & hobby's",
-    contact:    'Contact',
-    present:    'Heden',
-    consent:    'Ik geef toestemming voor de verwerking van mijn persoonsgegevens voor wervingsdoeleinden.',
+    experience: 'Werkervaring', education: 'Opleiding',
+    skills: 'Vaardigheden', languages: 'Talen', summary: 'Samenvatting',
+    profile: 'Professioneel profiel', interests: "Interesses & hobby's",
+    contact: 'Contact', present: 'Heden',
+    consent: 'Ik geef toestemming voor de verwerking van mijn persoonsgegevens voor wervingsdoeleinden.',
+    personalData: 'Persoonlijke gegevens', professionalSummary: 'Professioneel profiel',
+    workExperience: 'Werkervaring', educationSection: 'Opleiding',
+    skillsSection: 'Vaardigheden', languagesSection: 'Talen', interestsSection: "Interesses & hobby's",
+    firstName: 'Voornaam', lastName: 'Achternaam', position: 'Functietitel',
+    email: 'E-mail', phone: 'Telefoon', city: 'Stad / adres', linkedin: 'LinkedIn',
+    company: 'Bedrijf', jobTitle: 'Functie', from: 'Van', to: 'Tot', duties: 'Taken',
+    school: 'Universiteit / school', field: 'Studie / graad',
+    addMore: '＋ Nog een toevoegen', addLang: '＋ Taal toevoegen', addSection: '＋ Eigen sectie',
+    sectionName: 'Sectienaam', sectionContent: 'Inhoud...',
+    remove: '✕ Verwijderen', removePhoto: '✕ Foto verwijderen',
+    skillsPlaceholder: 'Excel, Python, Photoshop...', skillsHint: "Scheiden met komma's · klik op suggesties:",
+    summaryPlaceholder: "Korte beschrijving van uw competenties en carrièredoelen (2–4 zinnen)...",
+    companyPlaceholder: 'Google', jobPlaceholder: 'Marketing Manager',
+    currentlyPlaceholder: 'heden', schoolPlaceholder: 'Universiteit van Amsterdam',
+    fieldPlaceholder: 'Financiën en Administratie', langPlaceholder: 'Engels',
+    fillBelow: 'Vul gegevens in hieronder',
   },
 };
 
@@ -1692,7 +1768,7 @@ function renderCVForm() {
       <div class="acc-row" onclick="toggleAccPersonal()">
         <span class="acc-drag-spacer"></span>
         <div class="acc-info">
-          <span class="acc-label">Dane osobowe</span>
+          <span class="acc-label">${L("personalData")}</span>
           <span class="acc-summary" id="accPersonalSummary">${fullName || ''}</span>
         </div>
         <button class="acc-btn" onclick="event.stopPropagation();toggleAccPersonal()">
@@ -1710,18 +1786,18 @@ function renderCVForm() {
             <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
             <div class="acc-personal-meta">
               <div class="acc-personal-name" id="accPersonalName">${fullName || 'Twoje imię i nazwisko'}</div>
-              <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko || 'Uzupełnij dane poniżej'}</div>
-              ${cvData.zdjecie ? `<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">✕ Usuń zdjęcie</button>` : ''}
+              <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko || L('fillBelow')}</div>
+              ${cvData.zdjecie ? `<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">${L("removePhoto")}</button>` : ''}
             </div>
           </div>
           <div class="cvf-grid2">
-            <div class="cvf-group"><label>Imię</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko';document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
-            <div class="cvf-group"><label>Nazwisko</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko';document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
-            <div class="cvf-group cvf-full"><label>Stanowisko / tytuł zawodowy</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||'Uzupełnij dane poniżej'" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
-            <div class="cvf-group"><label>Email</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
-            <div class="cvf-group"><label>Telefon</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
-            <div class="cvf-group"><label>Adres / Miasto</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
-            <div class="cvf-group"><label>LinkedIn</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
+            <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko';document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
+            <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko';document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
+            <div class="cvf-group cvf-full"><label>${L("position")}</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||L('fillBelow')" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
+            <div class="cvf-group"><label>${L("email")}</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
+            <div class="cvf-group"><label>${L("phone")}</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
+            <div class="cvf-group"><label>${L("city")}</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
+            <div class="cvf-group"><label>${L("linkedin")}</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
           </div>
         </div>
       </div>
@@ -1732,7 +1808,7 @@ function renderCVForm() {
       ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
     </div>
     <div style="padding:12px 16px 8px">
-      <button class="cvf-add-custom-btn" onclick="addCustomSection()">＋ Dodaj własną sekcję</button>
+      <button class="cvf-add-custom-btn" onclick="addCustomSection()">${L("addSection")}</button>
     </div>
   `;
   initDragDrop();
@@ -1768,66 +1844,66 @@ function buildSectionFormHTML(sec) {
 
 function buildSectionBodyHTML(sec) {
   if (sec === 'podsumowanie') return `
-    <textarea class="cvf-input" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="Krótki opis swoich kompetencji i celów zawodowych (2–4 zdania)...">${cvData.podsumowanie}</textarea>`;
+    <textarea class="cvf-input" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="${L('summaryPlaceholder')}">${cvData.podsumowanie}</textarea>`;
 
   if (sec === 'doswiadczenie') return `
     <div id="cvExpList">
       ${cvData.doswiadczenie.map((e,i) => `
         <div class="cvf-card">
           <div class="cvf-grid2">
-            <div class="cvf-group cvf-full"><label>Firma</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="Google Polska"></div>
-            <div class="cvf-group cvf-full"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="Marketing Manager"></div>
-            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
-            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="obecnie"></div>
-            <div class="cvf-group cvf-full"><label>Obowiązki</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="Główne obowiązki i osiągnięcia...">${e.opis}</textarea></div>
+            <div class="cvf-group cvf-full"><label>${L("company")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="${L('companyPlaceholder')}"></div>
+            <div class="cvf-group cvf-full"><label>${L("jobTitle")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="${L('jobPlaceholder')}"></div>
+            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
+            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="${L('currentlyPlaceholder')}"></div>
+            <div class="cvf-group cvf-full"><label>${L("duties")}</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="${L('duties')}...">${e.opis}</textarea></div>
           </div>
-          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})">✕ Usuń</button>` : ''}
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})>${L("remove")}</button>` : ''}
         </div>`).join('')}
     </div>
-    <button class="acc-add-more" onclick="addCVExp()">＋ Dodaj kolejne</button>`;
+    <button class="acc-add-more" onclick="addCVExp()">${L("addMore")}</button>`;
 
   if (sec === 'wyksztalcenie') return `
     <div id="cvEduList">
       ${cvData.wyksztalcenie.map((e,i) => `
         <div class="cvf-card">
           <div class="cvf-grid2">
-            <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label>
+            <div class="cvf-group cvf-full"><label>${L("school")}</label>
               <div class="cvf-autocomplete-wrap">
                 <input class="cvf-input" id="szkola-${i}" onfocus="showUniSuggest(${i},this.value)" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
                 <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
               </div>
             </div>
-            <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label>
+            <div class="cvf-group cvf-full"><label>${L("field")}</label>
               <div class="cvf-autocomplete-wrap">
                 <input class="cvf-input" id="kierunek-${i}" onfocus="showKierunekSuggest(${i},this.value)" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
                 <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
               </div>
             </div>
-            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
-            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
+            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
+            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
           </div>
-          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">✕ Usuń</button>` : ''}
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})>${L("remove")}</button>` : ''}
         </div>`).join('')}
     </div>
-    <button class="acc-add-more" onclick="addCVEdu()">＋ Dodaj kolejne</button>`;
+    <button class="acc-add-more" onclick="addCVEdu()">${L("addMore")}</button>`;
 
   if (sec === 'umiejetnosci') return `
-    <input class="cvf-input" id="skillsInput" oninput="cvData.umiejetnosci=this.value;updateCVPreview();updateSkillChips()" value="${cvData.umiejetnosci}" placeholder="Excel, Python, Photoshop...">
-    <p class="acc-hint">Oddzielaj przecinkami · klikaj propozycje:</p>
+    <input class="cvf-input" id="skillsInput" oninput="cvData.umiejetnosci=this.value;updateCVPreview();updateSkillChips()" value="${cvData.umiejetnosci}" placeholder="${L('skillsPlaceholder')}">
+    <p class="acc-hint">${L("skillsHint")}</p>
     <div class="cvf-suggestions" id="skillSuggestions"></div>`;
 
   if (sec === 'jezyki') return `
     <div id="cvLangList">
       ${cvData.jezyki.map((l,i) => `
         <div class="acc-lang-row">
-          <input class="cvf-input" style="flex:1;min-width:0" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="Angielski">
+          <input class="cvf-input" style="flex:1;min-width:0" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="${L('langPlaceholder')}">
           <select class="cvf-input" style="width:100px;flex-shrink:0" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
             ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
           </select>
           ${i>0 ? `<button class="acc-remove-x" onclick="removeCVLang(${i})">✕</button>` : '<div style="width:28px"></div>'}
         </div>`).join('')}
     </div>
-    <button class="acc-add-more" onclick="addCVLang()">＋ Dodaj język</button>
+    <button class="acc-add-more" onclick="addCVLang()">${L("addLang")}</button>
     <p class="acc-hint" style="margin-top:10px">Popularne języki — kliknij aby dodać:</p>
     <div class="cvf-suggestions" id="langSuggestions">
       ${TOP_LANGS.map(l => `<span class="cvf-chip" onclick="addLangChip('${l}')">${l}</span>`).join('')}
@@ -1918,7 +1994,7 @@ function buildCustomSectionHTML(sec) {
       <div class="acc-row" onclick="toggleAccSection('custom-${sec.id}')">
         <span class="acc-drag" onclick="event.stopPropagation()" title="Przeciągnij">⠿</span>
         <div class="acc-info">
-          <input class="acc-custom-name" value="${sec.title}" placeholder="Nazwa sekcji"
+          <input class="acc-custom-name" value="${sec.title}" placeholder="${L('sectionName')}"
             onclick="event.stopPropagation()"
             oninput="updateCustomSection('${sec.id}','title',this.value);updateCVPreview()">
         </div>
@@ -1930,7 +2006,7 @@ function buildCustomSectionHTML(sec) {
         </button>
       </div>
       <div class="acc-body">
-        <textarea class="cvf-input" rows="3" placeholder="Treść sekcji..."
+        <textarea class="cvf-input" rows="3" placeholder="${L('sectionContent')}"
           oninput="updateCustomSection('${sec.id}','content',this.value);updateCVPreview()">${sec.content}</textarea>
         <button class="cvf-remove-btn" style="margin-top:8px" onclick="removeCustomSection('${sec.id}')">✕ Usuń sekcję</button>
       </div>
