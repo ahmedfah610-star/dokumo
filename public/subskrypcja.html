@@ -91,6 +91,7 @@
     <a href="konto.html" class="btn-secondary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navLoginBtn">ZALOGUJ SIĘ</a>
     <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
     <div class="nav-profile" id="navProfile" style="display:none">
+      <a href="subskrypcja.html" id="navSubBadge" style="display:none"></a>
       <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
       <div class="nav-profile-dropdown" id="navDropdown">
         <div class="nav-profile-email" id="navProfileEmail"></div>
@@ -240,20 +241,23 @@ function cancelSub() {
 
 // ── NAV BADGE (PRO / Kup) ──
 function updateNavBadge() {
-  // Remove old badge if exists
-  const old = document.getElementById('navSubBadge');
-  if (old) old.remove();
-
-  const profile = document.getElementById('navProfile');
-  if (!profile || !getUser()) return;
-
-  const badge = document.createElement('div');
-  badge.id = 'navSubBadge';
-
-  if (isProActive()) {
-    badge.style.cssText = 'font-family:Syne,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#16a34a;color:#fff;padding:2px 7px;cursor:default;align-self:center;';
-    badge.textContent = 'PRO';
-  } else {
+  const badge = document.getElementById('navSubBadge');
+  if (!badge) return;
+  const user = getUser();
+  if (!user) { badge.style.display = 'none'; return; }
+  const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
+  const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  badge.style.display = 'inline-flex';
+  badge.style.cssText = isPro
+    ? 'display:inline-flex;align-items:center;gap:5px;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#16a34a;color:#fff;padding:7px 13px;text-decoration:none;white-space:nowrap;'
+    : 'display:inline-flex;align-items:center;gap:5px;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:#c8963c;color:#fff;padding:7px 13px;text-decoration:none;white-space:nowrap;transition:background 0.18s;';
+  badge.href = 'subskrypcja.html';
+  badge.innerHTML = isPro ? '★ PRO' : '★ KUP PREMIUM';
+  if (!isPro) {
+    badge.onmouseover = () => badge.style.background = '#a87830';
+    badge.onmouseout  = () => badge.style.background = '#c8963c';
+  }
+} else {
     badge.style.cssText = 'font-family:Syne,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:transparent;border:1.5px solid #c8963c;color:#92400e;padding:2px 7px;cursor:pointer;align-self:center;';
     badge.textContent = 'Kup PRO';
     badge.onclick = () => window.location.href = 'subskrypcja.html';
