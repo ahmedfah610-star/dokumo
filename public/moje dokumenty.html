@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumo – Moje Dokumenty</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── PAGE LAYOUT ── */
+.my-page { min-height:100vh; background:var(--bg); }
+.my-header {
+  border-bottom:1px solid var(--border);
+  background:var(--white);
+  padding:40px 0 0;
+}
+.my-header-inner {
+  max-width:1100px; margin:0 auto; padding:0 32px;
+}
+.my-header-top {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  margin-bottom:28px; gap:16px;
+}
+.my-title { font-family:'Instrument Serif',serif; font-size:2rem; color:var(--ink); letter-spacing:-0.02em; }
+.my-count { font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-left:12px; }
+.my-new-btn {
+  background:var(--accent); color:#fff; border:none; padding:11px 20px;
+  font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+  text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+  transition:background 0.2s; white-space:nowrap; flex-shrink:0;
+}
+.my-new-btn:hover { background:var(--accent2); }
+
+/* ── SEARCH + FILTERS ── */
+.my-toolbar {
+  display:flex; align-items:center; gap:12px; padding-bottom:0;
+  flex-wrap:wrap;
+}
+.my-search-wrap { position:relative; flex:1; min-width:200px; }
+.my-search-icon {
+  position:absolute; left:12px; top:50%; transform:translateY(-50%);
+  color:var(--muted); font-size:0.85rem; pointer-events:none;
+}
+.my-search {
+  width:100%; padding:9px 12px 9px 34px; border:1.5px solid var(--border);
+  background:var(--bg); font-family:'Syne',sans-serif; font-size:0.8rem;
+  color:var(--ink); outline:none; transition:border-color 0.2s;
+}
+.my-search:focus { border-color:var(--accent2); background:var(--white); }
+.my-filters { display:flex; gap:6px; flex-wrap:wrap; }
+.my-filter {
+  padding:7px 14px; font-family:'Syne',sans-serif; font-size:0.7rem;
+  font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+  border:1.5px solid var(--border); background:var(--white);
+  color:var(--muted); cursor:pointer; transition:all 0.15s;
+}
+.my-filter:hover { border-color:var(--accent2); color:var(--accent2); }
+.my-filter.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* ── TABS ── */
+.my-tabs {
+  display:flex; gap:0; border-bottom:none; margin-top:20px;
+}
+.my-tab {
+  padding:10px 20px; font-family:'Syne',sans-serif; font-size:0.73rem;
+  font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  border:none; background:none; cursor:pointer; color:var(--muted);
+  border-bottom:2px solid transparent; transition:all 0.18s;
+}
+.my-tab.active { color:var(--accent2); border-bottom-color:var(--accent2); }
+
+/* ── MAIN CONTENT ── */
+.my-content { max-width:1100px; margin:0 auto; padding:32px 32px 80px; }
+
+/* ── EMPTY STATE ── */
+.my-empty {
+  text-align:center; padding:80px 20px;
+  border:1.5px dashed var(--border); background:var(--white);
+  margin-top:8px;
+}
+.my-empty-icon { font-size:3rem; margin-bottom:16px; display:block; }
+.my-empty-title { font-family:'Instrument Serif',serif; font-size:1.5rem; color:var(--ink); margin-bottom:8px; }
+.my-empty-sub { font-size:0.85rem; color:var(--muted); line-height:1.65; margin-bottom:24px; }
+
+/* ── DOCUMENT GRID ── */
+.my-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:8px; }
+
+/* ── DOCUMENT CARD ── */
+.doc-card {
+  background:var(--white); border:1px solid var(--border);
+  transition:box-shadow 0.2s, border-color 0.2s;
+  position:relative; overflow:hidden;
+}
+.doc-card:hover { border-color:rgba(45,107,82,0.3); box-shadow:0 4px 20px rgba(0,0,0,0.07); }
+.doc-card-top {
+  padding:18px 18px 14px; border-bottom:1px solid var(--border2);
+}
+.doc-card-row1 { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
+.doc-card-icon { font-size:1.6rem; line-height:1; flex-shrink:0; margin-top:2px; }
+.doc-card-meta { flex:1; min-width:0; }
+.doc-card-name {
+  font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700;
+  color:var(--ink); line-height:1.3; margin-bottom:4px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.doc-card-type { display:inline-flex; align-items:center; gap:4px; }
+.doc-cat-tag {
+  font-size:0.62rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  padding:2px 7px; background:var(--accent-light); color:var(--accent2);
+}
+.doc-card-dates {
+  font-family:'DM Mono',monospace; font-size:0.68rem; color:var(--muted);
+  display:flex; gap:12px; flex-wrap:wrap;
+}
+.doc-status {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:0.65rem; font-weight:700; letter-spacing:0.08em;
+  text-transform:uppercase; padding:3px 8px; border:1px solid;
+}
+.doc-status.generated { color:#16a34a; border-color:#bbf7d0; background:#f0fdf4; }
+.doc-status.draft { color:#92400e; border-color:#fde68a; background:#fffbeb; }
+
+/* Actions row */
+.doc-card-actions {
+  display:flex; align-items:center; padding:10px 12px; gap:4px;
+  flex-wrap:wrap;
+}
+.doc-action-btn {
+  padding:6px 11px; font-family:'Syne',sans-serif; font-size:0.67rem;
+  font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+  border:1.5px solid var(--border); background:var(--white);
+  color:var(--ink2); cursor:pointer; transition:all 0.15s;
+  -webkit-appearance:none; white-space:nowrap;
+}
+.doc-action-btn:hover { border-color:var(--accent2); color:var(--accent2); background:#f9f8f5; }
+.doc-action-btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+.doc-action-btn.primary:hover { background:var(--accent2); border-color:var(--accent2); }
+.doc-action-btn.danger { margin-left:auto; }
+.doc-action-btn.danger:hover { border-color:#dc2626; color:#dc2626; background:#fef2f2; }
+
+/* ── SORT BAR ── */
+.my-sort-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 0 8px; border-bottom:1px solid var(--border2); margin-bottom:16px;
+}
+.my-sort-label { font-size:0.72rem; color:var(--muted); font-family:'Syne',sans-serif; }
+.my-sort-select {
+  font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:600;
+  border:1px solid var(--border); background:var(--white); padding:4px 8px;
+  color:var(--ink); cursor:pointer;
+}
+
+/* ── CONFIRM MODAL ── */
+.confirm-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4);
+  z-index:800; align-items:center; justify-content:center;
+}
+.confirm-overlay.open { display:flex; }
+.confirm-box {
+  background:var(--white); border:1px solid var(--border);
+  padding:32px 28px; max-width:360px; width:100%; margin:16px;
+  box-shadow:0 16px 48px rgba(0,0,0,0.15);
+}
+.confirm-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:8px; }
+.confirm-sub { font-size:0.83rem; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+.confirm-btns { display:flex; gap:10px; }
+.confirm-cancel {
+  flex:1; padding:10px; border:1.5px solid var(--border); background:var(--white);
+  font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; color:var(--ink2);
+}
+.confirm-delete {
+  flex:1; padding:10px; border:none; background:#dc2626; color:#fff;
+  font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;
+}
+
+/* ── TOAST ── */
+.my-toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--accent); color:#fff; padding:11px 22px;
+  font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700;
+  letter-spacing:0.06em; z-index:900; transition:transform 0.3s;
+  pointer-events:none; white-space:nowrap;
+}
+.my-toast.show { transform:translateX(-50%) translateY(0); }
+
+@media(max-width:640px) {
+  .my-header-inner { padding:0 16px; }
+  .my-content { padding:20px 16px 80px; }
+  .my-grid { grid-template-columns:1fr; }
+  .my-header-top { flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+<body class="my-page">
+
+<nav>
+  <a href="index.html" class="logo">Doku<span>mo</span></a>
+  <div class="nav-auth" id="navAuth">
+    <a href="konto.html" class="btn-secondary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navLoginBtn">ZALOGUJ SIĘ</a>
+    <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
+    <div class="nav-profile" id="navProfile" style="display:none">
+      <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+      <div class="nav-profile-dropdown" id="navDropdown">
+        <div class="nav-profile-email" id="navProfileEmail"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="my-header">
+  <div class="my-header-inner">
+    <div class="my-header-top">
+      <div>
+        <h1 class="my-title">Moje dokumenty<span class="my-count" id="docCount"></span></h1>
+        <p style="font-size:0.83rem;color:var(--muted);margin-top:4px">Wszystkie Twoje wygenerowane dokumenty w jednym miejscu.</p>
+      </div>
+      <a href="dokumenty.html" class="my-new-btn">+ Nowy dokument</a>
+    </div>
+
+    <div class="my-toolbar">
+      <div class="my-search-wrap">
+        <span class="my-search-icon">🔍</span>
+        <input class="my-search" id="mySearch" type="text" placeholder="Szukaj dokumentu…" oninput="renderDocs()">
+      </div>
+      <div class="my-filters" id="myFilters">
+        <button class="my-filter active" data-cat="all" onclick="setFilter('all',this)">Wszystkie</button>
+        <button class="my-filter" data-cat="ecommerce" onclick="setFilter('ecommerce',this)">E-commerce</button>
+        <button class="my-filter" data-cat="b2b" onclick="setFilter('b2b',this)">B2B</button>
+        <button class="my-filter" data-cat="hr" onclick="setFilter('hr',this)">HR</button>
+        <button class="my-filter" data-cat="najem" onclick="setFilter('najem',this)">Najem</button>
+        <button class="my-filter" data-cat="finanse" onclick="setFilter('finanse',this)">Finanse</button>
+        <button class="my-filter" data-cat="startup" onclick="setFilter('startup',this)">Startup</button>
+      </div>
+    </div>
+
+    <div class="my-tabs">
+      <button class="my-tab active" data-tab="all" onclick="setTab('all',this)">Wszystkie</button>
+      <button class="my-tab" data-tab="generated" onclick="setTab('generated',this)">Wygenerowane</button>
+      <button class="my-tab" data-tab="draft" onclick="setTab('draft',this)">Szkice</button>
+    </div>
+  </div>
+</div>
+
+<div class="my-content">
+  <div class="my-sort-bar">
+    <span class="my-sort-label" id="resultsLabel">Ładowanie…</span>
+    <select class="my-sort-select" id="mySort" onchange="renderDocs()">
+      <option value="newest">Najnowsze</option>
+      <option value="oldest">Najstarsze</option>
+      <option value="name">Nazwa A–Z</option>
+    </select>
+  </div>
+
+  <div id="myDocGrid"></div>
+</div>
+
+<!-- Confirm delete modal -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Usunąć dokument?</div>
+    <p class="confirm-sub" id="confirmMsg">Tej operacji nie można cofnąć.</p>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">Anuluj</button>
+      <button class="confirm-delete" id="confirmDeleteBtn">Usuń</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="my-toast" id="myToast"></div>
+
+<script>
+// ── STORAGE KEY ──
+const DOCS_KEY = 'dokumo_my_docs';
+
+// ── DOC CATEGORIES MAP ──
+const DOC_META = {
+  regulamin:        { cat:'ecommerce', icon:'🛒', label:'E-commerce' },
+  polityka_rodo:    { cat:'ecommerce', icon:'🔒', label:'E-commerce' },
+  polityka_zwrotow: { cat:'ecommerce', icon:'↩',  label:'E-commerce' },
+  umowa_b2b:        { cat:'b2b',       icon:'🤝', label:'B2B' },
+  nda:              { cat:'b2b',       icon:'🔐', label:'B2B' },
+  umowa_pracy:      { cat:'hr',        icon:'👔', label:'HR' },
+  umowa_zlecenie:   { cat:'hr',        icon:'📄', label:'HR' },
+  umowa_najmu:      { cat:'najem',     icon:'🏠', label:'Najem' },
+  protokol:         { cat:'najem',     icon:'📋', label:'Najem' },
+  wypowiedzenie_najmu: { cat:'najem',  icon:'📝', label:'Najem' },
+  biznesplan:       { cat:'finanse',   icon:'🏦', label:'Finanse' },
+  swot:             { cat:'finanse',   icon:'📊', label:'Finanse' },
+  umowa_spolnikow:  { cat:'startup',   icon:'🚀', label:'Startup' },
+};
+
+let activeFilter = 'all';
+let activeTab = 'all';
+let confirmDocId = null;
+
+// ── LOAD / SAVE ──
+function loadDocs() {
+  try { return JSON.parse(localStorage.getItem(DOCS_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveDocs(docs) {
+  localStorage.setItem(DOCS_KEY, JSON.stringify(docs));
+}
+
+// ── IMPORT from sessionStorage (after generating) ──
+function importGenerated() {
+  try {
+    const raw = sessionStorage.getItem('dokumo_docs');
+    if (!raw) return;
+    const generated = JSON.parse(raw);
+    const docs = loadDocs();
+    Object.entries(generated).forEach(([typeId, d]) => {
+      const meta = DOC_META[typeId] || { cat:'inne', icon:'📄', label:'Inne' };
+      // Avoid duplicates by checking if same typeId+text already exists
+      const exists = docs.some(x => x.typeId === typeId && x.text === d.text);
+      if (!exists) {
+        docs.unshift({
+          id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+          typeId,
+          name: d.name,
+          text: d.text,
+          cat: meta.cat,
+          icon: meta.icon,
+          catLabel: meta.label,
+          status: 'generated',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    });
+    saveDocs(docs);
+    sessionStorage.removeItem('dokumo_docs');
+  } catch(e) {}
+}
+
+// ── FILTER / SORT / RENDER ──
+function setFilter(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.my-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs();
+}
+function setTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.my-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs();
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function renderDocs() {
+  let docs = loadDocs();
+  const q = document.getElementById('mySearch').value.toLowerCase().trim();
+  const sort = document.getElementById('mySort').value;
+
+  // Filter
+  if (activeFilter !== 'all') docs = docs.filter(d => d.cat === activeFilter);
+  if (activeTab === 'generated') docs = docs.filter(d => d.status === 'generated');
+  if (activeTab === 'draft') docs = docs.filter(d => d.status === 'draft');
+  if (q) docs = docs.filter(d => d.name.toLowerCase().includes(q) || (d.catLabel||'').toLowerCase().includes(q));
+
+  // Sort
+  if (sort === 'newest') docs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (sort === 'oldest') docs.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+  if (sort === 'name') docs.sort((a,b) => a.name.localeCompare(b.name,'pl'));
+
+  const total = loadDocs().length;
+  document.getElementById('docCount').textContent = total ? '  ·  ' + total : '';
+  document.getElementById('resultsLabel').textContent = docs.length + ' ' + (docs.length === 1 ? 'dokument' : docs.length < 5 ? 'dokumenty' : 'dokumentów');
+
+  const grid = document.getElementById('myDocGrid');
+
+  if (docs.length === 0) {
+    grid.innerHTML = '<div class="my-empty">' +
+      '<span class="my-empty-icon">📂</span>' +
+      '<div class="my-empty-title">' + (total === 0 ? 'Brak dokumentów' : 'Brak wyników') + '</div>' +
+      '<p class="my-empty-sub">' + (total === 0 ? 'Wygeneruj swój pierwszy dokument — zajmie to mniej niż minutę.' : 'Spróbuj innego filtra lub wyszukiwania.') + '</p>' +
+      (total === 0 ? '<a href="dokumenty.html" class="btn-primary" style="display:inline-block;padding:12px 24px;font-size:0.78rem">Przeglądaj dokumenty</a>' : '') +
+      '</div>';
+    return;
+  }
+
+  grid.innerHTML = '<div class="my-grid">' +
+    docs.map(doc => {
+      const statusHtml = doc.status === 'generated'
+        ? '<span class="doc-status generated">✓ Wygenerowany</span>'
+        : '<span class="doc-status draft">○ Szkic</span>';
+      return '<div class="doc-card" id="card-' + doc.id + '">' +
+        '<div class="doc-card-top">' +
+          '<div class="doc-card-row1">' +
+            '<div class="doc-card-icon">' + (doc.icon||'📄') + '</div>' +
+            '<div class="doc-card-meta">' +
+              '<div class="doc-card-name" title="' + doc.name + '">' + doc.name + '</div>' +
+              '<div class="doc-card-type">' +
+                '<span class="doc-cat-tag">' + (doc.catLabel||doc.cat||'') + '</span>' +
+                '&nbsp;&nbsp;' + statusHtml +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="doc-card-dates">' +
+            '<span>Utworzono: ' + formatDate(doc.createdAt) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="doc-card-actions">' +
+          (doc.status === 'generated' ? '<button class="doc-action-btn primary" onclick="downloadDoc(\'' + doc.id + '\',\'pdf\')">📕 PDF</button>' : '') +
+          (doc.status === 'generated' ? '<button class="doc-action-btn" onclick="downloadDoc(\'' + doc.id + '\',\'txt\')">📄 TXT</button>' : '') +
+          (doc.status === 'generated' ? '<button class="doc-action-btn" onclick="downloadDoc(\'' + doc.id + '\',\'docx\')">📘 Word</button>' : '') +
+          '<button class="doc-action-btn" onclick="duplicateDoc(\'' + doc.id + '\')">⧉ Duplikuj</button>' +
+          '<button class="doc-action-btn danger" onclick="askDelete(\'' + doc.id + '\',\'' + doc.name.replace(/'/g,"\\'") + '\')">✕</button>' +
+        '</div>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+// ── DOWNLOAD ──
+function downloadDoc(docId, format) {
+  const docs = loadDocs();
+  const doc = docs.find(d => d.id === docId);
+  if (!doc || !doc.text) { showToast('Brak treści dokumentu.'); return; }
+  const safeName = doc.name.replace(/[\s\/\\:*?"<>|]+/g,'_');
+
+  if (format === 'txt') {
+    const blob = new Blob([doc.text], { type:'text/plain;charset=utf-8' });
+    triggerDl(URL.createObjectURL(blob), safeName + '.txt');
+
+  } else if (format === 'pdf') {
+    const win = window.open('', '_blank');
+    const safe = doc.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    win.document.write(
+      '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>' +
+      '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}' +
+      'pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}' +
+      '@media print{body{margin:2cm}}</style></head><body>' +
+      '<pre>' + safe + '</pre>' +
+      '<scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt></body></html>'
+    );
+    win.document.close();
+
+  } else if (format === 'docx') {
+    const rtf = buildRTF(doc.text, doc.name);
+    const blob = new Blob([rtf], { type:'application/rtf' });
+    triggerDl(URL.createObjectURL(blob), safeName + '.rtf');
+  }
+}
+
+function triggerDl(url, filename) {
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function buildRTF(text, title) {
+  const esc = s => s
+    .replace(/\\/g,'\\\\').replace(/[{}]/g, c => '\\' + c)
+    .replace(/[\u0080-\uFFFF]/g, c => {
+      const code = c.charCodeAt(0);
+      return code > 32767 ? '{\\uc1\\u'+(code-65536)+'?}' : '\\u'+code+'?';
+    });
+  const lines = text.split('\n').map(l => {
+    const e = esc(l);
+    return e.trim() ? e + '\\par' : '\\par';
+  }).join('\n');
+  return '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}' +
+    '{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 ' +
+    '{\\b\\fs28 ' + esc(title) + '}\\par\\par ' + lines + '}';
+}
+
+// ── DUPLICATE ──
+function duplicateDoc(docId) {
+  const docs = loadDocs();
+  const orig = docs.find(d => d.id === docId);
+  if (!orig) return;
+  const copy = Object.assign({}, orig, {
+    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+    name: orig.name + ' (kopia)',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  docs.unshift(copy);
+  saveDocs(docs);
+  renderDocs();
+  showToast('Zduplikowano: ' + copy.name);
+}
+
+// ── DELETE ──
+function askDelete(docId, name) {
+  confirmDocId = docId;
+  document.getElementById('confirmMsg').textContent = 'Usunąć „' + name + '"? Tej operacji nie można cofnąć.';
+  document.getElementById('confirmDeleteBtn').onclick = () => deleteDoc(docId);
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  confirmDocId = null;
+}
+function deleteDoc(docId) {
+  let docs = loadDocs();
+  docs = docs.filter(d => d.id !== docId);
+  saveDocs(docs);
+  closeConfirm();
+  renderDocs();
+  showToast('Dokument usunięty.');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('myToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── NAV AUTH ──
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
+}
+function clearUser() { localStorage.removeItem('dokumo_user'); }
+
+function updateNavAuth() {
+  const user = getUser();
+  const loginBtn    = document.getElementById('navLoginBtn');
+  const registerBtn = document.getElementById('navRegisterBtn');
+  const profile     = document.getElementById('navProfile');
+  const avatar      = document.getElementById('navAvatar');
+  const emailEl     = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display    = 'none';
+    registerBtn.style.display = 'none';
+    profile.style.display     = 'flex';
+    emailEl.textContent = user.email || '';
+    if (user.photo) {
+      avatar.innerHTML = '<img src="' + user.photo + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    } else {
+      avatar.textContent = (user.email || 'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display    = '';
+    registerBtn.style.display = '';
+    profile.style.display     = 'none';
+  }
+}
+
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.remove('open');
+});
+function logoutUser() {
+  clearUser();
+  window.location.href = 'index.html';
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  updateNavAuth();
+  if (!getUser()) {
+    // Not logged in — show message but still render
+  }
+  importGenerated();
+  renderDocs();
+});
+</script>
+</body>
+</html>
