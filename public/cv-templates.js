@@ -1,6 +1,15 @@
 // cv-templates.js – szablony CV
 // Ten plik jest ładowany przez kreator-cv.html
 
+function renderCustomSections(c1) {
+  if (!window.cvCustomSections || !cvCustomSections.length) return '';
+  return cvCustomSections.filter(s => s.title || s.content).map(s => `
+    <div style="margin-top:16px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1px solid #e8e8e8;padding-bottom:4px;margin-bottom:8px">${s.title}</div>
+      <div style="font-size:9.5px;color:#555;line-height:1.65">${s.content}</div>
+    </div>`).join('');
+}
+
 function buildCVHTML(tpl) {
   const d = cvData;
   const t = CV_TEMPLATES.find(x => x.id === tpl) || CV_TEMPLATES[0];
@@ -78,7 +87,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── SIDEBAR ───────────────────────────────────────────────
@@ -118,7 +127,7 @@ function buildCVHTML(tpl) {
               <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
             </div>`).join('')}
         </div>`:''}
-        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:10px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:10px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
       </div>
     </div>`;
 
@@ -180,7 +189,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── BOLD (czerwony) ───────────────────────────────────────
@@ -235,7 +244,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── TEAL ──────────────────────────────────────────────────
@@ -293,7 +302,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── MIDNIGHT ──────────────────────────────────────────────
@@ -337,7 +346,7 @@ function buildCVHTML(tpl) {
           ${d.zainteresowania?`<div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── CORAL ─────────────────────────────────────────────────
@@ -376,7 +385,7 @@ function buildCVHTML(tpl) {
                 <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
               </div>`).join('')}
           </div>`:''}
-          <div style="margin-top:14px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+          <div style="margin-top:14px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
         </div>
       </div>
     </div>`;
@@ -424,7 +433,7 @@ function buildCVHTML(tpl) {
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── SLATE ─────────────────────────────────────────────────
@@ -476,7 +485,7 @@ function buildCVHTML(tpl) {
           ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #eee">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #eee">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── OCEAN ─────────────────────────────────────────────────
@@ -522,7 +531,7 @@ function buildCVHTML(tpl) {
           ${d.zainteresowania?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06)"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
 
@@ -587,7 +596,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#bbb;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#bbb;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── SHIELD (ciemna sidebar z trójkątem wyciętym) ──────────
@@ -634,7 +643,7 @@ function buildCVHTML(tpl) {
             </div>`).join('')}
         </div>`:''}
         ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
       </div>
     </div>`;
 
@@ -684,7 +693,7 @@ function buildCVHTML(tpl) {
           ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
     </div>`;
 
   // ── SPLIT (fioletowy, pionowy podział ukośny) ─────────────
@@ -728,7 +737,7 @@ function buildCVHTML(tpl) {
               </div>`).join('')}
           </div>`:''}
           ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-          <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #ede9fe;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
+          <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #ede9fe;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
         </div>
       </div>
     </div>`;
