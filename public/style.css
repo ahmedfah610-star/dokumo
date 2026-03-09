@@ -494,7 +494,7 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .cvf-autocomplete-item:hover { background:var(--bg); color:var(--accent2); }
 
 /* ── CUSTOM SECTION BTN ── */
-.cvf-add-custom-btn { width:100%; margin-top:14px; padding:10px; background:transparent; border:1.5px dashed var(--border); font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.08em; color:var(--muted); cursor:pointer; transition:all 0.2s; -webkit-appearance:none; }
+.cvf-add-custom-btn { width:100%; margin-top:14px; margin-bottom:20px; padding:10px; background:transparent; border:1.5px dashed var(--border); font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.08em; color:var(--muted); cursor:pointer; transition:all 0.2s; -webkit-appearance:none; }
 .cvf-add-custom-btn:hover { border-color:var(--accent2); color:var(--accent2); }
 
 /* ── RESPONSIVE: TABLET ── */
@@ -540,8 +540,8 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 
 /* CV main area */
 .cv-main { display:flex; flex:1; overflow:hidden; }
-.cv-form-col { width:100%; flex-shrink:0; overflow-y:auto; padding:16px 16px 120px; border-right:1px solid var(--border); background:var(--bg); -webkit-overflow-scrolling:touch; }
-.cv-preview-col { display:none; flex:1; background:#d0cec9; flex-direction:column; align-items:center; padding:20px; overflow-y:auto; }
+.cv-form-col { width:100%; flex-shrink:0; overflow-y:auto; padding:16px 16px 180px; border-right:1px solid var(--border); background:var(--bg); -webkit-overflow-scrolling:touch; }
+.cv-preview-col { display:none; flex:1; background:#d0cec9; flex-direction:column; align-items:center; padding:20px; overflow-y:auto; padding-bottom:140px; }
 .cv-preview-label { font-size:0.63rem; color:rgba(0,0,0,0.35); font-weight:600; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px; }
 .cv-preview-doc { background:#fff; box-shadow:0 4px 40px rgba(0,0,0,0.22); width:100%; max-width:595px; min-height:842px; }
 
@@ -553,7 +553,7 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .cv-tab-btn.active::after { content:''; display:block; position:absolute; bottom:0; width:40px; height:2px; background:var(--accent2); }
 
 /* CV pay bar */
-.cv-pay-bar { position:fixed; bottom:60px; left:0; width:100%; background:rgba(247,245,240,0.97); backdrop-filter:blur(8px); border-top:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; z-index:100; }
+.cv-pay-bar { position:fixed; bottom:60px; left:0; width:100%; background:rgba(247,245,240,0.98); backdrop-filter:blur(10px); border-top:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; z-index:300; box-shadow:0 -4px 20px rgba(0,0,0,0.08); }
 .cv-pay-bar-left { font-size:0.7rem; color:var(--muted); line-height:1.4; }
 .cv-pay-bar-left strong { color:var(--ink); display:block; font-size:0.78rem; }
 .btn-pay-subtle { background:var(--accent); color:#fff; border:none; padding:9px 16px; font-family:'Syne',sans-serif; font-size:0.73rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:background 0.2s; -webkit-appearance:none; }
