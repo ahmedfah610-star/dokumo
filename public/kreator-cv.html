@@ -1028,7 +1028,7 @@ body { overflow:hidden; }
 /* ── PERSONAL SECTION as accordion ──────────────────────── */
 .acc-drag-spacer { width:30px; flex-shrink:0; }
 .acc-personal-inner { padding:4px 0 8px; }
-#accPersonalItem { border-bottom:2px solid var(--border); }
+#accPersonalItem { border-bottom:1px solid var(--border); background:var(--white); }
 #accPersonalItem .acc-body { padding:4px 16px 20px 16px; }
 
 </style>
@@ -1491,22 +1491,72 @@ function addLangChip(lang) {
   updateCVPreview();
 }
 
-const SKILLS_SUGGESTIONS = {
-  all: ['Microsoft Office','Excel','Word','PowerPoint','Python','JavaScript','SQL','Photoshop',
-    'Illustrator','Figma','AutoCAD','SAP','Salesforce','Google Analytics','Jira','Slack',
-    'Adobe Premiere','After Effects','WordPress','React','Node.js','Git','Docker',
-    'Zarządzanie projektem','Praca w zespole','Komunikacja','Analiza danych','Prezentacje',
-    'Obsługa klienta','Negocjacje','Zarządzanie czasem','Marketing','SEO','Social Media',
-    'E-commerce','Księgowość','Kadry i płace','Prawo pracy','RODO','Lean/Agile','Scrum']
-};
-
-const INTERESTS_SUGGESTIONS = [
-  'Fotografia','Sport','Muzyka','Gotowanie','Podróże','Czytanie','Gry planszowe',
-  'Gry komputerowe','Siłownia','Bieganie','Kolarstwo','Pływanie','Wspinaczka',
-  'Sztuki walki','Taniec','Malarstwo','Rysunek','Film','Theater','Wolontariat',
-  'Programowanie','Elektronika','Motoryzacja','Ogrodnictwo','Szachy','Poker',
-  'Inwestowanie','Kryptowaluty','Astronomia','Psychologia','Filozofia','Historia'
+const SKILLS_SUGGESTIONS_HARD = [
+  'Microsoft Office','Excel','Word','PowerPoint','Python','JavaScript','SQL','Photoshop',
+  'Illustrator','Figma','AutoCAD','SAP','Salesforce','Google Analytics','Jira','Slack',
+  'Adobe Premiere','After Effects','WordPress','React','Node.js','Git','Docker','Scrum','Lean/Agile'
 ];
+const SKILLS_SUGGESTIONS_SOFT = {
+  pl: ['Zarządzanie projektem','Praca w zespole','Komunikacja','Analiza danych','Prezentacje',
+    'Obsługa klienta','Negocjacje','Zarządzanie czasem','Marketing','SEO','Social Media',
+    'E-commerce','Księgowość','Kadry i płace','Prawo pracy','RODO'],
+  en: ['Project Management','Teamwork','Communication','Data Analysis','Presentations',
+    'Customer Service','Negotiation','Time Management','Marketing','SEO','Social Media',
+    'E-commerce','Accounting','HR','Employment Law','GDPR'],
+  de: ['Projektmanagement','Teamarbeit','Kommunikation','Datenanalyse','Präsentationen',
+    'Kundenservice','Verhandlung','Zeitmanagement','Marketing','SEO','Social Media',
+    'E-Commerce','Buchhaltung','Personalwesen','Arbeitsrecht','DSGVO'],
+  uk: ['Управління проектами','Командна робота','Комунікація','Аналіз даних','Презентації',
+    'Обслуговування клієнтів','Переговори','Управління часом','Маркетинг','SEO','Соціальні мережі',
+    'E-commerce','Бухгалтерія','HR','Трудове право','GDPR'],
+  es: ['Gestión de proyectos','Trabajo en equipo','Comunicación','Análisis de datos','Presentaciones',
+    'Atención al cliente','Negociación','Gestión del tiempo','Marketing','SEO','Redes sociales',
+    'E-commerce','Contabilidad','RRHH','Derecho laboral','RGPD'],
+  cs: ['Řízení projektů','Týmová práce','Komunikace','Analýza dat','Prezentace',
+    'Zákaznický servis','Vyjednávání','Time management','Marketing','SEO','Sociální sítě',
+    'E-commerce','Účetnictví','HR','Pracovní právo','GDPR'],
+  nl: ['Projectmanagement','Teamwork','Communicatie','Data-analyse','Presentaties',
+    'Klantenservice','Onderhandelen','Tijdsbeheer','Marketing','SEO','Social Media',
+    'E-commerce','Boekhouding','HR','Arbeidsrecht','AVG']
+};
+function getSkillSuggestions() {
+  const soft = SKILLS_SUGGESTIONS_SOFT[cvCurrentLang] || SKILLS_SUGGESTIONS_SOFT.pl;
+  return [...SKILLS_SUGGESTIONS_HARD, ...soft];
+}
+
+const INTERESTS_SUGGESTIONS_MAP = {
+  pl: ['Fotografia','Sport','Muzyka','Gotowanie','Podróże','Czytanie','Gry planszowe',
+    'Gry komputerowe','Siłownia','Bieganie','Kolarstwo','Pływanie','Wspinaczka',
+    'Sztuki walki','Taniec','Malarstwo','Rysunek','Film','Wolontariat',
+    'Programowanie','Elektronika','Motoryzacja','Szachy','Inwestowanie','Historia'],
+  en: ['Photography','Sports','Music','Cooking','Travel','Reading','Board Games',
+    'Video Games','Gym','Running','Cycling','Swimming','Rock Climbing',
+    'Martial Arts','Dancing','Painting','Drawing','Film','Volunteering',
+    'Programming','Electronics','Cars','Chess','Investing','History'],
+  de: ['Fotografie','Sport','Musik','Kochen','Reisen','Lesen','Brettspiele',
+    'Videospiele','Fitnessstudio','Laufen','Radfahren','Schwimmen','Klettern',
+    'Kampfsport','Tanzen','Malen','Zeichnen','Film','Ehrenamt',
+    'Programmierung','Elektronik','Autos','Schach','Investieren','Geschichte'],
+  uk: ['Фотографія','Спорт','Музика','Кулінарія','Подорожі','Читання','Настільні ігри',
+    'Відеоігри','Тренажерний зал','Біг','Велоспорт','Плавання','Скелелазіння',
+    'Бойові мистецтва','Танці','Малювання','Кіно','Волонтерство',
+    'Програмування','Електроніка','Автомобілі','Шахи','Інвестування','Історія'],
+  es: ['Fotografía','Deporte','Música','Cocina','Viajes','Lectura','Juegos de mesa',
+    'Videojuegos','Gimnasio','Running','Ciclismo','Natación','Escalada',
+    'Artes marciales','Baile','Pintura','Dibujo','Cine','Voluntariado',
+    'Programación','Electrónica','Automoción','Ajedrez','Inversiones','Historia'],
+  cs: ['Fotografie','Sport','Hudba','Vaření','Cestování','Čtení','Deskovky',
+    'Videohry','Posilovna','Běh','Cyklistika','Plavání','Horolezectví',
+    'Bojová umění','Tanec','Malování','Kreslení','Film','Dobrovolnictví',
+    'Programování','Elektronika','Auta','Šachy','Investování','Dějiny'],
+  nl: ['Fotografie','Sport','Muziek','Koken','Reizen','Lezen','Bordspellen',
+    'Videospellen','Fitness','Hardlopen','Fietsen','Zwemmen','Klimmen',
+    'Vechtsport','Dansen','Schilderen','Tekenen','Film','Vrijwilligerswerk',
+    'Programmeren','Elektronica',"Auto's",'Schaken','Beleggen','Geschiedenis']
+};
+function getInterestSuggestions() {
+  return INTERESTS_SUGGESTIONS_MAP[cvCurrentLang] || INTERESTS_SUGGESTIONS_MAP.pl;
+}
 
 // Które sekcje są otwarte
 let cvOpenSections = new Set(['doswiadczenie']);
@@ -1591,6 +1641,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'obecnie', schoolPlaceholder: 'Uniwersytet Warszawski',
     fieldPlaceholder: 'Finanse i Rachunkowość', langPlaceholder: 'Angielski',
     fillBelow: 'Uzupełnij dane poniżej',
+    fullNamePlaceholder: 'Twoje imię i nazwisko',
   },
   en: {
     experience: 'Work Experience', education: 'Education',
@@ -1614,6 +1665,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'present', schoolPlaceholder: 'University of Warsaw',
     fieldPlaceholder: 'Finance and Accounting', langPlaceholder: 'English',
     fillBelow: 'Fill in details below',
+    fullNamePlaceholder: 'Your full name',
   },
   de: {
     experience: 'Berufserfahrung', education: 'Ausbildung',
@@ -1637,6 +1689,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'heute', schoolPlaceholder: 'Universität Berlin',
     fieldPlaceholder: 'Betriebswirtschaft', langPlaceholder: 'Englisch',
     fillBelow: 'Daten unten ausfüllen',
+    fullNamePlaceholder: 'Vor- und Nachname',
   },
   uk: {
     experience: 'Досвід роботи', education: 'Освіта',
@@ -1660,6 +1713,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'зараз', schoolPlaceholder: 'Університет',
     fieldPlaceholder: 'Фінанси та бухгалтерія', langPlaceholder: 'Англійська',
     fillBelow: 'Заповніть дані нижче',
+    fullNamePlaceholder: 'Ваше ім\'я та прізвище',
   },
   es: {
     experience: 'Experiencia laboral', education: 'Educación',
@@ -1683,6 +1737,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'presente', schoolPlaceholder: 'Universidad',
     fieldPlaceholder: 'Finanzas y Contabilidad', langPlaceholder: 'Inglés',
     fillBelow: 'Completa los datos abajo',
+    fullNamePlaceholder: 'Tu nombre completo',
   },
   cs: {
     experience: 'Pracovní zkušenosti', education: 'Vzdělání',
@@ -1706,6 +1761,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'současnost', schoolPlaceholder: 'Univerzita Karlova',
     fieldPlaceholder: 'Finance a účetnictví', langPlaceholder: 'Angličtina',
     fillBelow: 'Vyplňte údaje níže',
+    fullNamePlaceholder: 'Vaše jméno a příjmení',
   },
   nl: {
     experience: 'Werkervaring', education: 'Opleiding',
@@ -1729,6 +1785,7 @@ const CV_LABELS = {
     currentlyPlaceholder: 'heden', schoolPlaceholder: 'Universiteit van Amsterdam',
     fieldPlaceholder: 'Financiën en Administratie', langPlaceholder: 'Engels',
     fillBelow: 'Vul gegevens in hieronder',
+    fullNamePlaceholder: 'Uw volledige naam',
   },
 };
 
@@ -1739,9 +1796,11 @@ function L(key) {
 
 function setCVLang(lang, btn) {
   cvCurrentLang = lang;
-  document.querySelectorAll('.cv-lang-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
   renderCVForm();
+  // Re-apply active after re-render
+  document.querySelectorAll('.cv-lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
   updateCVPreview();
 }
 
@@ -1786,14 +1845,14 @@ function renderCVForm() {
             </div>
             <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
             <div class="acc-personal-meta">
-              <div class="acc-personal-name" id="accPersonalName">${fullName || 'Twoje imię i nazwisko'}</div>
+              <div class="acc-personal-name" id="accPersonalName">${fullName || L('fullNamePlaceholder')}</div>
               <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko || L('fillBelow')}</div>
               ${cvData.zdjecie ? `<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">${L("removePhoto")}</button>` : ''}
             </div>
           </div>
           <div class="cvf-grid2">
-            <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko';document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
-            <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko';document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
+            <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
+            <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
             <div class="cvf-group cvf-full"><label>${L("position")}</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||L('fillBelow')" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
             <div class="cvf-group"><label>${L("email")}</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
             <div class="cvf-group"><label>${L("phone")}</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
@@ -1971,7 +2030,7 @@ function updateInterestChips() {
   const container = document.getElementById('interestSuggestions');
   if (!container) return;
   const current = (cvData.zainteresowania || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  container.innerHTML = INTERESTS_SUGGESTIONS.map(s => {
+  container.innerHTML = getInterestSuggestions().map(s => {
     const used = current.includes(s.toLowerCase());
     return `<span class="cvf-chip${used?' used':''}" onclick="addInterestChip('${s.replace(/'/g,"\\'")}')">${s}</span>`;
   }).join('');
@@ -2033,7 +2092,7 @@ function updateSkillChips() {
   const container = document.getElementById('skillSuggestions');
   if (!container) return;
   const current = (cvData.umiejetnosci || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  container.innerHTML = SKILLS_SUGGESTIONS.all.map(s => {
+  container.innerHTML = getSkillSuggestions().map(s => {
     const used = current.includes(s.toLowerCase());
     return `<span class="cvf-chip${used?' used':''}" onclick="addSkillChip('${s.replace(/'/g,"\\'")}')">${s}</span>`;
   }).join('');
