@@ -1269,7 +1269,6 @@ function downloadAll() {
 }
 
 function redoForm() {
-  // Wróć do formularza pierwszego dokumentu ZACHOWUJĄC wpisane dane
   queueIdx = 0;
   const firstDocId = docQueue[0];
   if (!firstDocId) { closeSubpage(); return; }
@@ -1277,20 +1276,23 @@ function redoForm() {
   const doc = getDoc(firstDocId);
   if (!doc) { closeSubpage(); return; }
 
-  // Wyczysć poprzednio wygenerowane dokumenty żeby można było generować od nowa
+  // Wyczyść wygenerowane dokumenty
   generatedDocs = {};
 
-  // Odbuduj formularz — dane są w sharedData więc pola będą wypełnione
+  // Odbuduj formularz z zachowanymi danymi (sharedData)
   buildSubpage(doc, firstDocId);
 
-  // Scrolluj do pól formularza (nie do góry strony)
+  // Upewnij się że subpage jest otwarta (buildSubpage jej nie otwiera)
+  const subpageEl = document.getElementById('subpage');
+  subpageEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Scrolluj do pól formularza
   setTimeout(() => {
     const form = document.getElementById('gfForm');
-    const subpage = document.getElementById('subpage');
-    if (form && subpage) {
-      subpage.scrollTop = form.offsetTop - 20;
+    if (form && subpageEl) {
+      subpageEl.scrollTop = form.offsetTop - 20;
     }
-    // Focus na pierwszym pustym polu
     const firstInput = form && form.querySelector('input:not([type=hidden]), textarea, select');
     if (firstInput) firstInput.focus();
   }, 50);
