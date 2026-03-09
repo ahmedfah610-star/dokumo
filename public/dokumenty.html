@@ -428,12 +428,7 @@ select.gf-input { cursor: pointer; }
 <!-- NAV -->
 <nav>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <div style="display:flex;align-items:center;gap:10px">
-    <span class="discount-badge" id="navDiscountBadge">-15%</span>
-    <button class="cart-btn" onclick="openCart()">
-      🛒 Koszyk <span class="cart-count" id="cartCount">0</span>
-    </button>
-  </div>
+  <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em">ZAŁÓŻ KONTO</a>
 </nav>
 
 <div class="discount-banner" id="discountBanner">
@@ -791,20 +786,20 @@ function renderGrid(filterCatId = 'all') {
 
   // CV card na górze
   const cvCard = `
-    <div class="doc-card cv-card" onclick="window.location.href='kreator-cv.html'">
+    <div class="doc-card cv-card">
       <div class="doc-card-icon">📄</div>
       <div class="doc-card-name">Kreator CV</div>
       <div class="doc-card-desc">Profesjonalne CV w 10 szablonach. Gotowe do pobrania jako PDF.</div>
       <div class="doc-card-footer">
-        <span class="doc-card-btn cv-btn">Stwórz CV →</span>
+        <button class="btn-generate-full" onclick="window.location.href='kreator-cv.html'">GENERUJ →</button>
       </div>
     </div>
-    <div class="doc-card cv-card" onclick="openTranslateCVModal()">
+    <div class="doc-card cv-card">
       <div class="doc-card-icon">🌐</div>
       <div class="doc-card-name">Tłumacz CV na angielski</div>
       <div class="doc-card-desc">Wgraj CV w PDF — AI przetłumaczy i wypełni kreator. Pobierz gotowe po angielsku.</div>
       <div class="doc-card-footer">
-        <span class="doc-card-btn cv-btn">Tłumacz CV →</span>
+        <button class="btn-generate-full" onclick="openTranslateCVModal()">GENERUJ →</button>
       </div>
     </div>`;
 
