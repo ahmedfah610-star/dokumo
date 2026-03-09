@@ -13,7 +13,8 @@ function renderCustomSections(c1) {
 function buildCVHTML(tpl) {
   const d = cvData;
   const t = CV_TEMPLATES.find(x => x.id === tpl) || CV_TEMPLATES[0];
-  const c1 = t.color1, c2 = t.color2;
+  const c1 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c1 : t.color1;
+  const c2 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c2 : t.color2;
   const name = [d.imie, d.nazwisko].filter(Boolean).join(' ') || 'Imię Nazwisko';
   const skills = d.umiejetnosci ? d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean) : [];
   const photo = d.zdjecie ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
@@ -105,6 +106,7 @@ function buildCVHTML(tpl) {
         ${d.jezyki.some(l=>l.jezyk)?`
         <div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Języki</div>
         ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:rgba(255,255,255,0.75);margin-bottom:4px">${l.jezyk} <span style="opacity:0.5">– ${l.poziom}</span></div>`).join('')}`:''}
+        ${d.zainteresowania?`<div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Zainteresowania</div><div style="font-size:9px;color:rgba(255,255,255,0.7);line-height:1.6">${d.zainteresowania}</div>`:''}
       </div>
       <div style="flex:1;padding:28px 28px">
         ${d.podsumowanie?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:8px">Profil zawodowy</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
@@ -242,6 +244,11 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Języki</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} – ${l.poziom}</div>`).join('')}
           </div>`:''}
+          ${d.zainteresowania?`
+          <div style="margin-top:16px">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Zainteresowania</div>
+            <div style="font-size:9px;color:#555;line-height:1.6">${d.zainteresowania}</div>
+          </div>`:''}
         </div>
       </div>
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
@@ -363,6 +370,7 @@ function buildCVHTML(tpl) {
           ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.75);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
           ${skills.length?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Umiejętności</div>${skills.map(s=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${s}</div>`).join('')}`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
+          ${d.zainteresowania?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Zainteresowania</div><div style="font-size:8.5px;color:rgba(255,255,255,0.75);line-height:1.65">${d.zainteresowania}</div>`:''}
         </div>
         <div style="padding:28px 28px">
           ${d.podsumowanie?`<div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #f0f0f0"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:7px">Profil zawodowy</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
@@ -431,6 +439,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;margin-bottom:4px;padding:3px 8px;background:${c1}15;border-radius:3px;color:#444">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${d.zainteresowania?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div><div style="font-size:9px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
@@ -575,6 +584,11 @@ function buildCVHTML(tpl) {
           <div style="margin-top:18px">
             <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Języki</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
+          </div>`:''}
+          ${d.zainteresowania?`
+          <div style="margin-top:18px">
+            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Zainteresowania</div>
+            <div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div>
           </div>`:''}
         </div>
         <!-- Right col -->
