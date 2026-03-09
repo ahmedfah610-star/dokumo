@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumo – Pakiet Biznes</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.sub-page { min-height:100vh; background:var(--bg); }
+.sub-main { max-width:560px; margin:0 auto; padding:60px 24px 100px; }
+
+.sub-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'Syne',sans-serif; font-size:0.65rem; font-weight:700;
+  letter-spacing:0.14em; text-transform:uppercase;
+  background:var(--accent); color:#fff; padding:4px 12px; margin-bottom:20px;
+}
+.sub-title { font-family:'Instrument Serif',serif; font-size:2.4rem; color:var(--ink); letter-spacing:-0.02em; line-height:1.1; margin-bottom:12px; }
+.sub-desc { font-size:0.88rem; color:var(--muted); line-height:1.7; margin-bottom:36px; }
+
+/* Pricing card */
+.sub-card {
+  background:var(--white); border:1.5px solid var(--accent);
+  padding:32px 28px 28px; position:relative; margin-bottom:28px;
+}
+.sub-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, var(--accent), var(--accent2), #c8963c);
+}
+.sub-card-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+.sub-plan-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--ink); letter-spacing:0.04em; }
+.sub-plan-tag {
+  font-size:0.62rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  background:#fef3c7; color:#92400e; padding:3px 8px; border:1px solid #fde68a;
+}
+.sub-price { display:flex; align-items:baseline; gap:4px; margin-bottom:6px; }
+.sub-price-num { font-family:'Instrument Serif',serif; font-size:3.2rem; color:var(--accent); letter-spacing:-0.03em; line-height:1; }
+.sub-price-unit { font-family:'Syne',sans-serif; font-size:0.78rem; color:var(--muted); font-weight:600; }
+.sub-period { font-size:0.75rem; color:var(--muted); margin-bottom:24px; }
+
+.sub-features { list-style:none; padding:0; margin:0 0 28px; display:flex; flex-direction:column; gap:10px; }
+.sub-features li { display:flex; align-items:flex-start; gap:10px; font-size:0.83rem; color:var(--ink2); line-height:1.5; }
+.sub-check { color:var(--accent2); font-weight:700; flex-shrink:0; margin-top:1px; }
+
+.sub-btn {
+  width:100%; padding:16px; background:var(--accent); color:#fff; border:none;
+  font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+  transition:background 0.2s; -webkit-appearance:none;
+}
+.sub-btn:hover { background:var(--accent2); }
+.sub-btn:disabled { background:#9ca3af; cursor:not-allowed; }
+
+.sub-secure { font-size:0.72rem; color:var(--muted); text-align:center; margin-top:12px; line-height:1.5; }
+
+/* Active state */
+.sub-active-card {
+  background:var(--white); border:1.5px solid #16a34a;
+  padding:28px; margin-bottom:28px; position:relative;
+}
+.sub-active-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.sub-active-icon { font-size:2rem; }
+.sub-active-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#15803d; }
+.sub-active-sub { font-size:0.8rem; color:var(--muted); margin-top:2px; }
+.sub-expires { font-family:'DM Mono',monospace; font-size:0.78rem; color:var(--ink2); padding:10px 14px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:20px; }
+.sub-cancel-btn {
+  background:none; border:1.5px solid var(--border); padding:10px 18px;
+  font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase; color:var(--muted);
+  cursor:pointer; transition:all 0.18s;
+}
+.sub-cancel-btn:hover { border-color:#dc2626; color:#dc2626; }
+
+.sub-note { font-size:0.78rem; color:var(--muted); line-height:1.65; padding:16px; background:var(--white); border:1px solid var(--border); }
+
+/* Loading state */
+.sub-loading { text-align:center; padding:40px 0; }
+.sub-loading-dots { display:inline-flex; gap:6px; margin-bottom:12px; }
+.sub-loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:sub-dot 1.2s infinite; }
+.sub-loading-dots span:nth-child(2) { animation-delay:0.2s; }
+.sub-loading-dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes sub-dot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+</style>
+</head>
+<body class="sub-page">
+
+<nav>
+  <a href="index.html" class="logo">Doku<span>mo</span></a>
+  <div class="nav-auth" id="navAuth">
+    <a href="konto.html" class="btn-secondary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navLoginBtn">ZALOGUJ SIĘ</a>
+    <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
+    <div class="nav-profile" id="navProfile" style="display:none">
+      <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+      <div class="nav-profile-dropdown" id="navDropdown">
+        <div class="nav-profile-email" id="navProfileEmail"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="sub-main">
+  <span class="sub-badge">✦ Plan Biznes</span>
+  <h1 class="sub-title">Wszystkie dokumenty.<br>Jeden tydzień.</h1>
+  <p class="sub-desc">Generuj nieograniczoną liczbę dokumentów przez 7 dni — regulaminy, umowy, biznesplany i więcej. Bez ukrytych opłat.</p>
+
+  <div id="subContent">
+    <div class="sub-loading">
+      <div class="sub-loading-dots"><span></span><span></span><span></span></div>
+      <p style="font-size:0.8rem;color:var(--muted)">Sprawdzam status subskrypcji…</p>
+    </div>
+  </div>
+
+  <div class="sub-note">
+    💳 Płatność obsługiwana przez <strong>Stripe</strong> — bezpieczna i szyfrowana. Dokumo nie przechowuje danych karty.
+  </div>
+</div>
+
+<script>
+// ── NAV AUTH ──
+function getUser() { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } }
+function clearUser() { localStorage.removeItem('dokumo_user'); }
+function getSubscription() { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } }
+function isProActive() {
+  const sub = getSubscription();
+  if (!sub || !sub.expiresAt) return false;
+  return new Date(sub.expiresAt) > new Date();
+}
+
+function updateNavAuth() {
+  const user = getUser();
+  const loginBtn    = document.getElementById('navLoginBtn');
+  const registerBtn = document.getElementById('navRegisterBtn');
+  const profile     = document.getElementById('navProfile');
+  const avatar      = document.getElementById('navAvatar');
+  const emailEl     = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display = 'none'; registerBtn.style.display = 'none';
+    profile.style.display = 'flex';
+    emailEl.textContent = user.email || '';
+    if (user.photo) {
+      avatar.innerHTML = '<img src="'+user.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    } else {
+      avatar.textContent = (user.email||'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display = ''; registerBtn.style.display = '';
+    profile.style.display = 'none';
+  }
+}
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('navDropdown').classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.remove('open');
+});
+function logoutUser() { clearUser(); window.location.href = 'index.html'; }
+
+// ── RENDER SUBSCRIPTION STATE ──
+function renderSub() {
+  const content = document.getElementById('subContent');
+  const user = getUser();
+  const sub = getSubscription();
+  const active = isProActive();
+
+  if (active) {
+    const exp = new Date(sub.expiresAt);
+    const days = Math.ceil((exp - new Date()) / 86400000);
+    content.innerHTML =
+      '<div class="sub-active-card">' +
+        '<div class="sub-active-header">' +
+          '<div class="sub-active-icon">🏆</div>' +
+          '<div><div class="sub-active-title">Pakiet Biznes — AKTYWNY</div>' +
+          '<div class="sub-active-sub">Masz pełny dostęp do wszystkich dokumentów</div></div>' +
+        '</div>' +
+        '<div class="sub-expires">Wygasa: ' + exp.toLocaleDateString('pl-PL', {day:'2-digit',month:'long',year:'numeric'}) + ' · zostało <strong>' + days + ' dni</strong></div>' +
+        '<button class="sub-cancel-btn" onclick="cancelSub()">Anuluj subskrypcję</button>' +
+      '</div>';
+  } else {
+    content.innerHTML =
+      '<div class="sub-card">' +
+        '<div class="sub-card-header">' +
+          '<div>' +
+            '<div class="sub-plan-name">PAKIET BIZNES</div>' +
+          '</div>' +
+          '<span class="sub-plan-tag">7 DNI</span>' +
+        '</div>' +
+        '<div class="sub-price"><span class="sub-price-num">1</span><span class="sub-price-unit">zł</span></div>' +
+        '<div class="sub-period">dostęp przez 7 dni · jednorazowa płatność</div>' +
+        '<ul class="sub-features">' +
+          '<li><span class="sub-check">✓</span> Nielimitowane generowanie wszystkich dokumentów</li>' +
+          '<li><span class="sub-check">✓</span> Regulamin sklepu, Polityka RODO, Umowy B2B, NDA</li>' +
+          '<li><span class="sub-check">✓</span> Umowy HR, najmu, protokoły i więcej</li>' +
+          '<li><span class="sub-check">✓</span> Pobieranie PDF, Word i TXT</li>' +
+          '<li><span class="sub-check">✓</span> Zapis w Moich Dokumentach</li>' +
+          '<li><span class="sub-check">✓</span> Biznesplan i Analiza SWOT</li>' +
+        '</ul>' +
+        '<button class="sub-btn" id="subPayBtn" onclick="goToPayment()">' +
+          (user ? 'Kup dostęp — 1 zł' : 'Zaloguj się, aby kupić') +
+        '</button>' +
+      '</div>';
+
+    if (!user) {
+      document.getElementById('subPayBtn').onclick = () => window.location.href = 'konto.html';
+    }
+  }
+}
+
+function goToPayment() {
+  const btn = document.getElementById('subPayBtn');
+  btn.textContent = 'Przekierowuję do płatności…';
+  btn.disabled = true;
+  // TODO: zastąp prawdziwym linkiem Stripe
+  // Po powrocie z Stripe wywołaj: activateSub()
+  setTimeout(() => {
+    // PLACEHOLDER — symulacja płatności
+    activateSub();
+  }, 1500);
+}
+
+function activateSub() {
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  localStorage.setItem('dokumo_sub', JSON.stringify({ plan:'biznes', expiresAt, activatedAt: new Date().toISOString() }));
+  renderSub();
+  updateNavBadge();
+}
+
+function cancelSub() {
+  if (!confirm('Anulować subskrypcję? Stracisz dostęp po wygaśnięciu obecnego okresu.')) return;
+  localStorage.removeItem('dokumo_sub');
+  renderSub();
+  updateNavBadge();
+}
+
+// ── NAV BADGE (PRO / Kup) ──
+function updateNavBadge() {
+  // Remove old badge if exists
+  const old = document.getElementById('navSubBadge');
+  if (old) old.remove();
+
+  const profile = document.getElementById('navProfile');
+  if (!profile || !getUser()) return;
+
+  const badge = document.createElement('div');
+  badge.id = 'navSubBadge';
+
+  if (isProActive()) {
+    badge.style.cssText = 'font-family:Syne,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#16a34a;color:#fff;padding:2px 7px;cursor:default;align-self:center;';
+    badge.textContent = 'PRO';
+  } else {
+    badge.style.cssText = 'font-family:Syne,sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:transparent;border:1.5px solid #c8963c;color:#92400e;padding:2px 7px;cursor:pointer;align-self:center;';
+    badge.textContent = 'Kup PRO';
+    badge.onclick = () => window.location.href = 'subskrypcja.html';
+  }
+
+  // Insert badge BEFORE the avatar
+  const avatar = document.getElementById('navAvatar');
+  profile.insertBefore(badge, avatar);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateNavAuth();
+  setTimeout(renderSub, 300);
+  updateNavBadge();
+});
+</script>
+</body>
+</html>
