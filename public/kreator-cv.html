@@ -70,6 +70,28 @@ body { overflow:hidden; }
 .btn-import-pdf:hover { background:var(--accent); }
 .import-modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
 
+/* ── DRAG & DROP SEKCJI ── */
+.cvf-section-block { position:relative; }
+.cvf-section-block.dragging { opacity:0.4; }
+.cvf-section-block.drag-over { border-top:2px solid var(--accent2); }
+.cvf-drag-handle { display:inline-flex; align-items:center; cursor:grab; color:var(--muted); padding:2px 6px 2px 0; font-size:0.9rem; user-select:none; transition:color 0.15s; vertical-align:middle; }
+.cvf-drag-handle:hover { color:var(--accent2); }
+.cvf-drag-handle:active { cursor:grabbing; }
+
+/* ── SKILLS SUGGESTIONS ── */
+.cvf-suggestions { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.cvf-chip { background:var(--bg); border:1px solid var(--border); padding:3px 10px; font-size:0.68rem; cursor:pointer; color:var(--ink2); transition:all 0.15s; border-radius:2px; }
+.cvf-chip:hover { background:var(--accent2); color:#fff; border-color:var(--accent2); }
+.cvf-chip.used { opacity:0.35; cursor:default; text-decoration:line-through; }
+.cvf-chip.used:hover { background:var(--bg); color:var(--ink2); border-color:var(--border); }
+
+/* ── AUTOCOMPLETE ── */
+.cvf-autocomplete-wrap { position:relative; }
+.cvf-autocomplete-list { position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-top:none; z-index:200; max-height:160px; overflow-y:auto; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+.cvf-autocomplete-list.show { display:block; }
+.cvf-autocomplete-item { padding:7px 10px; font-size:0.78rem; cursor:pointer; color:var(--ink); }
+.cvf-autocomplete-item:hover { background:var(--bg); color:var(--accent2); }
+
 /* ── BOTTOM BAR (subtle) ── */
 .cv-pay-bar { position:fixed; bottom:0; left:0; width:380px; background:rgba(247,245,240,0.97); backdrop-filter:blur(8px); border-top:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px; z-index:100; }
 .cv-pay-bar-left { font-size:0.72rem; color:var(--muted); line-height:1.4; }
@@ -371,6 +393,18 @@ function showImportError(msg) {
 
 const CV_STRIPE = 'https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00';
 
+let cvData = {
+  imie:'', nazwisko:'', stanowisko:'', email:'', tel:'', adres:'', linkedin:'', www:'',
+  zdjecie: null,
+  podsumowanie:'',
+  doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
+  wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
+  umiejetnosci:'',
+  jezyki:[{ jezyk:'', poziom:'B2' }],
+  zainteresowania:''
+};
+let cvTemplate = 'timeline';
+
 const CV_TEMPLATES = [
   { id:'timeline',     name:'Timeline',     color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(135deg,#1a3a2e,#2d6b52)' },
   { id:'sidebar',      name:'Sidebar',      color1:'#1a2744', color2:'#2c4a8a',  thumb:'linear-gradient(135deg,#1a2744,#2c4a8a)' },
@@ -388,18 +422,34 @@ const CV_TEMPLATES = [
   { id:'split',        name:'Split',        color1:'#4a044e', color2:'#d8b4fe',  thumb:'linear-gradient(160deg,#4a044e 50%,#faf5ff 50%)' },
 ];
 
-let cvData = {
-  imie:'', nazwisko:'', stanowisko:'', email:'', tel:'', adres:'', linkedin:'', www:'',
-  zdjecie: null,
-  podsumowanie:'',
-  doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
-  wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
-  umiejetnosci:'',
-  jezyki:[{ jezyk:'', poziom:'B2' }],
-  zainteresowania:''
+// ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
+let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','jezyki','zainteresowania'];
+
+const POLISH_UNIVERSITIES = [
+  'Uniwersytet Warszawski','Uniwersytet Jagielloński','Politechnika Warszawska',
+  'Akademia Górniczo-Hutnicza w Krakowie','Politechnika Gdańska','Politechnika Wrocławska',
+  'Politechnika Łódzka','Politechnika Poznańska','Politechnika Śląska','Politechnika Krakowska',
+  'Uniwersytet Wrocławski','Uniwersytet im. Adama Mickiewicza w Poznaniu',
+  'Uniwersytet Gdański','Uniwersytet Łódzki','Uniwersytet Śląski w Katowicach',
+  'Szkoła Główna Handlowa w Warszawie','Szkoła Główna Gospodarstwa Wiejskiego',
+  'Akademia Leona Koźmińskiego','Uczelnia Łazarskiego','SWPS Uniwersytet Humanistycznospołeczny',
+  'Uniwersytet MERITO Warszawa','Wyższa Szkoła Informatyki i Zarządzania w Rzeszowie',
+  'Akademia WSB','Collegium Civitas','Vistula University',
+  'Wojskowa Akademia Techniczna','Akademia Marynarki Wojennej',
+  'Uniwersytet Medyczny w Warszawie','Gdański Uniwersytet Medyczny',
+  'Katolicki Uniwersytet Lubelski','Szkoła Wyższa Psychologii Społecznej',
+  'Akademia Finansów i Biznesu Vistula','Polsko-Japońska Akademia Technik Komputerowych',
+  'Wyższa Szkoła Bankowa','Uczelnia Vistula','Akademia Humanistyczno-Ekonomiczna w Łodzi'
+];
+
+const SKILLS_SUGGESTIONS = {
+  all: ['Microsoft Office','Excel','Word','PowerPoint','Python','JavaScript','SQL','Photoshop',
+    'Illustrator','Figma','AutoCAD','SAP','Salesforce','Google Analytics','Jira','Slack',
+    'Adobe Premiere','After Effects','WordPress','React','Node.js','Git','Docker',
+    'Zarządzanie projektem','Praca w zespole','Komunikacja','Analiza danych','Prezentacje',
+    'Obsługa klienta','Negocjacje','Zarządzanie czasem','Marketing','SEO','Social Media',
+    'E-commerce','Księgowość','Kadry i płace','Prawo pracy','RODO','Lean/Agile','Scrum']
 };
-let cvTemplate = 'klasyczny';
-let cvPaid = new URLSearchParams(window.location.search).get('cv') === 'paid';
 
 function renderCVForm() {
   const panel = document.getElementById('cvFormPanel');
@@ -425,67 +475,189 @@ function renderCVForm() {
       <div class="cvf-group"><label>Adres</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
       <div class="cvf-group"><label>LinkedIn</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
     </div>
-    <div class="cvf-section" style="margin-top:16px">Podsumowanie</div>
-    <div class="cvf-group">
-      <textarea class="cvf-input" rows="3" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="Krótki opis kompetencji (2-4 zdania)...">${cvData.podsumowanie}</textarea>
-    </div>
-    <div class="cvf-section" style="margin-top:16px">Doświadczenie zawodowe
-      <button class="cvf-add-btn" onclick="addCVExp()">+ Dodaj</button>
-    </div>
-    <div id="cvExpList">
-      ${cvData.doswiadczenie.map((e,i) => `
-        <div class="cvf-card">
-          <div class="cvf-grid2">
-            <div class="cvf-group cvf-full"><label>Firma</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="Google Polska"></div>
-            <div class="cvf-group cvf-full"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="Marketing Manager"></div>
-            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
-            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="obecnie"></div>
-            <div class="cvf-group cvf-full"><label>Obowiązki</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="Zarządzanie kampaniami...">${e.opis}</textarea></div>
-          </div>
-          ${i>0?`<button class="cvf-remove-btn" onclick="removeCVExp(${i})">✕ Usuń</button>`:''}
-        </div>`).join('')}
-    </div>
-    <div class="cvf-section" style="margin-top:16px">Wykształcenie
-      <button class="cvf-add-btn" onclick="addCVEdu()">+ Dodaj</button>
-    </div>
-    <div id="cvEduList">
-      ${cvData.wyksztalcenie.map((e,i) => `
-        <div class="cvf-card">
-          <div class="cvf-grid2">
-            <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview()" value="${e.szkola}" placeholder="Uniwersytet Warszawski"></div>
-            <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview()" value="${e.kierunek}" placeholder="Finanse i Rachunkowość"></div>
-            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
-            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
-          </div>
-          ${i>0?`<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">✕ Usuń</button>`:''}
-        </div>`).join('')}
-    </div>
-    <div class="cvf-section" style="margin-top:16px">Umiejętności</div>
-    <div class="cvf-group">
-      <input class="cvf-input" oninput="cvData.umiejetnosci=this.value;updateCVPreview()" value="${cvData.umiejetnosci}" placeholder="Excel, Python, Photoshop...">
-      <small style="font-size:0.65rem;color:#9a9690">Oddzielaj przecinkami</small>
-    </div>
-    <div class="cvf-section" style="margin-top:16px">Języki
-      <button class="cvf-add-btn" onclick="addCVLang()">+ Dodaj</button>
-    </div>
-    <div id="cvLangList">
-      ${cvData.jezyki.map((l,i) => `
-        <div class="cvf-grid2" style="margin-bottom:8px">
-          <div class="cvf-group"><input class="cvf-input" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="Angielski"></div>
-          <div class="cvf-group">
-            <select class="cvf-input" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
-              ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
-            </select>
-          </div>
-        </div>`).join('')}
-    </div>
-    <div class="cvf-section" style="margin-top:16px">Zainteresowania</div>
-    <div class="cvf-group" style="margin-bottom:0">
-      <input class="cvf-input" oninput="cvData.zainteresowania=this.value;updateCVPreview()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, finanse...">
+
+    <div id="cvSectionsContainer">
+      ${cvSectionOrder.map(sec => buildSectionFormHTML(sec)).join('')}
     </div>
   `;
+  initDragDrop();
 }
 
+function buildSectionFormHTML(sec) {
+  const handle = `<span class="cvf-drag-handle" title="Przeciągnij aby zmienić kolejność">⠿</span>`;
+  if (sec === 'podsumowanie') return `
+    <div class="cvf-section-block" data-section="podsumowanie" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">${handle}Podsumowanie</div>
+      <div class="cvf-group">
+        <textarea class="cvf-input" rows="3" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="Krótki opis kompetencji (2-4 zdania)...">${cvData.podsumowanie}</textarea>
+      </div>
+    </div>`;
+
+  if (sec === 'doswiadczenie') return `
+    <div class="cvf-section-block" data-section="doswiadczenie" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">${handle}Doświadczenie zawodowe
+        <button class="cvf-add-btn" onclick="addCVExp()">+ Dodaj</button>
+      </div>
+      <div id="cvExpList">
+        ${cvData.doswiadczenie.map((e,i) => `
+          <div class="cvf-card">
+            <div class="cvf-grid2">
+              <div class="cvf-group cvf-full"><label>Firma</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="Google Polska"></div>
+              <div class="cvf-group cvf-full"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="Marketing Manager"></div>
+              <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
+              <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="obecnie"></div>
+              <div class="cvf-group cvf-full"><label>Obowiązki</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="Zarządzanie kampaniami...">${e.opis}</textarea></div>
+            </div>
+            ${i>0?`<button class="cvf-remove-btn" onclick="removeCVExp(${i})">✕ Usuń</button>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if (sec === 'wyksztalcenie') return `
+    <div class="cvf-section-block" data-section="wyksztalcenie" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">${handle}Wykształcenie
+        <button class="cvf-add-btn" onclick="addCVEdu()">+ Dodaj</button>
+      </div>
+      <div id="cvEduList">
+        ${cvData.wyksztalcenie.map((e,i) => `
+          <div class="cvf-card">
+            <div class="cvf-grid2">
+              <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label>
+                <div class="cvf-autocomplete-wrap">
+                  <input class="cvf-input" id="szkola-${i}" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
+                  <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
+                </div>
+              </div>
+              <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview()" value="${e.kierunek}" placeholder="Finanse i Rachunkowość"></div>
+              <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
+              <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
+            </div>
+            ${i>0?`<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">✕ Usuń</button>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if (sec === 'umiejetnosci') return `
+    <div class="cvf-section-block" data-section="umiejetnosci" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">${handle}Umiejętności</div>
+      <div class="cvf-group">
+        <input class="cvf-input" id="skillsInput" oninput="cvData.umiejetnosci=this.value;updateCVPreview();updateSkillChips()" value="${cvData.umiejetnosci}" placeholder="Excel, Python, Photoshop...">
+        <small style="font-size:0.65rem;color:#9a9690">Oddzielaj przecinkami</small>
+      </div>
+      <div class="cvf-suggestions" id="skillSuggestions"></div>
+    </div>`;
+
+  if (sec === 'jezyki') return `
+    <div class="cvf-section-block" data-section="jezyki" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">${handle}Języki
+        <button class="cvf-add-btn" onclick="addCVLang()">+ Dodaj</button>
+      </div>
+      <div id="cvLangList">
+        ${cvData.jezyki.map((l,i) => `
+          <div class="cvf-grid2" style="margin-bottom:8px">
+            <div class="cvf-group"><input class="cvf-input" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="Angielski"></div>
+            <div class="cvf-group">
+              <select class="cvf-input" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
+                ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
+              </select>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if (sec === 'zainteresowania') return `
+    <div class="cvf-section-block" data-section="zainteresowania" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">${handle}Zainteresowania</div>
+      <div class="cvf-group" style="margin-bottom:0">
+        <input class="cvf-input" oninput="cvData.zainteresowania=this.value;updateCVPreview()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, finanse...">
+      </div>
+    </div>`;
+  return '';
+}
+
+// ── AUTOCOMPLETE UCZELNIE ──────────────────────────────────
+function showUniSuggest(i, val) {
+  const list = document.getElementById('uni-list-' + i);
+  if (!list) return;
+  if (!val || val.length < 2) { list.classList.remove('show'); return; }
+  const q = val.toLowerCase();
+  const matches = POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 6);
+  if (!matches.length) { list.classList.remove('show'); return; }
+  list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onclick="pickUni(${i},'${u.replace(/'/g,"\\'")}')">${u}</div>`).join('');
+  list.classList.add('show');
+}
+function pickUni(i, val) {
+  cvData.wyksztalcenie[i].szkola = val;
+  const input = document.getElementById('szkola-' + i);
+  if (input) input.value = val;
+  const list = document.getElementById('uni-list-' + i);
+  if (list) list.classList.remove('show');
+  updateCVPreview();
+}
+document.addEventListener('click', e => {
+  document.querySelectorAll('.cvf-autocomplete-list').forEach(l => {
+    if (!l.contains(e.target)) l.classList.remove('show');
+  });
+});
+
+// ── SKILLS CHIPS ──────────────────────────────────────────
+function updateSkillChips() {
+  const container = document.getElementById('skillSuggestions');
+  if (!container) return;
+  const current = (cvData.umiejetnosci || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  container.innerHTML = SKILLS_SUGGESTIONS.all.map(s => {
+    const used = current.includes(s.toLowerCase());
+    return `<span class="cvf-chip${used?' used':''}" onclick="addSkillChip('${s.replace(/'/g,"\\'")}')">${s}</span>`;
+  }).join('');
+}
+function addSkillChip(skill) {
+  const current = cvData.umiejetnosci.split(',').map(s => s.trim()).filter(Boolean);
+  if (current.map(s=>s.toLowerCase()).includes(skill.toLowerCase())) return;
+  current.push(skill);
+  cvData.umiejetnosci = current.join(', ');
+  const input = document.getElementById('skillsInput');
+  if (input) input.value = cvData.umiejetnosci;
+  updateCVPreview();
+  updateSkillChips();
+}
+
+// ── DRAG & DROP SEKCJI ─────────────────────────────────────
+let dragSrc = null;
+function initDragDrop() {
+  const blocks = document.querySelectorAll('.cvf-section-block');
+  blocks.forEach(block => {
+    block.addEventListener('dragstart', e => {
+      dragSrc = block;
+      block.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    block.addEventListener('dragend', () => {
+      block.classList.remove('dragging');
+      document.querySelectorAll('.cvf-section-block').forEach(b => b.classList.remove('drag-over'));
+    });
+    block.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.cvf-section-block').forEach(b => b.classList.remove('drag-over'));
+      if (block !== dragSrc) block.classList.add('drag-over');
+    });
+    block.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === block) return;
+      // Reorder cvSectionOrder
+      const from = cvSectionOrder.indexOf(dragSrc.dataset.section);
+      const to = cvSectionOrder.indexOf(block.dataset.section);
+      cvSectionOrder.splice(from, 1);
+      cvSectionOrder.splice(to, 0, dragSrc.dataset.section);
+      renderCVForm();
+      updateCVPreview();
+      // Restore skill chips if umiejetnosci visible
+      updateSkillChips();
+    });
+  });
+  // Init skills chips after render
+  updateSkillChips();
+}
 function loadPhoto(input) {
   const file = input.files[0];
   if (!file) return;
@@ -662,4 +834,3 @@ function downloadCV() {
 </script>
 </body>
 </html>
-
