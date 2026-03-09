@@ -10,96 +10,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="cv-templates.js"></script>
 <style>
-/* ── KREATOR LAYOUT ── */
 body { overflow:hidden; }
-.cv-app { display:flex; flex-direction:column; height:100vh; }
-.cv-nav { height:58px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 24px; background:var(--white); flex-shrink:0; }
-.cv-nav-right { display:flex; align-items:center; gap:10px; }
-.btn-choose-tpl { display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); padding:8px 14px; font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; color:var(--ink); transition:all 0.2s; }
-.btn-choose-tpl:hover { border-color:var(--accent2); color:var(--accent2); }
-.btn-choose-tpl .tpl-preview-dot { width:14px; height:14px; border-radius:2px; flex-shrink:0; }
-
-/* ── MAIN AREA ── */
-.cv-main { display:flex; flex:1; overflow:hidden; }
-
-/* ── FORM PANEL ── */
-.cv-form-col { width:380px; flex-shrink:0; overflow-y:auto; padding:20px 20px 80px; border-right:1px solid var(--border); background:var(--bg); }
-
-/* ── PREVIEW PANEL ── */
-.cv-preview-col { flex:1; background:#d0cec9; display:flex; flex-direction:column; align-items:center; padding:20px; overflow-y:auto; }
-.cv-preview-label { font-size:0.65rem; color:rgba(0,0,0,0.35); font-weight:600; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px; }
-.cv-preview-doc { background:#fff; box-shadow:0 4px 40px rgba(0,0,0,0.22); width:595px; min-height:842px; }
-
-/* ── TEMPLATE PANEL (slide-in from right) ── */
-.cv-tpl-overlay { position:fixed; inset:0; z-index:800; pointer-events:none; }
-.cv-tpl-overlay.open { pointer-events:all; }
-.cv-tpl-backdrop { position:absolute; inset:0; background:rgba(0,0,0,0); transition:background 0.3s; }
-.cv-tpl-overlay.open .cv-tpl-backdrop { background:rgba(0,0,0,0.35); }
-.cv-tpl-drawer { position:absolute; top:0; right:0; bottom:0; width:480px; background:var(--white); border-left:1px solid var(--border); transform:translateX(100%); transition:transform 0.32s cubic-bezier(0.4,0,0.2,1); display:flex; flex-direction:column; }
-.cv-tpl-overlay.open .cv-tpl-drawer { transform:translateX(0); }
-.cv-tpl-drawer-head { padding:20px 24px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-.cv-tpl-drawer-head h3 { font-family:'Instrument Serif',serif; font-size:1.15rem; }
-.cv-tpl-drawer-head button { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
-.cv-tpl-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px 24px; overflow-y:auto; }
-.cv-tpl-card { border:2px solid var(--border); cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
-.cv-tpl-card:hover { border-color:var(--accent2); transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.1); }
-.cv-tpl-card.active { border-color:var(--accent); }
-.cv-tpl-card.active::after { content:'✓'; position:absolute; top:8px; right:8px; background:var(--accent); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; }
-.cv-tpl-thumb { height:120px; overflow:hidden; }
-.cv-tpl-name { padding:8px 10px; font-size:0.72rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink2); background:var(--bg); border-top:1px solid var(--border); }
-
-/* ── IMPORT MODAL ── */
-.import-modal-overlay { position:fixed; inset:0; z-index:900; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
-.import-modal-overlay.open { opacity:1; pointer-events:all; }
-.import-modal { background:var(--white); width:480px; max-width:90vw; padding:32px; position:relative; }
-.import-modal h2 { font-family:'Instrument Serif',serif; font-size:1.5rem; margin-bottom:6px; }
-.import-modal p.import-sub { font-size:0.8rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
-.import-drop-zone { border:2px dashed var(--border); padding:40px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--bg); }
-.import-drop-zone:hover, .import-drop-zone.dragover { border-color:var(--accent2); background:#f0f8f5; }
-.import-drop-zone .drop-icon { font-size:2.5rem; margin-bottom:10px; }
-.import-drop-zone .drop-hint { margin:0; font-size:0.8rem; color:var(--muted); }
-.import-drop-zone strong { color:var(--ink); }
-.import-progress { display:none; margin-top:20px; }
-.import-progress.show { display:block; }
-.import-progress-bar-wrap { height:4px; background:var(--border); margin:10px 0; }
-.import-progress-bar { height:4px; background:var(--accent2); width:0%; transition:width 0.5s; }
-.import-progress-text { font-size:0.75rem; color:var(--muted); }
-.import-error { display:none; margin-top:12px; padding:10px 14px; background:#fef2f2; border:1px solid #fca5a5; font-size:0.78rem; color:#991b1b; }
-.import-error.show { display:block; }
-.btn-import-pdf { display:flex; align-items:center; gap:7px; background:var(--accent2); color:#fff; border:none; padding:8px 14px; font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; }
-.btn-import-pdf:hover { background:var(--accent); }
-.import-modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
-
-/* ── DRAG & DROP SEKCJI ── */
 .cvf-section-block { position:relative; }
-.cvf-section-block.dragging { opacity:0.4; }
-.cvf-section-block.drag-over { border-top:2px solid var(--accent2); }
-.cvf-drag-handle { display:inline-flex; align-items:center; cursor:grab; color:var(--muted); padding:2px 6px 2px 0; font-size:0.9rem; user-select:none; transition:color 0.15s; vertical-align:middle; }
-.cvf-drag-handle:hover { color:var(--accent2); }
-.cvf-drag-handle:active { cursor:grabbing; }
-
-/* ── SKILLS SUGGESTIONS ── */
-.cvf-suggestions { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
-.cvf-chip { background:var(--bg); border:1px solid var(--border); padding:3px 10px; font-size:0.68rem; cursor:pointer; color:var(--ink2); transition:all 0.15s; border-radius:2px; }
-.cvf-chip:hover { background:var(--accent2); color:#fff; border-color:var(--accent2); }
-.cvf-chip.used { opacity:0.35; cursor:default; text-decoration:line-through; }
-.cvf-chip.used:hover { background:var(--bg); color:var(--ink2); border-color:var(--border); }
-
-/* ── AUTOCOMPLETE ── */
-.cvf-autocomplete-wrap { position:relative; }
-.cvf-autocomplete-list { position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-top:none; z-index:200; max-height:160px; overflow-y:auto; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
-.cvf-autocomplete-list.show { display:block; }
-.cvf-autocomplete-item { padding:7px 10px; font-size:0.78rem; cursor:pointer; color:var(--ink); }
-.cvf-autocomplete-item:hover { background:var(--bg); color:var(--accent2); }
-
-/* ── BOTTOM BAR (subtle) ── */
-.cv-pay-bar { position:fixed; bottom:0; left:0; width:380px; background:rgba(247,245,240,0.97); backdrop-filter:blur(8px); border-top:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px; z-index:100; }
-.cv-pay-bar-left { font-size:0.72rem; color:var(--muted); line-height:1.4; }
-.cv-pay-bar-left strong { color:var(--ink); display:block; font-size:0.8rem; }
-.btn-pay-subtle { background:var(--accent); color:#fff; border:none; padding:9px 18px; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:background 0.2s; }
-.btn-pay-subtle:hover { background:var(--accent2); }
-.btn-download-subtle { background:transparent; border:1px solid var(--accent); color:var(--accent); padding:9px 18px; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:all 0.2s; }
-.btn-download-subtle:hover { background:var(--accent); color:#fff; }
 </style>
 </head>
 <body>
@@ -124,12 +36,22 @@ body { overflow:hidden; }
   <!-- MAIN -->
   <div class="cv-main">
     <div class="cv-form-col" id="cvFormPanel"></div>
-    <div class="cv-preview-col">
+    <div class="cv-preview-col" id="cvPreviewCol">
       <div class="cv-preview-label">Podgląd na żywo · A4</div>
       <div class="cv-preview-doc" id="cvPreviewInner"></div>
     </div>
   </div>
 
+</div>
+
+<!-- MOBILE TABS -->
+<div class="cv-mobile-tabs" id="cvMobileTabs">
+  <button class="cv-tab-btn active" id="tabForm" onclick="switchCVTab('form')">
+    <span class="tab-icon">✏️</span>Formularz
+  </button>
+  <button class="cv-tab-btn" id="tabPreview" onclick="switchCVTab('preview')">
+    <span class="tab-icon">👁️</span>Podgląd
+  </button>
 </div>
 
 <!-- TEMPLATE DRAWER -->
@@ -148,8 +70,8 @@ body { overflow:hidden; }
 <div class="import-modal-overlay" id="importModalOverlay">
   <div class="import-modal">
     <button class="import-modal-close" onclick="closeImportModal()">✕</button>
-    <h2>Przetłumacz CV na angielski</h2>
-    <p class="import-sub">Wgraj swoje CV w PDF — AI wyciągnie dane, przetłumaczy na angielski i automatycznie wypełni kreator. Następnie wybierz szablon i pobierz gotowe CV po angielsku.</p>
+    <h2>Importuj CV z PDF</h2>
+    <p class="import-sub">Wgraj swoje CV w PDF — AI automatycznie wyciągnie dane i wypełni formularz. Następnie możesz edytować i pobrać gotowe CV.</p>
 
     <div class="import-drop-zone" id="importDropZone"
       onclick="document.getElementById('importPdfInput').click()"
@@ -252,36 +174,36 @@ async function handlePdfFile(file) {
       return;
     }
 
-    showImportProgress('Tłumaczę i strukturyzuję dane przez AI...', 45);
+    showImportProgress('Wyciągam dane przez AI...', 45);
 
     // Step 2: send to Gemini via existing proxy
-    const prompt = `You are a professional CV parser and translator. Extract ALL information from the following CV text and return it as a single valid JSON object. Translate ALL text content to ENGLISH (names of people, cities, and proper nouns should stay as-is; everything else translate). 
+    const prompt = `Jesteś profesjonalnym parserem CV. Wyciągnij WSZYSTKIE informacje z poniższego tekstu CV i zwróć je jako pojedynczy poprawny obiekt JSON. Zachowaj oryginalny język danych (nie tłumacz). 
 
-Return ONLY a raw JSON object (no markdown, no backticks, no explanation) with this exact structure:
+Zwróć TYLKO surowy obiekt JSON (bez markdown, bez backticks, bez wyjaśnień) w tej dokładnej strukturze:
 {
-  "imie": "first name",
-  "nazwisko": "last name",
-  "stanowisko": "job title in English",
+  "imie": "imię",
+  "nazwisko": "nazwisko",
+  "stanowisko": "stanowisko/tytuł zawodowy",
   "email": "email",
-  "tel": "phone",
-  "adres": "city, country in English",
-  "linkedin": "linkedin url",
-  "www": "website url",
-  "podsumowanie": "professional summary in English (2-4 sentences)",
+  "tel": "telefon",
+  "adres": "miasto, kraj",
+  "linkedin": "url linkedin lub puste",
+  "www": "strona www lub puste",
+  "podsumowanie": "podsumowanie zawodowe 2-4 zdania",
   "doswiadczenie": [
-    {"firma": "company name", "stanowisko": "job title in English", "od": "start date", "do": "end date or Present", "opis": "responsibilities in English"}
+    {"firma": "nazwa firmy", "stanowisko": "stanowisko", "od": "data rozpoczęcia", "do": "data zakończenia lub obecnie", "opis": "obowiązki"}
   ],
   "wyksztalcenie": [
-    {"szkola": "school/university name", "kierunek": "field of study in English", "od": "start year", "do": "end year", "opis": ""}
+    {"szkola": "nazwa uczelni/szkoły", "kierunek": "kierunek studiów", "od": "rok rozpoczęcia", "do": "rok ukończenia", "opis": ""}
   ],
-  "umiejetnosci": "comma-separated skills in English",
+  "umiejetnosci": "umiejętności oddzielone przecinkami",
   "jezyki": [
-    {"jezyk": "language name in English", "poziom": "level (A1/A2/B1/B2/C1/C2/Native)"}
+    {"jezyk": "nazwa języka", "poziom": "poziom (A1/A2/B1/B2/C1/C2/Ojczysty)"}
   ],
-  "zainteresowania": "interests in English, comma-separated"
+  "zainteresowania": "zainteresowania oddzielone przecinkami"
 }
 
-CV TEXT:
+TEKST CV:
 ${fullText.substring(0, 8000)}`;
 
     const response = await fetch('/api/generate', {
@@ -387,9 +309,57 @@ function showImportError(msg) {
   err.textContent = '⚠ ' + msg;
 }
 
-// ======================================================
-// KREATOR CV
-// ======================================================
+// ── MOBILE TABS ───────────────────────────────────────────
+function switchCVTab(tab) {
+  const formCol = document.getElementById('cvFormPanel');
+  const previewCol = document.getElementById('cvPreviewCol');
+  const tabForm = document.getElementById('tabForm');
+  const tabPreview = document.getElementById('tabPreview');
+  const payBar = document.getElementById('cvPayBar');
+  const isMobile = window.innerWidth < 768;
+
+  if (!isMobile) return;
+
+  if (tab === 'form') {
+    formCol.style.display = '';
+    previewCol.style.display = 'none';
+    tabForm.classList.add('active');
+    tabPreview.classList.remove('active');
+    if (payBar) payBar.style.bottom = '60px';
+  } else {
+    formCol.style.display = 'none';
+    previewCol.style.display = 'flex';
+    tabPreview.classList.add('active');
+    tabForm.classList.remove('active');
+    scaleMobilePreview();
+    if (payBar) payBar.style.bottom = '60px';
+  }
+}
+
+function scaleMobilePreview() {
+  const previewDoc = document.getElementById('cvPreviewInner');
+  const previewCol = document.getElementById('cvPreviewCol');
+  if (!previewDoc || !previewCol || window.innerWidth >= 768) return;
+  const colWidth = previewCol.clientWidth - 32;
+  const scale = colWidth / 595;
+  previewDoc.style.transform = `scale(${scale})`;
+  previewDoc.style.transformOrigin = 'top left';
+  previewDoc.style.width = '595px';
+  previewDoc.parentElement && (previewDoc.parentElement.style.height = (842 * scale + 32) + 'px');
+}
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 768) {
+    const formCol = document.getElementById('cvFormPanel');
+    const previewCol = document.getElementById('cvPreviewCol');
+    if (formCol) formCol.style.display = '';
+    if (previewCol) { previewCol.style.display = ''; }
+    const previewDoc = document.getElementById('cvPreviewInner');
+    if (previewDoc) { previewDoc.style.transform = ''; previewDoc.style.width = ''; }
+  }
+});
+
+// ── KREATOR CV ──────────────────────────────────────────────
 
 const CV_STRIPE = 'https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00';
 
@@ -424,6 +394,7 @@ const CV_TEMPLATES = [
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
 let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','jezyki','zainteresowania'];
+let cvCustomSections = []; // [{id, title, content}]
 
 const POLISH_UNIVERSITIES = [
   'Uniwersytet Warszawski','Uniwersytet Jagielloński','Politechnika Warszawska',
@@ -434,12 +405,24 @@ const POLISH_UNIVERSITIES = [
   'Szkoła Główna Handlowa w Warszawie','Szkoła Główna Gospodarstwa Wiejskiego',
   'Akademia Leona Koźmińskiego','Uczelnia Łazarskiego','SWPS Uniwersytet Humanistycznospołeczny',
   'Uniwersytet MERITO Warszawa','Wyższa Szkoła Informatyki i Zarządzania w Rzeszowie',
-  'Akademia WSB','Collegium Civitas','Vistula University',
-  'Wojskowa Akademia Techniczna','Akademia Marynarki Wojennej',
-  'Uniwersytet Medyczny w Warszawie','Gdański Uniwersytet Medyczny',
-  'Katolicki Uniwersytet Lubelski','Szkoła Wyższa Psychologii Społecznej',
-  'Akademia Finansów i Biznesu Vistula','Polsko-Japońska Akademia Technik Komputerowych',
-  'Wyższa Szkoła Bankowa','Uczelnia Vistula','Akademia Humanistyczno-Ekonomiczna w Łodzi'
+  'Akademia WSB','Collegium Civitas','Vistula University','Wojskowa Akademia Techniczna',
+  'Akademia Marynarki Wojennej','Uniwersytet Medyczny w Warszawie','Gdański Uniwersytet Medyczny',
+  'Katolicki Uniwersytet Lubelski','Polsko-Japońska Akademia Technik Komputerowych',
+  'Wyższa Szkoła Bankowa','Akademia Humanistyczno-Ekonomiczna w Łodzi',
+  'Liceum Ogólnokształcące','Technikum','Szkoła Policealna'
+];
+
+const KIERUNKI_SUGGESTIONS = [
+  'Informatyka','Zarządzanie','Finanse i Rachunkowość','Marketing','Ekonomia',
+  'Prawo','Psychologia','Pedagogika','Budownictwo','Architektura',
+  'Mechanika i Budowa Maszyn','Elektrotechnika','Automatyka i Robotyka',
+  'Inżynieria Oprogramowania','Cyberbezpieczeństwo','Analityka Danych',
+  'Grafika Komputerowa','Wzornictwo Przemysłowe','Administracja','Logistyka',
+  'Turystyka i Rekreacja','Filologia Angielska','Filologia Polska','Historia',
+  'Socjologia','Dziennikarstwo','Stosunki Międzynarodowe','Politologia',
+  'Medycyna','Pielęgniarstwo','Farmacja','Fizjoterapia','Stomatologia',
+  'Matematyka','Fizyka','Chemia','Biologia','Biotechnologia',
+  'Rolnictwo','Leśnictwo','Geodezja i Kartografia','Inżynieria Środowiska'
 ];
 
 const SKILLS_SUGGESTIONS = {
@@ -450,6 +433,14 @@ const SKILLS_SUGGESTIONS = {
     'Obsługa klienta','Negocjacje','Zarządzanie czasem','Marketing','SEO','Social Media',
     'E-commerce','Księgowość','Kadry i płace','Prawo pracy','RODO','Lean/Agile','Scrum']
 };
+
+const INTERESTS_SUGGESTIONS = [
+  'Fotografia','Sport','Muzyka','Gotowanie','Podróże','Czytanie','Gry planszowe',
+  'Gry komputerowe','Siłownia','Bieganie','Kolarstwo','Pływanie','Wspinaczka',
+  'Sztuki walki','Taniec','Malarstwo','Rysunek','Film','Theater','Wolontariat',
+  'Programowanie','Elektronika','Motoryzacja','Ogrodnictwo','Szachy','Poker',
+  'Inwestowanie','Kryptowaluty','Astronomia','Psychologia','Filozofia','Historia'
+];
 
 function renderCVForm() {
   const panel = document.getElementById('cvFormPanel');
@@ -478,7 +469,9 @@ function renderCVForm() {
 
     <div id="cvSectionsContainer">
       ${cvSectionOrder.map(sec => buildSectionFormHTML(sec)).join('')}
+      ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
     </div>
+    <button class="cvf-add-custom-btn" onclick="addCustomSection()">＋ Dodaj sekcję niestandardową</button>
   `;
   initDragDrop();
 }
@@ -528,7 +521,12 @@ function buildSectionFormHTML(sec) {
                   <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
                 </div>
               </div>
-              <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview()" value="${e.kierunek}" placeholder="Finanse i Rachunkowość"></div>
+              <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label>
+                <div class="cvf-autocomplete-wrap">
+                  <input class="cvf-input" id="kierunek-${i}" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
+                  <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
+                </div>
+              </div>
               <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
               <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
             </div>
@@ -568,9 +566,11 @@ function buildSectionFormHTML(sec) {
   if (sec === 'zainteresowania') return `
     <div class="cvf-section-block" data-section="zainteresowania" draggable="true">
       <div class="cvf-section" style="margin-top:16px">${handle}Zainteresowania</div>
-      <div class="cvf-group" style="margin-bottom:0">
-        <input class="cvf-input" oninput="cvData.zainteresowania=this.value;updateCVPreview()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, finanse...">
+      <div class="cvf-group">
+        <input class="cvf-input" id="interestsInput" oninput="cvData.zainteresowania=this.value;updateCVPreview();updateInterestChips()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, finanse...">
+        <small style="font-size:0.65rem;color:#9a9690">Oddzielaj przecinkami</small>
       </div>
+      <div class="cvf-suggestions" id="interestSuggestions"></div>
     </div>`;
   return '';
 }
@@ -579,9 +579,9 @@ function buildSectionFormHTML(sec) {
 function showUniSuggest(i, val) {
   const list = document.getElementById('uni-list-' + i);
   if (!list) return;
-  if (!val || val.length < 2) { list.classList.remove('show'); return; }
+  if (!val || val.length < 1) { list.classList.remove('show'); return; }
   const q = val.toLowerCase();
-  const matches = POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 6);
+  const matches = POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 7);
   if (!matches.length) { list.classList.remove('show'); return; }
   list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onclick="pickUni(${i},'${u.replace(/'/g,"\\'")}')">${u}</div>`).join('');
   list.classList.add('show');
@@ -594,13 +594,87 @@ function pickUni(i, val) {
   if (list) list.classList.remove('show');
   updateCVPreview();
 }
+
+// ── AUTOCOMPLETE KIERUNKI ──────────────────────────────────
+function showKierunekSuggest(i, val) {
+  const list = document.getElementById('kierunek-list-' + i);
+  if (!list) return;
+  if (!val || val.length < 1) { list.classList.remove('show'); return; }
+  const q = val.toLowerCase();
+  const matches = KIERUNKI_SUGGESTIONS.filter(k => k.toLowerCase().includes(q)).slice(0, 7);
+  if (!matches.length) { list.classList.remove('show'); return; }
+  list.innerHTML = matches.map(k => `<div class="cvf-autocomplete-item" onclick="pickKierunek(${i},'${k.replace(/'/g,"\\'")}')">${k}</div>`).join('');
+  list.classList.add('show');
+}
+function pickKierunek(i, val) {
+  cvData.wyksztalcenie[i].kierunek = val;
+  const input = document.getElementById('kierunek-' + i);
+  if (input) input.value = val;
+  const list = document.getElementById('kierunek-list-' + i);
+  if (list) list.classList.remove('show');
+  updateCVPreview();
+}
+
 document.addEventListener('click', e => {
   document.querySelectorAll('.cvf-autocomplete-list').forEach(l => {
     if (!l.contains(e.target)) l.classList.remove('show');
   });
 });
 
-// ── SKILLS CHIPS ──────────────────────────────────────────
+// ── INTERESTS CHIPS ───────────────────────────────────────
+function updateInterestChips() {
+  const container = document.getElementById('interestSuggestions');
+  if (!container) return;
+  const current = (cvData.zainteresowania || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  container.innerHTML = INTERESTS_SUGGESTIONS.map(s => {
+    const used = current.includes(s.toLowerCase());
+    return `<span class="cvf-chip${used?' used':''}" onclick="addInterestChip('${s.replace(/'/g,"\\'")}')">${s}</span>`;
+  }).join('');
+}
+function addInterestChip(interest) {
+  const current = cvData.zainteresowania.split(',').map(s => s.trim()).filter(Boolean);
+  if (current.map(s=>s.toLowerCase()).includes(interest.toLowerCase())) return;
+  current.push(interest);
+  cvData.zainteresowania = current.join(', ');
+  const input = document.getElementById('interestsInput');
+  if (input) input.value = cvData.zainteresowania;
+  updateCVPreview();
+  updateInterestChips();
+}
+
+// ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
+function buildCustomSectionHTML(sec) {
+  const handle = `<span class="cvf-drag-handle" title="Przeciągnij">⠿</span>`;
+  return `
+    <div class="cvf-section-block" data-section="custom-${sec.id}" draggable="true">
+      <div class="cvf-section" style="margin-top:16px">
+        ${handle}
+        <input class="cvf-input" style="display:inline-block;width:180px;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 6px;border:1px dashed var(--border);background:transparent" 
+          value="${sec.title}" placeholder="NAZWA SEKCJI"
+          oninput="updateCustomSection('${sec.id}','title',this.value);updateCVPreview()">
+        <button class="cvf-remove-btn" style="margin-left:8px" onclick="removeCustomSection('${sec.id}')">✕ Usuń</button>
+      </div>
+      <div class="cvf-group">
+        <textarea class="cvf-input" rows="3" placeholder="Treść sekcji..."
+          oninput="updateCustomSection('${sec.id}','content',this.value);updateCVPreview()">${sec.content}</textarea>
+      </div>
+    </div>`;
+}
+function addCustomSection() {
+  const id = 'cs_' + Date.now();
+  cvCustomSections.push({ id, title: 'Nowa sekcja', content: '' });
+  renderCVForm();
+  updateCVPreview();
+}
+function removeCustomSection(id) {
+  cvCustomSections = cvCustomSections.filter(s => s.id !== id);
+  renderCVForm();
+  updateCVPreview();
+}
+function updateCustomSection(id, field, val) {
+  const sec = cvCustomSections.find(s => s.id === id);
+  if (sec) sec[field] = val;
+}
 function updateSkillChips() {
   const container = document.getElementById('skillSuggestions');
   if (!container) return;
@@ -644,19 +718,31 @@ function initDragDrop() {
     block.addEventListener('drop', e => {
       e.preventDefault();
       if (!dragSrc || dragSrc === block) return;
-      // Reorder cvSectionOrder
-      const from = cvSectionOrder.indexOf(dragSrc.dataset.section);
-      const to = cvSectionOrder.indexOf(block.dataset.section);
-      cvSectionOrder.splice(from, 1);
-      cvSectionOrder.splice(to, 0, dragSrc.dataset.section);
+      const fromSec = dragSrc.dataset.section;
+      const toSec = block.dataset.section;
+      // Handle standard sections
+      const fromIdx = cvSectionOrder.indexOf(fromSec);
+      const toIdx = cvSectionOrder.indexOf(toSec);
+      if (fromIdx !== -1 && toIdx !== -1) {
+        cvSectionOrder.splice(fromIdx, 1);
+        cvSectionOrder.splice(toIdx, 0, fromSec);
+      }
+      // Handle custom sections
+      const fromCIdx = cvCustomSections.findIndex(s => 'custom-'+s.id === fromSec);
+      const toCIdx = cvCustomSections.findIndex(s => 'custom-'+s.id === toSec);
+      if (fromCIdx !== -1 && toCIdx !== -1) {
+        const [moved] = cvCustomSections.splice(fromCIdx, 1);
+        cvCustomSections.splice(toCIdx, 0, moved);
+      }
       renderCVForm();
       updateCVPreview();
-      // Restore skill chips if umiejetnosci visible
       updateSkillChips();
+      updateInterestChips();
     });
   });
-  // Init skills chips after render
+  // Init chips after render
   updateSkillChips();
+  updateInterestChips();
 }
 function loadPhoto(input) {
   const file = input.files[0];
