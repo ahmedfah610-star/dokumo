@@ -10,7 +10,20 @@
 <body>
 <nav>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em">ZAŁÓŻ KONTO</a>
+  <div class="nav-auth" id="navAuth">
+    <a href="konto.html" class="nav-login-btn" id="navLoginBtn">Zaloguj się</a>
+    <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
+    <div class="nav-profile" id="navProfile" style="display:none">
+      <div class="nav-avatar" id="navAvatar">?</div>
+      <div class="nav-profile-dropdown" id="navDropdown">
+        <div class="nav-profile-name" id="navProfileName">Użytkownik</div>
+        <div class="nav-profile-email" id="navProfileEmail"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <a href="dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+      </div>
+    </div>
+  </div>
 </nav>
 <div class="hero">
   <div>
