@@ -16,10 +16,10 @@
     <div class="nav-profile" id="navProfile" style="display:none">
       <div class="nav-avatar" id="navAvatar">?</div>
       <div class="nav-profile-dropdown" id="navDropdown">
-        <div class="nav-profile-name" id="navProfileName">Użytkownik</div>
         <div class="nav-profile-email" id="navProfileEmail"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <a href="dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
       </div>
     </div>
@@ -71,4 +71,43 @@
 <footer>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
   <p>© 2026 Dokumo · Dokumenty biznesowe</p>
-  <p><a href="/cdn-cgi/l/email-protection" class="__c
+  <p><a href="/cdn-cgi/l/email-protection" class="__cfEmail">kontakt@dokumo.pl</a></p>
+</footer>
+<script>
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
+}
+function clearUser() { localStorage.removeItem('dokumo_user'); }
+
+function updateNavAuth() {
+  const user = getUser();
+  const loginBtn    = document.getElementById('navLoginBtn');
+  const registerBtn = document.getElementById('navRegisterBtn');
+  const profile     = document.getElementById('navProfile');
+  const avatar      = document.getElementById('navAvatar');
+  const emailEl     = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display    = 'none';
+    registerBtn.style.display = 'none';
+    profile.style.display     = 'flex';
+    emailEl.textContent = user.email || '';
+    if (user.photo) {
+      avatar.innerHTML = '<img src="' + user.photo + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    } else {
+      avatar.textContent = (user.email || 'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display    = '';
+    registerBtn.style.display = '';
+    profile.style.display     = 'none';
+  }
+}
+function logoutUser() {
+  clearUser();
+  window.location.href = 'index.html';
+}
+document.addEventListener('DOMContentLoaded', updateNavAuth);
+</script>
+</body>
+</html>
