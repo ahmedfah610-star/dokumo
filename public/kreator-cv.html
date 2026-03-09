@@ -1350,14 +1350,13 @@ function switchCVTab(tab) {
     previewCol.style.display = 'none';
     tabForm.classList.add('active');
     tabPreview.classList.remove('active');
-    if (payBar) payBar.style.bottom = '60px';
+    // pay bar stays at bottom:60px (above tabs) via CSS
   } else {
     formCol.style.display = 'none';
     previewCol.style.display = 'flex';
     tabPreview.classList.add('active');
     tabForm.classList.remove('active');
     scaleMobilePreview();
-    if (payBar) payBar.style.bottom = '60px';
   }
 }
 
