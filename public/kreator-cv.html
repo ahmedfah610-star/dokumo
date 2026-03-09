@@ -12,6 +12,107 @@
 <style>
 body { overflow:hidden; }
 .cvf-section-block { position:relative; }
+
+/* ── DANE OSOBOWE CARD ── */
+.acc-personal {
+  background:var(--white);
+  border-bottom:2px solid var(--border);
+  padding:20px 18px 22px;
+}
+.acc-personal-top { display:flex; align-items:center; gap:16px; }
+.acc-photo {
+  width:68px; height:68px; border:2px dashed var(--border);
+  background:var(--bg); cursor:pointer; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; overflow:hidden;
+  flex-shrink:0; transition:border-color 0.2s; border-radius:8px; text-align:center;
+}
+.acc-photo:hover { border-color:var(--accent2); }
+.acc-personal-meta { flex:1; min-width:0; }
+.acc-personal-name {
+  font-family:'Instrument Serif',serif; font-size:1.1rem; color:var(--ink);
+  line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.acc-personal-role {
+  font-size:0.75rem; color:var(--muted); margin-top:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* ── ACCORDION LIST ── */
+.acc-list { background:var(--white); }
+.acc-item { border-bottom:1px solid var(--border); }
+
+/* ── ACCORDION ROW (header) ── */
+.acc-row {
+  display:flex; align-items:center; gap:0;
+  padding:15px 16px 15px 8px; cursor:pointer; user-select:none;
+  transition:background 0.15s; min-height:56px;
+}
+.acc-row:hover { background:rgba(45,107,82,0.025); }
+.acc-drag {
+  color:#d4d2ce; font-size:0.95rem;
+  padding:0 10px 0 4px; cursor:grab; flex-shrink:0;
+  line-height:1; transition:color 0.15s;
+}
+.acc-drag:active { cursor:grabbing; }
+.acc-row:hover .acc-drag { color:#aaa; }
+.acc-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.acc-label { font-size:0.88rem; font-weight:600; color:var(--ink2); transition:color 0.15s; }
+.acc-item.open .acc-label { color:var(--ink); }
+.acc-summary {
+  font-size:0.7rem; color:var(--muted); font-weight:400;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90%;
+}
+
+/* ── TOGGLE BUTTON ── */
+.acc-btn {
+  width:34px; height:34px; flex-shrink:0;
+  border:1.5px solid var(--border); background:var(--bg); color:var(--ink2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border-radius:8px;
+  transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+.acc-row:hover .acc-btn { border-color:var(--accent2); color:var(--accent2); }
+.acc-item.open .acc-btn { background:var(--accent2); border-color:var(--accent2); color:#fff; }
+.acc-plus-v {
+  transform-origin:7px 7px;
+  transition:transform 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.acc-item.open .acc-plus-v { transform:rotate(90deg); }
+
+/* ── ACCORDION BODY ── */
+.acc-body { display:none; padding:4px 18px 20px 38px; animation:acc-in 0.2s ease; }
+.acc-item.open .acc-body { display:block; }
+@keyframes acc-in {
+  from { opacity:0; transform:translateY(-4px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── BODY HELPERS ── */
+.acc-hint { font-size:0.67rem; color:var(--muted); margin:6px 0 6px; }
+.acc-add-more {
+  margin-top:10px; background:transparent;
+  border:1px dashed var(--border); color:var(--muted);
+  padding:7px 14px; font-family:'Syne',sans-serif;
+  font-size:0.7rem; font-weight:600; letter-spacing:0.06em;
+  text-transform:uppercase; cursor:pointer;
+  transition:all 0.18s; width:100%;
+}
+.acc-add-more:hover { border-color:var(--accent2); color:var(--accent2); }
+.acc-lang-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.acc-remove-x {
+  background:none; border:none; color:var(--muted);
+  cursor:pointer; font-size:0.85rem; width:28px; flex-shrink:0;
+  padding:0; line-height:1; transition:color 0.15s;
+}
+.acc-remove-x:hover { color:var(--red); }
+.acc-custom-name {
+  font-size:0.88rem; font-weight:600; color:var(--ink2);
+  background:transparent; border:none; outline:none;
+  font-family:'Syne',sans-serif; flex:1; min-width:0;
+  border-bottom:1px solid transparent; transition:border-color 0.15s; padding:0;
+}
+.acc-custom-name:focus { border-bottom-color:var(--accent2); color:var(--ink); }
 </style>
 </head>
 <body>
@@ -442,136 +543,187 @@ const INTERESTS_SUGGESTIONS = [
   'Inwestowanie','Kryptowaluty','Astronomia','Psychologia','Filozofia','Historia'
 ];
 
+// Które sekcje są otwarte
+let cvOpenSections = new Set(['doswiadczenie']);
+
+const SEC_LABELS = {
+  podsumowanie: 'Podsumowanie zawodowe',
+  doswiadczenie: 'Doświadczenie zawodowe',
+  wyksztalcenie: 'Wykształcenie',
+  umiejetnosci: 'Umiejętności',
+  jezyki: 'Języki',
+  zainteresowania: 'Hobby i zainteresowania'
+};
+
+function getSectionSummary(sec) {
+  if (sec === 'podsumowanie') return cvData.podsumowanie ? cvData.podsumowanie.substring(0,55)+'…' : '';
+  if (sec === 'doswiadczenie') {
+    const f = cvData.doswiadczenie.filter(e=>e.firma||e.stanowisko);
+    return f.length ? f.map(e=>e.firma||e.stanowisko).join(', ') : '';
+  }
+  if (sec === 'wyksztalcenie') {
+    const f = cvData.wyksztalcenie.filter(e=>e.szkola);
+    return f.length ? f.map(e=>e.szkola).join(', ') : '';
+  }
+  if (sec === 'umiejetnosci') return cvData.umiejetnosci ? cvData.umiejetnosci.substring(0,50) : '';
+  if (sec === 'jezyki') return cvData.jezyki.filter(l=>l.jezyk).map(l=>l.jezyk).join(', ');
+  if (sec === 'zainteresowania') return cvData.zainteresowania ? cvData.zainteresowania.substring(0,50) : '';
+  return '';
+}
+
+function toggleAccSection(sec) {
+  if (cvOpenSections.has(sec)) {
+    cvOpenSections.delete(sec);
+  } else {
+    cvOpenSections.add(sec);
+    setTimeout(() => {
+      if (sec === 'umiejetnosci') updateSkillChips();
+      if (sec === 'zainteresowania') updateInterestChips();
+    }, 30);
+  }
+  const item = document.querySelector('.acc-item[data-section="'+sec+'"]');
+  if (!item) return;
+  item.classList.toggle('open', cvOpenSections.has(sec));
+  const sumEl = item.querySelector('.acc-summary');
+  if (sumEl) sumEl.textContent = getSectionSummary(sec);
+}
+
 function renderCVForm() {
   const panel = document.getElementById('cvFormPanel');
+  const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ');
   panel.innerHTML = `
-    <div class="cvf-section">Dane osobowe</div>
-    <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px">
-      <div>
-        <div class="cvf-photo-box" id="cvPhotoBox" onclick="document.getElementById('cvPhotoInput').click()">
-          ${cvData.zdjecie ? `<img src="${cvData.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:4px"><span style="font-size:1.8rem">📷</span><span style="font-size:0.6rem;color:#9a9690">Zdjęcie</span></div>'}
+    <div class="acc-personal">
+      <div class="acc-personal-top">
+        <div class="acc-photo" onclick="document.getElementById('cvPhotoInput').click()" title="Dodaj zdjęcie">
+          ${cvData.zdjecie
+            ? `<img src="${cvData.zdjecie}" style="width:100%;height:100%;object-fit:cover">`
+            : `<span style="font-size:1.5rem;display:block">📷</span><span style="font-size:0.58rem;color:#9a9690;margin-top:3px;display:block">Zdjęcie</span>`}
         </div>
         <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
-        ${cvData.zdjecie ? `<button class="cvf-remove-btn" style="width:80px;text-align:center;margin-top:4px;display:block" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">✕ Usuń</button>` : ''}
+        <div class="acc-personal-meta">
+          <div class="acc-personal-name" id="accPersonalName">${fullName || 'Twoje imię i nazwisko'}</div>
+          <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko || 'Uzupełnij dane poniżej'}</div>
+          ${cvData.zdjecie ? `<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">✕ Usuń zdjęcie</button>` : ''}
+        </div>
       </div>
-      <div style="flex:1;display:flex;flex-direction:column;gap:8px">
-        <div class="cvf-group"><label>Imię</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview()" value="${cvData.imie}" placeholder="Jan"></div>
-        <div class="cvf-group"><label>Nazwisko</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview()" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
-        <div class="cvf-group"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview()" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
+      <div class="cvf-grid2" style="margin-top:16px">
+        <div class="cvf-group"><label>Imię</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko'" value="${cvData.imie}" placeholder="Jan"></div>
+        <div class="cvf-group"><label>Nazwisko</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko'" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
+        <div class="cvf-group cvf-full"><label>Stanowisko / tytuł zawodowy</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||'Uzupełnij dane poniżej'" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
+        <div class="cvf-group"><label>Email</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
+        <div class="cvf-group"><label>Telefon</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
+        <div class="cvf-group"><label>Adres / Miasto</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
+        <div class="cvf-group"><label>LinkedIn</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
       </div>
-    </div>
-    <div class="cvf-grid2">
-      <div class="cvf-group"><label>Email</label><input class="cvf-input" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@kowalski.pl" type="email"></div>
-      <div class="cvf-group"><label>Telefon</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
-      <div class="cvf-group"><label>Adres</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
-      <div class="cvf-group"><label>LinkedIn</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
     </div>
 
-    <div id="cvSectionsContainer">
+    <div class="acc-list" id="cvSectionsContainer">
       ${cvSectionOrder.map(sec => buildSectionFormHTML(sec)).join('')}
       ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
     </div>
-    <button class="cvf-add-custom-btn" onclick="addCustomSection()">＋ Dodaj sekcję niestandardową</button>
+    <div style="padding:12px 16px 8px">
+      <button class="cvf-add-custom-btn" onclick="addCustomSection()">＋ Dodaj własną sekcję</button>
+    </div>
   `;
   initDragDrop();
+  if (cvOpenSections.has('umiejetnosci')) updateSkillChips();
+  if (cvOpenSections.has('zainteresowania')) updateInterestChips();
 }
 
 function buildSectionFormHTML(sec) {
-  const handle = `<span class="cvf-drag-handle" title="Przeciągnij aby zmienić kolejność">⠿</span>`;
-  if (sec === 'podsumowanie') return `
-    <div class="cvf-section-block" data-section="podsumowanie" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">${handle}Podsumowanie</div>
-      <div class="cvf-group">
-        <textarea class="cvf-input" rows="3" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="Krótki opis kompetencji (2-4 zdania)...">${cvData.podsumowanie}</textarea>
+  const isOpen = cvOpenSections.has(sec);
+  const label = SEC_LABELS[sec] || sec;
+  const summary = getSectionSummary(sec);
+  const body = buildSectionBodyHTML(sec);
+  return `
+    <div class="acc-item${isOpen ? ' open' : ''}" data-section="${sec}" draggable="true">
+      <div class="acc-row" onclick="toggleAccSection('${sec}')">
+        <span class="acc-drag" onclick="event.stopPropagation()" title="Przeciągnij">⠿</span>
+        <div class="acc-info">
+          <span class="acc-label">${label}</span>
+          ${summary ? `<span class="acc-summary">${summary}</span>` : ''}
+        </div>
+        <button class="acc-btn" tabindex="-1">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
+            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="acc-body">
+        ${body}
       </div>
     </div>`;
+}
+
+function buildSectionBodyHTML(sec) {
+  if (sec === 'podsumowanie') return `
+    <textarea class="cvf-input" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="Krótki opis swoich kompetencji i celów zawodowych (2–4 zdania)...">${cvData.podsumowanie}</textarea>`;
 
   if (sec === 'doswiadczenie') return `
-    <div class="cvf-section-block" data-section="doswiadczenie" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">${handle}Doświadczenie zawodowe
-        <button class="cvf-add-btn" onclick="addCVExp()">+ Dodaj</button>
-      </div>
-      <div id="cvExpList">
-        ${cvData.doswiadczenie.map((e,i) => `
-          <div class="cvf-card">
-            <div class="cvf-grid2">
-              <div class="cvf-group cvf-full"><label>Firma</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="Google Polska"></div>
-              <div class="cvf-group cvf-full"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="Marketing Manager"></div>
-              <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
-              <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="obecnie"></div>
-              <div class="cvf-group cvf-full"><label>Obowiązki</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="Zarządzanie kampaniami...">${e.opis}</textarea></div>
-            </div>
-            ${i>0?`<button class="cvf-remove-btn" onclick="removeCVExp(${i})">✕ Usuń</button>`:''}
-          </div>`).join('')}
-      </div>
-    </div>`;
+    <div id="cvExpList">
+      ${cvData.doswiadczenie.map((e,i) => `
+        <div class="cvf-card">
+          <div class="cvf-grid2">
+            <div class="cvf-group cvf-full"><label>Firma</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="Google Polska"></div>
+            <div class="cvf-group cvf-full"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="Marketing Manager"></div>
+            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
+            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="obecnie"></div>
+            <div class="cvf-group cvf-full"><label>Obowiązki</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="Główne obowiązki i osiągnięcia...">${e.opis}</textarea></div>
+          </div>
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})">✕ Usuń</button>` : ''}
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" onclick="addCVExp()">＋ Dodaj kolejne</button>`;
 
   if (sec === 'wyksztalcenie') return `
-    <div class="cvf-section-block" data-section="wyksztalcenie" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">${handle}Wykształcenie
-        <button class="cvf-add-btn" onclick="addCVEdu()">+ Dodaj</button>
-      </div>
-      <div id="cvEduList">
-        ${cvData.wyksztalcenie.map((e,i) => `
-          <div class="cvf-card">
-            <div class="cvf-grid2">
-              <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label>
-                <div class="cvf-autocomplete-wrap">
-                  <input class="cvf-input" id="szkola-${i}" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
-                  <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
-                </div>
+    <div id="cvEduList">
+      ${cvData.wyksztalcenie.map((e,i) => `
+        <div class="cvf-card">
+          <div class="cvf-grid2">
+            <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label>
+              <div class="cvf-autocomplete-wrap">
+                <input class="cvf-input" id="szkola-${i}" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
+                <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
               </div>
-              <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label>
-                <div class="cvf-autocomplete-wrap">
-                  <input class="cvf-input" id="kierunek-${i}" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
-                  <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
-                </div>
-              </div>
-              <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
-              <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
             </div>
-            ${i>0?`<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">✕ Usuń</button>`:''}
-          </div>`).join('')}
-      </div>
-    </div>`;
+            <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label>
+              <div class="cvf-autocomplete-wrap">
+                <input class="cvf-input" id="kierunek-${i}" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
+                <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
+              </div>
+            </div>
+            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
+            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
+          </div>
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">✕ Usuń</button>` : ''}
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" onclick="addCVEdu()">＋ Dodaj kolejne</button>`;
 
   if (sec === 'umiejetnosci') return `
-    <div class="cvf-section-block" data-section="umiejetnosci" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">${handle}Umiejętności</div>
-      <div class="cvf-group">
-        <input class="cvf-input" id="skillsInput" oninput="cvData.umiejetnosci=this.value;updateCVPreview();updateSkillChips()" value="${cvData.umiejetnosci}" placeholder="Excel, Python, Photoshop...">
-        <small style="font-size:0.65rem;color:#9a9690">Oddzielaj przecinkami</small>
-      </div>
-      <div class="cvf-suggestions" id="skillSuggestions"></div>
-    </div>`;
+    <input class="cvf-input" id="skillsInput" oninput="cvData.umiejetnosci=this.value;updateCVPreview();updateSkillChips()" value="${cvData.umiejetnosci}" placeholder="Excel, Python, Photoshop...">
+    <p class="acc-hint">Oddzielaj przecinkami · klikaj propozycje:</p>
+    <div class="cvf-suggestions" id="skillSuggestions"></div>`;
 
   if (sec === 'jezyki') return `
-    <div class="cvf-section-block" data-section="jezyki" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">${handle}Języki
-        <button class="cvf-add-btn" onclick="addCVLang()">+ Dodaj</button>
-      </div>
-      <div id="cvLangList">
-        ${cvData.jezyki.map((l,i) => `
-          <div class="cvf-grid2" style="margin-bottom:8px">
-            <div class="cvf-group"><input class="cvf-input" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="Angielski"></div>
-            <div class="cvf-group">
-              <select class="cvf-input" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
-                ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
-              </select>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
+    <div id="cvLangList">
+      ${cvData.jezyki.map((l,i) => `
+        <div class="acc-lang-row">
+          <input class="cvf-input" style="flex:1;min-width:0" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="Angielski">
+          <select class="cvf-input" style="width:100px;flex-shrink:0" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
+            ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
+          </select>
+          ${i>0 ? `<button class="acc-remove-x" onclick="removeCVLang(${i})">✕</button>` : '<div style="width:28px"></div>'}
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" onclick="addCVLang()">＋ Dodaj język</button>`;
 
   if (sec === 'zainteresowania') return `
-    <div class="cvf-section-block" data-section="zainteresowania" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">${handle}Zainteresowania</div>
-      <div class="cvf-group">
-        <input class="cvf-input" id="interestsInput" oninput="cvData.zainteresowania=this.value;updateCVPreview();updateInterestChips()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, finanse...">
-        <small style="font-size:0.65rem;color:#9a9690">Oddzielaj przecinkami</small>
-      </div>
-      <div class="cvf-suggestions" id="interestSuggestions"></div>
-    </div>`;
+    <input class="cvf-input" id="interestsInput" oninput="cvData.zainteresowania=this.value;updateCVPreview();updateInterestChips()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, muzyka...">
+    <p class="acc-hint">Klikaj propozycje lub wpisz własne:</p>
+    <div class="cvf-suggestions" id="interestSuggestions"></div>`;
+
   return '';
 }
 
@@ -644,19 +796,27 @@ function addInterestChip(interest) {
 
 // ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
 function buildCustomSectionHTML(sec) {
-  const handle = `<span class="cvf-drag-handle" title="Przeciągnij">⠿</span>`;
+  const isOpen = cvOpenSections.has('custom-' + sec.id);
   return `
-    <div class="cvf-section-block" data-section="custom-${sec.id}" draggable="true">
-      <div class="cvf-section" style="margin-top:16px">
-        ${handle}
-        <input class="cvf-input" style="display:inline-block;width:180px;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 6px;border:1px dashed var(--border);background:transparent" 
-          value="${sec.title}" placeholder="NAZWA SEKCJI"
-          oninput="updateCustomSection('${sec.id}','title',this.value);updateCVPreview()">
-        <button class="cvf-remove-btn" style="margin-left:8px" onclick="removeCustomSection('${sec.id}')">✕ Usuń</button>
+    <div class="acc-item${isOpen ? ' open' : ''}" data-section="custom-${sec.id}" draggable="true">
+      <div class="acc-row" onclick="toggleAccSection('custom-${sec.id}')">
+        <span class="acc-drag" onclick="event.stopPropagation()" title="Przeciągnij">⠿</span>
+        <div class="acc-info">
+          <input class="acc-custom-name" value="${sec.title}" placeholder="Nazwa sekcji"
+            onclick="event.stopPropagation()"
+            oninput="updateCustomSection('${sec.id}','title',this.value);updateCVPreview()">
+        </div>
+        <button class="acc-btn" tabindex="-1">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
+            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="cvf-group">
+      <div class="acc-body">
         <textarea class="cvf-input" rows="3" placeholder="Treść sekcji..."
           oninput="updateCustomSection('${sec.id}','content',this.value);updateCVPreview()">${sec.content}</textarea>
+        <button class="cvf-remove-btn" style="margin-top:8px" onclick="removeCustomSection('${sec.id}')">✕ Usuń sekcję</button>
       </div>
     </div>`;
 }
@@ -698,7 +858,7 @@ function addSkillChip(skill) {
 // ── DRAG & DROP SEKCJI ─────────────────────────────────────
 let dragSrc = null;
 function initDragDrop() {
-  const blocks = document.querySelectorAll('.cvf-section-block');
+  const blocks = document.querySelectorAll('.acc-item');
   blocks.forEach(block => {
     block.addEventListener('dragstart', e => {
       dragSrc = block;
@@ -707,12 +867,12 @@ function initDragDrop() {
     });
     block.addEventListener('dragend', () => {
       block.classList.remove('dragging');
-      document.querySelectorAll('.cvf-section-block').forEach(b => b.classList.remove('drag-over'));
+      document.querySelectorAll('.acc-item').forEach(b => b.classList.remove('drag-over'));
     });
     block.addEventListener('dragover', e => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
-      document.querySelectorAll('.cvf-section-block').forEach(b => b.classList.remove('drag-over'));
+      document.querySelectorAll('.acc-item').forEach(b => b.classList.remove('drag-over'));
       if (block !== dragSrc) block.classList.add('drag-over');
     });
     block.addEventListener('drop', e => {
