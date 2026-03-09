@@ -897,6 +897,107 @@ body { overflow:hidden; }
   border-bottom:1px solid transparent; transition:border-color 0.15s; padding:0;
 }
 .acc-custom-name:focus { border-bottom-color:var(--accent2); color:var(--ink); }
+
+/* ── TEMPLATE DRAWER ───────────────────────────────────── */
+.cv-tpl-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
+  z-index:1000; backdrop-filter:blur(2px);
+}
+.cv-tpl-overlay.open { display:block; }
+.cv-tpl-drawer {
+  position:fixed; top:0; right:-640px; width:620px; max-width:100vw;
+  height:100vh; background:var(--white);
+  border-left:1px solid var(--border);
+  box-shadow:-20px 0 60px rgba(0,0,0,0.12);
+  z-index:1001; display:flex; flex-direction:column;
+  transition:right 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow:hidden;
+}
+.cv-tpl-overlay.open .cv-tpl-drawer { right:0; }
+.cv-tpl-drawer-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 22px; border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.cv-tpl-drawer-head h3 {
+  font-family:'Instrument Serif',serif; font-size:1.15rem; color:var(--ink);
+}
+.cv-tpl-drawer-head button {
+  background:none; border:none; font-size:1.2rem; cursor:pointer;
+  color:var(--muted); width:32px; height:32px; display:flex;
+  align-items:center; justify-content:center; transition:color 0.15s;
+}
+.cv-tpl-drawer-head button:hover { color:var(--ink); }
+
+/* scrollable area */
+.cv-tpl-grid {
+  flex:1; overflow-y:auto; padding:20px 22px 40px;
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+.cv-tpl-section-label {
+  grid-column:1/-1;
+  font-size:0.62rem; font-weight:700; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--muted);
+  padding-top:8px; margin-bottom:-4px;
+}
+.cv-tpl-card {
+  border:2px solid var(--border); background:var(--white);
+  cursor:pointer; overflow:hidden;
+  transition:border-color 0.18s, box-shadow 0.18s;
+  position:relative;
+}
+.cv-tpl-card:hover {
+  border-color:var(--accent2);
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+}
+.cv-tpl-card.active {
+  border-color:var(--accent2);
+  box-shadow:0 0 0 3px rgba(45,107,82,0.18);
+}
+.cv-tpl-card.active::after {
+  content:'✓'; position:absolute; bottom:8px; right:8px;
+  width:22px; height:22px; border-radius:50%;
+  background:var(--accent2); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.7rem; font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+.cv-tpl-thumb {
+  width:100%; height:160px; overflow:hidden;
+  position:relative; background:#f5f5f5;
+  pointer-events:none; user-select:none;
+}
+.cv-tpl-thumb-inner {
+  width:595px;
+  transform-origin:top left;
+  pointer-events:none;
+}
+.cv-tpl-name {
+  font-size:0.72rem; font-weight:600; color:var(--ink2);
+  padding:7px 10px; background:var(--white);
+  border-top:1px solid var(--border);
+  text-align:center; letter-spacing:0.02em;
+}
+.cv-tpl-card.active .cv-tpl-name { color:var(--accent2); }
+
+/* Color picker */
+.cv-color-swatch {
+  width:28px; height:28px; border-radius:50%;
+  cursor:pointer; border:2px solid transparent;
+  transition:all 0.18s; flex-shrink:0;
+}
+.cv-color-swatch:hover, .cv-color-swatch.active {
+  border-color:var(--ink); transform:scale(1.15);
+}
+.cv-color-reset {
+  width:28px; height:28px; border-radius:50%;
+  border:2px dashed var(--border); background:none;
+  cursor:pointer; display:flex; align-items:center;
+  justify-content:center; font-size:0.8rem;
+  color:var(--muted); transition:all 0.18s; flex-shrink:0;
+}
+.cv-color-reset:hover { border-color:var(--accent2); color:var(--accent2); }
+
 </style>
 </head>
 <body>
@@ -986,14 +1087,14 @@ body { overflow:hidden; }
   </div>
 </div>
 
-<!-- PAY BAR (subtle, bottom-left) -->
+<!-- PAY BAR -->
 <div class="cv-pay-bar" id="cvPayBar">
   <div class="cv-pay-bar-left">
     <strong>Gotowe? Pobierz PDF</strong>
-    jednorazowo · 5 zł
+    <span style="font-size:0.72rem;color:var(--muted)">Gotowe do pobrania</span>
   </div>
   <div id="cvPayBtnWrap">
-    <button class="btn-pay-subtle" onclick="payAndDownloadCV()">Zapłać 5 zł →</button>
+    <button class="btn-pay-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>
   </div>
 </div>
 
@@ -1794,7 +1895,7 @@ function downloadCV() {
   html2pdf().set(opt).from(el).save();
 }
 
-function payAndDownloadCV() {
+function downloadCV() {
   // Otwórz Stripe w nowej karcie z parametrem success
   const successUrl = encodeURIComponent(window.location.origin + window.location.pathname + '?cv=paid');
   window.open(CV_STRIPE, '_blank');
@@ -1868,166 +1969,15 @@ function resetColorTheme() {
 }
 
 function getTplPreviewHTML(t) {
-  const c = t.color1, c2 = t.color2;
-  const w = 'rgba(255,255,255,0.85)', wm = 'rgba(255,255,255,0.5)', wl = 'rgba(255,255,255,0.25)';
-  const bar = (w,op=1) => `<div style="height:3px;background:${w};border-radius:1px;margin-bottom:2px;opacity:${op}"></div>`;
-  const bars = (col,n=4) => Array(n).fill(0).map((_,i)=>`<div style="height:2.5px;background:${col};border-radius:1px;margin-bottom:2px;opacity:${0.9-i*0.15};width:${[100,85,95,70][i]||80}%"></div>`).join('');
-
-  if (t.id === 'timeline') return `
-    <div style="height:100%;background:#fff;display:flex;flex-direction:column">
-      <div style="background:${c};padding:8px 10px;display:flex;align-items:center;gap:5px">
-        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3)"></div>
-        <div><div style="height:3.5px;background:${w};width:55px;border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:${wm};width:35px;border-radius:1px"></div></div>
-      </div>
-      <div style="flex:1;padding:6px 8px;display:flex;gap:6px">
-        <div style="width:3px;background:${c};border-radius:2px;flex-shrink:0"></div>
-        <div style="flex:1">${bars('#ccc')}</div>
-      </div>
-    </div>`;
-
-  if (t.id === 'sidebar') return `
-    <div style="height:100%;display:flex">
-      <div style="width:35%;background:${c};padding:6px 5px;display:flex;flex-direction:column;gap:3px">
-        <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
-        ${bars(w,4)}
-      </div>
-      <div style="flex:1;padding:6px 8px;background:#fff">${bars('#ccc')}</div>
-    </div>`;
-
-  if (t.id === 'creative') return `
-    <div style="height:100%;background:#fff">
-      <div style="background:linear-gradient(135deg,${c},${c2});padding:10px;text-align:center">
-        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 3px"></div>
-        <div style="height:3px;background:${w};border-radius:1px;width:60%;margin:0 auto 2px"></div>
-        <div style="height:2px;background:${wm};border-radius:1px;width:40%;margin:0 auto"></div>
-      </div>
-      <div style="padding:6px 8px">${bars('#ccc')}</div>
-    </div>`;
-
-  if (t.id === 'bold') return `
-    <div style="height:100%;background:#fff">
-      <div style="background:#111;padding:8px 10px;display:flex;align-items:center;gap:5px">
-        <div style="flex:1"><div style="height:5px;background:${w};width:70%;border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:${c};width:50%;border-radius:1px"></div></div>
-      </div>
-      <div style="background:${c};height:4px"></div>
-      <div style="padding:5px 8px;display:flex;gap:6px">
-        <div style="flex:1">${bars('#bbb',3)}</div>
-        <div style="width:30%">${bars(c,3)}</div>
-      </div>
-    </div>`;
-
-  if (t.id === 'teal') return `
-    <div style="height:100%;background:#f8fffe;display:flex">
-      <div style="width:38%;background:${c};padding:6px 5px">
-        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 5px"></div>
-        ${bars(w,4)}
-      </div>
-      <div style="flex:1;padding:6px 8px">${bars('#aaa')}</div>
-    </div>`;
-
-  if (t.id === 'midnight') return `
-    <div style="height:100%;background:#fff">
-      <div style="background:${c};padding:12px 10px;display:flex;align-items:center;gap:6px">
-        <div style="flex:1"><div style="height:4px;background:${w};border-radius:1px;width:65%;margin-bottom:3px"></div><div style="height:2px;background:${wm};border-radius:1px;width:45%"></div></div>
-        <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2)"></div>
-      </div>
-      <div style="padding:6px 8px">${bars('#bbb')}</div>
-    </div>`;
-
-  if (t.id === 'coral') return `
-    <div style="height:100%;display:flex">
-      <div style="width:36%;background:linear-gradient(180deg,${c},${c2});padding:6px 5px">
-        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
-        ${bars(w,4)}
-      </div>
-      <div style="flex:1;padding:6px 7px;background:#fff">${bars('#ccc')}</div>
-    </div>`;
-
-  if (t.id === 'rose') return `
-    <div style="height:100%;background:#fff">
-      <div style="background:linear-gradient(135deg,${c},${c2});padding:10px;text-align:center">
-        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);margin:0 auto 4px"></div>
-        <div style="height:3px;background:${w};border-radius:1px;width:55%;margin:0 auto 2px"></div>
-        <div style="display:flex;justify-content:center;gap:3px;margin-top:3px">
-          <div style="height:8px;background:rgba(255,255,255,0.2);padding:0 5px;border-radius:10px;width:25px"></div>
-          <div style="height:8px;background:rgba(255,255,255,0.2);padding:0 5px;border-radius:10px;width:20px"></div>
-        </div>
-      </div>
-      <div style="padding:5px 8px;display:flex;gap:6px">
-        <div style="flex:1">${bars('#ccc',3)}</div>
-        <div style="width:32%">${bars(c,3)}</div>
-      </div>
-    </div>`;
-
-  if (t.id === 'slate') return `
-    <div style="height:100%;background:#f8f9fa;display:flex">
-      <div style="width:38%;background:${c};padding:6px 5px">
-        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.25);margin:0 auto 5px"></div>
-        ${bars(w,4)}
-      </div>
-      <div style="flex:1;padding:6px 8px">${bars('#999')}</div>
-    </div>`;
-
-  if (t.id === 'ocean') return `
-    <div style="height:100%;background:#fff">
-      <div style="background:linear-gradient(135deg,${c},${c2});padding:8px 10px;display:flex;align-items:center;gap:5px">
-        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3)"></div>
-        <div style="flex:1"><div style="height:3px;background:${w};width:60%;border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:${wm};width:40%;border-radius:1px"></div></div>
-      </div>
-      <div style="padding:6px 8px;display:flex;gap:6px">
-        <div style="flex:1">${bars('#bbb',3)}</div>
-        <div style="width:32%">${bars(c,3)}</div>
-      </div>
-    </div>`;
-
-  if (t.id === 'diagonal') return `
-    <div style="height:100%;background:#f5f5f0;position:relative">
-      <div style="background:${c};height:32px;clip-path:polygon(0 0,100% 0,100% 60%,0 100%);position:relative;padding:6px 10px">
-        <div style="height:3.5px;background:${w};width:55%;border-radius:1px;margin-bottom:2px"></div>
-        <div style="height:2px;background:${wm};width:35%;border-radius:1px"></div>
-      </div>
-      <div style="padding:4px 8px 6px;display:flex;gap:6px;margin-top:4px">
-        <div style="width:34%">${bars('#aaa',3)}</div>
-        <div style="flex:1">${bars('#bbb',3)}</div>
-      </div>
-    </div>`;
-
-  if (t.id === 'shield') return `
-    <div style="height:100%;display:flex">
-      <div style="width:38%;background:${c};position:relative;overflow:hidden;padding:6px 5px">
-        <div style="position:absolute;top:0;right:-6px;bottom:0;width:12px;background:#fff;clip-path:polygon(0 0,100% 50%,0 100%)"></div>
-        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
-        ${bars(w,4)}
-      </div>
-      <div style="flex:1;padding:6px 8px 6px 12px;background:#fff">${bars('#ccc')}</div>
-    </div>`;
-
-  if (t.id === 'arrow') return `
-    <div style="height:100%;background:#fff7f0">
-      <div style="background:${c};padding:8px 10px;clip-path:polygon(0 0,95% 0,100% 50%,95% 100%,0 100%)">
-        <div style="height:3.5px;background:${w};width:60%;border-radius:1px;margin-bottom:2px"></div>
-        <div style="height:2px;background:${wm};width:40%;border-radius:1px"></div>
-      </div>
-      <div style="padding:6px 8px;display:flex;gap:6px">
-        <div style="width:32%">${bars(c,3)}</div>
-        <div style="flex:1">${bars('#bbb',3)}</div>
-      </div>
-    </div>`;
-
-  if (t.id === 'split') return `
-    <div style="height:100%;display:flex">
-      <div style="width:38%;background:${c};padding:6px 5px">
-        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
-        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:4px"></div>
-        ${bars(wm,3)}
-        <div style="height:1px;background:rgba(255,255,255,0.2);margin:4px 0"></div>
-        ${bars(wl,2)}
-      </div>
-      <div style="flex:1;padding:6px 7px;background:#faf5ff">${bars('#c4b5fd',3)}${bars('#ccc',2)}</div>
-    </div>`;
-
-  return `<div style="height:100%;background:${t.thumb}"></div>`;
+  // Temporarily clear custom color to show template's native look
+  const savedColor = cvCustomColor;
+  cvCustomColor = null;
+  const html = buildCVHTML(t.id);
+  cvCustomColor = savedColor;
+  const scale = 270 / 595; // thumb width / A4 width
+  return `<div class="cv-tpl-thumb-inner" style="transform:scale(${scale})">${html}</div>`;
 }
+
 
 function renderTplGrid() {
   const grid = document.getElementById('cvTplGrid');
@@ -2053,6 +2003,18 @@ function renderTplGrid() {
     `).join('');
   });
   grid.innerHTML = html;
+
+  // Scale thumbnails to fit actual card width
+  requestAnimationFrame(() => {
+    const cards = grid.querySelectorAll('.cv-tpl-card');
+    if (cards.length) {
+      const cardW = cards[0].clientWidth || 260;
+      const scale = (cardW - 4) / 595; // -4 for border
+      grid.querySelectorAll('.cv-tpl-thumb-inner').forEach(el => {
+        el.style.transform = `scale(${scale})`;
+      });
+    }
+  });
 
   // Use event delegation - click anywhere on grid picks the card
   grid.onclick = function(e) {
@@ -2109,7 +2071,7 @@ if (new URLSearchParams(window.location.search).get('cv') === 'paid') {
     '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
 }
 
-function payAndDownloadCV() {
+function downloadCV() {
   window.open(CV_STRIPE, '_blank');
   document.getElementById('cvPayBtnWrap').innerHTML =
     '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
