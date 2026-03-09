@@ -436,12 +436,12 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .cv-tpl-drawer-head h3 { font-family:'Instrument Serif',serif; font-size:1.1rem; }
 .cv-tpl-drawer-head button { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
 .cv-tpl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px 22px; overflow-y:auto; }
-.cv-tpl-card { border:2px solid var(--border); cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
-.cv-tpl-card:hover { border-color:var(--accent2); }
-.cv-tpl-card.active { border-color:var(--accent); }
-.cv-tpl-card.active::after { content:'✓'; position:absolute; top:6px; right:6px; background:var(--accent); color:#fff; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:700; }
-.cv-tpl-thumb { height:110px; overflow:hidden; }
-.cv-tpl-name { padding:7px 10px; font-size:0.68rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink2); background:var(--bg); border-top:1px solid var(--border); }
+.cv-tpl-card { border:2px solid var(--border); cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; border-radius:4px; }
+.cv-tpl-card:hover { border-color:var(--accent2); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.1); }
+.cv-tpl-card.active { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+.cv-tpl-card.active::after { content:'✓'; position:absolute; top:7px; right:7px; background:var(--accent); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; z-index:2; }
+.cv-tpl-thumb { height:120px; overflow:hidden; }
+.cv-tpl-name { padding:8px 10px; font-size:0.7rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink2); background:var(--white); border-top:1px solid var(--border); }
 
 /* Import modal */
 .import-modal-overlay { position:fixed; inset:0; z-index:900; background:rgba(0,0,0,0.5); display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; }
