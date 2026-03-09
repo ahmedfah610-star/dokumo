@@ -718,3 +718,41 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
   .doc-dl-btn { padding:10px 4px; font-size:0.72rem; }
   .doc-result-preview { max-height:240px; }
 }
+
+/* ── NAV AUTH ── */
+.nav-auth { display:flex; align-items:center; gap:10px; }
+
+/* Profile avatar */
+.nav-profile { position:relative; display:flex; align-items:center; }
+.nav-avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--accent); color:#fff;
+  font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:2px solid transparent; transition:border-color 0.2s;
+  overflow:hidden; flex-shrink:0;
+}
+.nav-avatar:hover, .nav-profile:hover .nav-avatar { border-color:var(--accent2); }
+
+/* Dropdown */
+.nav-profile-dropdown {
+  display:none; position:absolute; top:calc(100% + 12px); right:0;
+  background:var(--white); border:1px solid var(--border);
+  min-width:220px; z-index:999; padding:8px 0;
+  box-shadow:0 12px 40px rgba(0,0,0,0.13);
+}
+.nav-profile:hover .nav-profile-dropdown { display:block; }
+.nav-profile-email {
+  font-family:'DM Mono',monospace; font-size:0.73rem; color:var(--ink2);
+  padding:10px 16px 10px; font-weight:500; letter-spacing:-0.01em;
+  border-bottom: none;
+}
+.nav-profile-link {
+  display:block; padding:9px 16px; font-size:0.77rem; font-family:'Syne',sans-serif;
+  color:var(--ink2); text-decoration:none; transition:background 0.15s;
+  background:none; border:none; cursor:pointer; width:100%; text-align:left;
+  font-weight:600; letter-spacing:0.03em;
+}
+.nav-profile-link:hover { background:var(--bg); color:var(--accent2); }
+.nav-logout-btn { color:#e05c5c !important; font-weight:500 !important; }
+.nav-logout-btn:hover { background:#fff5f5 !important; }
