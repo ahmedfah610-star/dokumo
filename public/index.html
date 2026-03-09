@@ -18,7 +18,7 @@
       <div class="nav-profile-dropdown" id="navDropdown">
         <div class="nav-profile-email" id="navProfileEmail"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-        <a href="dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
       </div>
@@ -71,9 +71,9 @@
 <footer>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
   <p>© 2026 Dokumo · Dokumenty biznesowe</p>
-  <p><a href="/cdn-cgi/l/email-protection" class="__cfEmail">kontakt@dokumo.pl</a></p>
+  <p><a href="/cdn-cgi/l/email-protection" class="__cfEmail"><span class="__cf_email__" data-cfemail="ed868283998c8699ad898286988082c39d81">[email&#160;protected]</span></a></p>
 </footer>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function getUser() {
   try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
 }
@@ -112,13 +112,4 @@ function toggleNavDropdown(e) {
 // Close dropdown when clicking outside
 document.addEventListener('click', () => {
   const dd = document.getElementById('navDropdown');
-  if (dd) dd.classList.remove('open');
-});
-function logoutUser() {
-  clearUser();
-  window.location.href = 'index.html';
-}
-document.addEventListener('DOMContentLoaded', updateNavAuth);
-</script>
-</body>
-</html>
+  if (dd) dd
