@@ -207,6 +207,7 @@
         <div class="nav-profile-email" id="navProfileEmail"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
         <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
       </div>
@@ -572,6 +573,7 @@ function logoutUser() {
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
   updateNavAuth();
+  updateNavBadge();
   if (!getUser()) {
     // Not logged in — show message but still render
   }
