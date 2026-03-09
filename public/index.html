@@ -14,7 +14,7 @@
     <a href="konto.html" class="btn-secondary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navLoginBtn">ZALOGUJ SIĘ</a>
     <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
     <div class="nav-profile" id="navProfile" style="display:none">
-      <div class="nav-avatar" id="navAvatar">?</div>
+      <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
       <div class="nav-profile-dropdown" id="navDropdown">
         <div class="nav-profile-email" id="navProfileEmail"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
@@ -103,6 +103,17 @@ function updateNavAuth() {
     profile.style.display     = 'none';
   }
 }
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  if (!dd) return;
+  dd.classList.toggle('open');
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.remove('open');
+});
 function logoutUser() {
   clearUser();
   window.location.href = 'index.html';
