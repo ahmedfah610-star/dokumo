@@ -120,38 +120,68 @@
   </div>
 </main>
 
-<script>
-function handleOAuth(provider) {
-  const btn = event.currentTarget;
-  btn.style.opacity = '0.6';
-  btn.style.pointerEvents = 'none';
-  btn.querySelector('.oauth-btn-label').textContent = 'Łączenie…';
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  setTimeout(() => {
-    // Placeholder — zastąp prawdziwą integracją Google OAuth / Firebase
-    // Symulacja zalogowanego użytkownika:
-    const mockUser = {
-      name: 'Jan Kowalski',
-      email: 'jan@gmail.com',
-      photo: '',
-      provider: provider
-    };
-    localStorage.setItem('dokumo_user', JSON.stringify(mockUser));
+  const firebaseConfig = {
+    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain: "dokumo-c1ccb.firebaseapp.com",
+    projectId: "dokumo-c1ccb",
+    storageBucket: "dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId: "1088576029067",
+    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+  };
 
-    document.getElementById('kontoDefault').style.display = 'none';
-    const success = document.getElementById('kontoSuccess');
-    success.style.display = 'block';
-    document.getElementById('successMsg').textContent =
-      'Zalogowano przez ' + provider + '. Za chwilę przekierujemy Cię do dokumentów…';
-    setTimeout(() => { window.location.href = 'dokumenty.html'; }, 2000);
-  }, 1200);
-}
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-// Jeśli już zalogowany — przekieruj od razu
-window.addEventListener('DOMContentLoaded', () => {
-  const user = localStorage.getItem('dokumo_user');
-  if (user) { window.location.href = 'dokumenty.html'; }
-});
+  // Jeśli już zalogowany — przekieruj od razu
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      localStorage.setItem('dokumo_user', JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL
+      }));
+      window.location.href = 'dokumenty.html';
+    }
+  });
+
+  // Udostępnij funkcję globalnie dla przycisku onclick
+  window.handleOAuth = async function(providerName) {
+    const btn = event.currentTarget;
+    btn.style.opacity = '0.6';
+    btn.style.pointerEvents = 'none';
+    btn.querySelector('.oauth-btn-label').textContent = 'Łączenie…';
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      localStorage.setItem('dokumo_user', JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL
+      }));
+
+      document.getElementById('kontoDefault').style.display = 'none';
+      const success = document.getElementById('kontoSuccess');
+      success.style.display = 'block';
+      document.getElementById('successMsg').textContent =
+        'Zalogowano jako ' + user.displayName + '. Za chwilę przekierujemy Cię…';
+      setTimeout(() => { window.location.href = 'dokumenty.html'; }, 1800);
+
+    } catch(err) {
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+      btn.querySelector('.oauth-btn-label').textContent = 'Kontynuuj z Google';
+      if (err.code !== 'auth/popup-closed-by-user') {
+        alert('Błąd logowania: ' + err.message);
+      }
+    }
+  }
 </script>
 
 </body>
