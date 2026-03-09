@@ -1365,20 +1365,27 @@ function scaleMobilePreview() {
   const previewDoc = document.getElementById('cvPreviewInner');
   const previewCol = document.getElementById('cvPreviewCol');
   if (!previewDoc || !previewCol || window.innerWidth >= 768) return;
-  const pad = 20; // padding from col sides
-  const colWidth = previewCol.clientWidth - pad * 2;
-  const scale = colWidth / 595;
+  // Use full viewport width with 16px margin each side
+  const vw = window.innerWidth;
+  const margin = 12;
+  const availW = vw - margin * 2;
+  const scale = availW / 595;
+  const scaledH = Math.round(842 * scale);
   previewDoc.style.width = '595px';
   previewDoc.style.transform = `scale(${scale})`;
   previewDoc.style.transformOrigin = 'top left';
   previewDoc.style.position = 'relative';
-  previewDoc.style.left = pad + 'px';
+  previewDoc.style.left = margin + 'px';
+  previewDoc.style.top = '0';
   previewDoc.style.marginTop = '0';
-  previewDoc.style.marginBottom = '0';
+  previewDoc.style.marginBottom = -(842 - scaledH) + 'px'; // collapse extra space
   previewDoc.style.flexShrink = '0';
-  // Set col height so content doesn't get clipped
-  previewCol.style.minHeight = (842 * scale + 80) + 'px';
+  // Container: enough height for scaled content + label + bottom bar
+  previewCol.style.minHeight = (scaledH + 60) + 'px';
   previewCol.style.overflow = 'auto';
+  previewCol.style.paddingLeft = '0';
+  previewCol.style.paddingRight = '0';
+  previewCol.style.alignItems = 'flex-start';
 }
 
 window.addEventListener('resize', () => {
