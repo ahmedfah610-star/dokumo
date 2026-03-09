@@ -1277,12 +1277,23 @@ function redoForm() {
   const doc = getDoc(firstDocId);
   if (!doc) { closeSubpage(); return; }
 
-  // Odbuduj formularz — dane są w sharedData więc pola będą wypełnione
-  buildSubpage(doc, firstDocId);
-  document.getElementById('subpage').scrollTop = 0;
-
   // Wyczysć poprzednio wygenerowane dokumenty żeby można było generować od nowa
   generatedDocs = {};
+
+  // Odbuduj formularz — dane są w sharedData więc pola będą wypełnione
+  buildSubpage(doc, firstDocId);
+
+  // Scrolluj do pól formularza (nie do góry strony)
+  setTimeout(() => {
+    const form = document.getElementById('gfForm');
+    const subpage = document.getElementById('subpage');
+    if (form && subpage) {
+      subpage.scrollTop = form.offsetTop - 20;
+    }
+    // Focus na pierwszym pustym polu
+    const firstInput = form && form.querySelector('input:not([type=hidden]), textarea, select');
+    if (firstInput) firstInput.focus();
+  }, 50);
 }
 
 // ── TRANSLATE CV ─────────────────────────────────────────────
