@@ -741,7 +741,7 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
   min-width:220px; z-index:999; padding:8px 0;
   box-shadow:0 12px 40px rgba(0,0,0,0.13);
 }
-.nav-profile:hover .nav-profile-dropdown { display:block; }
+.nav-profile-dropdown.open { display:block !important; }
 .nav-profile-email {
   font-family:'DM Mono',monospace; font-size:0.73rem; color:var(--ink2);
   padding:10px 16px 10px; font-weight:500; letter-spacing:-0.01em;
