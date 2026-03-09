@@ -37,6 +37,14 @@ nav {
 }
 .btn-primary:hover { background:var(--accent2); }
 .btn-primary:active { transform:scale(0.98); }
+.btn-secondary {
+  background:transparent; color:var(--accent); border:2px solid var(--accent); padding:14px 28px;
+  font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600;
+  letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;
+  text-decoration:none; display:inline-block; transition:all 0.25s;
+  -webkit-appearance:none;
+}
+.btn-secondary:hover { background:var(--accent); color:#fff; }
 
 /* ── CART BUTTON ── */
 .cart-btn {
