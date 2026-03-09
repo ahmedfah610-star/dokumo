@@ -633,7 +633,7 @@ function buildCVHTML(tpl) {
               </div>
             </div>`).join('')}
         </div>`:''}
-        ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Referencje</div><div style="font-size:9.5px;color:#555">${d.zainteresowania}</div></div>`:''}
+        ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
       </div>
     </div>`;
@@ -727,7 +727,7 @@ function buildCVHTML(tpl) {
                 <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
               </div>`).join('')}
           </div>`:''}
-          ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Referencje</div><div style="font-size:9.5px;color:#555">${d.zainteresowania}</div></div>`:''}
+          ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
           <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #ede9fe;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.</div>
         </div>
       </div>
