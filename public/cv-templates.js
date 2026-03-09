@@ -1,760 +1,1357 @@
-// cv-templates.js – szablony CV
-// Ten plik jest ładowany przez kreator-cv.html
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumo – Kreator CV</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="cv-templates.js"></script>
+<style>
+body { overflow:hidden; }
+.cvf-section-block { position:relative; }
 
-function renderCustomSections(c1) {
-  if (!window.cvCustomSections || !cvCustomSections.length) return '';
-  return cvCustomSections.filter(s => s.title || s.content).map(s => `
-    <div style="margin-top:16px">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1px solid #e8e8e8;padding-bottom:4px;margin-bottom:8px">${s.title}</div>
-      <div style="font-size:9.5px;color:#555;line-height:1.65">${s.content}</div>
-    </div>`).join('');
+/* ── MOBILE NAV ── */
+.cv-btn-icon { display:none; }
+.cv-nav-logo { font-size:1.2rem; }
+
+@media (max-width: 540px) {
+  /* Hide long labels, show icons only */
+  .cv-btn-label { display:none; }
+  .cv-btn-icon { display:inline; }
+  .cv-nav-subtitle { display:none; }
+  .btn-import-pdf { padding:7px 10px; min-width:0; }
+  .btn-choose-tpl { padding:7px 10px; min-width:0; gap:4px; }
+  .tpl-preview-dot { width:10px !important; height:10px !important; }
+  .btn-back { font-size:0.7rem; padding:6px 0; }
+  .cv-nav-logo { font-size:1.1rem; }
 }
 
-function buildCVHTML(tpl) {
-  const d = cvData;
-  const t = CV_TEMPLATES.find(x => x.id === tpl) || CV_TEMPLATES[0];
-  const c1 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c1 : t.color1;
-  const c2 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c2 : t.color2;
-  const name = [d.imie, d.nazwisko].filter(Boolean).join(' ') || 'Imię Nazwisko';
-  const skills = d.umiejetnosci ? d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean) : [];
-  const photo = d.zdjecie ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
-  const contact = [
-    d.email && `<span>✉ ${d.email}</span>`,
-    d.tel && `<span>📞 ${d.tel}</span>`,
-    d.adres && `<span>📍 ${d.adres}</span>`,
-    d.linkedin && `<span>🔗 ${d.linkedin}</span>`,
-  ].filter(Boolean).join('');
+@media (max-width: 380px) {
+  .cv-nav { padding:0 8px; gap:4px; }
+  .btn-import-pdf { padding:6px 8px; }
+  .btn-choose-tpl { padding:6px 8px; }
+}</style>
 
-  // ── TIMELINE ──────────────────────────────────────────────
-  if (tpl === 'timeline') return `
-    <div style="font-family:Arial,sans-serif;background:#fff;padding:0;min-height:842px">
-      <div style="background:linear-gradient(135deg,${c1},${c2});padding:36px 40px 28px;display:flex;align-items:center;gap:22px">
-        ${d.zdjecie ? `<div style="width:88px;height:88px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.5);flex-shrink:0">${photo}</div>` : ''}
-        <div>
-          <div style="font-size:26px;font-weight:700;color:#fff;line-height:1.1">${name}</div>
-          ${d.stanowisko?`<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:9.5px;color:rgba(255,255,255,0.75)">${contact}</div>
+/* ── DANE OSOBOWE CARD ── */
+.acc-personal {
+  background:var(--white);
+  border-bottom:2px solid var(--border);
+  padding:20px 18px 22px;
+}
+.acc-personal-top { display:flex; align-items:center; gap:16px; }
+.acc-photo {
+  width:68px; height:68px; border:2px dashed var(--border);
+  background:var(--bg); cursor:pointer; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; overflow:hidden;
+  flex-shrink:0; transition:border-color 0.2s; border-radius:8px; text-align:center;
+}
+.acc-photo:hover { border-color:var(--accent2); }
+.acc-personal-meta { flex:1; min-width:0; }
+.acc-personal-name {
+  font-family:'Instrument Serif',serif; font-size:1.1rem; color:var(--ink);
+  line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.acc-personal-role {
+  font-size:0.75rem; color:var(--muted); margin-top:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* ── ACCORDION LIST ── */
+.acc-list { background:var(--white); }
+.acc-item { border-bottom:1px solid var(--border); }
+
+/* ── ACCORDION ROW (header) ── */
+.acc-row {
+  display:flex; align-items:center; gap:0;
+  padding:15px 16px 15px 8px; cursor:pointer; user-select:none;
+  transition:background 0.15s; min-height:56px;
+}
+.acc-row:hover { background:rgba(45,107,82,0.025); }
+.acc-drag {
+  color:#d4d2ce; font-size:0.95rem;
+  padding:0 10px 0 4px; cursor:grab; flex-shrink:0;
+  line-height:1; transition:color 0.15s;
+}
+.acc-drag:active { cursor:grabbing; }
+.acc-row:hover .acc-drag { color:#aaa; }
+.acc-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.acc-label { font-size:0.88rem; font-weight:600; color:var(--ink2); transition:color 0.15s; }
+.acc-item.open .acc-label { color:var(--ink); }
+.acc-summary {
+  font-size:0.7rem; color:var(--muted); font-weight:400;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90%;
+}
+
+/* ── TOGGLE BUTTON ── */
+.acc-btn {
+  width:34px; height:34px; flex-shrink:0;
+  border:1.5px solid var(--border); background:var(--bg); color:var(--ink2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border-radius:8px;
+  transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+.acc-row:hover .acc-btn { border-color:var(--accent2); color:var(--accent2); }
+.acc-item.open .acc-btn { background:var(--accent2); border-color:var(--accent2); color:#fff; }
+.acc-plus-v {
+  transform-origin:7px 7px;
+  transition:transform 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.acc-item.open .acc-plus-v { transform:rotate(90deg); }
+
+/* ── ACCORDION BODY ── */
+.acc-body { display:none; padding:4px 18px 20px 38px; animation:acc-in 0.2s ease; }
+.acc-item.open .acc-body { display:block; }
+@keyframes acc-in {
+  from { opacity:0; transform:translateY(-4px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── BODY HELPERS ── */
+.acc-hint { font-size:0.67rem; color:var(--muted); margin:6px 0 6px; }
+.acc-add-more {
+  margin-top:10px; background:transparent;
+  border:1px dashed var(--border); color:var(--muted);
+  padding:7px 14px; font-family:'Syne',sans-serif;
+  font-size:0.7rem; font-weight:600; letter-spacing:0.06em;
+  text-transform:uppercase; cursor:pointer;
+  transition:all 0.18s; width:100%;
+}
+.acc-add-more:hover { border-color:var(--accent2); color:var(--accent2); }
+.acc-lang-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.acc-remove-x {
+  background:none; border:none; color:var(--muted);
+  cursor:pointer; font-size:0.85rem; width:28px; flex-shrink:0;
+  padding:0; line-height:1; transition:color 0.15s;
+}
+.acc-remove-x:hover { color:var(--red); }
+.acc-custom-name {
+  font-size:0.88rem; font-weight:600; color:var(--ink2);
+  background:transparent; border:none; outline:none;
+  font-family:'Syne',sans-serif; flex:1; min-width:0;
+  border-bottom:1px solid transparent; transition:border-color 0.15s; padding:0;
+}
+.acc-custom-name:focus { border-bottom-color:var(--accent2); color:var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="cv-app">
+
+  <!-- NAV -->
+  <div class="cv-nav">
+    <button class="btn-back" onclick="window.location.href='dokumenty.html'">← Wróć</button>
+    <a href="index.html" class="logo cv-nav-logo">Doku<span>mo</span><span class="cv-nav-subtitle"> · Kreator CV</span></a>
+    <div class="cv-nav-right">
+      <button class="btn-import-pdf" onclick="openImportModal()" title="Importuj CV z PDF">
+        <span>📄</span><span class="cv-btn-label"> Importuj CV z PDF</span>
+      </button>
+      <button class="btn-choose-tpl" onclick="openTplDrawer()" title="Wybierz szablon">
+        <span class="tpl-preview-dot" id="tplDot" style="background:#1a3a2e"></span>
+        <span class="cv-btn-label">Wybierz szablon ▾</span>
+        <span class="cv-btn-icon">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="cv-main">
+    <div class="cv-form-col" id="cvFormPanel"></div>
+    <div class="cv-preview-col" id="cvPreviewCol">
+      <div class="cv-preview-label">Podgląd na żywo · A4</div>
+      <div class="cv-preview-wrapper" id="cvPreviewWrapper">
+        <div class="cv-preview-doc" id="cvPreviewInner"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE TABS -->
+<div class="cv-mobile-tabs" id="cvMobileTabs">
+  <button class="cv-tab-btn active" id="tabForm" onclick="switchCVTab('form')">
+    <span class="tab-icon">✏️</span>Formularz
+  </button>
+  <button class="cv-tab-btn" id="tabPreview" onclick="switchCVTab('preview')">
+    <span class="tab-icon">👁️</span>Podgląd
+  </button>
+</div>
+
+<!-- TEMPLATE DRAWER -->
+<div class="cv-tpl-overlay" id="cvTplOverlay">
+  <div class="cv-tpl-backdrop" onclick="closeTplDrawer()"></div>
+  <div class="cv-tpl-drawer">
+    <div class="cv-tpl-drawer-head">
+      <h3>Wybierz szablon</h3>
+      <button onclick="closeTplDrawer()">✕</button>
+    </div>
+    <!-- COLOR THEME PICKER -->
+    <div style="padding:14px 22px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:0.64rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Kolor motywu</div>
+      <div id="colorThemePicker" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+    </div>
+    <div class="cv-tpl-grid" id="cvTplGrid"></div>
+  </div>
+</div>
+
+<!-- IMPORT CV MODAL -->
+<div class="import-modal-overlay" id="importModalOverlay">
+  <div class="import-modal">
+    <button class="import-modal-close" onclick="closeImportModal()">✕</button>
+    <h2>Importuj CV z PDF</h2>
+    <p class="import-sub">Wgraj swoje CV w PDF — AI automatycznie wyciągnie dane i wypełni formularz. Następnie możesz edytować i pobrać gotowe CV.</p>
+
+    <div class="import-drop-zone" id="importDropZone"
+      onclick="document.getElementById('importPdfInput').click()"
+      ondragover="handleDragOver(event)"
+      ondragleave="handleDragLeave(event)"
+      ondrop="handleDrop(event)">
+      <div class="drop-icon">📋</div>
+      <p class="drop-hint"><strong>Kliknij lub przeciągnij plik PDF</strong></p>
+      <p class="drop-hint" style="margin-top:4px;font-size:0.72rem">Obsługiwane: PDF · maks. 10 MB</p>
+    </div>
+    <input type="file" id="importPdfInput" accept="application/pdf" style="display:none" onchange="handlePdfFile(this.files[0])">
+
+    <div class="import-progress" id="importProgress">
+      <div class="import-progress-text" id="importProgressText">Wczytuję plik PDF...</div>
+      <div class="import-progress-bar-wrap">
+        <div class="import-progress-bar" id="importProgressBar"></div>
+      </div>
+    </div>
+
+    <div class="import-error" id="importError"></div>
+  </div>
+</div>
+
+<!-- PAY BAR (subtle, bottom-left) -->
+<div class="cv-pay-bar" id="cvPayBar">
+  <div class="cv-pay-bar-left">
+    <strong>Gotowe? Pobierz PDF</strong>
+    jednorazowo · 5 zł
+  </div>
+  <div id="cvPayBtnWrap">
+    <button class="btn-pay-subtle" onclick="payAndDownloadCV()">Zapłać 5 zł →</button>
+  </div>
+</div>
+
+<script>
+// ======================================================
+// IMPORT CV Z PDF
+// ======================================================
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function openImportModal() {
+  document.getElementById('importModalOverlay').classList.add('open');
+  resetImportUI();
+}
+function closeImportModal() {
+  document.getElementById('importModalOverlay').classList.remove('open');
+}
+
+function resetImportUI() {
+  const prog = document.getElementById('importProgress');
+  const err = document.getElementById('importError');
+  const bar = document.getElementById('importProgressBar');
+  prog.classList.remove('show');
+  err.classList.remove('show');
+  bar.style.width = '0%';
+  document.getElementById('importPdfInput').value = '';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('importDropZone').classList.add('dragover');
+}
+function handleDragLeave(e) {
+  document.getElementById('importDropZone').classList.remove('dragover');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('importDropZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') {
+    handlePdfFile(file);
+  } else {
+    showImportError('Proszę wgrać plik PDF.');
+  }
+}
+
+async function handlePdfFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    showImportError('Plik jest za duży (maks. 10 MB).');
+    return;
+  }
+
+  showImportProgress('Wczytuję plik PDF...', 15);
+
+  try {
+    // Step 1: extract text with PDF.js
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      fullText += content.items.map(item => item.str).join(' ') + '\n';
+    }
+
+    if (!fullText.trim()) {
+      showImportError('Nie udało się wyciągnąć tekstu z PDF. Upewnij się, że plik nie jest skanem obrazkowym.');
+      return;
+    }
+
+    showImportProgress('Wyciągam dane przez AI...', 45);
+
+    // Step 2: send to Gemini via existing proxy
+    const prompt = `Jesteś profesjonalnym parserem CV. Wyciągnij WSZYSTKIE informacje z poniższego tekstu CV i zwróć je jako pojedynczy poprawny obiekt JSON. Zachowaj oryginalny język danych (nie tłumacz). 
+
+Zwróć TYLKO surowy obiekt JSON (bez markdown, bez backticks, bez wyjaśnień) w tej dokładnej strukturze:
+{
+  "imie": "imię",
+  "nazwisko": "nazwisko",
+  "stanowisko": "stanowisko/tytuł zawodowy",
+  "email": "email",
+  "tel": "telefon",
+  "adres": "miasto, kraj",
+  "linkedin": "url linkedin lub puste",
+  "www": "strona www lub puste",
+  "podsumowanie": "podsumowanie zawodowe 2-4 zdania",
+  "doswiadczenie": [
+    {"firma": "nazwa firmy", "stanowisko": "stanowisko", "od": "data rozpoczęcia", "do": "data zakończenia lub obecnie", "opis": "obowiązki"}
+  ],
+  "wyksztalcenie": [
+    {"szkola": "nazwa uczelni/szkoły", "kierunek": "kierunek studiów", "od": "rok rozpoczęcia", "do": "rok ukończenia", "opis": ""}
+  ],
+  "umiejetnosci": "umiejętności oddzielone przecinkami",
+  "jezyki": [
+    {"jezyk": "nazwa języka", "poziom": "poziom (A1/A2/B1/B2/C1/C2/Ojczysty)"}
+  ],
+  "zainteresowania": "zainteresowania oddzielone przecinkami"
+}
+
+TEKST CV:
+${fullText.substring(0, 8000)}`;
+
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!response.ok) throw new Error('API error ' + response.status);
+
+    showImportProgress('Przetwarzam odpowiedź AI...', 80);
+
+    const data = await response.json();
+    const rawText = data.text || data.result || '';
+
+    // Parse JSON from response
+    let parsed;
+    try {
+      // Strip possible markdown fences
+      const clean = rawText.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Try to find JSON object in text
+      const match = rawText.match(/\{[\s\S]*\}/);
+      if (match) {
+        parsed = JSON.parse(match[0]);
+      } else {
+        throw new Error('Nie udało się sparsować odpowiedzi AI.');
+      }
+    }
+
+    showImportProgress('Wypełniam formularz...', 95);
+
+    // Step 3: fill cvData
+    cvData.imie = parsed.imie || '';
+    cvData.nazwisko = parsed.nazwisko || '';
+    cvData.stanowisko = parsed.stanowisko || '';
+    cvData.email = parsed.email || '';
+    cvData.tel = parsed.tel || '';
+    cvData.adres = parsed.adres || '';
+    cvData.linkedin = parsed.linkedin || '';
+    cvData.www = parsed.www || '';
+    cvData.podsumowanie = parsed.podsumowanie || '';
+    cvData.umiejetnosci = parsed.umiejetnosci || '';
+    cvData.zainteresowania = parsed.zainteresowania || '';
+
+    if (Array.isArray(parsed.doswiadczenie) && parsed.doswiadczenie.length > 0) {
+      cvData.doswiadczenie = parsed.doswiadczenie.map(e => ({
+        firma: e.firma || '',
+        stanowisko: e.stanowisko || '',
+        od: e.od || '',
+        do: e.do || '',
+        opis: e.opis || ''
+      }));
+    }
+
+    if (Array.isArray(parsed.wyksztalcenie) && parsed.wyksztalcenie.length > 0) {
+      cvData.wyksztalcenie = parsed.wyksztalcenie.map(e => ({
+        szkola: e.szkola || '',
+        kierunek: e.kierunek || '',
+        od: e.od || '',
+        do: e.do || '',
+        opis: e.opis || ''
+      }));
+    }
+
+    if (Array.isArray(parsed.jezyki) && parsed.jezyki.length > 0) {
+      cvData.jezyki = parsed.jezyki.map(l => ({
+        jezyk: l.jezyk || '',
+        poziom: l.poziom || 'B2'
+      }));
+    }
+
+    showImportProgress('Gotowe! ✓', 100);
+
+    // Step 4: render and close
+    setTimeout(() => {
+      renderCVForm();
+      updateCVPreview();
+      closeImportModal();
+    }, 700);
+
+  } catch(err) {
+    console.error('Import error:', err);
+    showImportError('Wystąpił błąd: ' + (err.message || 'Spróbuj ponownie.'));
+  }
+}
+
+function showImportProgress(text, percent) {
+  const prog = document.getElementById('importProgress');
+  const err = document.getElementById('importError');
+  prog.classList.add('show');
+  err.classList.remove('show');
+  document.getElementById('importProgressText').textContent = text;
+  document.getElementById('importProgressBar').style.width = percent + '%';
+}
+
+function showImportError(msg) {
+  const prog = document.getElementById('importProgress');
+  const err = document.getElementById('importError');
+  prog.classList.remove('show');
+  err.classList.add('show');
+  err.textContent = '⚠ ' + msg;
+}
+
+// ── MOBILE TABS ───────────────────────────────────────────
+function switchCVTab(tab) {
+  const formCol = document.getElementById('cvFormPanel');
+  const previewCol = document.getElementById('cvPreviewCol');
+  const tabForm = document.getElementById('tabForm');
+  const tabPreview = document.getElementById('tabPreview');
+  const payBar = document.getElementById('cvPayBar');
+  const isMobile = window.innerWidth < 768;
+
+  if (!isMobile) return;
+
+  if (tab === 'form') {
+    formCol.style.display = '';
+    previewCol.style.display = 'none';
+    tabForm.classList.add('active');
+    tabPreview.classList.remove('active');
+    if (payBar) payBar.style.bottom = '60px';
+  } else {
+    formCol.style.display = 'none';
+    previewCol.style.display = 'flex';
+    tabPreview.classList.add('active');
+    tabForm.classList.remove('active');
+    scaleMobilePreview();
+    if (payBar) payBar.style.bottom = '60px';
+  }
+}
+
+function scaleMobilePreview() {
+  const previewDoc = document.getElementById('cvPreviewInner');
+  const previewCol = document.getElementById('cvPreviewCol');
+  const wrapper = document.getElementById('cvPreviewWrapper');
+  if (!previewDoc || !previewCol || window.innerWidth >= 768) return;
+  const padding = 12;
+  const colWidth = previewCol.clientWidth - padding * 2;
+  const scale = colWidth / 595;
+  const scaledHeight = 842 * scale;
+  // Scale from center top
+  previewDoc.style.width = '595px';
+  previewDoc.style.transform = `scale(${scale})`;
+  previewDoc.style.transformOrigin = 'top center';
+  // Wrapper holds the scaled height
+  if (wrapper) {
+    wrapper.style.width = '100%';
+    wrapper.style.height = (scaledHeight + padding) + 'px';
+    wrapper.style.display = 'flex';
+    wrapper.style.justifyContent = 'center';
+    wrapper.style.alignItems = 'flex-start';
+    wrapper.style.overflow = 'hidden';
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 768) {
+    const formCol = document.getElementById('cvFormPanel');
+    const previewCol = document.getElementById('cvPreviewCol');
+    if (formCol) formCol.style.display = '';
+    if (previewCol) previewCol.style.display = '';
+    const previewDoc = document.getElementById('cvPreviewInner');
+    const wrapper = document.getElementById('cvPreviewWrapper');
+    if (previewDoc) {
+      previewDoc.style.transform = '';
+      previewDoc.style.width = '';
+    }
+    if (wrapper) {
+      wrapper.style.height = '';
+      wrapper.style.display = '';
+    }
+  } else {
+    scaleMobilePreview();
+  }
+});
+
+// ── KREATOR CV ──────────────────────────────────────────────
+
+const CV_STRIPE = 'https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00';
+
+let cvData = {
+  imie:'', nazwisko:'', stanowisko:'', email:'', tel:'', adres:'', linkedin:'', www:'',
+  zdjecie: null,
+  podsumowanie:'',
+  doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
+  wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
+  umiejetnosci:'',
+  jezyki:[{ jezyk:'', poziom:'B2' }],
+  zainteresowania:''
+};
+let cvTemplate = 'timeline';
+
+const CV_TEMPLATES = [
+  { id:'timeline',     name:'Timeline',     color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(135deg,#1a3a2e,#2d6b52)' },
+  { id:'sidebar',      name:'Sidebar',      color1:'#1a2744', color2:'#2c4a8a',  thumb:'linear-gradient(135deg,#1a2744,#2c4a8a)' },
+  { id:'creative',     name:'Creative',     color1:'#6b21a8', color2:'#a855f7',  thumb:'linear-gradient(135deg,#6b21a8,#a855f7)' },
+  { id:'bold',         name:'Bold',         color1:'#c0392b', color2:'#e74c3c',  thumb:'linear-gradient(135deg,#111,#c0392b)' },
+  { id:'teal',         name:'Teal',         color1:'#0f766e', color2:'#14b8a6',  thumb:'linear-gradient(135deg,#0f766e,#14b8a6)' },
+  { id:'midnight',     name:'Midnight',     color1:'#0f172a', color2:'#334155',  thumb:'linear-gradient(135deg,#0f172a,#334155)' },
+  { id:'coral',        name:'Coral',        color1:'#c2410c', color2:'#fb923c',  thumb:'linear-gradient(135deg,#c2410c,#fb923c)' },
+  { id:'rose',         name:'Rose',         color1:'#9d174d', color2:'#ec4899',  thumb:'linear-gradient(135deg,#9d174d,#ec4899)' },
+  { id:'slate',        name:'Slate',        color1:'#334155', color2:'#64748b',  thumb:'linear-gradient(135deg,#334155,#64748b)' },
+  { id:'ocean',        name:'Ocean',        color1:'#1e40af', color2:'#38bdf8',  thumb:'linear-gradient(135deg,#1e40af,#38bdf8)' },
+  { id:'diagonal',     name:'Diagonal',     color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(160deg,#1a3a2e 50%,#f5f5f0 50%)' },
+  { id:'shield',       name:'Shield',       color1:'#1a2744', color2:'#e8e4dc',  thumb:'linear-gradient(160deg,#1a2744 55%,#e8e4dc 55%)' },
+  { id:'arrow',        name:'Arrow',        color1:'#7c2d12', color2:'#fb923c',  thumb:'linear-gradient(160deg,#7c2d12 50%,#fff7f0 50%)' },
+  { id:'split',        name:'Split',        color1:'#4a044e', color2:'#d8b4fe',  thumb:'linear-gradient(160deg,#4a044e 50%,#faf5ff 50%)' },
+];
+
+// ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
+let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','jezyki','zainteresowania'];
+let cvCustomSections = []; // [{id, title, content}]
+
+const POLISH_UNIVERSITIES = [
+  'Uniwersytet Warszawski','Uniwersytet Jagielloński','Politechnika Warszawska',
+  'Akademia Górniczo-Hutnicza w Krakowie','Politechnika Gdańska','Politechnika Wrocławska',
+  'Politechnika Łódzka','Politechnika Poznańska','Politechnika Śląska','Politechnika Krakowska',
+  'Uniwersytet Wrocławski','Uniwersytet im. Adama Mickiewicza w Poznaniu',
+  'Uniwersytet Gdański','Uniwersytet Łódzki','Uniwersytet Śląski w Katowicach',
+  'Szkoła Główna Handlowa w Warszawie','Szkoła Główna Gospodarstwa Wiejskiego',
+  'Akademia Leona Koźmińskiego','Uczelnia Łazarskiego','SWPS Uniwersytet Humanistycznospołeczny',
+  'Uniwersytet MERITO Warszawa','Wyższa Szkoła Informatyki i Zarządzania w Rzeszowie',
+  'Akademia WSB','Collegium Civitas','Vistula University','Wojskowa Akademia Techniczna',
+  'Akademia Marynarki Wojennej','Uniwersytet Medyczny w Warszawie','Gdański Uniwersytet Medyczny',
+  'Katolicki Uniwersytet Lubelski','Polsko-Japońska Akademia Technik Komputerowych',
+  'Wyższa Szkoła Bankowa','Akademia Humanistyczno-Ekonomiczna w Łodzi',
+  'Liceum Ogólnokształcące','Technikum','Szkoła Policealna'
+];
+
+const KIERUNKI_SUGGESTIONS = [
+  'Informatyka','Zarządzanie','Finanse i Rachunkowość','Marketing','Ekonomia',
+  'Prawo','Psychologia','Pedagogika','Budownictwo','Architektura',
+  'Mechanika i Budowa Maszyn','Elektrotechnika','Automatyka i Robotyka',
+  'Inżynieria Oprogramowania','Cyberbezpieczeństwo','Analityka Danych',
+  'Grafika Komputerowa','Wzornictwo Przemysłowe','Administracja','Logistyka',
+  'Turystyka i Rekreacja','Filologia Angielska','Filologia Polska','Historia',
+  'Socjologia','Dziennikarstwo','Stosunki Międzynarodowe','Politologia',
+  'Medycyna','Pielęgniarstwo','Farmacja','Fizjoterapia','Stomatologia',
+  'Matematyka','Fizyka','Chemia','Biologia','Biotechnologia',
+  'Rolnictwo','Leśnictwo','Geodezja i Kartografia','Inżynieria Środowiska'
+];
+
+const TOP_LANGS = ['Angielski','Niemiecki','Francuski','Hiszpański','Włoski','Rosyjski','Chiński','Ukraiński','Niderlandzki','Portugalski'];
+
+function addLangChip(lang) {
+  // Check if this language is already in the list (empty slot or duplicate)
+  const existing = cvData.jezyki.find(l => l.jezyk.toLowerCase() === lang.toLowerCase());
+  if (existing) return;
+  // Find first empty slot or add new
+  const empty = cvData.jezyki.find(l => !l.jezyk);
+  if (empty) {
+    empty.jezyk = lang;
+  } else {
+    cvData.jezyki.push({ jezyk: lang, poziom: 'B2' });
+  }
+  // Re-render the jezyki section body
+  const item = document.querySelector('.acc-item[data-section="jezyki"]');
+  if (item) {
+    const body = item.querySelector('.acc-body');
+    if (body) {
+      body.innerHTML = buildSectionBodyHTML('jezyki');
+    }
+  }
+  updateCVPreview();
+}
+
+const SKILLS_SUGGESTIONS = {
+  all: ['Microsoft Office','Excel','Word','PowerPoint','Python','JavaScript','SQL','Photoshop',
+    'Illustrator','Figma','AutoCAD','SAP','Salesforce','Google Analytics','Jira','Slack',
+    'Adobe Premiere','After Effects','WordPress','React','Node.js','Git','Docker',
+    'Zarządzanie projektem','Praca w zespole','Komunikacja','Analiza danych','Prezentacje',
+    'Obsługa klienta','Negocjacje','Zarządzanie czasem','Marketing','SEO','Social Media',
+    'E-commerce','Księgowość','Kadry i płace','Prawo pracy','RODO','Lean/Agile','Scrum']
+};
+
+const INTERESTS_SUGGESTIONS = [
+  'Fotografia','Sport','Muzyka','Gotowanie','Podróże','Czytanie','Gry planszowe',
+  'Gry komputerowe','Siłownia','Bieganie','Kolarstwo','Pływanie','Wspinaczka',
+  'Sztuki walki','Taniec','Malarstwo','Rysunek','Film','Theater','Wolontariat',
+  'Programowanie','Elektronika','Motoryzacja','Ogrodnictwo','Szachy','Poker',
+  'Inwestowanie','Kryptowaluty','Astronomia','Psychologia','Filozofia','Historia'
+];
+
+// Które sekcje są otwarte
+let cvOpenSections = new Set(['doswiadczenie']);
+
+const SEC_LABELS = {
+  podsumowanie: 'Podsumowanie zawodowe',
+  doswiadczenie: 'Doświadczenie zawodowe',
+  wyksztalcenie: 'Wykształcenie',
+  umiejetnosci: 'Umiejętności',
+  jezyki: 'Języki',
+  zainteresowania: 'Hobby i zainteresowania'
+};
+
+function getSectionSummary(sec) {
+  if (sec === 'podsumowanie') return cvData.podsumowanie ? cvData.podsumowanie.substring(0,55)+'…' : '';
+  if (sec === 'doswiadczenie') {
+    const f = cvData.doswiadczenie.filter(e=>e.firma||e.stanowisko);
+    return f.length ? f.map(e=>e.firma||e.stanowisko).join(', ') : '';
+  }
+  if (sec === 'wyksztalcenie') {
+    const f = cvData.wyksztalcenie.filter(e=>e.szkola);
+    return f.length ? f.map(e=>e.szkola).join(', ') : '';
+  }
+  if (sec === 'umiejetnosci') return cvData.umiejetnosci ? cvData.umiejetnosci.substring(0,50) : '';
+  if (sec === 'jezyki') return cvData.jezyki.filter(l=>l.jezyk).map(l=>l.jezyk).join(', ');
+  if (sec === 'zainteresowania') return cvData.zainteresowania ? cvData.zainteresowania.substring(0,50) : '';
+  return '';
+}
+
+function toggleAccSection(sec) {
+  if (cvOpenSections.has(sec)) {
+    cvOpenSections.delete(sec);
+  } else {
+    cvOpenSections.add(sec);
+    setTimeout(() => {
+      if (sec === 'umiejetnosci') updateSkillChips();
+      if (sec === 'zainteresowania') updateInterestChips();
+    }, 30);
+  }
+  const item = document.querySelector('.acc-item[data-section="'+sec+'"]');
+  if (!item) return;
+  item.classList.toggle('open', cvOpenSections.has(sec));
+  const sumEl = item.querySelector('.acc-summary');
+  if (sumEl) sumEl.textContent = getSectionSummary(sec);
+}
+
+function renderCVForm() {
+  const panel = document.getElementById('cvFormPanel');
+  const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ');
+  panel.innerHTML = `
+    <div class="acc-personal">
+      <div class="acc-personal-top">
+        <div class="acc-photo" onclick="document.getElementById('cvPhotoInput').click()" title="Dodaj zdjęcie">
+          ${cvData.zdjecie
+            ? `<img src="${cvData.zdjecie}" style="width:100%;height:100%;object-fit:cover">`
+            : `<span style="font-size:1.5rem;display:block">📷</span><span style="font-size:0.58rem;color:#9a9690;margin-top:3px;display:block">Zdjęcie</span>`}
+        </div>
+        <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
+        <div class="acc-personal-meta">
+          <div class="acc-personal-name" id="accPersonalName">${fullName || 'Twoje imię i nazwisko'}</div>
+          <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko || 'Uzupełnij dane poniżej'}</div>
+          ${cvData.zdjecie ? `<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">✕ Usuń zdjęcie</button>` : ''}
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 200px;gap:0;padding:24px 40px;align-items:start">
-        <div style="padding-right:32px;border-right:2px solid #f0f0f0">
-          ${d.podsumowanie?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:6px">Profil</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:12px">Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="display:flex;gap:12px;margin-bottom:14px">
-                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
-                  <div style="width:10px;height:10px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:2px"></div>
-                  <div style="width:2px;flex:1;background:#e8e8e8;margin-top:3px"></div>
-                </div>
-                <div style="padding-bottom:12px">
-                  <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.stanowisko||''}</div>
-                  <div style="font-size:10px;color:${c2};font-weight:600">${e.firma||''}</div>
-                  <div style="font-size:9px;color:#aaa;margin-bottom:3px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                  ${e.opis?`<div style="font-size:9.5px;color:#666;line-height:1.6">${e.opis}</div>`:''}
-                </div>
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:12px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="display:flex;gap:12px;margin-bottom:12px">
-                <div style="width:10px;height:10px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:2px"></div>
-                <div>
-                  <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.kierunek||''}</div>
-                  <div style="font-size:10px;color:#666">${e.szkola}</div>
-                  <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div style="padding-left:20px">
-          ${skills.length?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Umiejętności</div>
-            ${skills.map(s=>`<div style="font-size:9.5px;margin-bottom:5px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px"><strong>${l.jezyk}</strong> <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${d.zainteresowania?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div>
-            <div style="font-size:9.5px;color:#666;line-height:1.6">${d.zainteresowania}</div>
-          </div>`:''}
-        </div>
+      <div class="cvf-grid2" style="margin-top:16px">
+        <div class="cvf-group"><label>Imię</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko'" value="${cvData.imie}" placeholder="Jan"></div>
+        <div class="cvf-group"><label>Nazwisko</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||'Twoje imię i nazwisko'" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
+        <div class="cvf-group cvf-full"><label>Stanowisko / tytuł zawodowy</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||'Uzupełnij dane poniżej'" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
+        <div class="cvf-group"><label>Email</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
+        <div class="cvf-group"><label>Telefon</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
+        <div class="cvf-group"><label>Adres / Miasto</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
+        <div class="cvf-group"><label>LinkedIn</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
+    </div>
+
+    <div class="acc-list" id="cvSectionsContainer">
+      ${cvSectionOrder.map(sec => buildSectionFormHTML(sec)).join('')}
+      ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
+    </div>
+    <div style="padding:12px 16px 8px">
+      <button class="cvf-add-custom-btn" onclick="addCustomSection()">＋ Dodaj własną sekcję</button>
+    </div>
+  `;
+  initDragDrop();
+  if (cvOpenSections.has('umiejetnosci')) updateSkillChips();
+  if (cvOpenSections.has('zainteresowania')) updateInterestChips();
+}
+
+function buildSectionFormHTML(sec) {
+  const isOpen = cvOpenSections.has(sec);
+  const label = SEC_LABELS[sec] || sec;
+  const summary = getSectionSummary(sec);
+  const body = buildSectionBodyHTML(sec);
+  return `
+    <div class="acc-item${isOpen ? ' open' : ''}" data-section="${sec}" draggable="true">
+      <div class="acc-row" onclick="toggleAccSection('${sec}')">
+        <span class="acc-drag" onclick="event.stopPropagation()" title="Przeciągnij">⠿</span>
+        <div class="acc-info">
+          <span class="acc-label">${label}</span>
+          ${summary ? `<span class="acc-summary">${summary}</span>` : ''}
+        </div>
+        <button class="acc-btn" tabindex="-1">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
+            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="acc-body">
+        ${body}
+      </div>
     </div>`;
+}
 
-  // ── SIDEBAR ───────────────────────────────────────────────
-  if (tpl === 'sidebar') return `
-    <div style="font-family:Arial,sans-serif;display:flex;min-height:842px">
-      <div style="width:220px;background:${c1};padding:28px 20px;flex-shrink:0;display:flex;flex-direction:column;gap:0">
-        ${d.zdjecie ? `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.3);margin:0 auto 16px">${photo}</div>` : ''}
-        <div style="font-size:17px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:4px;text-align:center">${name}</div>
-        ${d.stanowisko?`<div style="font-size:8.5px;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:18px">${d.stanowisko}</div>`:''}
-        <div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Kontakt</div>
-        ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(c=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:5px;word-break:break-all">${c}</div>`).join('')}
-        ${skills.length?`
-        <div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Umiejętności</div>
-        ${skills.map(s=>`<div style="font-size:9px;color:rgba(255,255,255,0.75);margin-bottom:4px;display:flex;align-items:center;gap:5px"><span style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:inline-block;flex-shrink:0"></span>${s}</div>`).join('')}`:''}
-        ${d.jezyki.some(l=>l.jezyk)?`
-        <div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Języki</div>
-        ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:rgba(255,255,255,0.75);margin-bottom:4px">${l.jezyk} <span style="opacity:0.5">– ${l.poziom}</span></div>`).join('')}`:''}
-        ${d.zainteresowania?`<div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Zainteresowania</div><div style="font-size:9px;color:rgba(255,255,255,0.7);line-height:1.6">${d.zainteresowania}</div>`:''}
-      </div>
-      <div style="flex:1;padding:28px 28px">
-        ${d.podsumowanie?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:8px">Profil zawodowy</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-        <div style="margin-bottom:20px">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:10px">Doświadczenie</div>
-          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-            <div style="margin-bottom:12px;padding-left:10px;border-left:3px solid ${c2}">
-              <div style="font-size:11px;font-weight:700;color:#222">${e.stanowisko||''}</div>
-              <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:${c2};font-weight:600">${e.firma||''}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:3px;line-height:1.6">${e.opis}</div>`:''}
-            </div>`).join('')}
-        </div>`:''}
-        ${d.wyksztalcenie.some(e=>e.szkola)?`
-        <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
-          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-            <div style="margin-bottom:10px;padding-left:10px;border-left:3px solid ${c2}">
-              <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-              <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-            </div>`).join('')}
-        </div>`:''}
-        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:10px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-      </div>
-    </div>`;
+function buildSectionBodyHTML(sec) {
+  if (sec === 'podsumowanie') return `
+    <textarea class="cvf-input" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="Krótki opis swoich kompetencji i celów zawodowych (2–4 zdania)...">${cvData.podsumowanie}</textarea>`;
 
-  // ── CREATIVE (fioletowy gradient) ─────────────────────────
-  if (tpl === 'creative') return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px">
-      <div style="background:linear-gradient(160deg,${c1} 0%,${c2} 100%);padding:0 0 40px 0;position:relative;overflow:hidden">
-        <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05)"></div>
-        <div style="position:absolute;bottom:-20px;left:60%;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.05)"></div>
-        <div style="position:relative;z-index:1;padding:36px 40px;display:flex;align-items:center;gap:24px">
-          ${d.zdjecie ? `<div style="width:96px;height:96px;border-radius:50%;overflow:hidden;border:4px solid rgba(255,255,255,0.4);flex-shrink:0">${photo}</div>` : ''}
-          <div>
-            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1.1;letter-spacing:-0.5px">${name}</div>
-            ${d.stanowisko?`<div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:6px;letter-spacing:2px;text-transform:uppercase">${d.stanowisko}</div>`:''}
+  if (sec === 'doswiadczenie') return `
+    <div id="cvExpList">
+      ${cvData.doswiadczenie.map((e,i) => `
+        <div class="cvf-card">
+          <div class="cvf-grid2">
+            <div class="cvf-group cvf-full"><label>Firma</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="Google Polska"></div>
+            <div class="cvf-group cvf-full"><label>Stanowisko</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="Marketing Manager"></div>
+            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
+            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="obecnie"></div>
+            <div class="cvf-group cvf-full"><label>Obowiązki</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="Główne obowiązki i osiągnięcia...">${e.opis}</textarea></div>
           </div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;padding:0 40px;position:relative;z-index:1">
-          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(c=>`<span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);font-size:9px;padding:4px 10px;border-radius:20px">${c}</span>`).join('')}
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 180px;padding:28px 40px;gap:28px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="width:20px;height:3px;background:${c2};border-radius:2px;display:inline-block"></span>O mnie</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px;display:flex;align-items:center;gap:8px"><span style="width:20px;height:3px;background:${c2};border-radius:2px;display:inline-block"></span>Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:12px;background:#faf9fe;padding:10px 14px;border-left:3px solid ${c2}">
-                <div style="font-size:11px;font-weight:700;color:#222">${e.stanowisko||''}</div>
-                <div style="display:flex;justify-content:space-between;margin-top:2px"><div style="font-size:9.5px;color:${c1};font-weight:600">${e.firma||''}</div><div style="font-size:9px;color:#bbb">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-                ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px;display:flex;align-items:center;gap:8px"><span style="width:20px;height:3px;background:${c2};border-radius:2px;display:inline-block"></span>Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:10px;background:#faf9fe;padding:10px 14px;border-left:3px solid ${c2}">
-                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#bbb">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Umiejętności</div>
-            ${skills.map(s=>`<div style="font-size:9px;background:linear-gradient(135deg,${c1}15,${c2}15);padding:4px 8px;margin-bottom:4px;color:#333;border-radius:3px">${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${d.zainteresowania?`
-          <div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div>
-            <div style="font-size:9.5px;color:#666;line-height:1.6">${d.zainteresowania}</div>
-          </div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})">✕ Usuń</button>` : ''}
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" onclick="addCVExp()">＋ Dodaj kolejne</button>`;
 
-  // ── BOLD (czerwony) ───────────────────────────────────────
-  if (tpl === 'bold') return `
-    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px">
-      <div style="background:#111;padding:32px 40px;display:flex;align-items:center;gap:20px">
-        ${d.zdjecie ? `<div style="width:86px;height:86px;border-radius:50%;overflow:hidden;border:3px solid ${c1};flex-shrink:0">${photo}</div>` : ''}
-        <div style="flex:1">
-          <div style="font-size:26px;font-weight:900;color:#fff;line-height:1;text-transform:uppercase;letter-spacing:-0.5px">${name}</div>
-          ${d.stanowisko?`<div style="font-size:11px;color:${c1};margin-top:6px;font-weight:700;text-transform:uppercase;letter-spacing:2px">${d.stanowisko}</div>`:''}
-        </div>
-      </div>
-      <div style="background:${c1};padding:10px 40px;display:flex;flex-wrap:wrap;gap:16px">
-        ${[d.email,d.tel,d.adres].filter(Boolean).map(c=>`<span style="font-size:9.5px;color:#fff">${c}</span>`).join('')}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 180px;padding:28px 40px;gap:28px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:3px solid ${c1};padding-bottom:4px;margin-bottom:8px">Profil</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:3px solid ${c1};padding-bottom:4px;margin-bottom:10px">Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;align-items:baseline">
-                  <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}</div>
-                  <div style="font-size:9px;color:#999;white-space:nowrap">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c1};font-weight:600">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:3px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:3px solid ${c1};padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:10px">
-                <div style="font-size:11px;font-weight:700;color:#111">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#999">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Umiejętności</div>
-            ${skills.map(s=>`<div style="font-size:9px;padding:3px 0;border-bottom:1px solid #f0f0f0;color:#444">${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Języki</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} – ${l.poziom}</div>`).join('')}
-          </div>`:''}
-          ${d.zainteresowania?`
-          <div style="margin-top:16px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Zainteresowania</div>
-            <div style="font-size:9px;color:#555;line-height:1.6">${d.zainteresowania}</div>
-          </div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-  // ── TEAL ──────────────────────────────────────────────────
-  if (tpl === 'teal') return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f8fffe;min-height:842px">
-      <div style="background:#fff;border-bottom:4px solid ${c1};padding:28px 40px;display:flex;align-items:center;gap:22px">
-        ${d.zdjecie ? `<div style="width:90px;height:90px;border-radius:12px;overflow:hidden;border:2px solid ${c1};flex-shrink:0">${photo}</div>` : ''}
-        <div style="flex:1">
-          <div style="font-size:26px;font-weight:700;color:#1a1a1a;line-height:1.1">${name}</div>
-          ${d.stanowisko?`<div style="font-size:11px;color:${c1};font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:1.5px">${d.stanowisko}</div>`:''}
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:9px;color:#666">${contact}</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 190px;padding:24px 40px;gap:24px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:18px;background:#fff;padding:14px;border-left:4px solid ${c1};box-shadow:0 2px 8px rgba(0,0,0,0.04)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:6px">Profil</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px;display:flex;align-items:center;gap:8px"><span style="width:24px;height:2px;background:${c1};display:inline-block"></span>Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="background:#fff;padding:12px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
-                <div style="display:flex;justify-content:space-between;align-items:baseline">
-                  <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.stanowisko||''}</div>
-                  <div style="font-size:9px;color:#aaa;white-space:nowrap">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c1};font-weight:600">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px;display:flex;align-items:center;gap:8px"><span style="width:24px;height:2px;background:${c1};display:inline-block"></span>Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="background:#fff;padding:10px;margin-bottom:6px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
-                <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`
-          <div style="background:#fff;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Umiejętności</div>
-            ${skills.map(s=>`<div style="font-size:9px;background:${c1}15;padding:3px 8px;margin-bottom:4px;border-radius:3px;color:#333">${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="background:#fff;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${d.zainteresowania?`
-          <div style="background:#fff;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div>
-            <div style="font-size:9.5px;color:#666;line-height:1.6">${d.zainteresowania}</div>
-          </div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-  // ── MIDNIGHT ──────────────────────────────────────────────
-  if (tpl === 'midnight') return `
-    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px">
-      <div style="background:#0f172a;padding:32px 40px;display:flex;gap:24px;align-items:center">
-        ${d.zdjecie?`<div style="width:84px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.15)">${photo}</div>`:''}
-        <div>
-          <div style="font-size:24px;font-weight:700;color:#f8fafc;letter-spacing:-0.3px">${name}</div>
-          ${d.stanowisko?`<div style="font-size:10px;color:#94a3b8;margin-top:5px;letter-spacing:2px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<span style="font-size:9px;color:#94a3b8">${x}</span>`).join(' · ')}</div>
-        </div>
-      </div>
-      <div style="height:3px;background:linear-gradient(90deg,${c1},${c2},transparent)"></div>
-      <div style="display:grid;grid-template-columns:1fr 185px;padding:24px 40px;gap:24px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:7px">Profil</div><div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:10px">Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:11px;padding:10px;background:#f8fafc;border-radius:4px">
-                <div style="display:flex;justify-content:space-between"><div style="font-size:11px;font-weight:700;color:#1e293b">${e.stanowisko||''}</div><div style="font-size:8.5px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-                <div style="font-size:9.5px;color:${c2};font-weight:600;margin-top:1px">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#555;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:10px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:8px;padding:10px;background:#f8fafc;border-radius:4px">
-                <div style="font-size:11px;font-weight:700;color:#1e293b">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:8.5px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#f1f5f9;margin-bottom:3px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${d.zainteresowania?`<div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-  // ── CORAL ─────────────────────────────────────────────────
-  if (tpl === 'coral') return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px">
-      <div style="display:grid;grid-template-columns:210px 1fr;min-height:842px">
-        <div style="background:linear-gradient(180deg,${c1},${c2});padding:28px 20px;display:flex;flex-direction:column;gap:0">
-          ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid rgba(255,255,255,0.4)">${photo}</div>`:''}
-          <div style="text-align:center;margin-bottom:20px">
-            <div style="font-size:15px;font-weight:700;color:#fff;line-height:1.2">${name}</div>
-            ${d.stanowisko?`<div style="font-size:8.5px;color:rgba(255,255,255,0.7);margin-top:4px;text-transform:uppercase;letter-spacing:1px">${d.stanowisko}</div>`:''}
-          </div>
-          <div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Kontakt</div>
-          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.75);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
-          ${skills.length?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Umiejętności</div>${skills.map(s=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${s}</div>`).join('')}`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
-          ${d.zainteresowania?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Zainteresowania</div><div style="font-size:8.5px;color:rgba(255,255,255,0.75);line-height:1.65">${d.zainteresowania}</div>`:''}
-        </div>
-        <div style="padding:28px 28px">
-          ${d.podsumowanie?`<div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #f0f0f0"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:7px">Profil zawodowy</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px">Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:10px;padding-left:10px;border-left:2px solid ${c2}">
-                <div style="font-size:11px;font-weight:700;color:#222">${e.stanowisko||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:${c1}">${e.firma||''}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-                ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:3px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:8px;padding-left:10px;border-left:2px solid ${c2}">
-                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-          <div style="margin-top:14px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-        </div>
-      </div>
-    </div>`;
-
-  // ── ROSE ──────────────────────────────────────────────────
-  if (tpl === 'rose') return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px">
-      <div style="background:linear-gradient(135deg,${c1},${c2});padding:36px 40px;text-align:center;position:relative">
-        ${d.zdjecie?`<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto 14px;border:4px solid rgba(255,255,255,0.5)">${photo}</div>`:'<div style="width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.2);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem">👤</div>'}
-        <div style="font-size:24px;font-weight:700;color:#fff;letter-spacing:-0.3px">${name}</div>
-        ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.75);margin-top:6px;letter-spacing:2px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:12px">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<span style="font-size:9px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:20px">${x}</span>`).join('')}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 180px;padding:24px 40px;gap:24px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:7px;padding-bottom:5px;border-bottom:2px solid ${c1}">O mnie</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid ${c1}">Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:11px;display:flex;gap:10px">
-                <div style="width:8px;height:8px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:3px"></div>
-                <div>
-                  <div style="font-size:11px;font-weight:700;color:#222">${e.stanowisko||''}</div>
-                  <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:${c2};font-weight:600">${e.firma||''}</div><div style="font-size:9px;color:#bbb">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-                  ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:3px;line-height:1.6">${e.opis}</div>`:''}
-                </div>
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid ${c1}">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:8px;display:flex;gap:10px">
-                <div style="width:8px;height:8px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:3px"></div>
-                <div>
-                  <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                  <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#bbb">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-                </div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;margin-bottom:4px;padding:3px 8px;background:${c1}15;border-radius:3px;color:#444">${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${d.zainteresowania?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div><div style="font-size:9px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-  // ── SLATE ─────────────────────────────────────────────────
-  if (tpl === 'slate') return `
-    <div style="font-family:Georgia,serif;background:#fff;min-height:842px">
-      <div style="border-top:6px solid ${c1};padding:32px 44px 24px">
-        <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px">
-          ${d.zdjecie?`<div style="width:80px;height:80px;overflow:hidden;flex-shrink:0;border:2px solid ${c1}">${photo}</div>`:''}
-          <div>
-            <div style="font-size:26px;font-weight:700;color:${c1};line-height:1;letter-spacing:-0.5px">${name}</div>
-            ${d.stanowisko?`<div style="font-size:11px;color:${c2};font-style:italic;margin-top:5px">${d.stanowisko}</div>`:''}
-          </div>
-          <div style="flex:1;text-align:right">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<div style="font-size:9px;color:#666;margin-bottom:3px">${x}</div>`).join('')}</div>
-        </div>
-        <div style="height:1px;background:${c1};margin-bottom:20px"></div>
-        ${d.podsumowanie?`<div style="margin-bottom:20px;font-size:10px;color:#555;line-height:1.8;font-style:italic">"${d.podsumowanie}"</div>`:''}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 180px;padding:0 44px 28px;gap:28px">
-        <div>
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:12px">Doświadczenie zawodowe</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;align-items:baseline">
-                  <div style="font-size:11px;font-weight:700;color:#222">${e.stanowisko||''}</div>
-                  <div style="font-size:9px;color:#999;font-style:italic">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c2};font-style:italic">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#555;margin-top:4px;line-height:1.65">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:12px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:10px">
-                <div style="display:flex;justify-content:space-between">
-                  <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                  <div style="font-size:9px;color:#999;font-style:italic">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c2};font-style:italic">${e.szkola}</div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px;padding-left:8px;border-left:2px solid ${c1}">  ${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk} <span style="color:#999">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #eee">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-  // ── OCEAN ─────────────────────────────────────────────────
-  if (tpl === 'ocean') return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f0f9ff;min-height:842px">
-      <div style="background:linear-gradient(135deg,${c1},${c2});padding:32px 40px;display:flex;align-items:center;gap:22px;clip-path:polygon(0 0,100% 0,100% 85%,0 100%)">
-        ${d.zdjecie?`<div style="width:88px;height:88px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.5);flex-shrink:0">${photo}</div>`:''}
-        <div>
-          <div style="font-size:25px;font-weight:700;color:#fff;line-height:1.1">${name}</div>
-          ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.8);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<span style="font-size:9px;color:rgba(255,255,255,0.8)">${x}</span>`).join('')}</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 185px;padding:8px 40px 24px;gap:24px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:18px;background:#fff;padding:14px;border-radius:6px;box-shadow:0 1px 8px rgba(30,64,175,0.07)"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:6px">Profil</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px">Doświadczenie</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="background:#fff;padding:12px;margin-bottom:8px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);border-left:3px solid ${c2}">
-                <div style="display:flex;justify-content:space-between">
-                  <div style="font-size:11px;font-weight:700;color:#1e293b">${e.stanowisko||''}</div>
-                  <div style="font-size:9px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:9.5px;color:${c1};font-weight:600">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#666;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:10px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="background:#fff;padding:10px;margin-bottom:6px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);border-left:3px solid ${c2}">
-                <div style="font-size:11px;font-weight:700;color:#1e293b">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;background:${c1}12;padding:3px 8px;margin-bottom:4px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${d.zainteresowania?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06)"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-
-  // ── DIAGONAL (ukośne cięcie jak na screenie) ──────────────
-  if (tpl === 'diagonal') return `
-    <div style="font-family:Arial,sans-serif;background:#f5f5f0;min-height:842px;position:relative;overflow:hidden">
-      <!-- Dark header with diagonal cut -->
-      <div style="position:relative;background:#1a3a2e;height:170px;overflow:hidden">
-        <div style="position:absolute;bottom:-1px;left:0;right:0;height:60px;background:#f5f5f0;clip-path:polygon(0 100%,100% 100%,100% 40%,0 100%)"></div>
-        <div style="position:absolute;bottom:-1px;left:0;right:0;height:60px;background:#f5f5f0;clip-path:polygon(0 60%,100% 0,100% 100%,0 100%);opacity:0.15"></div>
-        <div style="padding:28px 32px 0;display:flex;align-items:center;gap:20px;position:relative;z-index:2">
-          ${d.zdjecie?`<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.35);flex-shrink:0">${photo}</div>`:''}
-          <div>
-            <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1">${name}</div>
-            ${d.stanowisko?`<div style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-          </div>
-        </div>
-      </div>
-      <!-- Content -->
-      <div style="display:grid;grid-template-columns:200px 1fr;padding:16px 32px 28px;gap:24px">
-        <!-- Left col -->
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Dane kontaktowe</div>
-          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:9.5px;color:#555;margin-bottom:5px;display:flex;align-items:flex-start;gap:5px"><span style="color:#1a3a2e;flex-shrink:0">›</span>${x}</div>`).join('')}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div style="margin-top:18px">
-            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:10px">
-                <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:2px"><div style="width:7px;height:7px;border-radius:50%;background:#1a3a2e;flex-shrink:0;margin-top:3px"></div><div style="font-size:10px;font-weight:700;color:#222">${e.kierunek||''}</div></div>
-                <div style="font-size:9.5px;color:#555;padding-left:13px">${e.szkola}</div>
-                <div style="font-size:9px;color:#999;padding-left:13px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-              </div>`).join('')}
-          </div>`:''}
-          ${skills.length?`
-          <div style="margin-top:18px">
-            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Umiejętności</div>
-            ${skills.map(s=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-top:18px">
-            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Języki</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${d.zainteresowania?`
-          <div style="margin-top:18px">
-            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Zainteresowania</div>
-            <div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div>
-          </div>`:''}
-        </div>
-        <!-- Right col -->
-        <div>
-          ${d.podsumowanie?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:13px;font-weight:700;color:#1a3a2e;margin-bottom:6px;border-bottom:2px solid #1a3a2e;padding-bottom:4px">Podsumowanie</div>
-            <div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div>
-          </div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div>
-            <div style="font-size:13px;font-weight:700;color:#1a3a2e;margin-bottom:10px;border-bottom:2px solid #1a3a2e;padding-bottom:4px">Doświadczenie zawodowe</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:14px">
-                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#1a3a2e">${e.firma||''}</span></div>
-                <div style="font-size:9px;color:#aaa;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#1a3a2e;flex-shrink:0">•</span>${l}</div>`).join('')}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#bbb;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-    </div>`;
-
-  // ── SHIELD (ciemna sidebar z trójkątem wyciętym) ──────────
-  if (tpl === 'shield') return `
-    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px;display:flex">
-      <!-- Sidebar with arrow/shield cut -->
-      <div style="width:215px;flex-shrink:0;position:relative;background:#1a2744;overflow:visible">
-        <div style="background:#1a2744;min-height:842px;padding:28px 20px;display:flex;flex-direction:column;position:relative;z-index:1">
-          <!-- Arrow-shaped cut at right edge -->
-          <div style="position:absolute;top:0;right:-20px;bottom:0;width:40px;background:#fff;clip-path:polygon(50% 50%,0 0,0 100%);z-index:2"></div>
-          ${d.zdjecie?`<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid rgba(255,255,255,0.25)">${photo}</div>`:''}
-          <div style="font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.2;margin-bottom:4px">${name}</div>
-          ${d.stanowisko?`<div style="font-size:8.5px;color:rgba(255,255,255,0.55);text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px">${d.stanowisko}</div>`:''}
-          <div style="font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Kontakt</div>
-          ${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
-          ${skills.length?`<div style="font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:16px 0 8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:4px">· ${s}</div>`).join('')}`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:16px 0 8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:rgba(255,255,255,0.7);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
-        </div>
-      </div>
-      <!-- Main content -->
-      <div style="flex:1;padding:30px 28px 28px 36px">
-        ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Podsumowanie</div><div style="font-size:10px;line-height:1.75;color:#555">${d.podsumowanie}</div></div>`:''}
-        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-        <div style="margin-bottom:18px">
-          <div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:10px">Doświadczenie zawodowe</div>
-          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-            <div style="margin-bottom:13px">
-              <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#1a2744">${e.firma||''}</span></div>
-              <div style="font-size:9px;color:#aaa;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-              ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#1a2744">•</span>${l}</div>`).join('')}</div>`:''}
-            </div>`).join('')}
-        </div>`:''}
-        ${d.wyksztalcenie.some(e=>e.szkola)?`
-        <div>
-          <div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
-          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-            <div style="margin-bottom:10px;display:flex;gap:10px">
-              <div style="width:7px;height:7px;border-radius:50%;background:#1a2744;flex-shrink:0;margin-top:4px"></div>
-              <div>
-                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                <div style="font-size:9.5px;color:#555">${e.szkola}</div>
-                <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+  if (sec === 'wyksztalcenie') return `
+    <div id="cvEduList">
+      ${cvData.wyksztalcenie.map((e,i) => `
+        <div class="cvf-card">
+          <div class="cvf-grid2">
+            <div class="cvf-group cvf-full"><label>Uczelnia / szkoła</label>
+              <div class="cvf-autocomplete-wrap">
+                <input class="cvf-input" id="szkola-${i}" oninput="cvData.wyksztalcenie[${i}].szkola=this.value;updateCVPreview();showUniSuggest(${i},this.value)" value="${e.szkola}" placeholder="Uniwersytet Warszawski" autocomplete="off">
+                <div class="cvf-autocomplete-list" id="uni-list-${i}"></div>
               </div>
-            </div>`).join('')}
-        </div>`:''}
-        ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-      </div>
-    </div>`;
-
-  // ── ARROW (pomarańczowy, ukośny nagłówek + strzałka) ──────
-  if (tpl === 'arrow') return `
-    <div style="font-family:Arial,sans-serif;background:#fff7f0;min-height:842px">
-      <div style="position:relative;overflow:hidden;background:#fff7f0">
-        <!-- Large diagonal shape -->
-        <div style="position:absolute;top:0;left:0;width:260px;height:180px;background:#7c2d12;clip-path:polygon(0 0,100% 0,80% 100%,0 100%)"></div>
-        <div style="position:absolute;top:0;left:200px;width:100px;height:180px;background:#fb923c;clip-path:polygon(0 0,100% 0,80% 100%,0 100%)"></div>
-        <!-- Content overlay -->
-        <div style="position:relative;z-index:2;padding:28px 32px;display:flex;align-items:center;gap:18px;height:180px">
-          ${d.zdjecie?`<div style="width:88px;height:88px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.4);flex-shrink:0">${photo}</div>`:''}
-          <div>
-            <div style="font-size:27px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1">${name}</div>
-            ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.75);margin-top:6px;letter-spacing:2px;text-transform:uppercase">${d.stanowisko}</div>`:''}
+            </div>
+            <div class="cvf-group cvf-full"><label>Kierunek / tytuł</label>
+              <div class="cvf-autocomplete-wrap">
+                <input class="cvf-input" id="kierunek-${i}" oninput="cvData.wyksztalcenie[${i}].kierunek=this.value;updateCVPreview();showKierunekSuggest(${i},this.value)" value="${e.kierunek}" placeholder="Finanse i Rachunkowość" autocomplete="off">
+                <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
+              </div>
+            </div>
+            <div class="cvf-group"><label>Od</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
+            <div class="cvf-group"><label>Do</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
           </div>
-          <div style="margin-left:auto;text-align:right">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<div style="font-size:9px;color:rgba(255,255,255,0.8);margin-bottom:3px">${x}</div>`).join('')}</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 185px;padding:20px 32px 28px;gap:24px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;color:#7c2d12;border-bottom:2px solid #fb923c;padding-bottom:4px;margin-bottom:8px">Podsumowanie</div><div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:12px;font-weight:700;color:#7c2d12;border-bottom:2px solid #fb923c;padding-bottom:4px;margin-bottom:10px">Doświadczenie zawodowe</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:13px">
-                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#7c2d12">${e.firma||''}</span></div>
-                <div style="font-size:9px;color:#fb923c;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#fb923c">•</span>${l}</div>`).join('')}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:12px;font-weight:700;color:#7c2d12;border-bottom:2px solid #fb923c;padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:10px;padding-left:10px;border-left:3px solid #fb923c">
-                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-        </div>
-        <div>
-          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Umiejętności</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#7c2d1215;border-left:2px solid #fb923c;margin-bottom:3px;color:#333">${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">✕ Usuń</button>` : ''}
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" onclick="addCVEdu()">＋ Dodaj kolejne</button>`;
+
+  if (sec === 'umiejetnosci') return `
+    <input class="cvf-input" id="skillsInput" oninput="cvData.umiejetnosci=this.value;updateCVPreview();updateSkillChips()" value="${cvData.umiejetnosci}" placeholder="Excel, Python, Photoshop...">
+    <p class="acc-hint">Oddzielaj przecinkami · klikaj propozycje:</p>
+    <div class="cvf-suggestions" id="skillSuggestions"></div>`;
+
+  if (sec === 'jezyki') return `
+    <div id="cvLangList">
+      ${cvData.jezyki.map((l,i) => `
+        <div class="acc-lang-row">
+          <input class="cvf-input" style="flex:1;min-width:0" oninput="cvData.jezyki[${i}].jezyk=this.value;updateCVPreview()" value="${l.jezyk}" placeholder="Angielski">
+          <select class="cvf-input" style="width:100px;flex-shrink:0" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
+            ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
+          </select>
+          ${i>0 ? `<button class="acc-remove-x" onclick="removeCVLang(${i})">✕</button>` : '<div style="width:28px"></div>'}
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" onclick="addCVLang()">＋ Dodaj język</button>
+    <p class="acc-hint" style="margin-top:10px">Popularne języki — kliknij aby dodać:</p>
+    <div class="cvf-suggestions" id="langSuggestions">
+      ${TOP_LANGS.map(l => `<span class="cvf-chip" onclick="addLangChip('${l}')">${l}</span>`).join('')}
     </div>`;
 
-  // ── SPLIT (fioletowy, pionowy podział ukośny) ─────────────
-  if (tpl === 'split') return `
-    <div style="font-family:Arial,sans-serif;background:#faf5ff;min-height:842px;position:relative;overflow:hidden">
-      <!-- Diagonal split background -->
-      <div style="position:absolute;top:0;left:0;width:250px;bottom:0;background:#4a044e;clip-path:polygon(0 0,100% 0,75% 100%,0 100%)"></div>
-      <div style="position:absolute;top:0;left:160px;width:120px;bottom:0;background:#7e22ce;clip-path:polygon(0 0,100% 0,60% 100%,0 100%);opacity:0.6"></div>
-      <!-- Content grid -->
-      <div style="position:relative;z-index:2;display:grid;grid-template-columns:190px 1fr;min-height:842px">
-        <!-- Left: dark col -->
-        <div style="padding:28px 16px 28px 22px;display:flex;flex-direction:column">
-          ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid rgba(255,255,255,0.3)">${photo}</div>`:''}
-          <div style="font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.2;margin-bottom:4px">${name}</div>
-          ${d.stanowisko?`<div style="font-size:8.5px;color:rgba(255,255,255,0.55);text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px">${d.stanowisko}</div>`:''}
-          <div style="font-size:7.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:7px">Kontakt</div>
-          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.7);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
-          ${skills.length?`<div style="font-size:7.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:14px 0 7px">Umiejętności</div>${skills.map(s=>`<div style="font-size:8.5px;margin-bottom:5px"><span style="display:inline-block;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);padding:2px 8px;border-radius:3px">${s}</span></div>`).join('')}`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:7.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin:14px 0 7px">Języki</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.75);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
-        </div>
-        <!-- Right: light col -->
-        <div style="padding:28px 24px 28px 16px">
-          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Podsumowanie</div><div style="font-size:10px;line-height:1.75;color:#555">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:10px">Doświadczenie zawodowe</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:13px">
-                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}, <span style="color:#7e22ce">${e.firma||''}</span></div>
-                <div style="font-size:9px;color:#a855f7;margin-bottom:4px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.7">${e.opis.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>`<div style="display:flex;gap:6px;margin-bottom:3px"><span style="color:#a855f7">•</span>${l}</div>`).join('')}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:10px">Wykształcenie</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:10px">
-                <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}
-          ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Zainteresowania</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-          <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #ede9fe;padding-top:8px;text-align:center">Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji. ${renderCustomSections(c1)}</div>
-        </div>
-      </div>
-    </div>`;
+  if (sec === 'zainteresowania') return `
+    <input class="cvf-input" id="interestsInput" oninput="cvData.zainteresowania=this.value;updateCVPreview();updateInterestChips()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, muzyka...">
+    <p class="acc-hint">Klikaj propozycje lub wpisz własne:</p>
+    <div class="cvf-suggestions" id="interestSuggestions"></div>`;
 
   return '';
 }
+
+// ── AUTOCOMPLETE UCZELNIE ──────────────────────────────────
+function showUniSuggest(i, val) {
+  const list = document.getElementById('uni-list-' + i);
+  if (!list) return;
+  if (!val || val.length < 1) { list.classList.remove('show'); return; }
+  const q = val.toLowerCase();
+  const matches = POLISH_UNIVERSITIES.filter(u => u.toLowerCase().includes(q)).slice(0, 7);
+  if (!matches.length) { list.classList.remove('show'); return; }
+  list.innerHTML = matches.map(u => `<div class="cvf-autocomplete-item" onclick="pickUni(${i},'${u.replace(/'/g,"\\'")}')">${u}</div>`).join('');
+  list.classList.add('show');
+}
+function pickUni(i, val) {
+  cvData.wyksztalcenie[i].szkola = val;
+  const input = document.getElementById('szkola-' + i);
+  if (input) input.value = val;
+  const list = document.getElementById('uni-list-' + i);
+  if (list) list.classList.remove('show');
+  updateCVPreview();
+}
+
+// ── AUTOCOMPLETE KIERUNKI ──────────────────────────────────
+function showKierunekSuggest(i, val) {
+  const list = document.getElementById('kierunek-list-' + i);
+  if (!list) return;
+  if (!val || val.length < 1) { list.classList.remove('show'); return; }
+  const q = val.toLowerCase();
+  const matches = KIERUNKI_SUGGESTIONS.filter(k => k.toLowerCase().includes(q)).slice(0, 7);
+  if (!matches.length) { list.classList.remove('show'); return; }
+  list.innerHTML = matches.map(k => `<div class="cvf-autocomplete-item" onclick="pickKierunek(${i},'${k.replace(/'/g,"\\'")}')">${k}</div>`).join('');
+  list.classList.add('show');
+}
+function pickKierunek(i, val) {
+  cvData.wyksztalcenie[i].kierunek = val;
+  const input = document.getElementById('kierunek-' + i);
+  if (input) input.value = val;
+  const list = document.getElementById('kierunek-list-' + i);
+  if (list) list.classList.remove('show');
+  updateCVPreview();
+}
+
+document.addEventListener('click', e => {
+  document.querySelectorAll('.cvf-autocomplete-list').forEach(l => {
+    if (!l.contains(e.target)) l.classList.remove('show');
+  });
+});
+
+// ── INTERESTS CHIPS ───────────────────────────────────────
+function updateInterestChips() {
+  const container = document.getElementById('interestSuggestions');
+  if (!container) return;
+  const current = (cvData.zainteresowania || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  container.innerHTML = INTERESTS_SUGGESTIONS.map(s => {
+    const used = current.includes(s.toLowerCase());
+    return `<span class="cvf-chip${used?' used':''}" onclick="addInterestChip('${s.replace(/'/g,"\\'")}')">${s}</span>`;
+  }).join('');
+}
+function addInterestChip(interest) {
+  const current = cvData.zainteresowania.split(',').map(s => s.trim()).filter(Boolean);
+  if (current.map(s=>s.toLowerCase()).includes(interest.toLowerCase())) return;
+  current.push(interest);
+  cvData.zainteresowania = current.join(', ');
+  const input = document.getElementById('interestsInput');
+  if (input) input.value = cvData.zainteresowania;
+  updateCVPreview();
+  updateInterestChips();
+}
+
+// ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
+function buildCustomSectionHTML(sec) {
+  const isOpen = cvOpenSections.has('custom-' + sec.id);
+  return `
+    <div class="acc-item${isOpen ? ' open' : ''}" data-section="custom-${sec.id}" draggable="true">
+      <div class="acc-row" onclick="toggleAccSection('custom-${sec.id}')">
+        <span class="acc-drag" onclick="event.stopPropagation()" title="Przeciągnij">⠿</span>
+        <div class="acc-info">
+          <input class="acc-custom-name" value="${sec.title}" placeholder="Nazwa sekcji"
+            onclick="event.stopPropagation()"
+            oninput="updateCustomSection('${sec.id}','title',this.value);updateCVPreview()">
+        </div>
+        <button class="acc-btn" tabindex="-1">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
+            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="acc-body">
+        <textarea class="cvf-input" rows="3" placeholder="Treść sekcji..."
+          oninput="updateCustomSection('${sec.id}','content',this.value);updateCVPreview()">${sec.content}</textarea>
+        <button class="cvf-remove-btn" style="margin-top:8px" onclick="removeCustomSection('${sec.id}')">✕ Usuń sekcję</button>
+      </div>
+    </div>`;
+}
+function addCustomSection() {
+  const id = 'cs_' + Date.now();
+  cvCustomSections.push({ id, title: 'Nowa sekcja', content: '' });
+  cvOpenSections.add('custom-' + id); // auto-open new section
+  renderCVForm();
+  updateCVPreview();
+}
+function removeCustomSection(id) {
+  cvCustomSections = cvCustomSections.filter(s => s.id !== id);
+  renderCVForm();
+  updateCVPreview();
+}
+function updateCustomSection(id, field, val) {
+  const sec = cvCustomSections.find(s => s.id === id);
+  if (sec) sec[field] = val;
+}
+function updateSkillChips() {
+  const container = document.getElementById('skillSuggestions');
+  if (!container) return;
+  const current = (cvData.umiejetnosci || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  container.innerHTML = SKILLS_SUGGESTIONS.all.map(s => {
+    const used = current.includes(s.toLowerCase());
+    return `<span class="cvf-chip${used?' used':''}" onclick="addSkillChip('${s.replace(/'/g,"\\'")}')">${s}</span>`;
+  }).join('');
+}
+function addSkillChip(skill) {
+  const current = cvData.umiejetnosci.split(',').map(s => s.trim()).filter(Boolean);
+  if (current.map(s=>s.toLowerCase()).includes(skill.toLowerCase())) return;
+  current.push(skill);
+  cvData.umiejetnosci = current.join(', ');
+  const input = document.getElementById('skillsInput');
+  if (input) input.value = cvData.umiejetnosci;
+  updateCVPreview();
+  updateSkillChips();
+}
+
+// ── DRAG & DROP SEKCJI ─────────────────────────────────────
+let dragSrc = null;
+function initDragDrop() {
+  const blocks = document.querySelectorAll('.acc-item');
+  blocks.forEach(block => {
+    block.addEventListener('dragstart', e => {
+      dragSrc = block;
+      block.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    block.addEventListener('dragend', () => {
+      block.classList.remove('dragging');
+      document.querySelectorAll('.acc-item').forEach(b => b.classList.remove('drag-over'));
+    });
+    block.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.acc-item').forEach(b => b.classList.remove('drag-over'));
+      if (block !== dragSrc) block.classList.add('drag-over');
+    });
+    block.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === block) return;
+      const fromSec = dragSrc.dataset.section;
+      const toSec = block.dataset.section;
+      // Handle standard sections
+      const fromIdx = cvSectionOrder.indexOf(fromSec);
+      const toIdx = cvSectionOrder.indexOf(toSec);
+      if (fromIdx !== -1 && toIdx !== -1) {
+        cvSectionOrder.splice(fromIdx, 1);
+        cvSectionOrder.splice(toIdx, 0, fromSec);
+      }
+      // Handle custom sections
+      const fromCIdx = cvCustomSections.findIndex(s => 'custom-'+s.id === fromSec);
+      const toCIdx = cvCustomSections.findIndex(s => 'custom-'+s.id === toSec);
+      if (fromCIdx !== -1 && toCIdx !== -1) {
+        const [moved] = cvCustomSections.splice(fromCIdx, 1);
+        cvCustomSections.splice(toCIdx, 0, moved);
+      }
+      renderCVForm();
+      updateCVPreview();
+      updateSkillChips();
+      updateInterestChips();
+    });
+  });
+  // Init chips after render
+  updateSkillChips();
+  updateInterestChips();
+}
+function loadPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    cvData.zdjecie = e.target.result;
+    renderCVForm();
+    updateCVPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function addCVExp() {
+  cvData.doswiadczenie.push({ firma:'', stanowisko:'', od:'', do:'', opis:'' });
+  renderCVForm();
+}
+function removeCVExp(i) {
+  cvData.doswiadczenie.splice(i,1);
+  renderCVForm(); updateCVPreview();
+}
+function addCVEdu() {
+  cvData.wyksztalcenie.push({ szkola:'', kierunek:'', od:'', do:'', opis:'' });
+  renderCVForm();
+}
+function removeCVEdu(i) {
+  cvData.wyksztalcenie.splice(i,1);
+  renderCVForm(); updateCVPreview();
+}
+function addCVLang() {
+  cvData.jezyki.push({ jezyk:'', poziom:'B2' });
+  renderCVForm();
+}
+
+function updateCVPreview() {
+  const el = document.getElementById('cvPreviewInner');
+  if (!el) return;
+  el.innerHTML = buildCVHTML(cvTemplate);
+}
+
+// buildCVHTML → cv-templates.js
+
+function downloadCV() {
+  const el = document.getElementById('cvPreviewInner');
+  const opt = {
+    margin: 0,
+    filename: 'CV_' + (cvData.imie||'') + '_' + (cvData.nazwisko||'') + '.pdf',
+    image: { type:'jpeg', quality:0.98 },
+    html2canvas: { scale:2, useCORS:true },
+    jsPDF: { unit:'px', format:[595,842], orientation:'portrait' }
+  };
+  html2pdf().set(opt).from(el).save();
+}
+
+function payAndDownloadCV() {
+  // Otwórz Stripe w nowej karcie z parametrem success
+  const successUrl = encodeURIComponent(window.location.origin + window.location.pathname + '?cv=paid');
+  window.open(CV_STRIPE, '_blank');
+  // Po 3s pokaż przycisk pobierania (użytkownik wraca po płatności)
+  document.getElementById('cvPayBtn').style.display = 'none';
+  document.getElementById('cvAfterPay').style.display = 'block';
+}
+
+function confirmAndDownload() {
+  downloadCV();
+}
+
+// ---- TEMPLATE DRAWER ----
+function openTplDrawer() {
+  const overlay = document.getElementById('cvTplOverlay');
+  overlay.classList.add('open');
+  renderTplGrid();
+}
+function closeTplDrawer() {
+  document.getElementById('cvTplOverlay').classList.remove('open');
+}
+// Color themes
+const COLOR_THEMES = [
+  { name:'Zieleń (domyślny)', c1:'#1a3a2e', c2:'#2d6b52' },
+  { name:'Granat',   c1:'#1a2744', c2:'#2c4a8a' },
+  { name:'Czerń',    c1:'#111111', c2:'#444444' },
+  { name:'Czerwień', c1:'#c0392b', c2:'#e74c3c' },
+  { name:'Morski',   c1:'#0f766e', c2:'#14b8a6' },
+  { name:'Ocean',    c1:'#1e40af', c2:'#3b82f6' },
+  { name:'Fiolet',   c1:'#6b21a8', c2:'#a855f7' },
+  { name:'Róż',      c1:'#9d174d', c2:'#ec4899' },
+  { name:'Koralik',  c1:'#c2410c', c2:'#fb923c' },
+  { name:'Szary',    c1:'#334155', c2:'#64748b' },
+];
+let cvCustomColor = null; // null = use template default
+
+function renderColorPicker() {
+  const el = document.getElementById('colorThemePicker');
+  if (!el) return;
+  const currentTpl = CV_TEMPLATES.find(t => t.id === cvTemplate);
+  const defaultC1 = currentTpl ? currentTpl.color1 : '#1a3a2e';
+  el.innerHTML = COLOR_THEMES.map(theme => {
+    const isActive = cvCustomColor
+      ? cvCustomColor.c1 === theme.c1
+      : theme.c1 === defaultC1;
+    return `<button title="${theme.name}" onclick="setColorTheme('${theme.c1}','${theme.c2}')"
+      style="width:28px;height:28px;border-radius:50%;background:${theme.c1};border:${isActive?'3px solid #fff':'2px solid transparent'};
+      box-shadow:${isActive?'0 0 0 2px '+theme.c1:'0 1px 4px rgba(0,0,0,0.2)'};
+      cursor:pointer;transition:all 0.15s;flex-shrink:0"></button>`;
+  }).join('');
+  // Also add "default" reset option
+  const hasCustom = !!cvCustomColor;
+  el.innerHTML += `<button title="Domyślny kolor szablonu" onclick="resetColorTheme()"
+    style="width:28px;height:28px;border-radius:50%;background:transparent;border:2px dashed #ccc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#aaa;${!hasCustom?'border-color:#666;color:#333':''}"
+    >↺</button>`;
+}
+
+function setColorTheme(c1, c2) {
+  cvCustomColor = { c1, c2 };
+  updateCVPreview();
+  renderColorPicker();
+  document.getElementById('tplDot').style.background = c1;
+}
+
+function resetColorTheme() {
+  cvCustomColor = null;
+  const t = CV_TEMPLATES.find(x => x.id === cvTemplate);
+  if (t) document.getElementById('tplDot').style.background = t.color1;
+  updateCVPreview();
+  renderColorPicker();
+}
+
+function getTplPreviewHTML(t) {
+  const c = t.color1, c2 = t.color2;
+  const w = 'rgba(255,255,255,0.85)', wm = 'rgba(255,255,255,0.5)', wl = 'rgba(255,255,255,0.25)';
+  const bar = (w,op=1) => `<div style="height:3px;background:${w};border-radius:1px;margin-bottom:2px;opacity:${op}"></div>`;
+  const bars = (col,n=4) => Array(n).fill(0).map((_,i)=>`<div style="height:2.5px;background:${col};border-radius:1px;margin-bottom:2px;opacity:${0.9-i*0.15};width:${[100,85,95,70][i]||80}%"></div>`).join('');
+
+  if (t.id === 'timeline') return `
+    <div style="height:100%;background:#fff;display:flex;flex-direction:column">
+      <div style="background:${c};padding:8px 10px;display:flex;align-items:center;gap:5px">
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3)"></div>
+        <div><div style="height:3.5px;background:${w};width:55px;border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:${wm};width:35px;border-radius:1px"></div></div>
+      </div>
+      <div style="flex:1;padding:6px 8px;display:flex;gap:6px">
+        <div style="width:3px;background:${c};border-radius:2px;flex-shrink:0"></div>
+        <div style="flex:1">${bars('#ccc')}</div>
+      </div>
+    </div>`;
+
+  if (t.id === 'sidebar') return `
+    <div style="height:100%;display:flex">
+      <div style="width:35%;background:${c};padding:6px 5px;display:flex;flex-direction:column;gap:3px">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
+        ${bars(w,4)}
+      </div>
+      <div style="flex:1;padding:6px 8px;background:#fff">${bars('#ccc')}</div>
+    </div>`;
+
+  if (t.id === 'creative') return `
+    <div style="height:100%;background:#fff">
+      <div style="background:linear-gradient(135deg,${c},${c2});padding:10px;text-align:center">
+        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 3px"></div>
+        <div style="height:3px;background:${w};border-radius:1px;width:60%;margin:0 auto 2px"></div>
+        <div style="height:2px;background:${wm};border-radius:1px;width:40%;margin:0 auto"></div>
+      </div>
+      <div style="padding:6px 8px">${bars('#ccc')}</div>
+    </div>`;
+
+  if (t.id === 'bold') return `
+    <div style="height:100%;background:#fff">
+      <div style="background:#111;padding:8px 10px;display:flex;align-items:center;gap:5px">
+        <div style="flex:1"><div style="height:5px;background:${w};width:70%;border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:${c};width:50%;border-radius:1px"></div></div>
+      </div>
+      <div style="background:${c};height:4px"></div>
+      <div style="padding:5px 8px;display:flex;gap:6px">
+        <div style="flex:1">${bars('#bbb',3)}</div>
+        <div style="width:30%">${bars(c,3)}</div>
+      </div>
+    </div>`;
+
+  if (t.id === 'teal') return `
+    <div style="height:100%;background:#f8fffe;display:flex">
+      <div style="width:38%;background:${c};padding:6px 5px">
+        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 5px"></div>
+        ${bars(w,4)}
+      </div>
+      <div style="flex:1;padding:6px 8px">${bars('#aaa')}</div>
+    </div>`;
+
+  if (t.id === 'midnight') return `
+    <div style="height:100%;background:#fff">
+      <div style="background:${c};padding:12px 10px;display:flex;align-items:center;gap:6px">
+        <div style="flex:1"><div style="height:4px;background:${w};border-radius:1px;width:65%;margin-bottom:3px"></div><div style="height:2px;background:${wm};border-radius:1px;width:45%"></div></div>
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2)"></div>
+      </div>
+      <div style="padding:6px 8px">${bars('#bbb')}</div>
+    </div>`;
+
+  if (t.id === 'coral') return `
+    <div style="height:100%;display:flex">
+      <div style="width:36%;background:linear-gradient(180deg,${c},${c2});padding:6px 5px">
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
+        ${bars(w,4)}
+      </div>
+      <div style="flex:1;padding:6px 7px;background:#fff">${bars('#ccc')}</div>
+    </div>`;
+
+  if (t.id === 'rose') return `
+    <div style="height:100%;background:#fff">
+      <div style="background:linear-gradient(135deg,${c},${c2});padding:10px;text-align:center">
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);margin:0 auto 4px"></div>
+        <div style="height:3px;background:${w};border-radius:1px;width:55%;margin:0 auto 2px"></div>
+        <div style="display:flex;justify-content:center;gap:3px;margin-top:3px">
+          <div style="height:8px;background:rgba(255,255,255,0.2);padding:0 5px;border-radius:10px;width:25px"></div>
+          <div style="height:8px;background:rgba(255,255,255,0.2);padding:0 5px;border-radius:10px;width:20px"></div>
+        </div>
+      </div>
+      <div style="padding:5px 8px;display:flex;gap:6px">
+        <div style="flex:1">${bars('#ccc',3)}</div>
+        <div style="width:32%">${bars(c,3)}</div>
+      </div>
+    </div>`;
+
+  if (t.id === 'slate') return `
+    <div style="height:100%;background:#f8f9fa;display:flex">
+      <div style="width:38%;background:${c};padding:6px 5px">
+        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.25);margin:0 auto 5px"></div>
+        ${bars(w,4)}
+      </div>
+      <div style="flex:1;padding:6px 8px">${bars('#999')}</div>
+    </div>`;
+
+  if (t.id === 'ocean') return `
+    <div style="height:100%;background:#fff">
+      <div style="background:linear-gradient(135deg,${c},${c2});padding:8px 10px;display:flex;align-items:center;gap:5px">
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3)"></div>
+        <div style="flex:1"><div style="height:3px;background:${w};width:60%;border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:${wm};width:40%;border-radius:1px"></div></div>
+      </div>
+      <div style="padding:6px 8px;display:flex;gap:6px">
+        <div style="flex:1">${bars('#bbb',3)}</div>
+        <div style="width:32%">${bars(c,3)}</div>
+      </div>
+    </div>`;
+
+  if (t.id === 'diagonal') return `
+    <div style="height:100%;background:#f5f5f0;position:relative">
+      <div style="background:${c};height:32px;clip-path:polygon(0 0,100% 0,100% 60%,0 100%);position:relative;padding:6px 10px">
+        <div style="height:3.5px;background:${w};width:55%;border-radius:1px;margin-bottom:2px"></div>
+        <div style="height:2px;background:${wm};width:35%;border-radius:1px"></div>
+      </div>
+      <div style="padding:4px 8px 6px;display:flex;gap:6px;margin-top:4px">
+        <div style="width:34%">${bars('#aaa',3)}</div>
+        <div style="flex:1">${bars('#bbb',3)}</div>
+      </div>
+    </div>`;
+
+  if (t.id === 'shield') return `
+    <div style="height:100%;display:flex">
+      <div style="width:38%;background:${c};position:relative;overflow:hidden;padding:6px 5px">
+        <div style="position:absolute;top:0;right:-6px;bottom:0;width:12px;background:#fff;clip-path:polygon(0 0,100% 50%,0 100%)"></div>
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
+        ${bars(w,4)}
+      </div>
+      <div style="flex:1;padding:6px 8px 6px 12px;background:#fff">${bars('#ccc')}</div>
+    </div>`;
+
+  if (t.id === 'arrow') return `
+    <div style="height:100%;background:#fff7f0">
+      <div style="background:${c};padding:8px 10px;clip-path:polygon(0 0,95% 0,100% 50%,95% 100%,0 100%)">
+        <div style="height:3.5px;background:${w};width:60%;border-radius:1px;margin-bottom:2px"></div>
+        <div style="height:2px;background:${wm};width:40%;border-radius:1px"></div>
+      </div>
+      <div style="padding:6px 8px;display:flex;gap:6px">
+        <div style="width:32%">${bars(c,3)}</div>
+        <div style="flex:1">${bars('#bbb',3)}</div>
+      </div>
+    </div>`;
+
+  if (t.id === 'split') return `
+    <div style="height:100%;display:flex">
+      <div style="width:38%;background:${c};padding:6px 5px">
+        <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px"></div>
+        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:4px"></div>
+        ${bars(wm,3)}
+        <div style="height:1px;background:rgba(255,255,255,0.2);margin:4px 0"></div>
+        ${bars(wl,2)}
+      </div>
+      <div style="flex:1;padding:6px 7px;background:#faf5ff">${bars('#c4b5fd',3)}${bars('#ccc',2)}</div>
+    </div>`;
+
+  return `<div style="height:100%;background:${t.thumb}"></div>`;
+}
+
+function renderTplGrid() {
+  const grid = document.getElementById('cvTplGrid');
+  renderColorPicker();
+  grid.innerHTML = CV_TEMPLATES.map(t => `
+    <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" onclick="pickTemplate('${t.id}')">
+      <div class="cv-tpl-thumb" style="height:120px;overflow:hidden">
+        ${getTplPreviewHTML(t)}
+      </div>
+      <div class="cv-tpl-name">${t.name}</div>
+    </div>
+  `).join('');
+}
+function pickTemplate(id) {
+  cvTemplate = id;
+  const t = CV_TEMPLATES.find(x => x.id === id);
+  document.getElementById('tplDot').style.background = t.color1;
+  updateCVPreview();
+  closeTplDrawer();
+}
+
+// ---- INIT ----
+
+// Check if coming from translate CV flow
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('from') === 'translate') {
+    try {
+      const imported = sessionStorage.getItem('dokumo_cv_import');
+      if (imported) {
+        const d = JSON.parse(imported);
+        sessionStorage.removeItem('dokumo_cv_import');
+        Object.assign(cvData, {
+          imie: d.imie || '',
+          nazwisko: d.nazwisko || '',
+          stanowisko: d.stanowisko || '',
+          email: d.email || '',
+          tel: d.tel || '',
+          adres: d.adres || '',
+          linkedin: d.linkedin || '',
+          www: d.www || '',
+          podsumowanie: d.podsumowanie || '',
+          umiejetnosci: d.umiejetnosci || '',
+          zainteresowania: d.zainteresowania || '',
+        });
+        if (Array.isArray(d.doswiadczenie) && d.doswiadczenie.length) cvData.doswiadczenie = d.doswiadczenie;
+        if (Array.isArray(d.wyksztalcenie) && d.wyksztalcenie.length) cvData.wyksztalcenie = d.wyksztalcenie;
+        if (Array.isArray(d.jezyki) && d.jezyki.length) cvData.jezyki = d.jezyki;
+      }
+    } catch(e) {}
+  }
+})();
+
+renderCVForm();
+updateCVPreview();
+
+// Check if paid
+if (new URLSearchParams(window.location.search).get('cv') === 'paid') {
+  document.getElementById('cvPayBtnWrap').innerHTML =
+    '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
+}
+
+function payAndDownloadCV() {
+  window.open(CV_STRIPE, '_blank');
+  document.getElementById('cvPayBtnWrap').innerHTML =
+    '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
+}
+
+function downloadCV() {
+  const el = document.getElementById('cvPreviewInner');
+  const name = [cvData.imie, cvData.nazwisko].filter(Boolean).join('_') || 'CV';
+  const opt = {
+    margin: 0,
+    filename: 'CV_' + name + '.pdf',
+    image: { type:'jpeg', quality:0.98 },
+    html2canvas: { scale:2, useCORS:true },
+    jsPDF: { unit:'px', format:[595,842], orientation:'portrait' }
+  };
+  html2pdf().set(opt).from(el).save();
+}
+</script>
+</body>
+</html>
