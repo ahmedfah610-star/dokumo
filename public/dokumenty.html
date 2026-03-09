@@ -946,6 +946,11 @@ function startCheckout() {
 function openDocPage(docId) {
   const doc = getDoc(docId);
   if (!doc) return;
+  // Jeśli docQueue nie jest ustawione (np. klik bezpośredni z karty), ustaw je
+  if (!docQueue.includes(docId)) {
+    docQueue = [docId];
+    queueIdx = 0;
+  }
   buildSubpage(doc, docId);
   document.getElementById('subpage').classList.add('open');
   document.body.style.overflow = 'hidden';
