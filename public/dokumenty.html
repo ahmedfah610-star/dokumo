@@ -444,7 +444,20 @@ select.gf-input { cursor: pointer; }
 <!-- NAV -->
 <nav>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em">ZAŁÓŻ KONTO</a>
+  <div class="nav-auth" id="navAuth">
+    <a href="konto.html" class="nav-login-btn" id="navLoginBtn">Zaloguj się</a>
+    <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
+    <div class="nav-profile" id="navProfile" style="display:none">
+      <div class="nav-avatar" id="navAvatar">?</div>
+      <div class="nav-profile-dropdown" id="navDropdown">
+        <div class="nav-profile-name" id="navProfileName">Użytkownik</div>
+        <div class="nav-profile-email" id="navProfileEmail"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+        <a href="dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+        <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <div class="discount-banner" id="discountBanner">
@@ -1260,7 +1273,50 @@ function downloadAs(docId, format) {
       </head><body>
       <pre>${d.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
       <script>window.onload=function(){window.print();}<\/script>
-    </body></html>`);
+    
+<script>
+// ── AUTH STATE (localStorage) ──
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
+}
+function setUser(u) { localStorage.setItem('dokumo_user', JSON.stringify(u)); }
+function clearUser() { localStorage.removeItem('dokumo_user'); }
+
+function updateNavAuth() {
+  const user = getUser();
+  const loginBtn   = document.getElementById('navLoginBtn');
+  const registerBtn = document.getElementById('navRegisterBtn');
+  const profile    = document.getElementById('navProfile');
+  const avatar     = document.getElementById('navAvatar');
+  const nameEl     = document.getElementById('navProfileName');
+  const emailEl    = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display   = 'none';
+    registerBtn.style.display = 'none';
+    profile.style.display    = 'block';
+    nameEl.textContent  = user.name  || 'Użytkownik';
+    emailEl.textContent = user.email || '';
+    if (user.photo) {
+      avatar.innerHTML = '<img src="' + user.photo + '" alt="">';
+    } else {
+      avatar.textContent = (user.name || 'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display    = 'inline-flex';
+    registerBtn.style.display = 'inline-flex';
+    profile.style.display     = 'none';
+  }
+}
+function logoutUser() {
+  clearUser();
+  updateNavAuth();
+  window.location.href = 'index.html';
+}
+document.addEventListener('DOMContentLoaded', updateNavAuth);
+</script>
+
+</body></html>`);
     win.document.close();
 
   } else if (format === 'docx') {
@@ -1444,5 +1500,48 @@ ${text.substring(0, 8000)}`;
 <!-- hidden compatibility elements -->
 <span id="cartCount" style="display:none">0</span>
 <span id="navDiscountBadge" style="display:none"></span>
+
+<script>
+// ── AUTH STATE (localStorage) ──
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
+}
+function setUser(u) { localStorage.setItem('dokumo_user', JSON.stringify(u)); }
+function clearUser() { localStorage.removeItem('dokumo_user'); }
+
+function updateNavAuth() {
+  const user = getUser();
+  const loginBtn   = document.getElementById('navLoginBtn');
+  const registerBtn = document.getElementById('navRegisterBtn');
+  const profile    = document.getElementById('navProfile');
+  const avatar     = document.getElementById('navAvatar');
+  const nameEl     = document.getElementById('navProfileName');
+  const emailEl    = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display   = 'none';
+    registerBtn.style.display = 'none';
+    profile.style.display    = 'block';
+    nameEl.textContent  = user.name  || 'Użytkownik';
+    emailEl.textContent = user.email || '';
+    if (user.photo) {
+      avatar.innerHTML = '<img src="' + user.photo + '" alt="">';
+    } else {
+      avatar.textContent = (user.name || 'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display    = 'inline-flex';
+    registerBtn.style.display = 'inline-flex';
+    profile.style.display     = 'none';
+  }
+}
+function logoutUser() {
+  clearUser();
+  updateNavAuth();
+  window.location.href = 'index.html';
+}
+document.addEventListener('DOMContentLoaded', updateNavAuth);
+</script>
+
 </body>
 </html>
