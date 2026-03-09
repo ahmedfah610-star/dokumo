@@ -218,12 +218,10 @@ function goToPayment() {
   const btn = document.getElementById('subPayBtn');
   btn.textContent = 'Przekierowuję do płatności…';
   btn.disabled = true;
-  // TODO: zastąp prawdziwym linkiem Stripe
-  // Po powrocie z Stripe wywołaj: activateSub()
-  setTimeout(() => {
-    // PLACEHOLDER — symulacja płatności
-    activateSub();
-  }, 1500);
+  // Po powrocie ze Stripe — aktywuj subskrypcję
+  // (docelowo webhook Stripe wywoła activateSub)
+  setTimeout(() => activateSub(), 800);
+  window.open('https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00', '_blank');
 }
 
 function activateSub() {
