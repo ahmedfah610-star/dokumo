@@ -448,7 +448,7 @@ select.gf-input { cursor: pointer; }
     <a href="konto.html" class="btn-secondary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navLoginBtn">ZALOGUJ SIĘ</a>
     <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
     <div class="nav-profile" id="navProfile" style="display:none">
-      <div class="nav-avatar" id="navAvatar">?</div>
+      <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
       <div class="nav-profile-dropdown" id="navDropdown">
         <div class="nav-profile-email" id="navProfileEmail"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
@@ -1173,56 +1173,49 @@ async function generateDoc(docId) {
 function showPaymentScreen() {
   const docs = Object.entries(generatedDocs);
 
-  // Build per-doc result cards with text preview + download buttons
+  // Build cards HTML without text content (inserted via DOM to avoid template literal injection)
   const docCardsHTML = docs.map(([id, d]) => {
     const icon = getDoc(id)?.icon || '📄';
-    // Format text for display — split into paragraphs
-    const previewText = d.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return `
-    <div class="doc-result-card" id="result-${id}">
-      <div class="doc-result-header">
-        <div class="doc-result-icon">${icon}</div>
-        <div>
-          <div class="doc-result-name">${d.name}</div>
-          <div class="doc-result-badge">✓ Wygenerowany</div>
-        </div>
-      </div>
-
-      <div class="doc-result-preview" id="preview-${id}">
-        <pre class="doc-result-text">${previewText}</pre>
-      </div>
-
-      <div class="doc-result-downloads">
-        <div class="doc-result-dl-label">Pobierz jako:</div>
-        <div class="doc-result-dl-btns">
-          <button class="doc-dl-btn doc-dl-txt" onclick="downloadAs('${id}','txt')">
-            <span class="doc-dl-icon">📄</span>
-            <span>Notatnik<br><small>.txt</small></span>
-          </button>
-          <button class="doc-dl-btn doc-dl-pdf" onclick="downloadAs('${id}','pdf')">
-            <span class="doc-dl-icon">📕</span>
-            <span>PDF<br><small>.pdf</small></span>
-          </button>
-          <button class="doc-dl-btn doc-dl-word" onclick="downloadAs('${id}','docx')">
-            <span class="doc-dl-icon">📘</span>
-            <span>Word<br><small>.docx</small></span>
-          </button>
-        </div>
-      </div>
-    </div>`;
+    return '<div class="doc-result-card" id="result-' + id + '">' +
+      '<div class="doc-result-header">' +
+        '<div class="doc-result-icon">' + icon + '</div>' +
+        '<div><div class="doc-result-name">' + d.name + '</div>' +
+        '<div class="doc-result-badge">✓ Wygenerowany</div></div>' +
+      '</div>' +
+      '<div class="doc-result-preview" id="preview-' + id + '">' +
+        '<pre class="doc-result-text" id="pretext-' + id + '"></pre>' +
+      '</div>' +
+      '<div class="doc-result-downloads">' +
+        '<div class="doc-result-dl-label">Pobierz jako:</div>' +
+        '<div class="doc-result-dl-btns">' +
+          '<button class="doc-dl-btn doc-dl-txt" onclick="downloadAs(\'' + id + '\',\'txt\')">' +
+            '<span class="doc-dl-icon">📄</span><span>Notatnik<br><small>.txt</small></span></button>' +
+          '<button class="doc-dl-btn doc-dl-pdf" onclick="downloadAs(\'' + id + '\',\'pdf\')">' +
+            '<span class="doc-dl-icon">📕</span><span>PDF<br><small>.pdf</small></span></button>' +
+          '<button class="doc-dl-btn doc-dl-word" onclick="downloadAs(\'' + id + '\',\'docx\')">' +
+            '<span class="doc-dl-icon">📘</span><span>Word<br><small>.docx</small></span></button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }).join('');
 
-  document.getElementById('subpageBody').innerHTML = `
-    <div class="gf-wrap">
-      <div class="pay-screen">
-        <div class="pay-all-check">✓</div>
-        <h2 class="pay-title">${docs.length === 1 ? 'Dokument gotowy!' : `Wszystkie ${docs.length} dokumenty gotowe!`}</h2>
-        <p class="pay-sub">Przejrzyj treść i pobierz w wybranym formacie.</p>
-        ${docCardsHTML}
-        <button class="gf-btn-redo" onclick="redoForm()">← Popraw dane</button>
-        <p class="gf-disclaimer">Dokumenty stanowią wzory do samodzielnej edycji. Zalecamy weryfikację przed podpisaniem.</p>
-      </div>
-    </div>`;
+  const title = docs.length === 1 ? 'Dokument gotowy!' : 'Wszystkie ' + docs.length + ' dokumenty gotowe!';
+
+  document.getElementById('subpageBody').innerHTML =
+    '<div class="gf-wrap"><div class="pay-screen">' +
+    '<div class="pay-all-check">✓</div>' +
+    '<h2 class="pay-title">' + title + '</h2>' +
+    '<p class="pay-sub">Przejrzyj treść i pobierz w wybranym formacie.</p>' +
+    docCardsHTML +
+    '<button class="gf-btn-redo" onclick="redoForm()">← Popraw dane</button>' +
+    '<p class="gf-disclaimer">Dokumenty stanowią wzory do samodzielnej edycji. Zalecamy weryfikację przed podpisaniem.</p>' +
+    '</div></div>';
+
+  // Insert text safely via DOM (avoids backtick/template literal injection)
+  docs.forEach(([id, d]) => {
+    const pre = document.getElementById('pretext-' + id);
+    if (pre) pre.textContent = d.text;
+  });
 }
 
 // ── PŁATNOŚĆ ─────────────────────────────────────────────────
@@ -1318,10 +1311,7 @@ function logoutUser() {
   updateNavAuth();
   window.location.href = 'index.html';
 }
-document.addEventListener('DOMContentLoaded', updateNavAuth);
-</script>
-
-</body></html>`);
+    </body></html>\`);
     win.document.close();
 
   } else if (format === 'docx') {
@@ -1538,6 +1528,15 @@ function updateNavAuth() {
     profile.style.display     = 'none';
   }
 }
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.remove('open');
+});
 function logoutUser() {
   clearUser();
   updateNavAuth();
