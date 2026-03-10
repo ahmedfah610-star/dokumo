@@ -21,5 +21,3 @@ export default async function handler(req, res) {
   await db.collection('users').doc(uid).collection('documents').doc(docId).delete();
   return res.status(200).json({ ok: true });
 }
-
-
