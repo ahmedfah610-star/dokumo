@@ -193,6 +193,27 @@
   .my-header-top { flex-direction:column; align-items:flex-start; }
 }
 </style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app = initializeApp({
+    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain: "dokumo-c1ccb.firebaseapp.com",
+    projectId: "dokumo-c1ccb",
+    storageBucket: "dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId: "1088576029067",
+    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+  });
+  const auth = getAuth(app);
+  window._getFirebaseToken = async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    return user.getIdToken();
+  };
+  onAuthStateChanged(auth, user => {
+    window._firebaseUser = user || null;
+  });
+</script>
 </head>
 <body class="my-page">
 
@@ -303,44 +324,46 @@ let activeFilter = 'all';
 let activeTab = 'all';
 let confirmDocId = null;
 
-// ── LOAD / SAVE ──
-function loadDocs() {
-  try { return JSON.parse(localStorage.getItem(DOCS_KEY)) || []; }
-  catch(e) { return []; }
-}
-function saveDocs(docs) {
-  localStorage.setItem(DOCS_KEY, JSON.stringify(docs));
+// ── API — pobierz token Firebase ──
+window._allDocs = [];
+
+async function getToken() {
+  if (window._getFirebaseToken) {
+    try { return await window._getFirebaseToken(); } catch(e) {}
+  }
+  return null;
 }
 
-// ── IMPORT from sessionStorage (after generating) ──
-function importGenerated() {
+// ── LOAD z API ──
+async function loadDocsFromAPI() {
+  const token = await getToken();
+  if (!token) return [];
   try {
-    const raw = sessionStorage.getItem('dokumo_docs');
-    if (!raw) return;
-    const generated = JSON.parse(raw);
-    const docs = loadDocs();
-    Object.entries(generated).forEach(([typeId, d]) => {
-      const meta = DOC_META[typeId] || { cat:'inne', icon:'📄', label:'Inne' };
-      // Avoid duplicates by checking if same typeId+text already exists
-      const exists = docs.some(x => x.typeId === typeId && x.text === d.text);
-      if (!exists) {
-        docs.unshift({
-          id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-          typeId,
-          name: d.name,
-          text: d.text,
-          cat: meta.cat,
-          icon: meta.icon,
-          catLabel: meta.label,
-          status: 'generated',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-      }
-    });
-    saveDocs(docs);
-    sessionStorage.removeItem('dokumo_docs');
-  } catch(e) {}
+    const res = await fetch('/api/get-docs', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.docs || [];
+  } catch(e) { return []; }
+}
+
+// ── DELETE przez API ──
+async function deleteDocAPI(docId) {
+  const token = await getToken();
+  if (!token) return;
+  await fetch('/api/delete-doc', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ docId })
+  });
+}
+
+// ── DUPLICATE (lokalnie + API save) ──
+async function duplicateDocAPI(doc) {
+  const token = await getToken();
+  if (!token) return;
+  // Duplikat zapisujemy przez generate? Nie — robimy POST do save-doc
+  // Na razie duplikuj lokalnie w pamięci (nie w Firestore)
+  // TODO: osobny endpoint save-doc
 }
 
 // ── FILTER / SORT / RENDER ──
@@ -363,8 +386,12 @@ function formatDate(iso) {
   return d.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 
-function renderDocs() {
-  let docs = loadDocs();
+async function renderDocs() {
+  const grid = document.getElementById('myDocGrid');
+  grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:0.85rem">Ładowanie dokumentów…</div>';
+
+  window._allDocs = await loadDocsFromAPI();
+  let docs = [...window._allDocs];
   const q = document.getElementById('mySearch').value.toLowerCase().trim();
   const sort = document.getElementById('mySort').value;
 
@@ -430,7 +457,7 @@ function renderDocs() {
 
 // ── DOWNLOAD ──
 function downloadDoc(docId, format) {
-  const docs = loadDocs();
+  const docs = window._allDocs || [];
   const doc = docs.find(d => d.id === docId);
   if (!doc || !doc.text) { showToast('Brak treści dokumentu.'); return; }
   const safeName = doc.name.replace(/[\s\/\\:*?"<>|]+/g,'_');
@@ -446,7 +473,28 @@ function downloadDoc(docId, format) {
       '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>' +
       '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}' +
       'pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}' +
-      '@media print{body{margin:2cm}}</style></head><body>' +
+      '@media print{body{margin:2cm}}</style><script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app = initializeApp({
+    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain: "dokumo-c1ccb.firebaseapp.com",
+    projectId: "dokumo-c1ccb",
+    storageBucket: "dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId: "1088576029067",
+    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+  });
+  const auth = getAuth(app);
+  window._getFirebaseToken = async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    return user.getIdToken();
+  };
+  onAuthStateChanged(auth, user => {
+    window._firebaseUser = user || null;
+  });
+</script>
+</head><body>' +
       '<pre>' + safe + '</pre>' +
       '<scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt></body></html>'
     );
@@ -483,19 +531,9 @@ function buildRTF(text, title) {
 
 // ── DUPLICATE ──
 function duplicateDoc(docId) {
-  const docs = loadDocs();
-  const orig = docs.find(d => d.id === docId);
+  const orig = (window._allDocs || []).find(d => d.id === docId);
   if (!orig) return;
-  const copy = Object.assign({}, orig, {
-    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-    name: orig.name + ' (kopia)',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  });
-  docs.unshift(copy);
-  saveDocs(docs);
-  renderDocs();
-  showToast('Zduplikowano: ' + copy.name);
+  showToast('Duplikowanie nie jest jeszcze dostępne w wersji cloud — wkrótce!');
 }
 
 // ── DELETE ──
@@ -509,10 +547,8 @@ function closeConfirm() {
   document.getElementById('confirmOverlay').classList.remove('open');
   confirmDocId = null;
 }
-function deleteDoc(docId) {
-  let docs = loadDocs();
-  docs = docs.filter(d => d.id !== docId);
-  saveDocs(docs);
+async function deleteDoc(docId) {
+  await deleteDocAPI(docId);
   closeConfirm();
   renderDocs();
   showToast('Dokument usunięty.');
@@ -597,9 +633,14 @@ document.addEventListener('DOMContentLoaded', () => {
   updateNavAuth();
   updateNavBadge();
   if (!getUser()) {
-    // Not logged in — show message but still render
+    document.getElementById('myDocGrid').innerHTML =
+      '<div class="my-empty"><span class="my-empty-icon">🔒</span>' +
+      '<div class="my-empty-title">Zaloguj się</div>' +
+      '<p class="my-empty-sub">Musisz być zalogowany, aby zobaczyć swoje dokumenty.</p>' +
+      '<a href="konto.html" class="btn-primary" style="display:inline-block;padding:12px 24px;font-size:0.78rem">Zaloguj się</a></div>';
+    document.getElementById('resultsLabel').textContent = '';
+    return;
   }
-  importGenerated();
   renderDocs();
 });
 </script>
