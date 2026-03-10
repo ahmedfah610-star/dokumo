@@ -149,6 +149,23 @@ function isProActive() {
   return new Date(sub.expiresAt) > new Date();
 }
 
+async function checkProFromAPI() {
+  for (let i = 0; i < 30 && !window._fbReady; i++) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  if (!window._fbToken) return false;
+  try {
+    const token = await window._fbToken();
+    const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (data.active && data.expiresAt) {
+      // Zapisz lokalnie dla szybkiego dostępu
+      localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
+    }
+    return data.active;
+  } catch(e) { return false; }
+}
+
 function updateNavAuth() {
   const user = getUser();
   const loginBtn    = document.getElementById('navLoginBtn');
@@ -276,10 +293,13 @@ function updateNavBadge() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   updateNavAuth();
-  setTimeout(renderSub, 300);
   updateNavBadge();
+  // Sprawdź PRO z Firestore i zaktualizuj localStorage
+  await checkProFromAPI();
+  updateNavBadge();
+  renderSub();
 });
 </script>
 </body>
