@@ -381,6 +381,15 @@ select.gf-input { cursor: pointer; }
   onAuthStateChanged(auth, u => {
     window._fbReady = true;
     window._fbToken = u ? () => u.getIdToken(true) : null;
+    if (u) {
+      localStorage.setItem('dokumo_user', JSON.stringify({
+        name: u.displayName || '', email: u.email || '', photo: u.photoURL || ''
+      }));
+    } else {
+      localStorage.removeItem('dokumo_user');
+    }
+    if (typeof updateNavAuth === 'function') updateNavAuth();
+    if (typeof updateNavBadge === 'function') updateNavBadge();
   });
 </script>
 </head>
