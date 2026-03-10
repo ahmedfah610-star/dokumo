@@ -1315,40 +1315,11 @@ function downloadAs(docId, format) {
   } else if (format === 'pdf') {
     const win = window.open('', '_blank');
     const safeText = d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    win.document.write(
-      '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + d.name + '</title>' +
-      '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}' +
-      'pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}' +
-      '@media print{body{margin:2cm}}</style><script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  const app = initializeApp({
-    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
-    authDomain: "dokumo-c1ccb.firebaseapp.com",
-    projectId: "dokumo-c1ccb",
-    storageBucket: "dokumo-c1ccb.firebasestorage.app",
-    messagingSenderId: "1088576029067",
-    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
-  });
-  const auth = getAuth(app);
-
-  // Czekaj na przywrócenie sesji Firebase
-  onAuthStateChanged(auth, user => {
-    window._firebaseUser = user || null;
-    window._firebaseReady = true;
-    // getIdToken zawsze zwraca świeży token
-    window._getFirebaseToken = async () => {
-      if (!user) return null;
-      return user.getIdToken(true);
-    };
-  });
-</script>
-</head><body>' +
-      '<pre>' + safeText + '</pre>' +
-      '<scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt>' +
-      '</body></html>'
-    );
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + d.name + '</title>');
+    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
+    win.document.write('</head><body><pre>' + safeText + '</pre>');
+    win.document.write('<scr' + 'ipt>window.onload=function(){window.print()}<\/scr' + 'ipt>');
+    win.document.write('</body></html>');
     win.document.close();
 
   } else if (format === 'docx') {
