@@ -381,15 +381,15 @@ select.gf-input { cursor: pointer; }
   });
   const auth = getAuth(app);
 
-  // Udostępnij getIdToken globalnie
-  window._getFirebaseToken = async () => {
-    const user = auth.currentUser;
-    if (!user) return null;
-    return user.getIdToken();
-  };
-
+  // Czekaj na przywrócenie sesji Firebase
   onAuthStateChanged(auth, user => {
     window._firebaseUser = user || null;
+    window._firebaseReady = true;
+    // getIdToken zawsze zwraca świeży token
+    window._getFirebaseToken = async () => {
+      if (!user) return null;
+      return user.getIdToken(true);
+    };
   });
 </script>
 </head>
@@ -1142,8 +1142,12 @@ async function generateDoc(docId) {
   document.getElementById('gfLoading').style.display = 'block';
 
   try {
-    // Pobierz token Firebase
+    // Poczekaj aż Firebase Auth przywróci sesję (max 3s)
     let firebaseToken = null;
+    for (let i = 0; i < 30; i++) {
+      if (window._firebaseReady) break;
+      await new Promise(r => setTimeout(r, 100));
+    }
     if (window._getFirebaseToken) {
       try { firebaseToken = await window._getFirebaseToken(); } catch(e) {}
     }
@@ -1329,15 +1333,15 @@ function downloadAs(docId, format) {
   });
   const auth = getAuth(app);
 
-  // Udostępnij getIdToken globalnie
-  window._getFirebaseToken = async () => {
-    const user = auth.currentUser;
-    if (!user) return null;
-    return user.getIdToken();
-  };
-
+  // Czekaj na przywrócenie sesji Firebase
   onAuthStateChanged(auth, user => {
     window._firebaseUser = user || null;
+    window._firebaseReady = true;
+    // getIdToken zawsze zwraca świeży token
+    window._getFirebaseToken = async () => {
+      if (!user) return null;
+      return user.getIdToken(true);
+    };
   });
 </script>
 </head><body>' +
