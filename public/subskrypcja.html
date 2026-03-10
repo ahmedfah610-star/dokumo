@@ -82,6 +82,25 @@
 .sub-loading-dots span:nth-child(3) { animation-delay:0.4s; }
 @keyframes sub-dot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
 </style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app = initializeApp({
+    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain: "dokumo-c1ccb.firebaseapp.com",
+    projectId: "dokumo-c1ccb",
+    storageBucket: "dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId: "1088576029067",
+    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+  });
+  const auth = getAuth(app);
+  window._getFirebaseToken = async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    return user.getIdToken();
+  };
+  onAuthStateChanged(auth, user => { window._firebaseUser = user || null; });
+</script>
 </head>
 <body class="sub-page">
 
@@ -225,9 +244,28 @@ function goToPayment() {
   window.open('https://buy.stripe.com/test_28E4gB0uqbzf18o0Bs1Jm00', '_blank');
 }
 
-function activateSub() {
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-  localStorage.setItem('dokumo_sub', JSON.stringify({ plan:'biznes', expiresAt, activatedAt: new Date().toISOString() }));
+async function activateSub() {
+  let token = null;
+  if (window._getFirebaseToken) {
+    try { token = await window._getFirebaseToken(); } catch(e) {}
+  }
+  if (token) {
+    try {
+      const res = await fetch('/api/activate-sub', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      if (data.expiresAt) {
+        // Zapisz też lokalnie dla szybkiego odczytu w nav badge
+        localStorage.setItem('dokumo_sub', JSON.stringify({ plan:'biznes', expiresAt: data.expiresAt }));
+      }
+    } catch(e) {}
+  } else {
+    // Fallback: tylko lokalnie (tryb test bez zalogowania)
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    localStorage.setItem('dokumo_sub', JSON.stringify({ plan:'biznes', expiresAt }));
+  }
   renderSub();
   updateNavBadge();
 }
