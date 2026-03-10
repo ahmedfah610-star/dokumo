@@ -1,11 +1,11 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/generate.js", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/generate", "dest": "/api/generate.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+  "functions": {
+    "api/*.js": {
+      "memory": 256
+    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/(.*)", "destination": "/public/$1" }
   ]
 }
