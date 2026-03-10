@@ -162,14 +162,10 @@ const app = initializeApp({
 });
 const auth = getAuth(app);
 
-window._getFirebaseToken = async () => {
-  const user = auth.currentUser;
-  if (!user) return null;
-  return user.getIdToken();
-};
-
 // Czekaj na Firebase Auth i dopiero wtedy inicjalizuj stronę
 onAuthStateChanged(auth, user => {
+  window._fbReady = true;
+  window._fbToken = user ? () => user.getIdToken(true) : null;
   window._firebaseUser = user || null;
   updateNavAuth();
   updateNavBadge();
@@ -252,8 +248,12 @@ function logoutUser() { clearUser(); window.location.href = 'index.html'; }
 
 // ── API ──
 async function getToken() {
-  if (window._getFirebaseToken) {
-    try { return await window._getFirebaseToken(); } catch(e) {}
+  // Poczekaj aż Firebase przywróci sesję (max 3s)
+  for (let i = 0; i < 30 && !window._fbReady; i++) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  if (window._fbToken) {
+    try { return await window._fbToken(); } catch(e) {}
   }
   return null;
 }
