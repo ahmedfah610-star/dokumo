@@ -367,6 +367,31 @@ select.gf-input { cursor: pointer; }
 .tcv-close { position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted); line-height:1; }
 
 </style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain: "dokumo-c1ccb.firebaseapp.com",
+    projectId: "dokumo-c1ccb",
+    storageBucket: "dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId: "1088576029067",
+    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+  });
+  const auth = getAuth(app);
+
+  // Udostępnij getIdToken globalnie
+  window._getFirebaseToken = async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    return user.getIdToken();
+  };
+
+  onAuthStateChanged(auth, user => {
+    window._firebaseUser = user || null;
+  });
+</script>
 </head>
 <body>
 
@@ -1117,10 +1142,39 @@ async function generateDoc(docId) {
   document.getElementById('gfLoading').style.display = 'block';
 
   try {
+    // Pobierz token Firebase
+    let firebaseToken = null;
+    if (window._getFirebaseToken) {
+      try { firebaseToken = await window._getFirebaseToken(); } catch(e) {}
+    }
+    if (!firebaseToken) {
+      document.getElementById('gfLoading').style.display = 'none';
+      document.getElementById('gfForm').style.display = 'block';
+      const errEl = document.getElementById('gfError');
+      errEl.textContent = 'Musisz być zalogowany i mieć aktywny Pakiet Biznes, aby generować dokumenty.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const meta = {cat:'inne',icon:'📄',catLabel:'Inne'};
+    const META_MAP = {
+      regulamin:{cat:'ecommerce',icon:'🛒',catLabel:'E-commerce'}, polityka_rodo:{cat:'ecommerce',icon:'🔒',catLabel:'E-commerce'},
+      polityka_zwrotow:{cat:'ecommerce',icon:'↩',catLabel:'E-commerce'}, umowa_b2b:{cat:'b2b',icon:'🤝',catLabel:'B2B'},
+      nda:{cat:'b2b',icon:'🔐',catLabel:'B2B'}, umowa_pracy:{cat:'hr',icon:'👔',catLabel:'HR'},
+      umowa_zlecenie:{cat:'hr',icon:'📄',catLabel:'HR'}, umowa_najmu:{cat:'najem',icon:'🏠',catLabel:'Najem'},
+      protokol:{cat:'najem',icon:'📋',catLabel:'Najem'}, wypowiedzenie_najmu:{cat:'najem',icon:'📝',catLabel:'Najem'},
+      biznesplan:{cat:'finanse',icon:'🏦',catLabel:'Finanse'}, swot:{cat:'finanse',icon:'📊',catLabel:'Finanse'},
+      umowa_spolnikow:{cat:'startup',icon:'🚀',catLabel:'Startup'},
+    };
+    Object.assign(meta, META_MAP[docId] || {});
+
     const res = await fetch('/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: doc.prompt(vals) + '\n\nPisz po polsku. Styl: formalny, prawniczy. NIE pisz wstępu ani komentarza – tylko treść dokumentu.' })
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + firebaseToken },
+      body: JSON.stringify({
+        prompt: doc.prompt(vals) + '\n\nPisz po polsku. Styl: formalny, prawniczy. NIE pisz wstępu ani komentarza – tylko treść dokumentu.',
+        docId, docName: doc.name, docCat: meta.cat, docIcon: meta.icon, docCatLabel: meta.catLabel
+      })
     });
     const rawText = await res.text();
     let data;
@@ -1139,27 +1193,7 @@ async function generateDoc(docId) {
     // Zapisz wygenerowany dokument
     generatedDocs[docId] = { text, name: doc.name, price: doc.price };
 
-    // Zapisz do "Moje dokumenty" w localStorage
-    try {
-      const DOC_META_LOCAL = {
-        regulamin:{cat:'ecommerce',icon:'🛒',label:'E-commerce'}, polityka_rodo:{cat:'ecommerce',icon:'🔒',label:'E-commerce'},
-        polityka_zwrotow:{cat:'ecommerce',icon:'↩',label:'E-commerce'}, umowa_b2b:{cat:'b2b',icon:'🤝',label:'B2B'},
-        nda:{cat:'b2b',icon:'🔐',label:'B2B'}, umowa_pracy:{cat:'hr',icon:'👔',label:'HR'},
-        umowa_zlecenie:{cat:'hr',icon:'📄',label:'HR'}, umowa_najmu:{cat:'najem',icon:'🏠',label:'Najem'},
-        protokol:{cat:'najem',icon:'📋',label:'Najem'}, wypowiedzenie_najmu:{cat:'najem',icon:'📝',label:'Najem'},
-        biznesplan:{cat:'finanse',icon:'🏦',label:'Finanse'}, swot:{cat:'finanse',icon:'📊',label:'Finanse'},
-        umowa_spolnikow:{cat:'startup',icon:'🚀',label:'Startup'},
-      };
-      const meta = DOC_META_LOCAL[docId] || {cat:'inne',icon:'📄',label:'Inne'};
-      const myDocs = JSON.parse(localStorage.getItem('dokumo_my_docs') || '[]');
-      myDocs.unshift({
-        id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-        typeId: docId, name: doc.name, text, cat: meta.cat,
-        icon: meta.icon, catLabel: meta.label, status: 'generated',
-        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-      });
-      localStorage.setItem('dokumo_my_docs', JSON.stringify(myDocs));
-    } catch(e) {}
+    // Dokument zapisany w Firestore przez api/generate
 
     document.getElementById('gfLoading').style.display = 'none';
 
@@ -1281,7 +1315,32 @@ function downloadAs(docId, format) {
       '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + d.name + '</title>' +
       '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}' +
       'pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}' +
-      '@media print{body{margin:2cm}}</style></head><body>' +
+      '@media print{body{margin:2cm}}</style><script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain: "dokumo-c1ccb.firebaseapp.com",
+    projectId: "dokumo-c1ccb",
+    storageBucket: "dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId: "1088576029067",
+    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+  });
+  const auth = getAuth(app);
+
+  // Udostępnij getIdToken globalnie
+  window._getFirebaseToken = async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+    return user.getIdToken();
+  };
+
+  onAuthStateChanged(auth, user => {
+    window._firebaseUser = user || null;
+  });
+</script>
+</head><body>' +
       '<pre>' + safeText + '</pre>' +
       '<scr'+'ipt>window.onload=function(){window.print();}<\/scr'+'ipt>' +
       '</body></html>'
