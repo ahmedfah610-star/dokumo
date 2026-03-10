@@ -367,6 +367,22 @@ select.gf-input { cursor: pointer; }
 .tcv-close { position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted); line-height:1; }
 
 </style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const auth = getAuth(initializeApp({
+    apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+    authDomain:"dokumo-c1ccb.firebaseapp.com",
+    projectId:"dokumo-c1ccb",
+    storageBucket:"dokumo-c1ccb.firebasestorage.app",
+    messagingSenderId:"1088576029067",
+    appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"
+  }));
+  onAuthStateChanged(auth, u => {
+    window._fbReady = true;
+    window._fbToken = u ? () => u.getIdToken(true) : null;
+  });
+</script>
 </head>
 <body>
 
@@ -1121,9 +1137,28 @@ async function generateDoc(docId) {
     return;
   }
 
-  // Sprawdź PRO
-  const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
-  const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  // Sprawdź PRO — najpierw localStorage (szybko), potem API (pewnie)
+  let isPro = false;
+  const subLocal = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
+  if (subLocal && subLocal.expiresAt && new Date(subLocal.expiresAt) > new Date()) {
+    isPro = true;
+  } else {
+    // Sprawdź przez API
+    for (let i = 0; i < 30 && !window._fbReady; i++) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+    if (window._fbToken) {
+      try {
+        const token = await window._fbToken();
+        const res2 = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data2 = await res2.json();
+        if (data2.active && data2.expiresAt) {
+          localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data2.plan, expiresAt: data2.expiresAt }));
+          isPro = true;
+        }
+      } catch(e) {}
+    }
+  }
   if (!isPro) {
     window.location.href = 'subskrypcja.html';
     return;
