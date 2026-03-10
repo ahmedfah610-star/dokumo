@@ -10,10 +10,8 @@ const auth = getAuth();
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
-
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(200).json({ active: false });
-
   let uid;
   try { ({ uid } = await auth.verifyIdToken(token)); }
   catch { return res.status(200).json({ active: false }); }
@@ -28,6 +26,7 @@ export default async function handler(req, res) {
   return res.status(200).json({
     active,
     plan: data.plan,
-    expiresAt: expiresAt?.toISOString() || null
+    expiresAt: expiresAt?.toISOString() || null,
+    cancelled: data.cancelled || false,
   });
 }
