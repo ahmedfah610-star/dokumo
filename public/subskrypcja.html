@@ -158,9 +158,13 @@ async function checkProFromAPI() {
     const token = await window._fbToken();
     const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
-    if (data.active && data.expiresAt) {
-      // Zapisz lokalnie dla szybkiego dostępu
-      localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
+    if (data.expiresAt) {
+      // Zapisz lokalnie — zachowaj flagę cancelled z Firestore
+      localStorage.setItem('dokumo_sub', JSON.stringify({
+        plan: data.plan,
+        expiresAt: data.expiresAt,
+        cancelled: data.cancelled || false
+      }));
     }
     return data.active;
   } catch(e) { return false; }
@@ -265,9 +269,23 @@ async function activateSub() {
   updateNavBadge();
 }
 
-function cancelSub() {
+async function cancelSub() {
   if (!confirm('Anulować subskrypcję? Zachowasz dostęp do końca opłaconego okresu.')) return;
-  // Nie usuwamy — tylko oznaczamy jako anulowana. Dostęp trwa do expiresAt.
+
+  // Zapisz anulowanie w Firestore
+  for (let i = 0; i < 30 && !window._fbReady; i++) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  if (window._fbToken) {
+    try {
+      const token = await window._fbToken();
+      await fetch('/api/cancel-sub', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
+      });
+    } catch(e) {}
+  }
+
+  // Zapisz też lokalnie
   const sub = getSubscription();
   if (sub) {
     sub.cancelled = true;
