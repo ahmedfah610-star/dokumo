@@ -1168,11 +1168,37 @@ async function generateDoc(docId) {
   document.getElementById('gfLoading').style.display = 'block';
 
   try {
+    // Token Firebase (opcjonalny — do zapisu w Firestore)
+    let fbToken = null;
+    for (let i = 0; i < 30 && !window._fbReady; i++) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+    if (window._fbToken) {
+      try { fbToken = await window._fbToken(); } catch(e) {}
+    }
+
+    const META_MAP = {
+      regulamin:{cat:'ecommerce',icon:'🛒',catLabel:'E-commerce'},
+      polityka_rodo:{cat:'ecommerce',icon:'🔒',catLabel:'E-commerce'},
+      polityka_zwrotow:{cat:'ecommerce',icon:'↩',catLabel:'E-commerce'},
+      umowa_b2b:{cat:'b2b',icon:'🤝',catLabel:'B2B'}, nda:{cat:'b2b',icon:'🔐',catLabel:'B2B'},
+      umowa_pracy:{cat:'hr',icon:'👔',catLabel:'HR'}, umowa_zlecenie:{cat:'hr',icon:'📄',catLabel:'HR'},
+      umowa_najmu:{cat:'najem',icon:'🏠',catLabel:'Najem'}, protokol:{cat:'najem',icon:'📋',catLabel:'Najem'},
+      wypowiedzenie_najmu:{cat:'najem',icon:'📝',catLabel:'Najem'},
+      biznesplan:{cat:'finanse',icon:'🏦',catLabel:'Finanse'}, swot:{cat:'finanse',icon:'📊',catLabel:'Finanse'},
+      umowa_spolnikow:{cat:'startup',icon:'🚀',catLabel:'Startup'},
+    };
+    const meta = META_MAP[docId] || {cat:'inne',icon:'📄',catLabel:'Inne'};
+
+    const headers = {'Content-Type':'application/json'};
+    if (fbToken) headers['Authorization'] = 'Bearer ' + fbToken;
+
     const res = await fetch('/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
-        prompt: doc.prompt(vals) + '\n\nPisz po polsku. Styl: formalny, prawniczy. NIE pisz wstępu ani komentarza – tylko treść dokumentu.'
+        prompt: doc.prompt(vals) + '\n\nPisz po polsku. Styl: formalny, prawniczy. NIE pisz wstępu ani komentarza – tylko treść dokumentu.',
+        docId, docName: doc.name, docCat: meta.cat, docIcon: meta.icon, docCatLabel: meta.catLabel
       })
     });
     const rawText = await res.text();
