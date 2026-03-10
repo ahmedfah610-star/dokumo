@@ -1,4 +1,4 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
@@ -21,3 +21,4 @@ export default async function handler(req, res) {
   await db.collection('users').doc(uid).collection('documents').doc(docId).delete();
   return res.status(200).json({ ok: true });
 }
+
