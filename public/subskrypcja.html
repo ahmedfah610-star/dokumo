@@ -216,7 +216,7 @@ function renderSub() {
           '<div class="sub-active-sub">Masz pełny dostęp do wszystkich dokumentów</div></div>' +
         '</div>' +
         '<div class="sub-expires">Wygasa: ' + exp.toLocaleDateString('pl-PL', {day:'2-digit',month:'long',year:'numeric'}) + ' · zostało <strong>' + days + ' dni</strong></div>' +
-        '<button class="sub-cancel-btn" onclick="cancelSub()">Anuluj subskrypcję</button>' +
+        (sub.cancelled ? '<p style="font-size:0.78rem;color:#92400e;margin-top:8px">⚠ Subskrypcja anulowana — dostęp aktywny do końca okresu.</p>' : '<button class="sub-cancel-btn" onclick="cancelSub()">Anuluj subskrypcję</button>') +
       '</div>';
   } else {
     content.innerHTML =
@@ -266,8 +266,13 @@ async function activateSub() {
 }
 
 function cancelSub() {
-  if (!confirm('Anulować subskrypcję? Stracisz dostęp po wygaśnięciu obecnego okresu.')) return;
-  localStorage.removeItem('dokumo_sub');
+  if (!confirm('Anulować subskrypcję? Zachowasz dostęp do końca opłaconego okresu.')) return;
+  // Nie usuwamy — tylko oznaczamy jako anulowana. Dostęp trwa do expiresAt.
+  const sub = getSubscription();
+  if (sub) {
+    sub.cancelled = true;
+    localStorage.setItem('dokumo_sub', JSON.stringify(sub));
+  }
   renderSub();
   updateNavBadge();
 }
