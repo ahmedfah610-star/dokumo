@@ -35,6 +35,7 @@ function buildCVHTML(tpl) {
   const c2 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c2 : t.color2;
   const name = [d.imie, d.nazwisko].filter(Boolean).join(' ') || 'Imię Nazwisko';
   const skills = d.umiejetnosci ? d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const certs = d.certyfikaty ? d.certyfikaty.split(',').map(s=>s.trim()).filter(Boolean) : [];
   const photo = d.zdjecie ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
   const contact = [
     d.email && `<span>✉ ${d.email}</span>`,
@@ -99,6 +100,11 @@ function buildCVHTML(tpl) {
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px"><strong>${l.jezyk}</strong> <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
+          ${certs.length?`
+          <div style="margin-bottom:16px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>
+            ${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}
+          </div>`:''}
           ${d.zainteresowania?`
           <div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -124,6 +130,7 @@ function buildCVHTML(tpl) {
         ${d.jezyki.some(l=>l.jezyk)?`
         <div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">${L("languages")}</div>
         ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:rgba(255,255,255,0.75);margin-bottom:4px">${l.jezyk} <span style="opacity:0.5">– ${l.poziom}</span></div>`).join('')}`:''}
+        ${certs.length?`<div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9px;color:rgba(255,255,255,0.75);margin-bottom:4px;display:flex;align-items:center;gap:5px"><span style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:inline-block;flex-shrink:0"></span>${c}</div>`).join('')}`:''}
         ${d.zainteresowania?`<div style="font-size:8.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:5px">${L("interests")}</div><div style="font-size:9px;color:rgba(255,255,255,0.7);line-height:1.6">${d.zainteresowania}</div>`:''}
       </div>
       <div style="flex:1;padding:28px 28px">
@@ -202,6 +209,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
+          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`
           <div>
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -262,6 +270,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} – ${l.poziom}</div>`).join('')}
           </div>`:''}
+          ${certs.length?`<div style="margin-top:16px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`
           <div style="margin-top:16px">
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">${L("interests")}</div>
@@ -320,6 +329,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
+          ${certs.length?`<div style="background:#fff;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`
           <div style="background:#fff;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -368,6 +378,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#f1f5f9;margin-bottom:3px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c2};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`<div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -388,6 +399,7 @@ function buildCVHTML(tpl) {
           ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.75);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
           ${skills.length?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${s}</div>`).join('')}`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
+          ${certs.length?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${c}</div>`).join('')}`:''}
           ${d.zainteresowania?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${L("interests")}</div><div style="font-size:8.5px;color:rgba(255,255,255,0.75);line-height:1.65">${d.zainteresowania}</div>`:''}
         </div>
         <div style="padding:28px 28px">
@@ -457,6 +469,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;margin-bottom:4px;padding:3px 8px;background:${c1}15;border-radius:3px;color:#444">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -509,6 +522,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px;padding-left:8px;border-left:2px solid ${c1}">  ${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk} <span style="color:#999">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -555,6 +569,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;background:${c1}12;padding:3px 8px;margin-bottom:4px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certs.length?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06)"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -602,6 +617,11 @@ function buildCVHTML(tpl) {
           <div style="margin-top:18px">
             <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
+          </div>`:''}
+          ${certs.length?`
+          <div style="margin-top:18px">
+            <div style="font-size:11px;font-weight:700;color:#1a3a2e;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Certyfikaty</div>
+            ${certs.map(c=>`<div style="font-size:9.5px;color:#555;margin-bottom:4px">· ${c}</div>`).join('')}
           </div>`:''}
           ${d.zainteresowania?`
           <div style="margin-top:18px">
@@ -674,6 +694,7 @@ function buildCVHTML(tpl) {
               </div>
             </div>`).join('')}
         </div>`:''}
+        ${certs.length?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:#1a2744;flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
         ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>${renderCustomSections(c1)}
       </div>
@@ -722,6 +743,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#7c2d1215;border-left:2px solid #fb923c;margin-bottom:3px;color:#333">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:#7c2d12;flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#7c2d12;margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -768,6 +790,7 @@ function buildCVHTML(tpl) {
                 <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
               </div>`).join('')}
           </div>`:''}
+          ${certs.length?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:#4a044e;flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
           ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:#4a044e;border-bottom:2px solid #d8b4fe;padding-bottom:4px;margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
           <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #ede9fe;padding-top:8px;text-align:center">${L("consent")}</div>${renderCustomSections(c1)}
         </div>
@@ -1197,10 +1220,6 @@ window.addEventListener('_fbAuthReady', async ()=>{
 
 <!-- PAY BAR -->
 <div class="cv-pay-bar" id="cvPayBar">
-  <div class="cv-pay-bar-left">
-    <strong>Gotowe? Pobierz PDF</strong>
-    <span style="font-size:0.72rem;color:var(--muted)">Gotowe do pobrania</span>
-  </div>
   <div id="cvPayBtnWrap">
     <button class="btn-pay-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>
   </div>
@@ -1493,6 +1512,7 @@ let cvData = {
   doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
   wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
   umiejetnosci:'',
+  certyfikaty:'',
   jezyki:[{ jezyk:'', poziom:'B2' }],
   zainteresowania:''
 };
@@ -1516,7 +1536,7 @@ const CV_TEMPLATES = [
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
-let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','jezyki','zainteresowania'];
+let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','certyfikaty','jezyki','zainteresowania'];
 let cvCustomSections = []; // [{id, title, content}]
 
 const POLISH_UNIVERSITIES = [
@@ -1549,6 +1569,7 @@ const KIERUNKI_SUGGESTIONS = [
 ];
 
 const TOP_LANGS = ['Angielski','Niemiecki','Francuski','Hiszpański','Włoski','Rosyjski','Chiński','Ukraiński','Niderlandzki','Portugalski'];
+const TOP_CERTS = ['Google Analytics (GA4)','Google Ads','Meta Blueprint','HubSpot Marketing','HubSpot Sales','Scrum Master (PSM I)','Prince2 Foundation','PMP','AWS Cloud Practitioner','Microsoft Azure','Power BI','Excel (MOS)','ICDL/ECDL','Lean Six Sigma','TOEIC','IELTS'];
 
 function addLangChip(lang) {
   // Check if this language is already in the list (empty slot or duplicate)
@@ -1647,6 +1668,7 @@ const SEC_LABELS = {
   get doswiadczenie() { return L('workExperience'); },
   get wyksztalcenie()  { return L('educationSection'); },
   get umiejetnosci()   { return L('skillsSection'); },
+  get certyfikaty()    { return 'Certyfikaty'; },
   get jezyki()         { return L('languagesSection'); },
   get zainteresowania(){ return L('interestsSection'); }
 };
@@ -1662,6 +1684,7 @@ function getSectionSummary(sec) {
     return f.length ? f.map(e=>e.szkola).join(', ') : '';
   }
   if (sec === 'umiejetnosci') return cvData.umiejetnosci ? cvData.umiejetnosci.substring(0,50) : '';
+  if (sec === 'certyfikaty') return cvData.certyfikaty ? cvData.certyfikaty.substring(0,50) : '';
   if (sec === 'jezyki') return cvData.jezyki.filter(l=>l.jezyk).map(l=>l.jezyk).join(', ');
   if (sec === 'zainteresowania') return cvData.zainteresowania ? cvData.zainteresowania.substring(0,50) : '';
   return '';
@@ -1674,6 +1697,7 @@ function toggleAccSection(sec) {
     cvOpenSections.add(sec);
     setTimeout(() => {
       if (sec === 'umiejetnosci') updateSkillChips();
+      if (sec === 'certyfikaty') updateCertChips();
       if (sec === 'zainteresowania') updateInterestChips();
     }, 30);
   }
@@ -1954,6 +1978,7 @@ function renderCVForm() {
   `;
   initDragDrop();
   if (cvOpenSections.has('umiejetnosci')) updateSkillChips();
+  if (cvOpenSections.has('certyfikaty')) updateCertChips();
   if (cvOpenSections.has('zainteresowania')) updateInterestChips();
 }
 
@@ -1983,6 +2008,24 @@ function buildSectionFormHTML(sec) {
     </div>`;
 }
 
+// ── DATE HELPERS ─────────────────────────────────────────
+function fmtMonth(val) {
+  // Konwertuje "2022-01" → "01.2022"
+  if (!val) return '';
+  const m = val.match(/^(\d{4})-(\d{2})$/);
+  if (m) return m[2] + '.' + m[1];
+  return val;
+}
+function monthVal(stored) {
+  // Konwertuje "01.2022" → "2022-01" (dla atrybutu value w type=month)
+  if (!stored) return '';
+  const m = stored.match(/^(\d{2})\.(\d{4})$/);
+  if (m) return m[2] + '-' + m[1];
+  const y = stored.match(/^(\d{4})$/);
+  if (y) return y[1] + '-01';
+  return stored;
+}
+
 function buildSectionBodyHTML(sec) {
   if (sec === 'podsumowanie') return `
     <textarea class="cvf-input" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="${L('summaryPlaceholder')}">${cvData.podsumowanie}</textarea>`;
@@ -1994,8 +2037,8 @@ function buildSectionBodyHTML(sec) {
           <div class="cvf-grid2">
             <div class="cvf-group cvf-full"><label>${L("company")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="${L('companyPlaceholder')}"></div>
             <div class="cvf-group cvf-full"><label>${L("jobTitle")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="${L('jobPlaceholder')}"></div>
-            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="01.2022"></div>
-            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="${L('currentlyPlaceholder')}"></div>
+            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" oninput="cvData.doswiadczenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" oninput="cvData.doswiadczenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
             <div class="cvf-group cvf-full"><label>${L("duties")}</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="${L('duties')}...">${e.opis}</textarea></div>
           </div>
           ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})>${L("remove")}</button>` : ''}
@@ -2020,8 +2063,8 @@ function buildSectionBodyHTML(sec) {
                 <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
               </div>
             </div>
-            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].od=this.value;updateCVPreview()" value="${e.od}" placeholder="2020"></div>
-            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" oninput="cvData.wyksztalcenie[${i}].do=this.value;updateCVPreview()" value="${e.do}" placeholder="2023"></div>
+            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" oninput="cvData.wyksztalcenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" oninput="cvData.wyksztalcenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
           </div>
           ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})>${L("remove")}</button>` : ''}
         </div>`).join('')}
@@ -2048,6 +2091,13 @@ function buildSectionBodyHTML(sec) {
     <p class="acc-hint" style="margin-top:10px">Popularne języki — kliknij aby dodać:</p>
     <div class="cvf-suggestions" id="langSuggestions">
       ${TOP_LANGS.map(l => `<span class="cvf-chip" onclick="addLangChip('${l}')">${l}</span>`).join('')}
+    </div>`;
+
+  if (sec === 'certyfikaty') return `
+    <input class="cvf-input" id="certInput" oninput="cvData.certyfikaty=this.value;updateCVPreview();updateCertChips()" value="${cvData.certyfikaty}" placeholder="np. Google Analytics, Scrum Master...">
+    <p class="acc-hint">Popularne certyfikaty — kliknij aby dodać:</p>
+    <div class="cvf-suggestions" id="certSuggestions">
+      ${TOP_CERTS.map(c => `<span class="cvf-chip" onclick="addCertChip('${c.replace(/'/g,"\\'")}')">${c}</span>`).join('')}
     </div>`;
 
   if (sec === 'zainteresowania') return `
@@ -2125,6 +2175,27 @@ function addInterestChip(interest) {
   if (input) input.value = cvData.zainteresowania;
   updateCVPreview();
   updateInterestChips();
+}
+
+// ── CERTYFIKATY CHIPS ─────────────────────────────────────
+function updateCertChips() {
+  const container = document.getElementById('certSuggestions');
+  if (!container) return;
+  const current = (cvData.certyfikaty || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  container.innerHTML = TOP_CERTS.map(c => {
+    const used = current.includes(c.toLowerCase());
+    return `<span class="cvf-chip${used?' used':''}" onclick="addCertChip('${c.replace(/'/g,"\\'")}')">${c}</span>`;
+  }).join('');
+}
+function addCertChip(cert) {
+  const current = (cvData.certyfikaty || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (current.map(s=>s.toLowerCase()).includes(cert.toLowerCase())) return;
+  current.push(cert);
+  cvData.certyfikaty = current.join(', ');
+  const input = document.getElementById('certInput');
+  if (input) input.value = cvData.certyfikaty;
+  updateCVPreview();
+  updateCertChips();
 }
 
 // ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
@@ -2374,12 +2445,34 @@ function resetColorTheme() {
 }
 
 function getTplPreviewHTML(t) {
-  // Temporarily clear custom color to show template's native look
   const savedColor = cvCustomColor;
+  const savedImie = cvData.imie, savedNazwisko = cvData.nazwisko, savedStan = cvData.stanowisko;
+  const savedEmail = cvData.email, savedTel = cvData.tel, savedAdres = cvData.adres;
+  const savedPods = cvData.podsumowanie, savedUm = cvData.umiejetnosci;
+  const savedDosw = cvData.doswiadczenie, savedWyksztalcenie = cvData.wyksztalcenie, savedJezyki = cvData.jezyki;
   cvCustomColor = null;
+  // Wypełnij przykładowymi danymi jeśli CV jest puste
+  if (!cvData.imie && !cvData.nazwisko) {
+    cvData.imie = 'Anna'; cvData.nazwisko = 'Kowalska';
+    cvData.stanowisko = 'Marketing Manager';
+    cvData.email = 'anna@email.pl'; cvData.tel = '+48 123 456 789'; cvData.adres = 'Warszawa';
+    cvData.podsumowanie = 'Doświadczona specjalistka ds. marketingu z 5-letnim stażem w e-commerce. Zarządzam kampaniami reklamowymi i analityką.';
+    cvData.umiejetnosci = 'Google Analytics, Facebook Ads, Excel, SEO, Copywriting';
+    cvData.doswiadczenie = [
+      {firma:'Sklep Online ABC', stanowisko:'Marketing Specialist', od:'01.2021', do:'Teraz', opis:'Zarządzanie kampaniami Google Ads i Meta. Wzrost konwersji o 35%.'},
+      {firma:'Agencja XYZ', stanowisko:'Junior Marketer', od:'06.2018', do:'12.2020', opis:'Tworzenie treści i obsługa social media.'}
+    ];
+    cvData.wyksztalcenie = [{szkola:'Uniwersytet Warszawski', kierunek:'Zarządzanie i Marketing', od:'2014', do:'2018'}];
+    cvData.jezyki = [{jezyk:'Angielski', poziom:'C1'}, {jezyk:'Niemiecki', poziom:'B1'}];
+  }
   const html = buildCVHTML(t.id);
+  // Przywróć oryginalne dane
+  cvData.imie = savedImie; cvData.nazwisko = savedNazwisko; cvData.stanowisko = savedStan;
+  cvData.email = savedEmail; cvData.tel = savedTel; cvData.adres = savedAdres;
+  cvData.podsumowanie = savedPods; cvData.umiejetnosci = savedUm;
+  cvData.doswiadczenie = savedDosw; cvData.wyksztalcenie = savedWyksztalcenie; cvData.jezyki = savedJezyki;
   cvCustomColor = savedColor;
-  const scale = 270 / 595; // thumb width / A4 width
+  const scale = 270 / 595;
   return `<div class="cv-tpl-thumb-inner" style="transform:scale(${scale})">${html}</div>`;
 }
 
@@ -2505,7 +2598,21 @@ function downloadCV() {
     html2canvas: { scale:2, useCORS:true },
     jsPDF: { unit:'px', format:[595,842], orientation:'portrait' }
   };
-  html2pdf().set(opt).from(el).save();
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile) {
+    html2pdf().set(opt).from(el).outputPdf('blob').then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = opt.filename;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+    });
+  } else {
+    html2pdf().set(opt).from(el).save();
+  }
 }
 </script>
 
