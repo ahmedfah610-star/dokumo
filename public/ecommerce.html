@@ -219,15 +219,6 @@ body {
   color: var(--ink); letter-spacing: -.01em;
 }
 
-.doc-tag {
-  font-size: .6rem; font-weight: 800; letter-spacing: .1em;
-  text-transform: uppercase; padding: 3px 8px; border-radius: 6px;
-  white-space: nowrap;
-}
-.tag-omnibus { background: rgba(34,197,94,.12); color: #4ade80; border: 1px solid rgba(34,197,94,.2); }
-.tag-rodo    { background: rgba(99,102,241,.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,.2); }
-.tag-eu      { background: rgba(251,191,36,.1);  color: #fcd34d; border: 1px solid rgba(251,191,36,.2); }
-
 .doc-desc {
   font-size: .8rem; color: var(--ink2);
   line-height: 1.5; font-weight: 300;
@@ -248,12 +239,12 @@ body {
 }
 .doc-card.ready .doc-btn {
   background: rgba(34,197,94,.15);
-  color: #4ade80;
-  border: 1px solid rgba(34,197,94,.2);
+  color: #39ff8a;
+  border: 1px solid rgba(57,255,138,.3);
 }
 .doc-card.ready:hover .doc-btn {
-  background: rgba(34,197,94,.25);
-  border-color: rgba(34,197,94,.4);
+  background: rgba(57,255,138,.2);
+  border-color: rgba(57,255,138,.5);
 }
 .doc-card.needs-input .doc-btn {
   background: rgba(249,115,22,.12);
@@ -406,12 +397,12 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <!-- DOCUMENT STACK -->
 
-<div style="max-width:860px;margin:0 auto;padding:36px 2rem 0;">
-  <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,#1a1c20 0%,#0f1923 50%,#1a1c20 100%);padding:36px 40px;border:1px solid rgba(255,255,255,.07);text-align:center;">
-    <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.15) 0%,transparent 70%);pointer-events:none;"></div>
     <div style="position:absolute;bottom:-30px;left:60px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.08) 0%,transparent 70%);pointer-events:none;"></div>
-    <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.3rem,3.5vw,1.9rem);font-weight:800;color:#f0ede8;letter-spacing:-.03em;line-height:1.2;position:relative;z-index:1;">Twój przewodnik po<br><span style="background:linear-gradient(90deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">świecie internetu.</span></p>
   </div>
+</div>
+
+<div style="max-width:860px;margin:40px auto 0;padding:0 2rem;">
+  <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:#1a1714;letter-spacing:-.03em;line-height:1.15;">Twój przewodnik po świecie<br><span style="background:linear-gradient(90deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">internetu.</span></h2>
 </div>
 
 <div class="doc-stack">
@@ -429,16 +420,12 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="doc-info">
         <div class="doc-header">
           <span class="doc-name">Regulamin Sklepu</span>
-          <span class="doc-tag tag-omnibus">Zgodny z Omnibus</span>
         </div>
         <p class="doc-desc">Dostosowany do Twoich produktów — fizyczne, cyfrowe lub SaaS. Uwzględnia obowiązkowe zapisy dyrektywy Omnibus o cenach.</p>
       </div>
     </div>
     <div class="doc-action">
-      <button class="doc-btn">
-        Pobierz pakiet
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
+      <button class="doc-btn">Generuj <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
     </div>
     <div class="doc-status"></div>
   </div>
@@ -457,16 +444,12 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="doc-info">
         <div class="doc-header">
           <span class="doc-name">Polityka Prywatności & Cookies</span>
-          <span class="doc-tag tag-rodo">RODO</span>
         </div>
         <p class="doc-desc">Generuje też gotowe treści checkboxów pod formularz kontaktowy i zapis do newslettera. Osobna sekcja dla plików cookies.</p>
       </div>
     </div>
     <div class="doc-action">
-      <button class="doc-btn">
-        Pobierz pakiet
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
+      <button class="doc-btn">Generuj <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
     </div>
     <div class="doc-status"></div>
   </div>
@@ -484,16 +467,12 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="doc-info">
         <div class="doc-header">
           <span class="doc-name">Zwroty & Reklamacje</span>
-          <span class="doc-tag tag-eu">Dyrektywa UE</span>
         </div>
         <p class="doc-desc">Pouczenie o prawie do odstąpienia i formularz zwrotu — gotowy do dołączenia do maila potwierdzającego zamówienie.</p>
       </div>
     </div>
     <div class="doc-action">
-      <button class="doc-btn">
-        Pobierz pakiet
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      </button>
+      <button class="doc-btn">Generuj <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
     </div>
     <div class="doc-status"></div>
   </div>
@@ -512,6 +491,10 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 </div>
 
+<div style="max-width:860px;margin:16px auto 0;padding:0 2rem;">
+  <p style="font-size:.72rem;color:#9b9590;letter-spacing:.02em;">📋 Ostatnia aktualizacja prawna: 11 marca 2026. Zgodne z najnowszymi wytycznymi UOKiK.</p>
+</div>
+
 <!-- GENERATOR MODAL -->
 <div id="genOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;align-items:flex-end;justify-content:center;">
   <div id="genSheet" style="background:#141518;border:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0;padding:32px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.6,1);">
@@ -527,7 +510,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     <div id="genResult" style="display:none;">
       <textarea id="genText" style="width:100%;min-height:320px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;color:#f0ede8;font-size:.82rem;line-height:1.7;resize:vertical;font-family:'DM Sans',sans-serif;"></textarea>
       <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
-        <button onclick="copyResult()" style="flex:1;padding:11px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#4ade80;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">📋 Kopiuj</button>
+        <button onclick="copyResult()" style="flex:1;padding:11px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#39ff8a;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">📋 Kopiuj</button>
         <button onclick="downloadResult()" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">⬇ Pobierz .txt</button>
       </div>
     </div>
