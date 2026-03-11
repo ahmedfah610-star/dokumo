@@ -312,7 +312,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 </div>
 
 <!-- GENERATOR MODAL -->
-<div id="genOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;align-items:flex-end;justify-content:center;">
+<div id="genOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;">
   <div id="genSheet" style="background:#141518;border:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0;padding:32px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.6,1);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
       <h2 id="genTitle" style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:#f0ede8;letter-spacing:-.02em;"></h2>
@@ -403,7 +403,7 @@ const FORMS = {
         label: 'Dzieło',
         fields: [
           { id:'dzielo', label:'Opis dzieła', placeholder:'np. Logo + identyfikacja wizualna', icon:'🎨' },
-          { id:'prawa_autorskie', label:'Przeniesienie praw autorskich?', type:'toggle', icon:'©️' },
+          { id:'prawa_autorskie', label:'Przeniesienie praw autorskich?', type:'toggle', icon:'📄' },
         ]
       },
       {
@@ -504,7 +504,8 @@ function openDoc(id) {
 
   const overlay = document.getElementById('genOverlay');
   const sheet = document.getElementById('genSheet');
-  overlay.style.display = 'flex';
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'auto';
   requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
 }
 
@@ -519,17 +520,17 @@ function renderStep() {
     <!-- Progress bar -->
     <div style="margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ${currentStep+1} z ${total}: ${step.label}</span>
-        <span style="font-size:.7rem;color:rgba(240,237,232,.3);">${pct}% ukończone</span>
-      </div>
+        <span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ${currentStep+1} z ${total}: ${step.label}<\/span>
+        <span style="font-size:.7rem;color:rgba(240,237,232,.3);">${pct}% ukończone<\/span>
+      <\/div>
       <div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>
-      </div>
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"><\/div>
+      <\/div>
       <!-- Step dots -->
       <div style="display:flex;gap:6px;margin-top:10px;">
-        ${steps.map((_,i) => `<div style="flex:1;height:3px;border-radius:99px;background:${i<=currentStep?'#39ff8a':'rgba(255,255,255,.08)'};transition:background .3s;"></div>`).join('')}
-      </div>
-    </div>
+        ${steps.map((_,i) => `<div style="flex:1;height:3px;border-radius:99px;background:${i<=currentStep?'#39ff8a':'rgba(255,255,255,.08)'};transition:background .3s;"><\/div>`).join('')}
+      <\/div>
+    <\/div>
   `;
 
   // Render fields
@@ -537,48 +538,48 @@ function renderStep() {
     const val = wizardValues[f.id] || '';
     if (f.type === 'pills') {
       html += `<div style="margin-bottom:18px;">
-        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">${f.icon} ${f.label}</label>
+        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">${f.icon} ${f.label}<\/label>
         <div style="display:flex;flex-wrap:wrap;gap:8px;" id="pills_${f.id}">
           ${f.options.map(o => `<button type="button" onclick="selectPill('${f.id}','${o.replace(/'/g,"\\'")}',this)"
             style="padding:8px 16px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid rgba(255,255,255,.12);background:${val===o?'rgba(57,255,138,.15)':'rgba(255,255,255,.05)'};color:${val===o?'#39ff8a':'rgba(240,237,232,.7)'};${val===o?'border-color:rgba(57,255,138,.4);':''}"
-            data-val="${o}">${o}</button>`).join('')}
-        </div>
+            data-val="${o}">${o}<\/button>`).join('')}
+        <\/div>
         <input type="hidden" id="gf_${f.id}" value="${val}">
-      </div>`;
+      <\/div>`;
     } else if (f.type === 'toggle') {
       const isYes = val === 'Tak';
       html += `<div style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;">
-        <span style="font-size:.85rem;font-weight:500;color:rgba(240,237,232,.8);">${f.icon} ${f.label}</span>
+        <span style="font-size:.85rem;font-weight:500;color:rgba(240,237,232,.8);">${f.icon} ${f.label}<\/span>
         <button type="button" onclick="toggleField('${f.id}',this)" id="toggle_${f.id}"
           style="width:48px;height:26px;border-radius:13px;border:none;cursor:pointer;transition:all .2s;background:${isYes?'#22c55e':'rgba(255,255,255,.12)};position:relative;">
-          <span style="position:absolute;top:3px;${isYes?'right:3px':'left:3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:all .2s;display:block;"></span>
-        </button>
+          <span style="position:absolute;top:3px;${isYes?'right:3px':'left:3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:all .2s;display:block;"><\/span>
+        <\/button>
         <input type="hidden" id="gf_${f.id}" value="${val||'Nie'}">
-      </div>`;
+      <\/div>`;
     } else if (f.type === 'date') {
       html += `<div style="margin-bottom:18px;">
-        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${f.icon} ${f.label}</label>
+        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${f.icon} ${f.label}<\/label>
         <input id="gf_${f.id}" type="date" value="${val}" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif;cursor:pointer;color-scheme:dark;">
-      </div>`;
+      <\/div>`;
     } else {
       html += `<div style="margin-bottom:18px;">
-        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${f.icon} ${f.label}${f.optional?' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>':''}</label>
+        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${f.icon} ${f.label}${f.optional?' <span style="font-weight:400;opacity:.5;">(opcjonalnie)<\/span>':''}<\/label>
         <input id="gf_${f.id}" type="text" placeholder="${f.placeholder}" value="${val}"
           style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif;"
           onkeydown="if(event.key==='Enter'){wizardNext();}">
-      </div>`;
+      <\/div>`;
     }
   });
 
   // Nav buttons
   const isLast = currentStep === total - 1;
   html += `<div style="display:flex;gap:10px;margin-top:8px;">
-    ${currentStep > 0 ? `<button type="button" onclick="wizardBack()" style="flex:0 0 auto;padding:13px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:'DM Sans',sans-serif;">← Wróć</button>` : ''}
+    ${currentStep > 0 ? `<button type="button" onclick="wizardBack()" style="flex:0 0 auto;padding:13px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:'DM Sans',sans-serif;">← Wróć<\/button>` : ''}
     <button type="button" onclick="wizardNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.9rem;transition:all .2s;"
       onmouseover="this.style.background='rgba(57,255,138,.22)'" onmouseout="this.style.background='rgba(57,255,138,.12)'">
       ${isLast ? 'Generuj dokument ⚡' : `Dalej: ${steps[currentStep+1]?.label} →`}
-    </button>
-  </div>`;
+    <\/button>
+  <\/div>`;
 
   document.getElementById('genForm').innerHTML = html;
 }
@@ -631,7 +632,9 @@ function wizardBack() {
 function closeGen() {
   const sheet = document.getElementById('genSheet');
   sheet.style.transform = 'translateY(100%)';
-  setTimeout(() => { document.getElementById('genOverlay').style.display = 'none'; }, 350);
+  const ov=document.getElementById('genOverlay');
+  ov.style.opacity='0';
+  setTimeout(()=>{ ov.style.pointerEvents='none'; }, 300);
 }
 
 async function generate() {
@@ -667,6 +670,16 @@ function downloadResult() {
 }
 
 document.getElementById('genOverlay').addEventListener('click', function(e) { if(e.target===this) closeGen(); });
+
+// Expose to global scope for inline onclick handlers
+window.openDoc = openDoc;
+window.closeGen = closeGen;
+window.selectPill = selectPill;
+window.toggleField = toggleField;
+window.wizardNext = wizardNext;
+window.wizardBack = wizardBack;
+window.copyResult = copyResult;
+window.downloadResult = downloadResult;
 
 </script>
 </body>
