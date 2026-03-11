@@ -11,28 +11,14 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh;}
 
-/* HERO */
-.hero{background:var(--ink);padding:28px 2rem 24px;text-align:center;position:relative;overflow:hidden;}
-.hero-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 1px,transparent 1px,transparent 48px);pointer-events:none;}
-.hero-inner{position:relative;z-index:1;}
-.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 12px 5px 8px;margin-bottom:16px;}
-.hero-tag-dot{width:20px;height:20px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;}
-.hero-tag-txt{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);}
-.hero-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.08;margin-bottom:6px;}
-.hero-sub{font-size:.82rem;color:rgba(255,255,255,.38);}
 
-/* CURRENT PLAN BAR */
-.current-bar{max-width:860px;margin:12px auto 0;padding:0 1.5rem;}
-.current-chip{display:flex;align-items:center;gap:10px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;font-size:.8rem;color:var(--ink2);}
-.current-chip strong{color:var(--ink);}
-.current-chip .plan-badge{font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-left:auto;}
 .badge-kariera{background:#dbeafe;color:#1e40af;}
 .badge-biznes{background:#dcfce7;color:#15803d;}
 .badge-promax{background:var(--ink);color:#fff;}
 .badge-free{background:rgba(26,23,20,.07);color:var(--ink2);}
 
 /* PLANS GRID */
-.plans{max-width:860px;margin:16px auto 40px;padding:0 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.plans{max-width:860px;margin:0 auto 40px;padding:0 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 
 .plan-card{background:var(--cream);border:1.5px solid var(--border);border-radius:16px;padding:18px;display:flex;flex-direction:column;position:relative;transition:box-shadow .25s,border-color .25s;}
 .plan-card:hover{box-shadow:0 6px 28px rgba(26,23,20,.08);}
@@ -104,34 +90,6 @@ onAuthStateChanged(auth, async u=>{
 </script>
 </head>
 <body>
-<style>
-.u-back-bar{display:flex;align-items:center;gap:8px;padding:8px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.06);}
-.u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
-.u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.09);}
-.u-plan-chip{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;margin-left:auto;text-decoration:none;}
-.u-plan-chip.active{background:#1a3a2e;color:#fff;}
-.u-plan-chip.free{background:rgba(26,23,20,.07);color:#6b6560;}
-</style>
-<div class="u-back-bar">
-  <a href="index.html" class="u-back-btn">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    Strona główna
-  </a>
-  <a href="subskrypcja.html" class="u-plan-chip free" id="uPlanChip"></a>
-</div>
-<script>
-(function(){
-  const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
-  const chip=document.getElementById('uPlanChip');
-  if(!chip)return;
-  const active=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-  const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
-  chip.textContent=active?(names[sub.plan]||'PRO'):'Free';
-  chip.className='u-plan-chip '+(active?'active':'free');
-})();
-</script>
-
-
 <!-- ── UNIVERSAL NAV ── -->
 <style>
 .u-nav{background:#faf8f4;border-bottom:1px solid rgba(26,23,20,.08);position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;padding:0 1.5rem;gap:0;}
@@ -251,25 +209,24 @@ onAuthStateChanged(auth, async u=>{
 </script>
 
 
-<div class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-inner">
-    <div class="hero-tag">
-      <div class="hero-tag-dot"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <span class="hero-tag-txt">Dokumo</span>
-    </div>
-    <h1 class="hero-title">Wybierz swój pakiet</h1>
-    <p class="hero-sub">7 dni dostępu za 1 zł — bez zobowiązań.</p>
+</div>
+
+<div style="padding:24px 1.5rem 0;max-width:860px;margin:0 auto;">
+  <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:#1a1714;letter-spacing:-.02em;margin-bottom:4px;">Wybierz pakiet</h1>
+  <p style="font-size:.8rem;color:#6b6560;">7 dni za 1 zł — bez zobowiązań, bez automatycznego odnowienia.</p>
+</div>
+
+<!-- Overlay oczekiwania na płatność -->
+<div id="paymentOverlay" style="display:none;position:fixed;inset:0;background:rgba(26,23,20,.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#faf8f4;border-radius:20px;padding:40px 32px;max-width:320px;text-align:center;line-height:1.6;">
+    <div style="font-size:2rem;margin-bottom:12px;">⏳</div>
+    <p id="paymentMsg" style="font-size:.9rem;color:#1a1714;font-weight:500;">Oczekiwanie na potwierdzenie płatności…</p>
+    <p style="font-size:.72rem;color:#6b6560;margin-top:8px;">Nie zamykaj tej strony.</p>
   </div>
 </div>
 
-<div class="current-bar">
-  <div class="current-chip" id="currentChip" style="display:none">
-    <span>Twój aktualny pakiet:</span>
-    <strong id="currentPlanName"></strong>
-    <span class="plan-badge" id="currentPlanBadge"></span>
-  </div>
-</div>
+<!-- Aktywny plan msg -->
+<div id="activePlanMsg" style="display:none;max-width:860px;margin:12px auto 0;padding:0 1.5rem;"></div>
 
 <div class="plans">
 
@@ -336,10 +293,12 @@ onAuthStateChanged(auth, async u=>{
 </div>
 
 <script>
+// ── Stripe linki — uzupełnij po stworzeniu produktów w Stripe Dashboard ──
+// W każdym linku ustaw metadata: plan=kariera / plan=biznes / plan=promax
 const STRIPE_LINKS = {
-  kariera: 'https://buy.stripe.com/test_kariera_placeholder',
-  biznes:  'https://buy.stripe.com/test_5kQ4gy7hy9L84nwaXHgIo00',
-  promax:  'https://buy.stripe.com/test_promax_placeholder',
+  kariera: 'https://buy.stripe.com/3cI9AS1XecXkf2a8PzgIo03',
+  biznes:  'https://buy.stripe.com/fZu28q31icXk4nw9TDgIo02',
+  promax:  'https://buy.stripe.com/7sYaEWfO42iGaLU9TDgIo01',
 };
 
 function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
@@ -353,74 +312,98 @@ function activePlan(){
 
 function renderPage(){
   const plan=activePlan();
-  const names={kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'};
-  const badgeClass={kariera:'badge-kariera',biznes:'badge-biznes',promax:'badge-promax'};
   const user=getUser();
+  const names={kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'};
 
-  // Current plan chip
-  const chip=document.getElementById('currentChip');
-  if(plan&&user){
-    chip.style.display='flex';
-    document.getElementById('currentPlanName').textContent=names[plan]||plan;
-    const b=document.getElementById('currentPlanBadge');
-    b.textContent=plan==='promax'?'AKTYWNY':plan.toUpperCase();
-    b.className='plan-badge '+(badgeClass[plan]||'badge-free');
+  // Aktywny plan - pokaż komunikat nad kartą
+  const activeMsg=document.getElementById('activePlanMsg');
+  if(activeMsg){
+    if(plan&&user){
+      activeMsg.style.display='block';
+      activeMsg.innerHTML=`<span style="font-size:.78rem;color:#1a3a2e;font-weight:600;">✓ Aktywny pakiet: <strong>${names[plan]||plan}</strong></span>`;
+    } else {
+      activeMsg.style.display='none';
+    }
   }
 
-  // Cancel button
-  if(plan) document.getElementById('cancelWrap').style.display='block';
+  // Anuluj
+  const cw=document.getElementById('cancelWrap');
+  if(cw) cw.style.display=plan?'block':'none';
 
-  // Update buttons
   ['kariera','biznes','promax'].forEach(p=>{
     const btn=document.getElementById('btn-'+p);
     const card=document.getElementById('card-'+p);
     const topBadge=document.getElementById('badge-'+p);
+    if(!btn)return;
     if(plan===p){
-      btn.textContent='✓ Aktywny pakiet';
+      btn.textContent='✓ Aktywny';
       btn.className='plan-btn outline';
       card.classList.add('active-plan');
       if(topBadge){topBadge.textContent='✓ Aktywny';topBadge.className='plan-top-badge active';}
-    } else if(!user){
-      btn.onclick=()=>{ sessionStorage.setItem('dokumo_after_sub',window.location.href); window.location.href='konto.html'; };
+    } else {
+      // reset
+      card.classList.remove('active-plan');
+    }
+    if(!user){
+      btn.onclick=()=>{sessionStorage.setItem('dokumo_after_sub',window.location.href);window.location.href='konto.html';};
     }
   });
 }
 
 async function checkSubFromAPI(){
-  if(!window._fbToken)return;
+  if(!window._fbToken)return false;
   try{
     const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
     const data=await res.json();
     if(data.active&&data.expiresAt){
       localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+      return true;
     }
   }catch(e){}
-  renderPage();
-  if(window._renderUNav)window._renderUNav();
+  return false;
+}
+
+// ── POLLING — odpala się gdy wracasz ze Stripe (?pending=true) ──
+async function pollForPayment(plan){
+  const overlay=document.getElementById('paymentOverlay');
+  const msg=document.getElementById('paymentMsg');
+  if(overlay) overlay.style.display='flex';
+
+  let attempts=0;
+  const maxAttempts=24; // 2 minuty (co 5s)
+  while(attempts<maxAttempts){
+    await new Promise(r=>setTimeout(r,5000));
+    attempts++;
+    const ok=await checkSubFromAPI();
+    if(ok){
+      if(msg) msg.innerHTML='<span style="font-size:1.5rem">✅</span><br>Płatność potwierdzona!<br><strong>'+({kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'}[plan]||plan)+'</strong> aktywny.';
+      if(window._renderUNav) window._renderUNav();
+      renderPage();
+      setTimeout(()=>{ if(overlay) overlay.style.display='none'; },2500);
+      return;
+    }
+    if(msg) msg.innerHTML='⏳ Oczekiwanie na potwierdzenie płatności…<br><small style="opacity:.6">'+attempts+'/'+maxAttempts+' prób</small>';
+  }
+  if(msg) msg.innerHTML='⚠️ Przekroczono czas oczekiwania.<br><small>Odśwież stronę za chwilę.</small>';
+  setTimeout(()=>{ if(overlay) overlay.style.display='none'; },4000);
 }
 
 function kupPakiet(plan){
   const user=getUser();
   if(!user){
-    sessionStorage.setItem('dokumo_after_sub',window.location.href);
+    sessionStorage.setItem('dokumo_after_sub',window.location.href+'?pending='+plan);
     window.location.href='konto.html';
     return;
   }
   const link=STRIPE_LINKS[plan];
-  if(!link||link.includes('placeholder')){
-    // Dev mode — symuluj aktywację
-    const expiresAt=new Date(Date.now()+7*24*60*60*1000).toISOString();
-    localStorage.setItem('dokumo_sub',JSON.stringify({plan,expiresAt,activatedAt:new Date().toISOString()}));
-    if(window._renderUNav)window._renderUNav();
-    renderPage();
-    alert('Tryb testowy — pakiet '+plan+' aktywowany lokalnie na 7 dni.');
+  if(!link||link.includes('UZUPELNIJ')){
+    alert('Link płatności dla pakietu "'+plan+'" nie jest jeszcze skonfigurowany.\nDodaj go w STRIPE_LINKS w subskrypcja.html.');
     return;
   }
-  const btn=document.getElementById('btn-'+plan);
-  btn.textContent='Przekierowuję…';
-  btn.disabled=true;
-  window.open(link,'_blank');
-  // Stripe webhook aktywuje plan w Firestore
+  // Zapisz oczekiwany plan w sessionStorage — sprawdzony po powrocie
+  sessionStorage.setItem('dokumo_pending_plan', plan);
+  // Przekieruj na Stripe (w tym samym oknie)
+  window.location.href = link;
 }
 
 async function anulujSub(){
@@ -431,10 +414,26 @@ async function anulujSub(){
   const sub=getSub();
   if(sub){sub.cancelled=true;localStorage.setItem('dokumo_sub',JSON.stringify(sub));}
   renderPage();
-  if(window._renderUNav)window._renderUNav();
+  if(window._renderUNav) window._renderUNav();
 }
 
-document.addEventListener('DOMContentLoaded',renderPage);
+document.addEventListener('DOMContentLoaded', async ()=>{
+  renderPage();
+  // Sprawdź czy wróciłeś ze Stripe (Stripe dodaje ?session_id= do URL success)
+  const params=new URLSearchParams(window.location.search);
+  // Plan może być w URL (?plan=kariera) LUB w sessionStorage (fallback)
+  const planFromUrl=params.get('plan');
+  const planFromSession=sessionStorage.getItem('dokumo_pending_plan');
+  const pendingPlan=planFromUrl||planFromSession;
+  if(params.has('payment_success')&&pendingPlan){
+    sessionStorage.removeItem('dokumo_pending_plan');
+    // Wyczyść URL żeby nie triggerować ponownie po odświeżeniu
+    history.replaceState({},'',window.location.pathname);
+    // Poczekaj na Firebase auth, potem polling
+    for(let i=0;i<20&&!window._fbReady;i++) await new Promise(r=>setTimeout(r,150));
+    pollForPayment(pendingPlan);
+  }
+});
 </script>
 </body>
 </html>
