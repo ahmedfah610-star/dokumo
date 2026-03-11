@@ -1180,7 +1180,8 @@ async function generateDoc(docId) {
   // Sprawdź PRO — najpierw localStorage (szybko), potem API (pewnie)
   let isPro = false;
   const subLocal = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
-  if (subLocal && subLocal.expiresAt && new Date(subLocal.expiresAt) > new Date()) {
+  const allowedPlans = ['biznes','promax','pro'];
+  if (subLocal && subLocal.expiresAt && new Date(subLocal.expiresAt) > new Date() && allowedPlans.includes(subLocal.plan)) {
     isPro = true;
   } else {
     // Sprawdź przez API
