@@ -72,6 +72,32 @@
 </style>
 </head>
 <body class="my-page">
+<style>
+.u-back-bar{display:flex;align-items:center;gap:8px;padding:10px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.08);}
+.u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
+.u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.1);}
+.u-plan-pill{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:4px 10px;border-radius:999px;text-transform:uppercase;margin-left:auto;text-decoration:none;}
+.u-plan-pill.active{background:#1a3a2e;color:#fff;}
+.u-plan-pill.free{background:rgba(26,23,20,.07);color:#6b6560;}
+</style>
+<div class="u-back-bar">
+  <a href="index.html" class="u-back-btn">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Strona główna
+  </a>
+  <a href="subskrypcja.html" class="u-plan-pill free" id="uPlanPill"></a>
+</div>
+<script>
+(function(){
+  const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
+  const el=document.getElementById('uPlanPill');
+  if(!el)return;
+  const active=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+  const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+  el.textContent=active?(names[sub.plan]||'PRO'):'Free';
+  el.className='u-plan-pill '+(active?'active':'free');
+})();
+</script>
 
 <nav>
   <a href="index.html" class="logo">Doku<span>mo</span></a>
@@ -163,10 +189,29 @@ const app = initializeApp({
 const auth = getAuth(app);
 
 // Czekaj na Firebase Auth i dopiero wtedy inicjalizuj stronę
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
   window._fbReady = true;
   window._fbToken = user ? () => user.getIdToken(true) : null;
   window._firebaseUser = user || null;
+  if (user) {
+    // Zawsze odśwież localStorage — zapobiega "wylogowaniu" po powrocie
+    localStorage.setItem('dokumo_user', JSON.stringify({
+      name: user.displayName || '',
+      email: user.email || '',
+      photo: user.photoURL || ''
+    }));
+    // Odśwież sub z API
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + token } });
+      const data = await res.json();
+      if (data.active && data.expiresAt) {
+        localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
+      }
+    } catch(e) {}
+  } else {
+    localStorage.removeItem('dokumo_user');
+  }
   updateNavAuth();
   if (!user) {
     document.getElementById('resultsLabel').textContent = '';
@@ -214,8 +259,6 @@ function updateNavAuth() {
     registerBtn.style.display = '';
     profile.style.display = 'none';
   }
-}
-
 }
 
 function toggleNavDropdown(e) {
@@ -365,37 +408,7 @@ function downloadDoc(docId, format) {
     var win = window.open('', '_blank');
     win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>');
     win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
-    win.document.write('</head><body>
-<style>
-.u-back-bar{display:flex;align-items:center;gap:8px;padding:8px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.06);}
-.u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
-.u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.09);}
-.u-plan-chip{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;margin-left:auto;text-decoration:none;}
-.u-plan-chip.active{background:#1a3a2e;color:#fff;}
-.u-plan-chip.free{background:rgba(26,23,20,.07);color:#6b6560;}
-</style>
-<div class="u-back-bar">
-  <a href="index.html" class="u-back-btn">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    Strona główna
-  </a>
-  <a href="subskrypcja.html" class="u-plan-chip free" id="uPlanChip"></a>
-</div>
-<script>
-(function(){
-  const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
-  const chip=document.getElementById('uPlanChip');
-  if(!chip)return;
-  const active=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-  const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
-  chip.textContent=active?(names[sub.plan]||'PRO'):'Free';
-  chip.className='u-plan-chip '+(active?'active':'free');
-})();
-</script>
-
-<style>
-</style>
-<pre>' + safe + '</pre>');
+    win.document.write('</head><body><pre>' + safe + '</pre>');
     win.document.write('<script>window.onload=function(){window.print()}<\/script>');
     win.document.write('</body></html>');
     win.document.close();
