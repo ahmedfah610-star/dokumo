@@ -1032,37 +1032,73 @@ body { overflow:hidden; }
 #accPersonalItem .acc-body { padding:4px 16px 20px 16px; }
 
 </style>
+
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const app=getApps().length?getApps()[0]:initializeApp({apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",authDomain:"dokumo-c1ccb.firebaseapp.com",projectId:"dokumo-c1ccb",storageBucket:"dokumo-c1ccb.firebasestorage.app",messagingSenderId:"1088576029067",appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"});
+onAuthStateChanged(getAuth(app), async u=>{
+  if(u){
+    localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
+    window._fbToken = await u.getIdToken();
+    // Odśwież sub z API
+    try{
+      const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
+      const data=await res.json();
+      if(data.active&&data.expiresAt){
+        localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+      }
+    }catch(e){}
+  } else {
+    window._fbToken=null;
+  }
+  window._fbReady=true;
+  window.dispatchEvent(new Event('_fbAuthReady'));
+  if(typeof updateChip==='function') updateChip();
+});
+</script>
 </head>
 <body>
 <style>
 .u-back-bar{display:flex;align-items:center;gap:8px;padding:8px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.06);}
 .u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
 .u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.09);}
-.u-sub-status{margin-left:auto;font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;}
-.u-sub-status.pro{background:#1a3a2e;color:#fff;}
-.u-sub-status.free{background:rgba(26,23,20,.07);color:#6b6560;}
+.u-plan-chip{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;margin-left:auto;text-decoration:none;}
+.u-plan-chip.active{background:#1a3a2e;color:#fff;}
+.u-plan-chip.free{background:rgba(26,23,20,.07);color:#6b6560;}
 </style>
-<div class="u-back-bar" id="uBackBar">
+<div class="u-back-bar">
   <a href="kariera.html" class="u-back-btn">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Strefa Kariery
   </a>
-  <span class="u-sub-status free" id="uSubStatus" style="display:none;"></span>
+  <a href="subskrypcja.html" class="u-plan-chip free" id="uPlanChip"></a>
 </div>
 <script>
-(function(){
-  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
-  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
-  const user=getUser();
-  const sub=getSub();
-  const el=document.getElementById('uSubStatus');
-  if(el&&user){
-    const isPro=sub&&sub.plan==='pro'&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-    el.textContent=isPro?'PRO':'Free';
-    el.className='u-sub-status '+(isPro?'pro':'free');
-    el.style.display='';
-  }
-})();
+function updateChip(){
+  const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
+  const chip=document.getElementById('uPlanChip');
+  if(!chip)return;
+  const active=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+  const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+  chip.textContent=active?(names[sub.plan]||'PRO'):'Free';
+  chip.className='u-plan-chip '+(active?'active':'free');
+}
+updateChip(); // od razu z localStorage
+
+// Po zalogowaniu Firebase — odśwież z API
+window.addEventListener('_fbAuthReady', async ()=>{
+  if(!window._fbToken) return;
+  try{
+    const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+token}});
+    const data=await res.json();
+    if(data.active&&data.expiresAt){
+      localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+      updateChip();
+    }
+  }catch(e){}
+});
 </script>
 
 <div class="cv-app">
