@@ -123,7 +123,7 @@ body {
 /* ── CARDS ── */
 .k-cards {
   max-width: 1100px;
-  margin: 52px auto 80px;
+  margin: 48px auto 80px;
   padding: 0 2rem;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -438,15 +438,7 @@ body {
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="k-hero">
-  <div class="k-eyebrow">
-    <span class="k-eyebrow-dot"></span>
-    Strefa Kariery
-  </div>
-  <h1 class="k-title">Cześć! W czym możemy<br>Ci dzisiaj <em>pomóc?</em></h1>
-  <p class="k-subtitle">Wybierz cel, a my przygotujemy dla Ciebie odpowiednie narzędzia.</p>
-</section>
+
 
 <!-- CARDS -->
 <section class="k-cards">
@@ -476,7 +468,7 @@ body {
   </a>
 
   <!-- KARTA 2 — Kalkulator -->
-  <div onclick="scrollToKalkulator()" class="k-card k-card-2">
+  <div onclick="window.location.href='kalkulator.html'" class="k-card k-card-2">
     <div class="k-card-num">02</div>
     <div class="k-card-icon">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -499,7 +491,7 @@ body {
   </div>
 
   <!-- KARTA 3 — Kończę współpracę -->
-  <a href="dokumenty.html?filter=hr" class="k-card k-card-3">
+  <a href="wypowiedzenia.html" class="k-card k-card-3">
     <div class="k-card-num">03</div>
     <div class="k-card-icon">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -523,72 +515,6 @@ body {
 
 </section>
 
-<!-- KALKULATOR -->
-<section id="kalkulator">
-  <div class="k-calc-inner">
-    <div class="k-calc-header">
-      <h2 class="k-calc-title">Kalkulator wynagrodzeń</h2>
-      <p class="k-calc-sub">Oblicz wynagrodzenie netto na podstawie brutto</p>
-    </div>
-
-    <div class="k-row">
-      <div class="k-field">
-        <label class="k-label">Wynagrodzenie brutto</label>
-        <input type="number" id="calcBrutto" class="k-input" placeholder="np. 6000" min="0">
-      </div>
-      <div class="k-field">
-        <label class="k-label">Typ umowy</label>
-        <select id="calcTyp" class="k-input">
-          <option value="uop">Umowa o pracę</option>
-          <option value="b2b">B2B (własna działalność)</option>
-          <option value="zlecenie">Umowa zlecenie</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="k-row">
-      <div class="k-field">
-        <label class="k-label">Wiek pracownika</label>
-        <select id="calcWiek" class="k-input">
-          <option value="do26">Do 26 lat (zerowy PIT)</option>
-          <option value="26plus" selected>Powyżej 26 lat</option>
-        </select>
-      </div>
-      <div class="k-field">
-        <label class="k-label">Próg podatkowy</label>
-        <select id="calcProg" class="k-input">
-          <option value="12">12% (do 120 000 zł)</option>
-          <option value="32">32% (powyżej 120 000 zł)</option>
-        </select>
-      </div>
-    </div>
-
-    <button class="k-calc-btn" onclick="obliczNetto()">Oblicz wynagrodzenie netto →</button>
-
-    <div class="k-result" id="calcResult">
-      <div class="k-result-label">Wynagrodzenie netto</div>
-      <div class="k-result-amount" id="resultNetto">— zł</div>
-      <div class="k-result-breakdown">
-        <div class="k-result-item">
-          <div class="k-result-item-label">Składki ZUS</div>
-          <div class="k-result-item-val" id="resultZUS">— zł</div>
-        </div>
-        <div class="k-result-item">
-          <div class="k-result-item-label">Składka zdrowotna</div>
-          <div class="k-result-item-val" id="resultZdrowotna">— zł</div>
-        </div>
-        <div class="k-result-item">
-          <div class="k-result-item-label">Zaliczka na podatek</div>
-          <div class="k-result-item-val" id="resultPodatek">— zł</div>
-        </div>
-        <div class="k-result-item">
-          <div class="k-result-item-label">Podstawa opodatkowania</div>
-          <div class="k-result-item-val" id="resultPodstawa">— zł</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <script>
 // ── NAV JS ──
@@ -654,81 +580,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateNavBadge();
 });
 
-// ── SCROLL DO KALKULATORA ──
-function scrollToKalkulator() {
-  document.getElementById('kalkulator').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
-// ── KALKULATOR ──
-function obliczNetto() {
-  const brutto = parseFloat(document.getElementById('calcBrutto').value);
-  if (!brutto || brutto <= 0) {
-    document.getElementById('calcBrutto').focus();
-    return;
-  }
 
-  const typ = document.getElementById('calcTyp').value;
-  const wiek = document.getElementById('calcWiek').value;
-  const prog = parseInt(document.getElementById('calcProg').value);
-
-  let zus = 0, zdrowotna = 0, podatek = 0, netto = 0, podstawa = 0;
-
-  if (typ === 'uop') {
-    // Składki pracownika: emerytalna 9.76% + rentowa 1.5% + chorobowa 2.45%
-    const emerytalna = brutto * 0.0976;
-    const rentowa = brutto * 0.015;
-    const chorobowa = brutto * 0.0245;
-    zus = emerytalna + rentowa + chorobowa;
-
-    zdrowotna = (brutto - zus) * 0.09;
-    const zdrowotnaDoPodatku = (brutto - zus) * 0.0775;
-
-    const kosztyUzyskania = 250;
-    podstawa = Math.round(brutto - zus - kosztyUzyskania);
-
-    if (wiek === 'do26') {
-      podatek = 0;
-    } else {
-      const ulga = 300;
-      podatek = Math.max(0, Math.round(podstawa * (prog / 100) - ulga));
-    }
-
-    netto = brutto - zus - zdrowotna - podatek;
-  } else if (typ === 'zlecenie') {
-    zus = brutto * 0.1371;
-    zdrowotna = (brutto - zus) * 0.09;
-    const koszty = (brutto - zus) * 0.2;
-    podstawa = Math.round(brutto - zus - koszty);
-    podatek = wiek === 'do26' ? 0 : Math.round(podstawa * (prog / 100));
-    netto = brutto - zus - zdrowotna - podatek;
-  } else {
-    // B2B — uproszczony ryczałt ZUS mały
-    zus = 381.81; // minimalne składki ZUS 2024
-    zdrowotna = brutto * 0.049;
-    podstawa = brutto - zus;
-    podatek = Math.round(podstawa * (prog / 100));
-    netto = brutto - zus - zdrowotna - podatek;
-  }
-
-  const fmt = (v) => Math.round(v).toLocaleString('pl-PL') + ' zł';
-
-  document.getElementById('resultNetto').textContent = fmt(netto);
-  document.getElementById('resultZUS').textContent = fmt(zus);
-  document.getElementById('resultZdrowotna').textContent = fmt(zdrowotna);
-  document.getElementById('resultPodatek').textContent = fmt(podatek);
-  document.getElementById('resultPodstawa').textContent = fmt(podstawa);
-
-  const result = document.getElementById('calcResult');
-  result.classList.add('show');
-  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-// Enter w polu brutto = oblicz
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('calcBrutto')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') obliczNetto();
-  });
-});
 </script>
 </body>
 </html>
