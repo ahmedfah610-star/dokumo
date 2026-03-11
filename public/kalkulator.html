@@ -12,69 +12,143 @@
   --ink: #1a1714;
   --ink2: #6b6560;
   --cream: #faf8f4;
-  --green: #1a3a2e;
+  --c-netto:   #1a3a2e;
+  --c-zus:     #c9903a;
+  --c-zdr:     #2d1f3d;
+  --c-podatek: #b03a2e;
   --gold: #c9903a;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
+* { box-sizing:border-box;margin:0;padding:0; }
+body { background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh; }
 
-.k-nav {
-  background: var(--cream);
-  border-bottom: 1px solid rgba(26,23,20,.08);
-  position: sticky; top: 0; z-index: 50;
-  padding: 0 2rem; height: 58px;
-  display: flex; align-items: center; justify-content: space-between;
-}
+/* NAV */
+.k-nav { background:var(--cream);border-bottom:1px solid rgba(26,23,20,.08);position:sticky;top:0;z-index:50;padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between; }
 .k-logo { display:flex;align-items:center;gap:8px;text-decoration:none;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink);letter-spacing:-.02em; }
 .k-logo-dot { width:28px;height:28px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center; }
 .k-back { font-size:.78rem;font-weight:500;color:var(--ink2);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s; }
 .k-back:hover { color:var(--ink); }
 
-.page-wrap {
-  max-width: 620px;
+/* LAYOUT */
+.k-wrap {
+  max-width: 1060px;
   margin: 0 auto;
-  padding: 56px 2rem 80px;
+  padding: 52px 2rem 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
 }
-.page-eyebrow {
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:20px;
-}
-.page-title {
+@media(max-width:720px) { .k-wrap { grid-template-columns:1fr; } }
+
+/* LEFT — INPUTS */
+.k-left {}
+.k-title { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.7rem,3.5vw,2.3rem);font-weight:800;letter-spacing:-.03em;color:var(--ink);margin-bottom:6px;line-height:1.1; }
+.k-sub { font-size:.85rem;color:var(--ink2);margin-bottom:36px;line-height:1.6; }
+
+/* SLIDER SECTION */
+.slider-block { margin-bottom:28px; }
+.slider-top { display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px; }
+.slider-label { font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2); }
+.slider-val-wrap { display:flex;align-items:center;gap:6px; }
+.slider-val {
   font-family:'Bricolage Grotesque',sans-serif;
-  font-size:clamp(1.8rem,4vw,2.6rem);
-  font-weight:800;letter-spacing:-.03em;
-  color:var(--ink);margin-bottom:10px;line-height:1.1;
+  font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;
+  background:none;border:none;outline:none;width:130px;text-align:right;cursor:text;
 }
-.page-sub { font-size:.9rem;color:var(--ink2);margin-bottom:40px;line-height:1.6; }
+.slider-val:focus { border-bottom:2px solid var(--ink); }
+.slider-currency { font-size:.85rem;color:var(--ink2);font-weight:500; }
 
-.k-field { margin-bottom:18px; }
-.k-label { display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px; }
-.k-input { width:100%;padding:14px 16px;background:#fff;border:1.5px solid rgba(26,23,20,.1);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:1rem;color:var(--ink);outline:none;transition:border-color .2s;appearance:none; }
-.k-input:focus { border-color:var(--ink); }
-.k-row { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
-
-.k-calc-btn {
-  width:100%;padding:15px;background:var(--ink);color:#fff;border:none;border-radius:14px;
-  font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.01em;
-  cursor:pointer;transition:background .2s,transform .1s;margin-top:8px;
+input[type=range] {
+  -webkit-appearance:none;width:100%;height:6px;
+  background:rgba(26,23,20,.1);border-radius:3px;outline:none;cursor:pointer;
 }
-.k-calc-btn:hover { background:#2d2824; }
-.k-calc-btn:active { transform:scale(.98); }
-
-.k-result {
-  margin-top:28px;background:var(--ink);border-radius:18px;padding:28px;display:none;
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--ink);border:3px solid var(--cream);
+  box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;
+  transition:transform .15s;
 }
-.k-result.show { display:block; }
-.k-result-label { font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px; }
-.k-result-amount { font-family:'Bricolage Grotesque',sans-serif;font-size:2.4rem;font-weight:800;color:#fff;letter-spacing:-.03em;margin-bottom:20px; }
-.k-result-breakdown { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
-.k-result-item { background:rgba(255,255,255,.07);border-radius:10px;padding:12px 14px; }
-.k-result-item-label { font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:3px; }
-.k-result-item-val { font-size:.95rem;font-weight:600;color:rgba(255,255,255,.85); }
+input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.15); }
+input[type=range]::-webkit-slider-runnable-track {
+  height:6px;border-radius:3px;
+}
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-.page-wrap { animation:fadeUp .45s ease both; }
+.slider-ticks { display:flex;justify-content:space-between;margin-top:6px; }
+.slider-tick { font-size:.65rem;color:var(--ink2); }
+
+/* OPTIONS */
+.opts-row { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px; }
+.k-field {}
+.k-label { display:block;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:7px; }
+.k-select {
+  width:100%;padding:11px 14px;background:#fff;
+  border:1.5px solid rgba(26,23,20,.1);border-radius:11px;
+  font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);
+  outline:none;transition:border-color .2s;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6560' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;
+}
+.k-select:focus { border-color:var(--ink); }
+
+/* STACKED BAR */
+.bar-section { margin-top:28px; }
+.bar-label { font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:10px; }
+.bar-track { width:100%;height:14px;border-radius:7px;overflow:hidden;display:flex; }
+.bar-seg { height:100%;transition:width .6s cubic-bezier(.34,1.3,.64,1); }
+.bar-seg.netto   { background:var(--c-netto); }
+.bar-seg.zus     { background:var(--c-zus); }
+.bar-seg.zdr     { background:var(--c-zdr); }
+.bar-seg.podatek { background:var(--c-podatek); }
+
+.bar-legend { display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px; }
+.leg-item { display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--ink2); }
+.leg-dot { width:9px;height:9px;border-radius:50%; }
+
+/* RIGHT — CHART + RESULTS */
+.k-right {}
+
+.chart-wrap {
+  position:relative;
+  width:100%;
+  max-width:280px;
+  margin:0 auto 28px;
+}
+.chart-wrap svg { display:block;width:100%;height:auto; }
+.chart-center {
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;
+}
+.chart-netto-label { font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:2px; }
+.chart-netto-val { font-family:'Bricolage Grotesque',sans-serif;font-size:1.55rem;font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1; }
+
+/* RESULT TILES */
+.tiles { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.tile {
+  background:var(--cream);
+  border:1.5px solid rgba(26,23,20,.07);
+  border-radius:14px;padding:16px 18px;
+  position:relative;overflow:hidden;
+}
+.tile::before {
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;
+}
+.tile.netto::before   { background:var(--c-netto); }
+.tile.zus::before     { background:var(--c-zus); }
+.tile.zdr::before     { background:var(--c-zdr); }
+.tile.podatek::before { background:var(--c-podatek); }
+.tile-label { font-size:.68rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:5px; }
+.tile-val { font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--ink);letter-spacing:-.02em; }
+.tile-pct { font-size:.72rem;color:var(--ink2);margin-top:2px; }
+.tile.netto { grid-column:1/-1;background:var(--ink); }
+.tile.netto .tile-label { color:rgba(255,255,255,.5); }
+.tile.netto .tile-val { font-size:1.6rem;color:#fff; }
+.tile.netto .tile-pct { color:rgba(255,255,255,.4); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.k-left  { animation:fadeUp .45s ease both; }
+.k-right { animation:fadeUp .45s ease .1s both; }
 </style>
 
 <script type="module">
@@ -89,10 +163,8 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--i
     appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"
   }));
   onAuthStateChanged(auth, user => {
-    if (user) { localStorage.setItem('dokumo_user', JSON.stringify({name:user.displayName||'',email:user.email||'',photo:user.photoURL||''})); }
-    else { localStorage.removeItem('dokumo_user'); }
-    if (typeof updateNavAuth==='function') updateNavAuth();
-    if (typeof updateNavBadge==='function') updateNavBadge();
+    if (user) localStorage.setItem('dokumo_user', JSON.stringify({name:user.displayName||'',email:user.email||'',photo:user.photoURL||''}));
+    else localStorage.removeItem('dokumo_user');
   });
 </script>
 </head>
@@ -111,118 +183,237 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--i
   </a>
 </nav>
 
-<div class="page-wrap">
-  <div class="page-eyebrow">💰 Zarobki</div>
-  <h1 class="page-title">Kalkulator<br>wynagrodzeń</h1>
-  <p class="page-sub">Oblicz wynagrodzenie netto na podstawie brutto. Uwzględniamy ZUS, podatek i ulgę dla pracowników.</p>
+<div class="k-wrap">
 
-  <div class="k-row">
-    <div class="k-field">
-      <label class="k-label">Wynagrodzenie brutto</label>
-      <input type="number" id="calcBrutto" class="k-input" placeholder="np. 6000" min="0">
+  <!-- LEFT -->
+  <div class="k-left">
+    <h1 class="k-title">Kalkulator<br>wynagrodzeń</h1>
+    <p class="k-sub">Przesuń suwak lub wpisz kwotę — wynik aktualizuje się na żywo.</p>
+
+    <!-- SLIDER -->
+    <div class="slider-block">
+      <div class="slider-top">
+        <span class="slider-label">Wynagrodzenie brutto</span>
+        <div class="slider-val-wrap">
+          <input type="text" id="inputVal" class="slider-val" value="6 000" inputmode="numeric">
+          <span class="slider-currency">zł</span>
+        </div>
+      </div>
+      <input type="range" id="slider" min="3000" max="30000" step="100" value="6000">
+      <div class="slider-ticks">
+        <span class="slider-tick">3 000 zł</span>
+        <span class="slider-tick">10 000 zł</span>
+        <span class="slider-tick">20 000 zł</span>
+        <span class="slider-tick">30 000 zł</span>
+      </div>
     </div>
-    <div class="k-field">
-      <label class="k-label">Typ umowy</label>
-      <select id="calcTyp" class="k-input">
-        <option value="uop">Umowa o pracę</option>
-        <option value="b2b">B2B (własna działalność)</option>
-        <option value="zlecenie">Umowa zlecenie</option>
-      </select>
+
+    <!-- OPTIONS -->
+    <div class="opts-row">
+      <div class="k-field">
+        <label class="k-label">Typ umowy</label>
+        <select id="selTyp" class="k-select">
+          <option value="uop">Umowa o pracę</option>
+          <option value="b2b">B2B</option>
+          <option value="zlecenie">Umowa zlecenie</option>
+        </select>
+      </div>
+      <div class="k-field">
+        <label class="k-label">Wiek</label>
+        <select id="selWiek" class="k-select">
+          <option value="do26">Do 26 lat (0% PIT)</option>
+          <option value="26plus" selected>Powyżej 26 lat</option>
+        </select>
+      </div>
+    </div>
+    <div class="opts-row">
+      <div class="k-field">
+        <label class="k-label">Próg podatkowy</label>
+        <select id="selProg" class="k-select">
+          <option value="12">12%</option>
+          <option value="32">32%</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- STACKED BAR -->
+    <div class="bar-section">
+      <div class="bar-label">Podział wynagrodzenia</div>
+      <div class="bar-track">
+        <div class="bar-seg netto"   id="barNetto"   style="width:0%"></div>
+        <div class="bar-seg zus"     id="barZus"     style="width:0%"></div>
+        <div class="bar-seg zdr"     id="barZdr"     style="width:0%"></div>
+        <div class="bar-seg podatek" id="barPodatek" style="width:0%"></div>
+      </div>
+      <div class="bar-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-netto)"></div>Netto</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-zus)"></div>ZUS</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-zdr)"></div>Zdrowotna</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-podatek)"></div>Podatek</div>
+      </div>
     </div>
   </div>
 
-  <div class="k-row">
-    <div class="k-field">
-      <label class="k-label">Wiek pracownika</label>
-      <select id="calcWiek" class="k-input">
-        <option value="do26">Do 26 lat (zerowy PIT)</option>
-        <option value="26plus" selected>Powyżej 26 lat</option>
-      </select>
+  <!-- RIGHT -->
+  <div class="k-right">
+    <!-- PIE CHART -->
+    <div class="chart-wrap">
+      <svg id="pieChart" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="80" fill="#e8e5e0"/>
+        <path id="pieNetto"   fill="#1a3a2e" d=""/>
+        <path id="pieZus"     fill="#c9903a" d=""/>
+        <path id="pieZdr"     fill="#2d1f3d" d=""/>
+        <path id="piePodatek" fill="#b03a2e" d=""/>
+        <circle cx="100" cy="100" r="52" fill="var(--bg)"/>
+      </svg>
+      <div class="chart-center">
+        <div class="chart-netto-label">netto</div>
+        <div class="chart-netto-val" id="chartNettoVal">—</div>
+      </div>
     </div>
-    <div class="k-field">
-      <label class="k-label">Próg podatkowy</label>
-      <select id="calcProg" class="k-input">
-        <option value="12">12% (do 120 000 zł)</option>
-        <option value="32">32% (powyżej 120 000 zł)</option>
-      </select>
+
+    <!-- TILES -->
+    <div class="tiles">
+      <div class="tile netto">
+        <div class="tile-label">Na rękę (netto)</div>
+        <div class="tile-val" id="tileNetto">—</div>
+        <div class="tile-pct" id="tilePctNetto"></div>
+      </div>
+      <div class="tile zus">
+        <div class="tile-label">Składki ZUS</div>
+        <div class="tile-val" id="tileZus">—</div>
+        <div class="tile-pct" id="tilePctZus"></div>
+      </div>
+      <div class="tile zdr">
+        <div class="tile-label">Zdrowotna</div>
+        <div class="tile-val" id="tileZdr">—</div>
+        <div class="tile-pct" id="tilePctZdr"></div>
+      </div>
+      <div class="tile podatek">
+        <div class="tile-label">Podatek</div>
+        <div class="tile-val" id="tilePodatek">—</div>
+        <div class="tile-pct" id="tilePctPodatek"></div>
+      </div>
     </div>
   </div>
 
-  <button class="k-calc-btn" onclick="obliczNetto()">Oblicz wynagrodzenie netto →</button>
-
-  <div class="k-result" id="calcResult">
-    <div class="k-result-label">Wynagrodzenie netto</div>
-    <div class="k-result-amount" id="resultNetto">— zł</div>
-    <div class="k-result-breakdown">
-      <div class="k-result-item">
-        <div class="k-result-item-label">Składki ZUS</div>
-        <div class="k-result-item-val" id="resultZUS">—</div>
-      </div>
-      <div class="k-result-item">
-        <div class="k-result-item-label">Składka zdrowotna</div>
-        <div class="k-result-item-val" id="resultZdrowotna">—</div>
-      </div>
-      <div class="k-result-item">
-        <div class="k-result-item-label">Zaliczka na podatek</div>
-        <div class="k-result-item-val" id="resultPodatek">—</div>
-      </div>
-      <div class="k-result-item">
-        <div class="k-result-item-label">Podstawa opodatkowania</div>
-        <div class="k-result-item-val" id="resultPodstawa">—</div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
-function getUser() { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } }
-function clearUser() { localStorage.removeItem('dokumo_user'); }
-function updateNavAuth() {}
-function updateNavBadge() {}
-function logoutUser() { clearUser(); localStorage.removeItem('dokumo_sub'); window.location.href='index.html'; }
+// ── PIE CHART ──
+function polarToXY(cx, cy, r, angleDeg) {
+  const rad = (angleDeg - 90) * Math.PI / 180;
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+}
 
-function obliczNetto() {
-  const brutto = parseFloat(document.getElementById('calcBrutto').value);
-  if (!brutto || brutto <= 0) { document.getElementById('calcBrutto').focus(); return; }
-  const typ = document.getElementById('calcTyp').value;
-  const wiek = document.getElementById('calcWiek').value;
-  const prog = parseInt(document.getElementById('calcProg').value);
-  let zus=0, zdrowotna=0, podatek=0, netto=0, podstawa=0;
+function pieSlicePath(cx, cy, r, startAngle, endAngle) {
+  if (endAngle - startAngle >= 360) endAngle = startAngle + 359.99;
+  const [x1, y1] = polarToXY(cx, cy, r, startAngle);
+  const [x2, y2] = polarToXY(cx, cy, r, endAngle);
+  const large = (endAngle - startAngle) > 180 ? 1 : 0;
+  return `M${cx},${cy} L${x1},${y1} A${r},${r},0,${large},1,${x2},${y2} Z`;
+}
+
+function updatePie(netto, zus, zdr, podatek) {
+  const total = netto + zus + zdr + podatek;
+  if (!total) return;
+  const segs = [
+    { id:'pieNetto',   val:netto },
+    { id:'pieZus',     val:zus },
+    { id:'pieZdr',     val:zdr },
+    { id:'piePodatek', val:podatek },
+  ];
+  let angle = 0;
+  segs.forEach(s => {
+    const sweep = (s.val / total) * 360;
+    document.getElementById(s.id).setAttribute('d', pieSlicePath(100,100,80,angle,angle+sweep));
+    angle += sweep;
+  });
+}
+
+// ── KALKULATOR ──
+function oblicz(brutto) {
+  const typ  = document.getElementById('selTyp').value;
+  const wiek = document.getElementById('selWiek').value;
+  const prog = parseInt(document.getElementById('selProg').value);
+  let zus=0, zdr=0, podatek=0;
 
   if (typ === 'uop') {
     zus = brutto * (0.0976 + 0.015 + 0.0245);
-    zdrowotna = (brutto - zus) * 0.09;
-    podstawa = Math.round(brutto - zus - 250);
+    zdr = (brutto - zus) * 0.09;
+    const podstawa = Math.round(brutto - zus - 250);
     podatek = wiek==='do26' ? 0 : Math.max(0, Math.round(podstawa*(prog/100)-300));
-    netto = brutto - zus - zdrowotna - podatek;
   } else if (typ === 'zlecenie') {
     zus = brutto * 0.1371;
-    zdrowotna = (brutto - zus) * 0.09;
-    podstawa = Math.round(brutto - zus - (brutto - zus)*0.2);
+    zdr = (brutto - zus) * 0.09;
+    const podstawa = Math.round((brutto - zus) * 0.8);
     podatek = wiek==='do26' ? 0 : Math.round(podstawa*(prog/100));
-    netto = brutto - zus - zdrowotna - podatek;
   } else {
     zus = 381.81;
-    zdrowotna = brutto * 0.049;
-    podstawa = brutto - zus;
-    podatek = Math.round(podstawa*(prog/100));
-    netto = brutto - zus - zdrowotna - podatek;
+    zdr = brutto * 0.049;
+    podatek = Math.round((brutto - zus)*(prog/100));
   }
 
-  const fmt = v => Math.round(v).toLocaleString('pl-PL') + ' zł';
-  document.getElementById('resultNetto').textContent = fmt(netto);
-  document.getElementById('resultZUS').textContent = fmt(zus);
-  document.getElementById('resultZdrowotna').textContent = fmt(zdrowotna);
-  document.getElementById('resultPodatek').textContent = fmt(podatek);
-  document.getElementById('resultPodstawa').textContent = fmt(podstawa);
-  const r = document.getElementById('calcResult');
-  r.classList.add('show');
-  r.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const netto = brutto - zus - zdr - podatek;
+  return { netto, zus, zdr, podatek };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('calcBrutto')?.addEventListener('keydown', e => { if(e.key==='Enter') obliczNetto(); });
+function fmt(v) { return Math.round(v).toLocaleString('pl-PL') + ' zł'; }
+function pct(v, total) { return Math.round(v/total*100) + '%'; }
+
+function update() {
+  const slider = document.getElementById('slider');
+  const brutto = parseFloat(slider.value);
+  const { netto, zus, zdr, podatek } = oblicz(brutto);
+
+  // Input display
+  document.getElementById('inputVal').value = Math.round(brutto).toLocaleString('pl-PL');
+
+  // Tiles
+  document.getElementById('tileNetto').textContent   = fmt(netto);
+  document.getElementById('tileZus').textContent     = fmt(zus);
+  document.getElementById('tileZdr').textContent     = fmt(zdr);
+  document.getElementById('tilePodatek').textContent = fmt(podatek);
+  document.getElementById('tilePctNetto').textContent   = pct(netto, brutto) + ' wynagrodzenia';
+  document.getElementById('tilePctZus').textContent     = pct(zus, brutto) + ' wynagrodzenia';
+  document.getElementById('tilePctZdr').textContent     = pct(zdr, brutto) + ' wynagrodzenia';
+  document.getElementById('tilePctPodatek').textContent = pct(podatek, brutto) + ' wynagrodzenia';
+
+  // Chart center
+  document.getElementById('chartNettoVal').textContent = fmt(netto);
+
+  // Pie
+  updatePie(netto, zus, zdr, podatek);
+
+  // Stacked bar
+  document.getElementById('barNetto').style.width   = pct(netto, brutto);
+  document.getElementById('barZus').style.width     = pct(zus, brutto);
+  document.getElementById('barZdr').style.width     = pct(zdr, brutto);
+  document.getElementById('barPodatek').style.width = pct(podatek, brutto);
+}
+
+// ── EVENTS ──
+document.getElementById('slider').addEventListener('input', update);
+['selTyp','selWiek','selProg'].forEach(id => {
+  document.getElementById(id).addEventListener('change', update);
 });
+
+// Wpisywanie ręczne
+document.getElementById('inputVal').addEventListener('input', function() {
+  const raw = this.value.replace(/\s/g,'').replace(/[^\d]/g,'');
+  let val = parseInt(raw);
+  if (isNaN(val)) return;
+  val = Math.max(3000, Math.min(30000, val));
+  document.getElementById('slider').value = val;
+  update();
+});
+
+document.getElementById('inputVal').addEventListener('blur', function() {
+  update(); // reformat on blur
+});
+
+// Init
+document.addEventListener('DOMContentLoaded', update);
 </script>
 </body>
 </html>
