@@ -3,9 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dokumo – Dokumenty biznesowe w 60 sekund</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Dokumo – Dokumenty w 60 sekund</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+
+<style>
+* { font-family:'Inter',sans-serif; box-sizing:border-box; }
+body { background:#f7f8fa; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+.fu { opacity:0; animation:fadeUp .55s ease forwards; }
+.d1{animation-delay:.05s}.d2{animation-delay:.13s}.d3{animation-delay:.22s}.d4{animation-delay:.33s}
+
+.card-blue  { background:linear-gradient(140deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%); }
+.card-green { background:linear-gradient(140deg,#064e3b 0%,#065f46 60%,#059669 100%); }
+</style>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -19,7 +35,6 @@
   }));
   onAuthStateChanged(auth, user => {
     if (user) {
-      // Zapisz/odśwież dane użytkownika w localStorage
       localStorage.setItem('dokumo_user', JSON.stringify({
         name: user.displayName || '',
         email: user.email || '',
@@ -28,81 +43,295 @@
     } else {
       localStorage.removeItem('dokumo_user');
     }
-    // Odśwież nav
     if (typeof updateNavAuth === 'function') updateNavAuth();
     if (typeof updateNavBadge === 'function') updateNavBadge();
   });
 </script>
 </head>
-<body>
-<nav>
-  <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <div class="nav-auth" id="navAuth">
-    <a href="konto.html" class="btn-secondary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navLoginBtn">ZALOGUJ SIĘ</a>
-    <a href="konto.html" class="btn-primary" style="padding:10px 20px;font-size:0.78rem;letter-spacing:0.1em" id="navRegisterBtn">ZAŁÓŻ KONTO</a>
-    <div class="nav-profile" id="navProfile" style="display:none">
-      <a href="subskrypcja.html" id="navSubBadge" style="display:none"></a>
-      <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
-      <div class="nav-profile-dropdown" id="navDropdown">
-        <div class="nav-profile-email" id="navProfileEmail"></div>
-        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-        <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
-        <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
-        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-        <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+<body class="min-h-screen">
+
+<!-- NAVBAR -->
+<header class="bg-white/80 backdrop-blur-lg border-b border-gray-100 sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto flex items-center justify-between px-6 h-[60px]">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <div class="w-[32px] h-[32px] rounded-[9px] bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <span class="text-[18px] font-[800] text-gray-900 tracking-tight">Dokumo</span>
+    </a>
+
+    <div id="navAuth" class="flex items-center gap-2">
+      <a href="konto.html" id="navLoginBtn" class="px-4 py-[7px] text-[13px] font-[600] text-gray-600 rounded-xl hover:bg-gray-100 transition-all">Zaloguj się</a>
+      <a href="konto.html" id="navRegisterBtn" class="px-4 py-[7px] text-[13px] font-[700] text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-sm">Załóż konto</a>
+      <div class="nav-profile" id="navProfile" style="display:none">
+        <a href="subskrypcja.html" id="navSubBadge" style="display:none"></a>
+        <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+        <div class="nav-profile-dropdown" id="navDropdown">
+          <div class="nav-profile-email" id="navProfileEmail"></div>
+          <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+          <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
+          <div class="nav-profile-sep"></div>
+          <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+        </div>
       </div>
     </div>
   </div>
-</nav>
-<div class="hero">
-  <div>
-    <div class="hero-tag"><span class="hero-tag-dot"></span> Dokumenty biznesowe · Gotowe w 60 sekund</div>
-    <h1>Profesjonalne dokumenty<br>bez <em>stresu</em>.</h1>
-    <p>Regulaminy, umowy, biznesplany, kreator CV. Wpisujesz dane — dostajesz gotowy dokument. Szybko, prosto, bez prawnika.</p>
-    <a href="dokumenty.html" class="btn-primary">Przeglądaj dokumenty</a>
-  </div>
-  <div class="biznes-block">
-    <div class="biznes-label">✦ Pakiet Biznesowy</div>
-    <h3 class="biznes-title">Wszystko czego<br>potrzebuje Twoja firma</h3>
-    <p class="biznes-sub">Regulamin, RODO, umowy B2B, NDA, biznesplan — jeden zestaw dokumentów na start każdej działalności.</p>
+</header>
 
-    <ul class="biznes-list">
-      <li><span class="biznes-check">✓</span> Regulamin sklepu internetowego</li>
-      <li><span class="biznes-check">✓</span> Polityka prywatności RODO</li>
-      <li><span class="biznes-check">✓</span> Umowa o współpracy B2B</li>
-      <li><span class="biznes-check">✓</span> Umowa NDA (poufność)</li>
-      <li><span class="biznes-check">✓</span> Biznesplan dla banku</li>
-    </ul>
 
-    <div class="biznes-coming">
-      <span class="biznes-coming-dot"></span>
-      Subskrypcja — już wkrótce
+<!-- HERO trust strip -->
+<section class="max-w-6xl mx-auto px-6 pt-14 pb-10 text-center">
+  <div class="fu d1 flex items-center justify-center gap-3 flex-wrap mb-2">
+    <div class="inline-flex items-center gap-2 bg-white border border-gray-200 shadow-sm text-gray-500 text-[12px] font-[600] px-3.5 py-1.5 rounded-full">
+      <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+      Ponad 12 000 pobranych dokumentów
     </div>
-  </div></div>
-<div class="stats-bar">
-  <div class="stat-item"><div class="stat-num">18</div><div class="stat-label">Dokumentów</div></div>
-  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Zgodność z prawem</div></div>
-  <div class="stat-item"><div class="stat-num">60s</div><div class="stat-label">Czas generowania</div></div>
-  <div class="stat-item"><div class="stat-num">CV</div><div class="stat-label">Kreator z PDF</div></div>
-</div>
-<div class="how">
-  <div class="how-inner">
-    <span class="section-eyebrow" style="color:rgba(255,255,255,0.5)">Jak to działa</span>
-    <h2 class="section-title" style="color:#fff">Cztery kroki. Gotowy dokument.</h2>
-    <div class="steps">
-      <div class="step"><div class="step-num">01</div><h4>Wybierz dokumenty</h4><p>Przeglądaj katalog i dodaj do koszyka co potrzebujesz.</p></div>
-      <div class="step"><div class="step-num">02</div><h4>Wpisz dane</h4><p>Krótki formularz — dane auto-uzupełniają się między dokumentami.</p></div>
-      <div class="step"><div class="step-num">03</div><h4>Dokument gotowy</h4><p>W 15–30 sekund dostajesz spersonalizowany dokument prawny.</p></div>
-      <div class="step"><div class="step-num">04</div><h4>Pobierz i używaj</h4><p>Skopiuj lub pobierz jako .txt gotowy do edycji w Wordzie.</p></div>
+    <div class="inline-flex items-center gap-1.5 text-[12.5px] text-gray-400 bg-white border border-gray-100 shadow-sm px-3.5 py-1.5 rounded-full">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Zgodne z polskim prawem
+    </div>
+    <div class="inline-flex items-center gap-1.5 text-[12.5px] text-gray-400 bg-white border border-gray-100 shadow-sm px-3.5 py-1.5 rounded-full">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PDF &amp; DOCX
+    </div>
+    <div class="inline-flex items-center gap-1.5 text-[12.5px] text-gray-400 bg-white border border-gray-100 shadow-sm px-3.5 py-1.5 rounded-full">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Bezpieczne i prywatne
     </div>
   </div>
-</div>
-<footer>
-  <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <p>© 2026 Dokumo · Dokumenty biznesowe</p>
-  <p><a href="/cdn-cgi/l/email-protection" class="__cfEmail"><span class="__cf_email__" data-cfemail="ed868283998c8699ad898286988082c39d81">[email&#160;protected]</span></a></p>
+</section>
+
+
+<!-- ZONE CARDS -->
+<section class="max-w-6xl mx-auto px-6 pb-16">
+  <div class="fu d3 grid md:grid-cols-2 gap-5">
+
+    <!-- KARIERA -->
+    <div onclick="window.location.href='kreator-cv.html'" class="card-blue rounded-3xl overflow-hidden relative cursor-pointer group hover:-translate-y-1 transition-all duration-300 shadow-2xl" style="min-height:380px;">
+      <div class="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-white/[.06] pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-white/[.04] pointer-events-none"></div>
+      <div class="relative z-10 p-10 pr-[220px] h-full flex flex-col justify-between" style="min-height:380px;">
+        <div>
+          <p class="text-[10.5px] font-[700] uppercase tracking-[.18em] text-white/40 mb-4">Strefa Kariery</p>
+          <h2 class="text-[32px] font-[900] text-white leading-[1.12] tracking-tight mb-6">Stwórz CV<br>i dokumenty<br>do pracy</h2>
+          <ul class="space-y-2.5 mb-8">
+            <li class="flex items-center gap-2.5 text-[13.5px] text-white/75">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,.18)"/><polyline points="5,8 7,10.5 11,5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              Kreator CV
+            </li>
+            <li class="flex items-center gap-2.5 text-[13.5px] text-white/75">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,.18)"/><polyline points="5,8 7,10.5 11,5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              List motywacyjny
+            </li>
+            <li class="flex items-center gap-2.5 text-[13.5px] text-white/75">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,.18)"/><polyline points="5,8 7,10.5 11,5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              Kalkulator wynagrodzeń netto
+            </li>
+          </ul>
+        </div>
+        <span class="inline-flex items-center gap-2 bg-white text-blue-700 font-[700] text-[13.5px] px-5 py-3 rounded-2xl w-fit hover:shadow-lg transition-all group-hover:shadow-md">
+          Wejdź w Strefę Kariery
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </div>
+      <div class="absolute right-0 top-0 bottom-0 w-[215px] flex items-center justify-center pointer-events-none" style="padding:14px 10px 14px 0;">
+        <svg width="205" height="340" viewBox="0 0 205 340" fill="none">
+          <g transform="translate(52,18) rotate(11 72 130)" opacity=".6">
+            <rect width="144" height="218" rx="11" fill="#dbeafe"/>
+            <rect width="144" height="36" rx="11" fill="#1d4ed8"/>
+            <rect y="25" width="144" height="11" fill="#1d4ed8"/>
+            <rect x="10" y="10" width="70" height="6" rx="3" fill="rgba(255,255,255,.55)"/>
+            <rect x="10" y="48" width="38" height="5" rx="2.5" fill="#93c5fd"/>
+            <rect x="10" y="59" width="124" height="3.5" rx="1.75" fill="#93c5fd" opacity=".5"/>
+            <rect x="10" y="67" width="106" height="3.5" rx="1.75" fill="#93c5fd" opacity=".5"/>
+          </g>
+          <g transform="translate(3,10) rotate(-7 72 130)" opacity=".78">
+            <rect width="144" height="222" rx="11" fill="#f0fdf4"/>
+            <rect width="144" height="36" rx="11" fill="#065f46"/>
+            <rect y="25" width="144" height="11" fill="#065f46"/>
+            <rect x="10" y="10" width="74" height="6" rx="3" fill="rgba(255,255,255,.58)"/>
+            <rect x="10" y="48" width="42" height="5" rx="2.5" fill="#6ee7b7"/>
+            <rect x="10" y="59" width="124" height="3.5" rx="1.75" fill="#6ee7b7" opacity=".5"/>
+          </g>
+          <g style="animation:floatA 4s ease-in-out infinite;" filter="drop-shadow(0 24px 48px rgba(30,64,175,.28)) drop-shadow(0 4px 14px rgba(0,0,0,.12))">
+            <rect x="22" y="4" width="160" height="298" rx="14" fill="white"/>
+            <rect x="22" y="4" width="160" height="56" rx="14" fill="#2563eb"/>
+            <rect x="22" y="44" width="160" height="16" fill="#2563eb"/>
+            <circle cx="50" cy="30" r="17" fill="#fde8d4"/>
+            <ellipse cx="50" cy="28" rx="11" ry="12.5" fill="#f5c9a0"/>
+            <ellipse cx="50" cy="19" rx="11.5" ry="8.5" fill="#3b1c0c"/>
+            <rect x="47" y="39" width="6" height="7" rx="2" fill="#f5c9a0"/>
+            <ellipse cx="46.5" cy="26.5" rx="1.9" ry="1.7" fill="#2a1508"/>
+            <ellipse cx="53.5" cy="26.5" rx="1.9" ry="1.7" fill="#2a1508"/>
+            <path d="M47 35 Q50 37.5 53 35" stroke="#bb6e50" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+            <rect x="76" y="17" width="86" height="7" rx="3.5" fill="rgba(255,255,255,.78)"/>
+            <rect x="76" y="29" width="64" height="5" rx="2.5" fill="rgba(255,255,255,.44)"/>
+            <rect x="34" y="74" width="66" height="6" rx="3" fill="#1e40af" opacity=".65"/>
+            <rect x="34" y="87" width="136" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="97" width="120" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="107" width="128" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="131" width="72" height="6" rx="3" fill="#1e40af" opacity=".65"/>
+            <rect x="34" y="144" width="136" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="154" width="114" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="178" width="62" height="6" rx="3" fill="#1e40af" opacity=".65"/>
+            <rect x="34" y="191" width="46" height="16" rx="8" fill="#eff6ff"/>
+            <rect x="38" y="197" width="38" height="4" rx="2" fill="#bfdbfe"/>
+            <rect x="86" y="191" width="40" height="16" rx="8" fill="#eff6ff"/>
+            <rect x="90" y="197" width="32" height="4" rx="2" fill="#bfdbfe"/>
+            <rect x="34" y="238" width="46" height="6" rx="3" fill="#1e40af" opacity=".65"/>
+            <rect x="34" y="251" width="136" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <line x1="34" y1="283" x2="130" y2="283" stroke="#e2e8f0" stroke-width="1.5"/>
+            <path d="M34 278 Q46 268 59 277 Q69 284 82 276 Q92 269 105 276 Q113 281 124 274" stroke="#2563eb" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- BIZNES -->
+    <div onclick="window.location.href='dokumenty.html'" class="card-green rounded-3xl overflow-hidden relative cursor-pointer group hover:-translate-y-1 transition-all duration-300 shadow-2xl" style="min-height:380px;">
+      <div class="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-white/[.05] pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-white/[.04] pointer-events-none"></div>
+      <div class="relative z-10 p-10 pr-[220px] h-full flex flex-col justify-between" style="min-height:380px;">
+        <div>
+          <p class="text-[10.5px] font-[700] uppercase tracking-[.18em] text-white/40 mb-4">Strefa Biznesu</p>
+          <h2 class="text-[32px] font-[900] text-white leading-[1.12] tracking-tight mb-6">Twórz umowy<br>i regulaminy</h2>
+          <p class="text-white/50 text-[13px] mb-5">Dla firm, e-commerce i freelancera</p>
+          <ul class="space-y-2.5 mb-8">
+            <li class="flex items-center gap-2.5 text-[13.5px] text-white/75">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,.18)"/><polyline points="5,8 7,10.5 11,5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              Regulamin sklepu internetowego
+            </li>
+            <li class="flex items-center gap-2.5 text-[13.5px] text-white/75">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,.18)"/><polyline points="5,8 7,10.5 11,5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              Polityka prywatności RODO
+            </li>
+            <li class="flex items-center gap-2.5 text-[13.5px] text-white/75">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,.18)"/><polyline points="5,8 7,10.5 11,5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              Umowa NDA / B2B
+            </li>
+          </ul>
+        </div>
+        <span class="inline-flex items-center gap-2 bg-white text-green-800 font-[700] text-[13.5px] px-5 py-3 rounded-2xl w-fit hover:shadow-lg transition-all">
+          Wejdź w Strefę Biznesu
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+      </div>
+      <div class="absolute right-0 top-0 bottom-0 w-[215px] flex items-center justify-center pointer-events-none" style="padding:14px 10px 14px 0;">
+        <svg width="205" height="340" viewBox="0 0 205 340" fill="none">
+          <g transform="translate(52,18) rotate(11 72 130)" opacity=".6">
+            <rect width="144" height="218" rx="11" fill="#cffafe"/>
+            <rect width="144" height="36" rx="11" fill="#0369a1"/>
+            <rect y="25" width="144" height="11" fill="#0369a1"/>
+            <rect x="10" y="10" width="70" height="6" rx="3" fill="rgba(255,255,255,.55)"/>
+            <rect x="10" y="48" width="38" height="5" rx="2.5" fill="#7dd3fc"/>
+            <rect x="10" y="59" width="124" height="3.5" rx="1.75" fill="#7dd3fc" opacity=".5"/>
+          </g>
+          <g transform="translate(3,10) rotate(-7 72 130)" opacity=".78">
+            <rect width="144" height="222" rx="11" fill="#f0fdf4"/>
+            <rect width="144" height="36" rx="11" fill="#1d4ed8"/>
+            <rect y="25" width="144" height="11" fill="#1d4ed8"/>
+            <rect x="10" y="10" width="16" height="16" rx="5" fill="rgba(255,255,255,.2)"/>
+            <rect x="32" y="11" width="66" height="6" rx="3" fill="rgba(255,255,255,.58)"/>
+            <rect x="10" y="48" width="42" height="5" rx="2.5" fill="#6ee7b7"/>
+            <rect x="10" y="59" width="124" height="3.5" rx="1.75" fill="#6ee7b7" opacity=".5"/>
+          </g>
+          <g style="animation:floatA 4.4s ease-in-out infinite;" filter="drop-shadow(0 24px 48px rgba(6,78,59,.25)) drop-shadow(0 4px 14px rgba(0,0,0,.12))">
+            <rect x="22" y="4" width="160" height="298" rx="14" fill="white"/>
+            <rect x="22" y="4" width="160" height="58" rx="14" fill="#064e3b"/>
+            <rect x="22" y="46" width="160" height="16" fill="#064e3b"/>
+            <rect x="34" y="15" width="24" height="28" rx="6" fill="rgba(255,255,255,.16)"/>
+            <rect x="39" y="21" width="14" height="2.5" rx="1.25" fill="white" opacity=".7"/>
+            <rect x="39" y="26" width="11" height="2.5" rx="1.25" fill="white" opacity=".7"/>
+            <text x="68" y="26" font-family="Inter,sans-serif" font-size="8" font-weight="800" fill="rgba(255,255,255,.9)" letter-spacing=".4">REGULAMIN SKLEPU</text>
+            <text x="68" y="37" font-family="Inter,sans-serif" font-size="8" font-weight="800" fill="rgba(255,255,255,.9)" letter-spacing=".4">INTERNETOWEGO</text>
+            <rect x="34" y="74" width="58" height="6" rx="3" fill="#064e3b" opacity=".55"/>
+            <rect x="34" y="87" width="140" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="97" width="124" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="107" width="132" height="4.5" rx="2.25" fill="#d1fae5"/>
+            <rect x="34" y="131" width="66" height="6" rx="3" fill="#064e3b" opacity=".55"/>
+            <rect x="34" y="144" width="140" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="154" width="118" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="188" width="54" height="6" rx="3" fill="#064e3b" opacity=".55"/>
+            <rect x="34" y="201" width="140" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <rect x="34" y="225" width="64" height="6" rx="3" fill="#064e3b" opacity=".55"/>
+            <rect x="34" y="238" width="140" height="4.5" rx="2.25" fill="#e2e8f0"/>
+            <line x1="34" y1="278" x2="134" y2="278" stroke="#e2e8f0" stroke-width="1.5"/>
+            <path d="M34 273 Q46 263 59 272 Q69 279 82 271 Q92 264 105 271 Q113 276 124 269" stroke="#065f46" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <g transform="translate(162,270)">
+              <circle r="18" stroke="rgba(5,150,105,.35)" stroke-width="1.6" stroke-dasharray="4 2" fill="rgba(255,255,255,.4)"/>
+              <circle r="12" stroke="rgba(5,150,105,.28)" stroke-width="1.1" fill="none"/>
+              <text y="-2" text-anchor="middle" font-family="Inter,sans-serif" font-size="5" font-weight="800" fill="rgba(5,150,105,.5)" letter-spacing="1">DOK</text>
+              <text y="5.5" text-anchor="middle" font-family="Inter,sans-serif" font-size="5" font-weight="800" fill="rgba(5,150,105,.5)" letter-spacing="1">UMO</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- JAK TO DZIAŁA -->
+<section class="bg-white py-20 border-t border-gray-100">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <h2 class="text-[38px] font-[900] text-gray-950 tracking-[-1.5px]">Jak to działa?</h2>
+      <p class="mt-3 text-gray-400 text-[15px]">Trzy kroki do gotowego dokumentu</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
+        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="text-[44px] font-[900] text-gray-100 leading-none mb-4 select-none tracking-tight">01</div>
+        <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Wybierz dokument</h4>
+        <p class="text-[13.5px] text-gray-400 leading-relaxed">Przeglądaj szablony w Strefie Kariery lub Biznesu.</p>
+      </div>
+      <div class="p-8 rounded-3xl border border-gray-100 hover:border-green-100 hover:bg-green-50/20 transition-all group">
+        <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-100 transition-colors">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <div class="text-[44px] font-[900] text-gray-100 leading-none mb-4 select-none tracking-tight">02</div>
+        <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Wypełnij formularz</h4>
+        <p class="text-[13.5px] text-gray-400 leading-relaxed">Prosty kreator krok po kroku. Żadnych zawiłości prawnych.</p>
+      </div>
+      <div class="p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
+        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="text-[44px] font-[900] text-gray-100 leading-none mb-4 select-none tracking-tight">03</div>
+        <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Pobierz gotowy plik</h4>
+        <p class="text-[13.5px] text-gray-400 leading-relaxed">PDF lub DOCX — gotowy do użycia, wysłania i podpisania.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-gray-100 py-8">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <span class="font-[800] text-gray-900 text-[14px]">Dokumo</span>
+    </div>
+    <p class="text-[13px] text-gray-400">© 2026 Dokumo. Wszelkie prawa zastrzeżone.</p>
+    <div class="flex gap-6">
+      <a href="#" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Regulamin</a>
+      <a href="#" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Prywatność</a>
+      <a href="#" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Kontakt</a>
+    </div>
+  </div>
 </footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+<script>
 function getUser() {
   try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
 }
@@ -120,7 +349,7 @@ function updateNavAuth() {
     loginBtn.style.display    = 'none';
     registerBtn.style.display = 'none';
     profile.style.display     = 'flex';
-    emailEl.textContent = user.email || '';
+    if (emailEl) emailEl.textContent = user.email || '';
     if (user.photo) {
       avatar.innerHTML = '<img src="' + user.photo + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
     } else {
@@ -132,13 +361,46 @@ function updateNavAuth() {
     profile.style.display     = 'none';
   }
 }
+
+function updateNavBadge() {
+  const badge = document.getElementById('navSubBadge');
+  if (!badge) return;
+  const user = getUser();
+  if (!user) { badge.style.display = 'none'; return; }
+  const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
+  const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  badge.style.display = 'inline-flex';
+  if (isPro) {
+    badge.textContent = '★ PRO';
+    badge.style.cssText = 'display:inline-flex;align-items:center;background:#166534;color:#fff;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;text-decoration:none;margin-right:6px;';
+  } else {
+    badge.textContent = '★ KUP PREMIUM';
+    badge.style.cssText = 'display:inline-flex;align-items:center;background:#92400e;color:#fff;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;text-decoration:none;margin-right:6px;';
+  }
+}
+
 function toggleNavDropdown(e) {
   e.stopPropagation();
   const dd = document.getElementById('navDropdown');
   if (!dd) return;
   dd.classList.toggle('open');
 }
-// Close dropdown when clicking outside
+
 document.addEventListener('click', () => {
   const dd = document.getElementById('navDropdown');
-  if (dd) dd
+  if (dd) dd.classList.remove('open');
+});
+
+function logoutUser() {
+  clearUser();
+  localStorage.removeItem('dokumo_sub');
+  window.location.href = 'index.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateNavAuth();
+  updateNavBadge();
+});
+</script>
+</body>
+</html>
