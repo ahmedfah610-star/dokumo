@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administracja & Majątek – Generator dokumentów AI | Dokumo</title>
+<meta name="description" content="Generuj umowy najmu, biznesplany, protokoły zdawczo-odbiorcze i analizy SWOT w kilka sekund. Dokumenty zgodne z polskim prawem, gotowe do podpisu.">
+<meta name="keywords" content="umowa najmu mieszkania, biznesplan dla banku, protokół zdawczo-odbiorczy, analiza SWOT, umowa wspólników, wypowiedzenie najmu, generator dokumentów AI, Dokumo">
+<link rel="canonical" href="https://dokumo.vercel.app/admin.html">
+<meta property="og:title" content="Administracja & Majątek – Dokumo">
+<meta property="og:description" content="Umowa najmu, biznesplan dla banku, protokół zdawczo-odbiorczy i więcej — generowane przez AI w sekundy.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dokumo.vercel.app/admin.html">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3ef;
+  --surface: #141518;
+  --surface2: #1a1c20;
+  --border: rgba(255,255,255,.07);
+  --ink: #f0ede8;
+  --ink2: rgba(240,237,232,.45);
+  --ink3: rgba(240,237,232,.25);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
+
+/* ── NAV ── */
+.u-nav { background: rgba(14,15,17,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; height: 56px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; }
+.u-nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1rem; color: var(--ink); letter-spacing: -.02em; flex-shrink: 0; }
+.u-nav-dot { width: 26px; height: 26px; background: var(--ink); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+.u-nav-back { display: flex; align-items: center; gap: 5px; font-size: .73rem; font-weight: 500; color: var(--ink2); text-decoration: none; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); margin-left: 12px; transition: all .2s; white-space: nowrap; flex-shrink: 0; }
+.u-nav-back:hover { color: var(--ink); border-color: rgba(255,255,255,.15); }
+.u-nav-spacer { flex: 1; }
+.u-nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.u-nav-login { font-size: .73rem; font-weight: 500; color: var(--ink2); text-decoration: none; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border); transition: all .2s; }
+.u-nav-login:hover { color: var(--ink); border-color: rgba(255,255,255,.2); }
+.u-nav-badge { font-size: .62rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
+.u-nav-badge.pro { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.25); }
+.u-nav-badge.free { background: rgba(255,255,255,.05); color: var(--ink3); border: 1px solid var(--border); }
+.u-nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface2); color: var(--ink); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
+.u-nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.u-nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
+.u-nav-profile.show { display: flex; }
+.u-nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #1a1c20; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.5); padding: 8px; min-width: 200px; z-index: 200; display: none; }
+.u-nav-dropdown.show { display: block; }
+.u-nav-dd-email { font-size: .72rem; color: var(--ink2); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.u-nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 1px; }
+.u-nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
+.u-nav-dd-link:hover { background: rgba(255,255,255,.05); color: var(--ink); }
+.u-nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+.u-nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #f87171; transition: background .15s; }
+.u-nav-dd-logout:hover { background: rgba(248,113,113,.08); }
+@media(max-width:480px){ .u-nav { padding: 0 1rem; } .u-nav-back span { display: none; } }
+
+/* ── HEADER ── */
+.page-header { padding: 48px 2rem 0; max-width: 860px; margin: 0 auto; }
+.page-label { display: inline-flex; align-items: center; gap: 7px; font-size: .65rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--green); margin-bottom: 16px; }
+.page-label-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: glow 2s ease-in-out infinite; }
+@keyframes glow { 0%,100% { opacity: 1; box-shadow: 0 0 8px var(--green); } 50% { opacity: .5; box-shadow: 0 0 3px var(--green); } }
+.page-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -.03em; color: var(--ink); line-height: 1.1; margin-bottom: 10px; }
+.page-sub { font-size: .88rem; color: var(--ink2); line-height: 1.6; font-weight: 300; }
+
+/* ── DOCUMENT STACK ── */
+.doc-stack { max-width: 860px; margin: 52px auto 80px; padding: 0 2rem; display: flex; flex-direction: column; gap: 12px; }
+
+.doc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; display: flex; align-items: center; cursor: pointer; position: relative; overflow: hidden; transition: transform .25s cubic-bezier(.34,1.3,.64,1), box-shadow .25s ease, border-color .25s; text-decoration: none; color: inherit; opacity: 0; animation: slideIn .4s ease both; }
+.doc-card:nth-child(1) { animation-delay: .05s; }
+.doc-card:nth-child(2) { animation-delay: .11s; }
+.doc-card:nth-child(3) { animation-delay: .17s; }
+.doc-card:nth-child(4) { animation-delay: .23s; }
+.doc-card:nth-child(5) { animation-delay: .29s; }
+.doc-card:nth-child(6) { animation-delay: .35s; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+.doc-card:hover { transform: translateX(6px) scale(1.008); box-shadow: -6px 0 0 0 var(--green), 0 12px 40px rgba(0,0,0,.35); border-color: rgba(255,255,255,.12); }
+
+.doc-edge { width: 4px; align-self: stretch; border-radius: 16px 0 0 16px; flex-shrink: 0; background: var(--green); }
+.doc-body { flex: 1; padding: 22px 24px; display: flex; align-items: center; gap: 20px; }
+.doc-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--green-dim); }
+.doc-info { flex: 1; min-width: 0; }
+.doc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; flex-wrap: wrap; }
+.doc-name { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.doc-desc { font-size: .8rem; color: var(--ink2); line-height: 1.5; font-weight: 300; }
+.doc-action { flex-shrink: 0; padding: 0 24px; }
+.doc-btn { display: inline-flex; align-items: center; gap: 7px; font-family: 'Bricolage Grotesque', sans-serif; font-size: .78rem; font-weight: 700; padding: 9px 18px; border-radius: 10px; cursor: pointer; transition: all .2s; white-space: nowrap; background: rgba(34,197,94,.15); color: #39ff8a; border: 1px solid rgba(57,255,138,.3); }
+.doc-card:hover .doc-btn { background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.4); }
+.doc-status { position: absolute; top: 14px; right: 14px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+.doc-card::after { content: ''; position: absolute; inset: 0; border-radius: 16px; opacity: 0; transition: opacity .3s; pointer-events: none; background: radial-gradient(ellipse at left center, rgba(34,197,94,.04), transparent 60%); }
+.doc-card:hover::after { opacity: 1; }
+
+@media(max-width:640px){
+  .doc-body { padding: 18px 16px; gap: 14px; }
+  .doc-icon { width: 38px; height: 38px; }
+  .doc-name { font-size: .9rem; }
+  .doc-card { flex-direction: column; align-items: stretch; }
+  .doc-action { padding: 0 16px 18px; }
+  .doc-btn { width: 100%; justify-content: center; }
+}
+
+/* ── MODAL ── */
+.gen-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); z-index: 300; align-items: flex-end; justify-content: center; }
+.gen-sheet { background: #0e0f11; border-radius: 24px 24px 0 0; border: 1px solid rgba(255,255,255,.08); width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; padding: 28px 28px 40px; transform: translateY(100%); transition: transform .35s cubic-bezier(.34,1.2,.64,1); }
+</style>
+
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const app=getApps().length?getApps()[0]:initializeApp({apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",authDomain:"dokumo-c1ccb.firebaseapp.com",projectId:"dokumo-c1ccb",storageBucket:"dokumo-c1ccb.firebasestorage.app",messagingSenderId:"1088576029067",appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"});
+onAuthStateChanged(getAuth(app),async u=>{
+  if(u){
+    localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
+    window._fbToken=await u.getIdToken();
+    window._fbReady=true;
+    try{
+      const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
+      const data=await res.json();
+      if(data.active&&data.expiresAt) localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+    }catch(e){}
+  }else{window._fbToken=null;window._fbReady=true;}
+  if(window._renderUNav)window._renderUNav();
+});
+</script>
+</head>
+<body>
+
+<nav class="u-nav">
+  <a href="index.html" class="u-nav-logo">
+    <div class="u-nav-dot"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f5f3ef" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    Dokumo
+  </a>
+  <a href="biznes.html" class="u-nav-back">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>Strefa Biznesu</span>
+  </a>
+  <div class="u-nav-spacer"></div>
+  <div class="u-nav-right">
+    <a href="konto.html" class="u-nav-login" id="uNavLogin">Zaloguj się</a>
+    <div class="u-nav-profile" id="uNavProfile">
+      <span class="u-nav-badge free" id="uNavBadge">Free</span>
+      <div class="u-nav-avatar" id="uNavAvatar" onclick="toggleUNavDrop(event)">?</div>
+      <div class="u-nav-dropdown" id="uNavDrop">
+        <div class="u-nav-dd-email">
+          <div class="u-nav-dd-name" id="uNavName"></div>
+          <div id="uNavEmail"></div>
+        </div>
+        <a href="konto.html" class="u-nav-dd-link">👤 Moje konto</a>
+        <a href="moje-dokumenty.html" class="u-nav-dd-link">📁 Moje dokumenty</a>
+        <a href="subskrypcja.html" class="u-nav-dd-link">⭐ Subskrypcja</a>
+        <div class="u-nav-dd-sep"></div>
+        <button class="u-nav-dd-logout" onclick="uNavLogout()">← Wyloguj się</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+(function(){
+  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
+  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
+  function renderUNav(){
+    var user=getUser(),sub=getSub();
+    var login=document.getElementById('uNavLogin');
+    var profile=document.getElementById('uNavProfile');
+    var badge=document.getElementById('uNavBadge');
+    var avatar=document.getElementById('uNavAvatar');
+    if(!login)return;
+    if(user){
+      login.style.display='none';profile.classList.add('show');
+      document.getElementById('uNavName').textContent=user.name||user.email||'';
+      document.getElementById('uNavEmail').textContent=user.email||'';
+      if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="">';
+      else avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();
+      var isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+      var names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+      badge.textContent=isActive?(names[sub.plan]||'PRO'):'Free';
+      badge.className='u-nav-badge '+(isActive?'pro':'free');
+    }else{login.style.display='';profile.classList.remove('show');}
+  }
+  function toggleUNavDrop(e){e.stopPropagation();document.getElementById('uNavDrop').classList.toggle('show');}
+  function uNavLogout(){localStorage.removeItem('dokumo_user');localStorage.removeItem('dokumo_sub');window.location.href='index.html';}
+  window.toggleUNavDrop=toggleUNavDrop;window.uNavLogout=uNavLogout;
+  document.addEventListener('click',function(){var d=document.getElementById('uNavDrop');if(d)d.classList.remove('show');});
+  renderUNav();window._renderUNav=renderUNav;
+})();
+</script>
+
+<div style="max-width:860px;margin:40px auto 0;padding:0 2rem;">
+  <h1 style="font-family:Bricolage Grotesque,sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:#1a1714;letter-spacing:-.03em;line-height:1.15;">Każda nieruchomość i firma<br>zasługuje na <span style="background:linear-gradient(90deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">porządne dokumenty.</span></h1>
+  <p style="margin-top:12px;font-size:.88rem;color:#6b6860;font-weight:300;max-width:520px;line-height:1.65;">Umowy najmu, biznesplany, protokoły — generowane przez AI w kilka sekund. Zgodne z polskim prawem.</p>
+</div>
+
+<main class="doc-stack" aria-label="Dokumenty administracyjne i majątkowe">
+
+  <article class="doc-card" data-doc="najmu" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">🏠</span></div>
+      <div class="doc-info">
+        <div class="doc-header">
+          <h2 class="doc-name" itemprop="name">Umowa najmu mieszkania</h2>
+        </div>
+        <p class="doc-desc" itemprop="description">Kompletna umowa najmu zgodna z ustawą o ochronie praw lokatorów — z kaucją, zasadami i okresem wypowiedzenia.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj umowę najmu mieszkania">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+  <article class="doc-card" data-doc="protokol" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📋</span></div>
+      <div class="doc-info">
+        <div class="doc-header">
+          <h2 class="doc-name" itemprop="name">Protokół zdawczo-odbiorczy</h2>
+        </div>
+        <p class="doc-desc" itemprop="description">Protokół przekazania lub zdania mieszkania ze stanem liczników, wyposażeniem i uwagami o stanie lokalu.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj protokół zdawczo-odbiorczy">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+  <article class="doc-card" data-doc="wypowiedzenie_najmu" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📝</span></div>
+      <div class="doc-info">
+        <div class="doc-header">
+          <h2 class="doc-name" itemprop="name">Wypowiedzenie umowy najmu</h2>
+        </div>
+        <p class="doc-desc" itemprop="description">Formalne wypowiedzenie z zachowaniem ustawowego okresu — zarówno dla najemcy, jak i wynajmującego.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj wypowiedzenie umowy najmu">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+  <article class="doc-card" data-doc="biznesplan" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">🏦</span></div>
+      <div class="doc-info">
+        <div class="doc-header">
+          <h2 class="doc-name" itemprop="name">Biznesplan dla banku</h2>
+        </div>
+        <p class="doc-desc" itemprop="description">Profesjonalny biznesplan pod kredyt inwestycyjny — z analizą rynku, prognozą finansową i harmonogramem spłat.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj biznesplan dla banku">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+  <article class="doc-card" data-doc="swot" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📊</span></div>
+      <div class="doc-info">
+        <div class="doc-header">
+          <h2 class="doc-name" itemprop="name">Analiza SWOT firmy</h2>
+        </div>
+        <p class="doc-desc" itemprop="description">Szczegółowa analiza mocnych i słabych stron, szans i zagrożeń — z konkretnymi rekomendacjami strategicznymi.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj analizę SWOT firmy">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+  <article class="doc-card" data-doc="spolnikow" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">🚀</span></div>
+      <div class="doc-info">
+        <div class="doc-header">
+          <h2 class="doc-name" itemprop="name">Umowa wspólników (co-founders)</h2>
+        </div>
+        <p class="doc-desc" itemprop="description">Umowa regulująca udziały, role, vesting i zasady wyjścia ze spółki — podstawa każdego startupu.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj umowę wspólników">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+</main>
+
+<!-- Modal -->
+<div class="gen-overlay" id="genOverlay">
+  <div class="gen-sheet" id="genSheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h2 id="genTitle" style="font-family:Bricolage Grotesque,sans-serif;font-size:1.1rem;font-weight:800;color:#f0ede8;letter-spacing:-.02em;"></h2>
+      <button onclick="closeGen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(240,237,232,.6);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.72rem;flex-shrink:0;">✕</button>
+    </div>
+    <div id="genForm"></div>
+    <div id="genLoading" style="display:none;text-align:center;padding:40px 0;">
+      <div style="width:36px;height:36px;border:3px solid rgba(57,255,138,.2);border-top-color:#39ff8a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
+      <p style="color:rgba(240,237,232,.5);font-size:.85rem;">Generowanie dokumentu…</p>
+    </div>
+    <div id="genResult" style="display:none;">
+      <textarea id="genText" style="width:100%;height:260px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#f0ede8;font-size:.8rem;padding:16px;resize:vertical;font-family:DM Sans,sans-serif;line-height:1.6;outline:none;" readonly></textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button onclick="copyResult()" style="flex:1;padding:11px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#39ff8a;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">📋 Kopiuj</button>
+        <button onclick="downloadResult()" style="flex:1;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(240,237,232,.7);border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">⬇ Pobierz .txt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+
+<script>
+var FORMS = {
+  najmu: {
+    title: "Umowa najmu mieszkania",
+    steps: [
+      { label: "Wynajmujący", fields: [
+        {id:"wyn_imie", label:"Imię i nazwisko właściciela", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"wyn_pesel", label:"PESEL", ph:"np. 75010112345", icon:"🔢", opt:true},
+        {id:"wyn_adres", label:"Adres zamieszkania", ph:"np. ul. Kwiatowa 5, 00-001 Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Najemca", fields: [
+        {id:"naj_imie", label:"Imię i nazwisko najemcy", ph:"np. Anna Nowak", icon:"👤"},
+        {id:"naj_pesel", label:"PESEL", ph:"np. 90020298765", icon:"🔢", opt:true},
+        {id:"naj_adres", label:"Adres zameldowania", ph:"np. ul. Różana 10, 00-002 Kraków", icon:"📍", opt:true}
+      ]},
+      { label: "Mieszkanie", fields: [
+        {id:"m_adres", label:"Adres mieszkania", ph:"np. ul. Słoneczna 3/15, 00-003 Wrocław", icon:"🏠"},
+        {id:"m_metraz", label:"Metraż (m²)", ph:"np. 48", icon:"📐", opt:true},
+        {id:"m_pokoje", label:"Liczba pokoi", ph:"np. 2", icon:"🚪", opt:true}
+      ]},
+      { label: "Warunki finansowe", fields: [
+        {id:"czynsz", label:"Czynsz miesięczny (zł)", ph:"np. 2500", icon:"💰"},
+        {id:"kaucja", label:"Kaucja (zł)", ph:"np. 5000", icon:"🔒", opt:true},
+        {id:"oplaty", label:"Opłaty dodatkowe", ph:"np. media i internet wg liczników", icon:"🧾", opt:true}
+      ]},
+      { label: "Zasady", fields: [
+        {id:"data_od", label:"Data rozpoczęcia", type:"date", icon:"📅"},
+        {id:"czas", label:"Czas trwania", type:"pills", icon:"⏱️", opts:["6 miesięcy","12 miesięcy","2 lata","Czas nieokreślony"]},
+        {id:"wypowiedzenie", label:"Okres wypowiedzenia", type:"pills", icon:"📋", opts:["1 miesiąc","2 miesiące","3 miesiące"]},
+        {id:"zwierzeta", label:"Zwierzęta", type:"pills", icon:"🐾", opts:["Niedozwolone","Dozwolone","Do uzgodnienia"]},
+        {id:"palenie", label:"Palenie", type:"pills", icon:"🚭", opts:["Zakaz palenia","Dozwolone","Tylko na balkonie"]}
+      ]}
+    ],
+    prompt: function(v){ return "Napisz umowę najmu mieszkania. Wynajmujący: "+v.wyn_imie+", PESEL: "+(v.wyn_pesel||"[brak]")+", adres: "+(v.wyn_adres||"[brak]")+". Najemca: "+v.naj_imie+", PESEL: "+(v.naj_pesel||"[brak]")+", adres: "+(v.naj_adres||"[brak]")+". Mieszkanie: "+v.m_adres+", "+(v.m_metraz||"[brak]")+" m², "+(v.m_pokoje||"[brak]")+" pokoje. Czynsz: "+v.czynsz+" zł, kaucja: "+(v.kaucja||"[brak]")+" zł, opłaty: "+(v.oplaty||"wg liczników")+". Okres: od "+(v.data_od||"[brak]")+", "+(v.czas||"nieokreślony")+", wypowiedzenie: "+(v.wypowiedzenie||"1 miesiąc")+". Zwierzęta: "+(v.zwierzeta||"niedozwolone")+", palenie: "+(v.palenie||"zakaz")+". Zacznij od treści umowy. Tylko czysty tekst."; }
+  },
+  protokol: {
+    title: "Protokół zdawczo-odbiorczy",
+    steps: [
+      { label: "Strony i lokal", fields: [
+        {id:"wyn", label:"Wynajmujący", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"naj", label:"Najemca", ph:"np. Anna Nowak", icon:"👤"},
+        {id:"adres", label:"Adres mieszkania", ph:"np. ul. Słoneczna 3/15, Wrocław", icon:"🏠"},
+        {id:"data", label:"Data przekazania", type:"date", icon:"📅"},
+        {id:"typ", label:"Rodzaj protokołu", type:"pills", icon:"📋", opts:["Przekazanie (wprowadzenie)","Zdanie (wyprowadzenie)"]}
+      ]},
+      { label: "Liczniki", fields: [
+        {id:"prad", label:"Prąd (kWh)", ph:"np. 12345", icon:"⚡", opt:true},
+        {id:"gaz", label:"Gaz (m³)", ph:"np. 456", icon:"🔥", opt:true},
+        {id:"woda_z", label:"Zimna woda (m³)", ph:"np. 78", icon:"💧", opt:true},
+        {id:"woda_c", label:"Ciepła woda (m³)", ph:"np. 34", icon:"♨️", opt:true}
+      ]},
+      { label: "Stan lokalu", fields: [
+        {id:"stan", label:"Stan ogólny", type:"pills", icon:"🏠", opts:["Bardzo dobry","Dobry","Przeciętny","Do remontu"]},
+        {id:"uwagi_sciany", label:"Ściany i sufity", ph:"np. bez uszkodzeń", icon:"🪟", opt:true},
+        {id:"uwagi_podlogi", label:"Podłogi", ph:"np. dobry stan", icon:"🪵", opt:true},
+        {id:"klucze", label:"Klucze", ph:"np. 2 komplety", icon:"🔑", opt:true},
+        {id:"wyposazenie", label:"Lista wyposażenia", ph:"np. lodówka, pralka, kanapa...", icon:"🛋️", opt:true}
+      ]}
+    ],
+    prompt: function(v){ return "Napisz protokół zdawczo-odbiorczy mieszkania. Wynajmujący: "+v.wyn+", najemca: "+v.naj+". Adres: "+v.adres+", data: "+(v.data||"[brak]")+", rodzaj: "+(v.typ||"przekazanie")+". Liczniki: prąd "+(v.prad||"[brak]")+" kWh, gaz "+(v.gaz||"[brak]")+" m³, woda zimna "+(v.woda_z||"[brak]")+" m³, ciepła "+(v.woda_c||"[brak]")+" m³. Stan: "+(v.stan||"dobry")+", ściany: "+(v.uwagi_sciany||"ok")+", podłogi: "+(v.uwagi_podlogi||"ok")+". Klucze: "+(v.klucze||"[brak]")+". Wyposażenie: "+(v.wyposazenie||"[brak]")+". Zacznij od treści protokołu. Tylko czysty tekst."; }
+  },
+  wypowiedzenie_najmu: {
+    title: "Wypowiedzenie umowy najmu",
+    steps: [
+      { label: "Kto wypowiada", fields: [
+        {id:"strona", label:"Kto składa wypowiedzenie?", type:"pills", icon:"👤", opts:["Najemca","Wynajmujący"]},
+        {id:"skladajacy", label:"Imię i nazwisko", ph:"np. Anna Nowak", icon:"👤"},
+        {id:"adres_s", label:"Adres składającego", ph:"np. ul. Różana 2, Kraków", icon:"📍", opt:true}
+      ]},
+      { label: "Druga strona", fields: [
+        {id:"druga", label:"Imię i nazwisko drugiej strony", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"adres_d", label:"Adres drugiej strony", ph:"np. ul. Kwiatowa 5, Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Szczegóły", fields: [
+        {id:"adres_m", label:"Adres mieszkania", ph:"np. ul. Słoneczna 3/15, Wrocław", icon:"🏠"},
+        {id:"data_umowy", label:"Data zawarcia umowy", ph:"np. 01.04.2025", icon:"📅", opt:true},
+        {id:"okres", label:"Okres wypowiedzenia", type:"pills", icon:"⏳", opts:["1 miesiąc","2 miesiące","3 miesiące"]}
+      ]}
+    ],
+    prompt: function(v){ return "Napisz wypowiedzenie umowy najmu. Składa "+(v.strona||"najemca")+": "+v.skladajacy+", adres: "+(v.adres_s||"[brak]")+". Do: "+v.druga+", adres: "+(v.adres_d||"[brak]")+". Mieszkanie: "+v.adres_m+". Umowa z: "+(v.data_umowy||"[brak]")+". Okres wypowiedzenia: "+(v.okres||"1 miesiąc")+". Zacznij od treści pisma. Tylko czysty tekst."; }
+  },
+  biznesplan: {
+    title: "Biznesplan dla banku",
+    steps: [
+      { label: "Firma", fields: [
+        {id:"firma", label:"Nazwa firmy", ph:"np. MójBiznes Sp. z o.o.", icon:"🏢"},
+        {id:"branza", label:"Branża", ph:"np. e-commerce, sprzedaż online", icon:"🏭"},
+        {id:"adres", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Cel kredytu", fields: [
+        {id:"kwota", label:"Kwota kredytu (zł)", ph:"np. 200 000", icon:"💰"},
+        {id:"cel", label:"Na co przeznaczony kredyt", ph:"np. zakup magazynu, rozbudowa zaplecza", icon:"🎯"}
+      ]},
+      { label: "Opis działalności", fields: [
+        {id:"opis", label:"Opis firmy i działalności", ph:"np. Prowadzimy sklep online z elektroniką od 3 lat...", icon:"📝"},
+        {id:"rynek", label:"Rynek i konkurencja", ph:"np. Allegro, Media Expert, lokalni sprzedawcy", icon:"📊", opt:true}
+      ]},
+      { label: "Finanse", fields: [
+        {id:"przychod", label:"Obecny przychód roczny (zł)", ph:"np. 1 200 000", icon:"📈"},
+        {id:"zysk", label:"Zysk netto roczny (zł)", ph:"np. 180 000", icon:"💵", opt:true},
+        {id:"prognoza", label:"Prognoza po inwestycji", ph:"np. 1 800 000 zł w roku 1", icon:"🔮"}
+      ]}
+    ],
+    prompt: function(v){ return "Napisz profesjonalny biznesplan dla banku pod kredyt inwestycyjny. Firma: "+v.firma+", branża: "+v.branza+", adres: "+(v.adres||"[brak]")+". Kwota kredytu: "+v.kwota+" zł, cel: "+v.cel+". Opis: "+v.opis+". Rynek: "+(v.rynek||"[brak]")+". Przychód: "+v.przychod+" zł, zysk: "+(v.zysk||"[brak]")+" zł, prognoza: "+v.prognoza+". Zawrzyj: streszczenie, opis firmy, analizę rynku, plan finansowy, harmonogram spłat. Zacznij od treści."; }
+  },
+  swot: {
+    title: "Analiza SWOT firmy",
+    steps: [
+      { label: "Firma", fields: [
+        {id:"firma", label:"Nazwa firmy", ph:"np. MójBiznes Sp. z o.o.", icon:"🏢"},
+        {id:"branza", label:"Branża i rodzaj działalności", ph:"np. sklep internetowy z elektroniką", icon:"🏭"},
+        {id:"opis", label:"Krótki opis firmy", ph:"np. 3 lata na rynku, 5 pracowników, sprzedaż B2C...", icon:"📝"}
+      ]},
+      { label: "Kontekst analizy", fields: [
+        {id:"cel_analizy", label:"Cel analizy", type:"pills", icon:"🎯", opts:["Planowanie strategii","Wniosek o kredyt/dotację","Szukanie inwestora","Ocena kondycji firmy"]},
+        {id:"rynek", label:"Główni konkurenci i rynek", ph:"np. Allegro, Media Expert, lokalni sprzedawcy", icon:"📊", opt:true}
+      ]}
+    ],
+    prompt: function(v){ return "Napisz szczegółową analizę SWOT dla firmy: "+v.firma+", branża: "+v.branza+", opis: "+v.opis+", cel: "+(v.cel_analizy||"planowanie strategii")+", rynek/konkurencja: "+(v.rynek||"[brak]")+". Zawrzyj: mocne strony, słabe strony, szanse, zagrożenia, rekomendacje strategiczne. Zacznij od treści analizy."; }
+  },
+  spolnikow: {
+    title: "Umowa wspólników",
+    steps: [
+      { label: "Spółka", fields: [
+        {id:"spolka", label:"Nazwa spółki", ph:"np. FinTech Sp. z o.o.", icon:"🚀"},
+        {id:"branza", label:"Branża i produkt", ph:"np. aplikacja mobilna do oszczędzania", icon:"🏭"}
+      ]},
+      { label: "Wspólnicy", fields: [
+        {id:"w1_imie", label:"Wspólnik 1 — imię i nazwisko", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"w1_udzial", label:"Udział wspólnika 1 (%)", ph:"np. 50", icon:"📊"},
+        {id:"w1_rola", label:"Rola wspólnika 1", ph:"np. CEO, product, sprzedaż", icon:"💼"},
+        {id:"w2_imie", label:"Wspólnik 2 — imię i nazwisko", ph:"np. Anna Nowak", icon:"👤"},
+        {id:"w2_udzial", label:"Udział wspólnika 2 (%)", ph:"np. 50", icon:"📊"},
+        {id:"w2_rola", label:"Rola wspólnika 2", ph:"np. CTO, technologia", icon:"💼"}
+      ]},
+      { label: "Kluczowe ustalenia", fields: [
+        {id:"vesting", label:"Vesting (opcjonalnie)", ph:"np. 4-letni vesting, 1 rok cliff", icon:"⏳", opt:true},
+        {id:"decyzje", label:"Próg decyzji strategicznych", type:"pills", icon:"⚖️", opts:["Jednomyślność","Większość 51%","Większość 75%"]},
+        {id:"wyjscie", label:"Zasady wyjścia ze spółki", ph:"np. prawo pierwokupu dla pozostałych wspólników", icon:"🚪"}
+      ]}
+    ],
+    prompt: function(v){ return "Napisz umowę wspólników (co-founders agreement) dla: "+v.spolka+", branża: "+v.branza+". Wspólnik 1: "+v.w1_imie+", "+v.w1_udzial+"%, rola: "+v.w1_rola+". Wspólnik 2: "+v.w2_imie+", "+v.w2_udzial+"%, rola: "+v.w2_rola+". Vesting: "+(v.vesting||"brak")+". Decyzje: "+(v.decyzje||"jednomyślność")+". Wyjście: "+v.wyjscie+". Zacznij od treści umowy. Tylko czysty tekst."; }
+  }
+};
+
+var currentDoc = null, currentStep = 0, wizVals = {};
+
+function openDoc(id) {
+  if (!FORMS[id]) return;
+  currentDoc = id; currentStep = 0; wizVals = {};
+  document.getElementById("genTitle").textContent = FORMS[id].title;
+  document.getElementById("genLoading").style.display = "none";
+  document.getElementById("genResult").style.display = "none";
+  document.getElementById("genForm").style.display = "block";
+  renderStep();
+  var ov = document.getElementById("genOverlay");
+  var sh = document.getElementById("genSheet");
+  ov.style.display = "flex";
+  requestAnimationFrame(function(){ sh.style.transform = "translateY(0)"; });
+}
+
+function closeGen() {
+  var sh = document.getElementById("genSheet");
+  sh.style.transform = "translateY(100%)";
+  setTimeout(function(){ document.getElementById("genOverlay").style.display = "none"; }, 350);
+}
+
+function renderStep() {
+  var form = FORMS[currentDoc];
+  var steps = form.steps;
+  var step = steps[currentStep];
+  var total = steps.length;
+  var pct = Math.round((currentStep / total) * 100);
+  var el = document.getElementById("genForm");
+
+  var segs = "";
+  for (var i = 0; i < total; i++) {
+    segs += '<div style="flex:1;height:3px;border-radius:99px;background:' + (i <= currentStep ? "#39ff8a" : "rgba(255,255,255,.1)") + ';transition:background .3s;"></div>';
+  }
+
+  var progressHTML = '<div style="margin-bottom:20px;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    + '<span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ' + (currentStep+1) + ' z ' + total + ': ' + step.label + '</span>'
+    + '<span style="font-size:.7rem;color:rgba(240,237,232,.3);">' + pct + '% ukończone</span>'
+    + '</div>'
+    + '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">'
+    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:6px;margin-top:10px;">' + segs + '</div>'
+    + '</div>';
+
+  var fieldsHTML = "";
+  var fields = step.fields;
+  for (var j = 0; j < fields.length; j++) {
+    var f = fields[j];
+    var val = wizVals[f.id] || "";
+    var lbl = '<label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">' + f.icon + " " + f.label + (f.opt ? ' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>' : "") + '</label>';
+
+    if (f.type === "pills") {
+      var pills = "";
+      for (var k = 0; k < f.opts.length; k++) {
+        var o = f.opts[k];
+        var active = val === o;
+        pills += '<button type="button" data-field="' + f.id + '" data-val="' + o + '" onclick="pickPill(this)" style="padding:8px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid ' + (active?"rgba(57,255,138,.4)":"rgba(255,255,255,.12)") + ';background:' + (active?"rgba(57,255,138,.15)":"rgba(255,255,255,.05)") + ';color:' + (active?"#39ff8a":"rgba(240,237,232,.7)") + ';">' + o + '</button>';
+      }
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<div style="display:flex;flex-wrap:wrap;gap:8px;" id="pills_' + f.id + '">' + pills + '</div><input type="hidden" id="gf_' + f.id + '" value="' + val + '"></div>';
+    } else if (f.type === "date") {
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
+    } else {
+      var inputStyle = "width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;";
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '"></div>';
+    }
+  }
+
+  var isLast = (currentStep === total - 1);
+  var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
+    + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : "")
+    + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
+    + (isLast ? "Generuj dokument ⚡" : "Dalej: " + steps[currentStep+1].label + " →")
+    + '</button></div>';
+
+  el.innerHTML = progressHTML + fieldsHTML + navHTML;
+}
+
+function pickPill(btn) {
+  var fid = btn.dataset.field;
+  var val = btn.dataset.val;
+  document.getElementById("gf_" + fid).value = val;
+  var container = document.getElementById("pills_" + fid);
+  var btns = container.querySelectorAll("button");
+  for (var i = 0; i < btns.length; i++) {
+    var active = btns[i].dataset.val === val;
+    btns[i].style.background = active ? "rgba(57,255,138,.15)" : "rgba(255,255,255,.05)";
+    btns[i].style.color = active ? "#39ff8a" : "rgba(240,237,232,.7)";
+    btns[i].style.borderColor = active ? "rgba(57,255,138,.4)" : "rgba(255,255,255,.12)";
+  }
+}
+
+function collectVals() {
+  var fields = FORMS[currentDoc].steps[currentStep].fields;
+  for (var i = 0; i < fields.length; i++) {
+    var el = document.getElementById("gf_" + fields[i].id);
+    if (el) wizVals[fields[i].id] = el.value;
+  }
+}
+
+function wizNext() {
+  collectVals();
+  if (currentStep < FORMS[currentDoc].steps.length - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    doGenerate();
+  }
+}
+
+function wizBack() {
+  collectVals();
+  if (currentStep > 0) { currentStep--; renderStep(); }
+}
+
+function checkAccess() {
+  var sub; try { sub = JSON.parse(localStorage.getItem("dokumo_sub")); } catch(e) { sub = null; }
+  var ok = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date() && ["biznes","promax","pro"].indexOf(sub.plan) >= 0;
+  if (!ok) { sessionStorage.setItem("dokumo_after_sub", window.location.href); window.location.href = "subskrypcja.html"; return false; }
+  var user; try { user = JSON.parse(localStorage.getItem("dokumo_user")); } catch(e) { user = null; }
+  if (!user) { window.location.href = "konto.html"; return false; }
+  return true;
+}
+
+async function doGenerate() {
+  if (!checkAccess()) return;
+  document.getElementById("genForm").style.display = "none";
+  document.getElementById("genLoading").style.display = "block";
+  try {
+    var prompt = FORMS[currentDoc].prompt(wizVals);
+    var token = window._fbToken || "";
+    var res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title})
+    });
+    var data = await res.json();
+    document.getElementById("genLoading").style.display = "none";
+    document.getElementById("genText").value = data.text || data.result || "Błąd generowania";
+    document.getElementById("genResult").style.display = "block";
+  } catch(e) {
+    document.getElementById("genLoading").style.display = "none";
+    document.getElementById("genForm").style.display = "block";
+    renderStep();
+    alert("Błąd połączenia. Spróbuj ponownie.");
+  }
+}
+
+function copyResult() { navigator.clipboard.writeText(document.getElementById("genText").value); }
+function downloadResult() {
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([document.getElementById("genText").value], {type:"text/plain"}));
+  a.download = FORMS[currentDoc].title.toLowerCase().replace(/\s+/g,"_") + ".txt";
+  a.click();
+}
+
+document.getElementById("genOverlay").addEventListener("click", function(e){ if(e.target===this) closeGen(); });
+document.addEventListener("click", function(e){
+  var card = e.target.closest("[data-doc]");
+  if (card) openDoc(card.dataset.doc);
+});
+</script>
+
+</body>
+</html>
