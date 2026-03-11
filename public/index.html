@@ -47,6 +47,34 @@ body { background:#f7f8fa; }
     if (typeof updateNavBadge === 'function') updateNavBadge();
   });
 </script>
+
+<style>
+@media (max-width: 768px) {
+  .card-blue, .card-green {
+    display: flex;
+    flex-direction: column;
+  }
+  .card-blue .hidden.md\:block,
+  .card-green .hidden.md\:block {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 160px !important;
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+    top: auto !important; left: auto !important;
+    right: auto !important; bottom: auto !important;
+    padding: 0 !important;
+    margin-top: -20px;
+  }
+  .card-blue .hidden.md\:block svg,
+  .card-green .hidden.md\:block svg {
+    width: 160px !important;
+    height: 160px !important;
+  }
+}
+</style>
 </head>
 <body class="min-h-screen">
 
@@ -84,7 +112,7 @@ body { background:#f7f8fa; }
 
 
 <!-- HERO trust strip -->
-<section class="max-w-6xl mx-auto px-6 pt-14 pb-10 text-center">
+<section class="max-w-6xl mx-auto px-4 pt-10 pb-6 text-center">
   <div class="fu d1 flex items-center justify-center gap-3 flex-wrap mb-2">
     <div class="inline-flex items-center gap-2 bg-white border border-gray-200 shadow-sm text-gray-500 text-[12px] font-[600] px-3.5 py-1.5 rounded-full">
       <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
@@ -107,14 +135,14 @@ body { background:#f7f8fa; }
 
 
 <!-- ZONE CARDS -->
-<section class="max-w-6xl mx-auto px-6 pb-16">
+<section class="max-w-6xl mx-auto px-4 pb-12">
   <div class="fu d3 grid md:grid-cols-2 gap-5">
 
     <!-- KARIERA -->
-    <div onclick="window.location.href='kariera.html'" class="card-blue rounded-3xl overflow-hidden relative cursor-pointer group hover:-translate-y-1 transition-all duration-300 shadow-2xl" style="min-height:380px;">
+    <div onclick="window.location.href='kariera.html'" class="card-blue rounded-3xl overflow-hidden relative cursor-pointer group hover:-translate-y-1 transition-all duration-300 shadow-2xl">
       <div class="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-white/[.06] pointer-events-none"></div>
       <div class="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-white/[.04] pointer-events-none"></div>
-      <div class="relative z-10 p-10 pr-[220px] h-full flex flex-col justify-between" style="min-height:380px;">
+      <div class="relative z-10 p-8 md:pr-[220px] h-full flex flex-col justify-between">
         <div>
           <p class="text-[10.5px] font-[700] uppercase tracking-[.18em] text-white/40 mb-4">Strefa Kariery</p>
           <h2 class="text-[32px] font-[900] text-white leading-[1.12] tracking-tight mb-6">Stwórz CV<br>i dokumenty<br>do pracy</h2>
@@ -138,7 +166,7 @@ body { background:#f7f8fa; }
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </span>
       </div>
-      <div class="absolute right-0 top-0 bottom-0 w-[215px] flex items-center justify-center pointer-events-none" style="padding:14px 10px 14px 0;">
+      <div class="hidden md:block absolute right-0 top-0 bottom-0 w-[215px] pointer-events-none" style="padding:14px 10px 14px 0;">
         <svg width="205" height="340" viewBox="0 0 205 340" fill="none">
           <g transform="translate(52,18) rotate(11 72 130)" opacity=".6">
             <rect width="144" height="218" rx="11" fill="#dbeafe"/>
@@ -192,10 +220,10 @@ body { background:#f7f8fa; }
     </div>
 
     <!-- BIZNES -->
-    <div onclick="window.location.href='dokumenty.html'" class="card-green rounded-3xl overflow-hidden relative cursor-pointer group hover:-translate-y-1 transition-all duration-300 shadow-2xl" style="min-height:380px;">
+    <div onclick="window.location.href='dokumenty.html'" class="card-green rounded-3xl overflow-hidden relative cursor-pointer group hover:-translate-y-1 transition-all duration-300 shadow-2xl">
       <div class="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-white/[.05] pointer-events-none"></div>
       <div class="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-white/[.04] pointer-events-none"></div>
-      <div class="relative z-10 p-10 pr-[220px] h-full flex flex-col justify-between" style="min-height:380px;">
+      <div class="relative z-10 p-8 md:pr-[220px] h-full flex flex-col justify-between">
         <div>
           <p class="text-[10.5px] font-[700] uppercase tracking-[.18em] text-white/40 mb-4">Strefa Biznesu</p>
           <h2 class="text-[32px] font-[900] text-white leading-[1.12] tracking-tight mb-6">Twórz umowy<br>i regulaminy</h2>
@@ -220,7 +248,7 @@ body { background:#f7f8fa; }
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </span>
       </div>
-      <div class="absolute right-0 top-0 bottom-0 w-[215px] flex items-center justify-center pointer-events-none" style="padding:14px 10px 14px 0;">
+      <div class="hidden md:block absolute right-0 top-0 bottom-0 w-[215px] pointer-events-none" style="padding:14px 10px 14px 0;">
         <svg width="205" height="340" viewBox="0 0 205 340" fill="none">
           <g transform="translate(52,18) rotate(11 72 130)" opacity=".6">
             <rect width="144" height="218" rx="11" fill="#cffafe"/>
