@@ -254,9 +254,10 @@ onAuthStateChanged(auth, async u=>{
       emailEl.textContent=user.email||'';
       if(user.photo){avatar.innerHTML='<img src="'+user.photo+'" alt="">';}
       else{avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();}
-      const isPro=sub&&sub.plan==='pro'&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-      badge.textContent=isPro?'PRO':'Free';
-      badge.className='u-nav-badge '+(isPro?'pro':'free');
+      const isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+      const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+      badge.textContent=isActive?(planNames[sub.plan]||'PRO'):'Free';
+      badge.className='u-nav-badge '+(isActive?'pro':'free');
     } else {
       login.style.display='';
       profile.classList.remove('show');
@@ -789,6 +790,15 @@ let genDocContent = '';
 let genDocFilename = 'dokument.txt';
 
 async function generate(prompt, title, filename) {
+  // Sprawdź dostęp
+  const sub = (()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
+  const hasSub = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  const allowed = hasSub && ['kariera','promax','pro'].includes(sub.plan);
+  if (!allowed) {
+    sessionStorage.setItem('dokumo_after_sub', window.location.href);
+    window.location.href = 'subskrypcja.html';
+    return;
+  }
   genDocContent = '';
   genDocFilename = filename;
   document.getElementById('genTitle').textContent = title;
