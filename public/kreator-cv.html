@@ -1034,6 +1034,36 @@ body { overflow:hidden; }
 </style>
 </head>
 <body>
+<style>
+.u-back-bar{display:flex;align-items:center;gap:8px;padding:8px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.06);}
+.u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
+.u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.09);}
+.u-sub-status{margin-left:auto;font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;}
+.u-sub-status.pro{background:#1a3a2e;color:#fff;}
+.u-sub-status.free{background:rgba(26,23,20,.07);color:#6b6560;}
+</style>
+<div class="u-back-bar" id="uBackBar">
+  <a href="kariera.html" class="u-back-btn">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Strefa Kariery
+  </a>
+  <span class="u-sub-status free" id="uSubStatus" style="display:none;"></span>
+</div>
+<script>
+(function(){
+  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
+  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
+  const user=getUser();
+  const sub=getSub();
+  const el=document.getElementById('uSubStatus');
+  if(el&&user){
+    const isPro=sub&&sub.plan==='pro'&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+    el.textContent=isPro?'PRO':'Free';
+    el.className='u-sub-status '+(isPro?'pro':'free');
+    el.style.display='';
+  }
+})();
+</script>
 
 <div class="cv-app">
 
@@ -2210,6 +2240,10 @@ function updateCVPreview() {
 // buildCVHTML → cv-templates.js
 
 function downloadCV() {
+  const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
+  const hasSub=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+  const allowed=hasSub&&['kariera','promax','pro'].includes(sub.plan);
+  if(!allowed){sessionStorage.setItem('dokumo_after_sub',window.location.href);window.location.href='subskrypcja.html';return;}
   const el = document.getElementById('cvPreviewInner');
   const opt = {
     margin: 0,
