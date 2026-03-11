@@ -1036,6 +1036,18 @@ function openDocPage(docId) {
 }
 
 function closeSubpage() {
+  // Zapisz aktualny stan formularza do sessionStorage
+  const activeDoc = docQueue[queueIdx];
+  if (activeDoc) {
+    const doc = getDoc(activeDoc);
+    if (doc) {
+      const vals = {};
+      doc.fields.forEach(f => {
+        if (f.id) { const el = document.getElementById('spf-' + f.id); if (el) vals[f.id] = el.value; }
+      });
+      if (Object.keys(vals).length) sessionStorage.setItem('dokumo_form_' + activeDoc, JSON.stringify(vals));
+    }
+  }
   document.getElementById('subpage').classList.remove('open');
   document.body.style.overflow = '';
   docQueue = [];
@@ -1049,6 +1061,35 @@ function closeSubpage() {
 // ── GENERATOR – nowy flow ─────────────────────────────────────
 // generatedDocs[docId] = { text, name, price }
 let generatedDocs = {};
+
+// ── PROFILE AUTOFILL ─────────────────────────────────────────
+function getProfileVal(fieldId, fieldLabel, profile) {
+  if (!profile) return '';
+  const id = (fieldId || '').toLowerCase();
+  const lbl = (fieldLabel || '').toLowerCase();
+  if ((id.includes('imie') && id.includes('nazwisko')) || (lbl.includes('imię') && lbl.includes('nazwisko')))
+    return [profile.imie, profile.nazwisko].filter(Boolean).join(' ');
+  if (id.includes('imie') || lbl.includes('imię')) return profile.imie || '';
+  if (id.includes('nazwisko') || lbl.includes('nazwisko')) return profile.nazwisko || '';
+  if (id.includes('firma') || id.includes('pracodawca') || id.includes('zleceniodawca') || lbl.includes('firma') || lbl.includes('pracodawca'))
+    return profile.firma || '';
+  if (id.includes('nip') || lbl.includes('nip')) return profile.nip || '';
+  if (id.includes('adres') || id.includes('siedziba') || lbl.includes('adres') || lbl.includes('siedziba'))
+    return profile.adres || '';
+  if (id.includes('email') || lbl.includes('email') || lbl.includes('e-mail')) return profile.email || '';
+  if (id.includes('tel') || id.includes('telefon') || lbl.includes('telefon')) return profile.tel || '';
+  return '';
+}
+
+function saveFormSession(docId) {
+  const doc = getDoc(docId);
+  if (!doc) return;
+  const vals = {};
+  doc.fields.forEach(f => {
+    if (f.id) { const el = document.getElementById('spf-' + f.id); if (el) vals[f.id] = el.value; }
+  });
+  sessionStorage.setItem('dokumo_form_' + docId, JSON.stringify(vals));
+}
 
 // ── BUILDSUBPAGE ──────────────────────────────────────────────
 function buildSubpage(doc, docId) {
@@ -1074,15 +1115,19 @@ function buildSubpage(doc, docId) {
     <div class="gf-progress-label">Dokument ${done+1} z ${total}</div>` : '';
 
   // Pola formularza
+  const sessionKey = 'dokumo_form_' + docId;
+  const sessionVals = (() => { try { return JSON.parse(sessionStorage.getItem(sessionKey)) || {}; } catch(e) { return {}; } })();
+  // Autofill z profilu użytkownika
+  const profile = (() => { try { return JSON.parse(localStorage.getItem('dokumo_profile')) || {}; } catch(e) { return {}; } })();
   const formHTML = sections.map(sec => `
     ${sec.title ? `<div class="gf-section">${sec.title}</div>` : ''}
     ${sec.fields.map(f => {
-      const val = sharedData[f.id] || '';
+      const val = sharedData[f.id] || sessionVals[f.id] || getProfileVal(f.id, f.l, profile) || '';
       const ftype = f.type || f.t || 'text';
       const fopts = f.opts || f.o || [];
       let inp;
       if (ftype === 'textarea') {
-        inp = '<textarea class="gf-input" id="spf-' + f.id + '" placeholder="' + (f.p||'') + '" rows="3">' + val + '</textarea>';
+        inp = '<textarea class="gf-input" id="spf-' + f.id + '" placeholder="' + (f.p||'') + '" rows="3" oninput="saveFormSession(\'' + docId + '\')">' + val + '</textarea>';
       } else if (ftype === 'select') {
         inp = '<select class="gf-input" id="spf-' + f.id + '">' + fopts.map(o=>'<option'+(val===o?' selected':'')+'>'+o+'</option>').join('') + '</select>';
       } else if (ftype === 'chips') {
@@ -1090,7 +1135,7 @@ function buildSubpage(doc, docId) {
         const chipsHTML = fopts.map(o=>'<button type="button" class="gf-chip'+(activeParts.includes(o)?' active':'')+'" onclick="toggleChip(\''+f.id+'\',this,\''+o.replace(/'/g,"\\'")+'\')">' + o + '</button>').join('');
         inp = '<div class="gf-chips-wrap"><div class="gf-chips-row">' + chipsHTML + '</div><input class="gf-input" id="spf-' + f.id + '" placeholder="' + (f.p||'lub wpisz własne...') + '" value="' + val + '"></div>';
       } else {
-        inp = '<input class="gf-input" type="' + ftype + '" id="spf-' + f.id + '" placeholder="' + (f.p||'') + '" value="' + val + '">';
+        inp = '<input class="gf-input" type="' + ftype + '" id="spf-' + f.id + '" placeholder="' + (f.p||'') + '" value="' + val + '" oninput="saveFormSession(\'' + docId + '\')">';
       }
       return `<div class="gf-field${f.full?' gf-full':''}">
         <label class="gf-label">${f.l}${f.r?'<span class="gf-req"> *</span>':''}</label>
