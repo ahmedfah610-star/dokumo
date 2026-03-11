@@ -407,7 +407,7 @@ select.gf-input { cursor: pointer; }
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Strona główna
   </a>
-  <span class="u-sub-status free" id="uSubStatus" style="display:none;"></span>
+
 </div>
 <script>
 (function(){
@@ -415,14 +415,6 @@ select.gf-input { cursor: pointer; }
   function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
   const user=getUser();
   const sub=getSub();
-  const el=document.getElementById('uSubStatus');
-  if(el&&user){
-    const isPro=sub&&sub.plan==='pro'&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-    el.textContent=isPro?'PRO':'Free';
-    el.className='u-sub-status '+(isPro?'pro':'free');
-    el.style.display='';
-  }
-})();
 </script>
 
 <!-- TRANSLATE CV MODAL -->
@@ -1660,14 +1652,16 @@ function updateNavBadge() {
   const user = getUser();
   if (!user) { badge.style.display = 'none'; return; }
   const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
-  const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  const isActive = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+  const planName = isActive ? (planNames[sub.plan] || 'PRO') : 'Free';
   badge.style.display = 'inline-flex';
-  badge.style.cssText = isPro
-    ? 'display:inline-flex;align-items:center;gap:5px;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#16a34a;color:#fff;padding:7px 13px;text-decoration:none;white-space:nowrap;'
-    : 'display:inline-flex;align-items:center;gap:5px;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:#c8963c;color:#fff;padding:7px 13px;text-decoration:none;white-space:nowrap;';
+  badge.style.cssText = isActive
+    ? 'display:inline-flex;align-items:center;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:#1a3a2e;color:#fff;padding:5px 12px;border-radius:999px;text-decoration:none;white-space:nowrap;'
+    : 'display:inline-flex;align-items:center;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(26,23,20,.08);color:#6b6560;padding:5px 12px;border-radius:999px;text-decoration:none;white-space:nowrap;';
   badge.href = 'subskrypcja.html';
-  badge.innerHTML = isPro ? '&#9733; PRO' : '&#9733; KUP PREMIUM';
-  if (!isPro) {
+  badge.textContent = planName;
+  if (!isActive) {
     badge.onmouseover = () => badge.style.background = '#a87830';
     badge.onmouseout  = () => badge.style.background = '#c8963c';
   }
