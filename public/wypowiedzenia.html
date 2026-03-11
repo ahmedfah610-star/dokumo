@@ -4,117 +4,147 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kończę Współpracę – Dokumo</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
 :root {
-  --bg: #f5f3ef;
-  --ink: #1a1714;
-  --ink2: #6b6560;
-  --cream: #faf8f4;
-  --purple: #2d1f3d;
-  --gold: #c9903a;
+  --bg:#f5f3ef; --ink:#1a1714; --ink2:#6b6560; --cream:#faf8f4;
+  --green:#1a3a2e; --gold:#c9903a; --red:#c0392b; --purple:#2d1f3d;
+  --border:rgba(26,23,20,.09);
 }
-* { box-sizing:border-box;margin:0;padding:0; }
-body { background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh;}
 
-.k-nav { background:var(--cream);border-bottom:1px solid rgba(26,23,20,.08);position:sticky;top:0;z-index:50;padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between; }
-.k-logo { display:flex;align-items:center;gap:8px;text-decoration:none;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink);letter-spacing:-.02em; }
-.k-logo-dot { width:28px;height:28px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center; }
-.k-back { font-size:.78rem;font-weight:500;color:var(--ink2);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s; }
-.k-back:hover { color:var(--ink); }
+.k-nav{background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;}
+.k-logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink);letter-spacing:-.02em;}
+.k-logo-dot{width:28px;height:28px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.k-back{font-size:.78rem;font-weight:500;color:var(--ink2);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s;}
+.k-back:hover{color:var(--ink);}
 
-.page-hero {
-  background: var(--purple);
-  padding: 56px 2rem 52px;
-  text-align: center;
-}
-.page-eyebrow {
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(255,255,255,.4);margin-bottom:20px;
-}
-.page-title {
-  font-family:'Bricolage Grotesque',sans-serif;
-  font-size:clamp(1.8rem,4vw,2.6rem);
-  font-weight:800;letter-spacing:-.03em;
-  color:#fff;margin-bottom:12px;line-height:1.1;
-}
-.page-sub { font-size:.9rem;color:rgba(255,255,255,.5);line-height:1.6;max-width:480px;margin:0 auto; }
+.hero{background:var(--purple);padding:52px 2rem 44px;text-align:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:18px;}
+.hero-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.03em;color:#fff;margin-bottom:12px;line-height:1.1;}
+.hero-sub{font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.65;max-width:440px;margin:0 auto;}
 
-.docs-grid {
-  max-width: 960px;
-  margin: 48px auto 80px;
-  padding: 0 2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+.modules{max-width:740px;margin:48px auto 80px;padding:0 1.5rem;display:flex;flex-direction:column;gap:20px;}
+
+.module{background:var(--cream);border:1.5px solid var(--border);border-radius:22px;overflow:hidden;transition:box-shadow .25s;}
+.module:hover{box-shadow:0 8px 32px rgba(26,23,20,.07);}
+.module-header{display:flex;align-items:flex-start;gap:16px;padding:26px 28px 22px;cursor:pointer;user-select:none;}
+.module-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.mod-red .module-icon{background:#fdf0ef;}
+.mod-gold .module-icon{background:#fdf6ea;}
+.mod-purple .module-icon{background:#f0edf7;}
+.module-meta{flex:1;}
+.module-num{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin-bottom:5px;}
+.module-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:4px;}
+.module-desc{font-size:.8rem;color:var(--ink2);line-height:1.55;}
+.module-chevron{width:28px;height:28px;border-radius:50%;background:rgba(26,23,20,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:8px;transition:transform .3s,background .2s;}
+.module.open .module-chevron{transform:rotate(180deg);background:var(--ink);}
+.module.open .module-chevron svg{stroke:#fff;}
+
+.module-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1);}
+.module.open .module-body{max-height:1000px;}
+.module-inner{padding:24px 28px 28px;border-top:1px solid var(--border);}
+
+.section-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:10px;}
+
+/* Choice buttons */
+.choice-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.choice-btn{padding:14px 14px;border-radius:14px;cursor:pointer;border:2px solid var(--border);background:#fff;text-align:left;transition:border-color .2s,background .2s;}
+.choice-btn:hover{border-color:rgba(26,23,20,.2);}
+.choice-btn.active{border-color:var(--ink);background:var(--ink);}
+.cb-icon{font-size:1.2rem;margin-bottom:8px;}
+.cb-label{font-size:.78rem;font-weight:700;color:var(--ink);line-height:1.3;}
+.cb-sub{font-size:.68rem;color:var(--ink2);margin-top:3px;line-height:1.35;}
+.choice-btn.active .cb-label,.choice-btn.active .cb-sub{color:rgba(255,255,255,.85);}
+
+/* Date chip */
+.date-chip{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.date-chip-icon{font-size:1.1rem;}
+.dc-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:3px;}
+.dc-val{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:800;color:var(--ink);}
+
+/* Date input */
+.date-input{padding:10px 14px;border:2px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;background:#fff;transition:border-color .2s;}
+.date-input:focus{border-color:var(--ink);}
+
+/* Select */
+.k-sel{padding:11px 14px;background:#fff;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;appearance:none;cursor:pointer;min-width:260px;}
+.k-sel:focus{border-color:var(--ink);}
+
+/* Urlop */
+.urlop-input-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.urlop-num{width:80px;padding:11px;border:2px solid var(--border);border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:var(--ink);text-align:center;outline:none;background:#fff;transition:border-color .2s;}
+.urlop-num:focus{border-color:var(--ink);}
+.urlop-num-label{font-size:.85rem;color:var(--ink2);line-height:1.4;}
+
+.urlop-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.urlop-opt{padding:14px;border-radius:14px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:border-color .2s,background .2s;text-align:left;}
+.urlop-opt:hover{border-color:rgba(26,23,20,.2);}
+.urlop-opt.active{border-color:var(--ink);background:var(--ink);}
+.uo-icon{font-size:1.1rem;margin-bottom:8px;}
+.uo-label{font-size:.78rem;font-weight:700;color:var(--ink);}
+.uo-sub{font-size:.68rem;color:var(--ink2);margin-top:2px;line-height:1.35;}
+.urlop-opt.active .uo-label,.urlop-opt.active .uo-sub{color:rgba(255,255,255,.85);}
+
+.ekwi-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;display:none;}
+.ekwi-card.show{display:block;}
+.ekwi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.ekwi-field label{display:block;font-size:.65rem;color:var(--ink2);margin-bottom:5px;}
+.ekwi-field input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;background:#fff;}
+.ekwi-field input:focus{border-color:var(--ink);}
+.ekwi-result{font-size:.8rem;color:var(--ink2);line-height:1.55;}
+.ekwi-result strong{color:var(--ink);}
+
+/* Checklist */
+.checklist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.checklist li{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .2s,background .2s;}
+.checklist li:hover{border-color:rgba(26,23,20,.15);}
+.checklist li.checked{border-color:#22c55e;background:#f0fdf4;}
+.check-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(26,23,20,.15);background:#fff;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.checklist li.checked .check-box{background:#22c55e;border-color:#22c55e;}
+.check-title{font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.check-desc{font-size:.71rem;color:var(--ink2);line-height:1.45;}
+.checklist li.checked .check-title{color:#15803d;}
+
+.rights-card{background:linear-gradient(135deg,#fdf6ea,#fff9f0);border:1.5px solid rgba(201,144,58,.18);border-radius:14px;padding:18px;margin-bottom:20px;}
+.rc-title{font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:8px;letter-spacing:.04em;}
+.rc-text{font-size:.8rem;color:var(--ink);line-height:1.6;}
+.rc-text strong{color:var(--red);}
+
+/* CTA */
+.cta-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:15px 20px;border:none;border-radius:14px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-size:.88rem;font-weight:800;letter-spacing:.01em;transition:transform .15s,box-shadow .2s;}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,23,20,.15);}
+.cta-btn:active{transform:scale(.98);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-purple{background:var(--purple);color:#fff;}
+.cta-btn svg{opacity:.75;flex-shrink:0;}
+
+@media(max-width:560px){
+  .modules{padding:0 1rem;margin:28px auto 56px;}
+  .module-header{padding:18px 16px 14px;}
+  .module-inner{padding:18px 16px 22px;}
+  .hero{padding:36px 1.2rem 30px;}
+  .choice-row,.urlop-opts{grid-template-columns:1fr;}
+  .ekwi-row{grid-template-columns:1fr;}
+  .k-sel{min-width:0;width:100%;}
 }
 
-.doc-card {
-  background: var(--cream);
-  border: 1.5px solid rgba(26,23,20,.08);
-  border-radius: 18px;
-  padding: 24px;
-  cursor: pointer;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: border-color .2s, transform .2s, box-shadow .2s;
-}
-.doc-card:hover {
-  border-color: var(--purple);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(45,31,61,.1);
-}
-
-.doc-card-icon {
-  width: 44px; height: 44px;
-  background: rgba(45,31,61,.08);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.3rem;
-}
-.doc-card-title {
-  font-family:'Bricolage Grotesque',sans-serif;
-  font-size:1rem;font-weight:700;
-  color:var(--ink);letter-spacing:-.01em;
-  line-height:1.3;
-}
-.doc-card-desc {
-  font-size:.78rem;color:var(--ink2);line-height:1.55;flex:1;
-}
-.doc-card-cta {
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:.75rem;font-weight:600;color:var(--purple);
-  margin-top:4px;
-}
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-.doc-card { opacity:0;animation:fadeUp .4s ease both; }
-.doc-card:nth-child(1){animation-delay:.05s}
-.doc-card:nth-child(2){animation-delay:.1s}
-.doc-card:nth-child(3){animation-delay:.15s}
-.doc-card:nth-child(4){animation-delay:.2s}
-.doc-card:nth-child(5){animation-delay:.25s}
-.doc-card:nth-child(6){animation-delay:.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.module{opacity:0;animation:fadeUp .4s ease both;}
+.module:nth-child(1){animation-delay:.05s}
+.module:nth-child(2){animation-delay:.12s}
+.module:nth-child(3){animation-delay:.19s}
 </style>
-
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const auth = getAuth(initializeApp({
-    apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
-    authDomain:"dokumo-c1ccb.firebaseapp.com",
-    projectId:"dokumo-c1ccb",
-    storageBucket:"dokumo-c1ccb.firebasestorage.app",
-    messagingSenderId:"1088576029067",
-    appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"
-  }));
-  onAuthStateChanged(auth, user => {
-    if (user) { localStorage.setItem('dokumo_user', JSON.stringify({name:user.displayName||'',email:user.email||'',photo:user.photoURL||''})); }
-    else { localStorage.removeItem('dokumo_user'); }
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const auth=getAuth(initializeApp({apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",authDomain:"dokumo-c1ccb.firebaseapp.com",projectId:"dokumo-c1ccb",storageBucket:"dokumo-c1ccb.firebasestorage.app",messagingSenderId:"1088576029067",appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"}));
+  onAuthStateChanged(auth,user=>{
+    if(user)localStorage.setItem('dokumo_user',JSON.stringify({name:user.displayName||'',email:user.email||'',photo:user.photoURL||''}));
+    else localStorage.removeItem('dokumo_user');
   });
 </script>
 </head>
@@ -122,9 +152,7 @@ body { background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);mi
 
 <nav class="k-nav">
   <a href="index.html" class="k-logo">
-    <div class="k-logo-dot">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    </div>
+    <div class="k-logo-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
     Dokumo
   </a>
   <a href="kariera.html" class="k-back">
@@ -133,57 +161,261 @@ body { background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);mi
   </a>
 </nav>
 
-<div class="page-hero">
-  <div class="page-eyebrow">📋 Dokumenty HR</div>
-  <h1 class="page-title">Kończę obecną<br>współpracę</h1>
-  <p class="page-sub">Gotowe wzory wypowiedzeń, wniosków i dokumentów pracowniczych — uzupełnij i pobierz w minutę.</p>
+<div class="hero">
+  <div class="hero-eyebrow">📋 Kończę współpracę</div>
+  <h1 class="hero-title">Co chcesz zrobić?</h1>
+  <p class="hero-sub">Wybierz moduł i wypełnij kilka pól — wygenerujemy dokument lub podpowiemy co sprawdzić.</p>
 </div>
 
-<div class="docs-grid">
+<div class="modules">
 
-  <a href="dokumenty.html?open=wypowiedzenie_pracy_pracownik" class="doc-card">
-    <div class="doc-card-icon">📄</div>
-    <div class="doc-card-title">Wypowiedzenie umowy o pracę przez pracownika</div>
-    <div class="doc-card-desc">Standardowe wypowiedzenie z zachowaniem okresu wypowiedzenia. Gotowe do wydruku.</div>
-    <span class="doc-card-cta">Generuj dokument →</span>
-  </a>
+  <!-- MODUŁ 1 -->
+  <div class="module mod-red" id="mod1">
+    <div class="module-header" onclick="toggleModule('mod1')">
+      <div class="module-icon">📄</div>
+      <div class="module-meta">
+        <div class="module-num">Moduł 01</div>
+        <div class="module-title">Wypowiedzenie umowy</div>
+        <div class="module-desc">Wybierz tryb, a system podpowie Ci ostatni dzień pracy.</div>
+      </div>
+      <div class="module-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="module-body">
+      <div class="module-inner">
+        <div class="section-label">Wybierz tryb</div>
+        <div class="choice-row">
+          <button class="choice-btn active" id="cb-por" onclick="selectTryb('porozumienie')">
+            <div class="cb-icon">🤝</div>
+            <div class="cb-label">Za porozumieniem stron</div>
+            <div class="cb-sub">Najczęstszy wybór — obie strony ustalają datę</div>
+          </button>
+          <button class="choice-btn" id="cb-wyp" onclick="selectTryb('wypowiedzenie')">
+            <div class="cb-icon">📅</div>
+            <div class="cb-label">Z zachowaniem okresu wypowiedzenia</div>
+            <div class="cb-sub">Formalny tryb z ustawowym terminem</div>
+          </button>
+        </div>
 
-  <a href="dokumenty.html?open=wypowiedzenie_za_porozumieniem" class="doc-card">
-    <div class="doc-card-icon">🤝</div>
-    <div class="doc-card-title">Rozwiązanie umowy za porozumieniem stron</div>
-    <div class="doc-card-desc">Gdy obie strony zgadzają się zakończyć współpracę w ustalonym terminie.</div>
-    <span class="doc-card-cta">Generuj dokument →</span>
-  </a>
+        <div id="blok-por">
+          <div class="section-label">Proponowana data zakończenia</div>
+          <input type="date" id="dataPor" class="date-input" style="margin-bottom:14px;" oninput="updatePor()">
+          <div class="date-chip" id="chipPor">
+            <span class="date-chip-icon">✅</span>
+            <div><div class="dc-label">Ostatni dzień pracy</div><div class="dc-val" id="valPor">—</div></div>
+          </div>
+        </div>
 
-  <a href="dokumenty.html?open=wniosek_urlop_zalegly" class="doc-card">
-    <div class="doc-card-icon">🏖</div>
-    <div class="doc-card-title">Wniosek o urlop zaległy</div>
-    <div class="doc-card-desc">Formalny wniosek o wykorzystanie zaległego urlopu wypoczynkowego przed odejściem.</div>
-    <span class="doc-card-cta">Generuj dokument →</span>
-  </a>
+        <div id="blok-wyp" style="display:none;">
+          <div class="section-label">Staż pracy u obecnego pracodawcy</div>
+          <select id="staz" class="k-sel" style="margin-bottom:14px;" onchange="updateWyp()">
+            <option value="2">Mniej niż 6 miesięcy → 2 tygodnie</option>
+            <option value="4">6 miesięcy – 3 lata → 1 miesiąc</option>
+            <option value="13" selected>Powyżej 3 lat → 3 miesiące</option>
+          </select>
+          <div class="date-chip">
+            <span class="date-chip-icon">📆</span>
+            <div><div class="dc-label">Jeśli złożysz dziś — ostatni dzień pracy to</div><div class="dc-val" id="valWyp">—</div></div>
+          </div>
+        </div>
 
-  <a href="dokumenty.html?open=wniosek_swiadectwo_pracy" class="doc-card">
-    <div class="doc-card-icon">📋</div>
-    <div class="doc-card-title">Wniosek o wydanie świadectwa pracy</div>
-    <div class="doc-card-desc">Formalne żądanie wydania świadectwa pracy po rozwiązaniu stosunku pracy.</div>
-    <span class="doc-card-cta">Generuj dokument →</span>
-  </a>
+        <div style="margin-top:18px;">
+          <button class="cta-btn btn-red" onclick="generujWyp()">
+            <span>GENERUJ WYPOWIEDZENIE →</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <a href="dokumenty.html?open=wypowiedzenie_zlecenie" class="doc-card">
-    <div class="doc-card-icon">📝</div>
-    <div class="doc-card-title">Wypowiedzenie umowy zlecenie</div>
-    <div class="doc-card-desc">Rozwiązanie umowy zlecenia ze strony zleceniobiorcy z zachowaniem terminu.</div>
-    <span class="doc-card-cta">Generuj dokument →</span>
-  </a>
+  <!-- MODUŁ 2 -->
+  <div class="module mod-gold" id="mod2">
+    <div class="module-header" onclick="toggleModule('mod2')">
+      <div class="module-icon">🏖️</div>
+      <div class="module-meta">
+        <div class="module-num">Moduł 02</div>
+        <div class="module-title">Urlop & Ekwiwalent</div>
+        <div class="module-desc">Zostały Ci dni urlopu? Zdecyduj co z nimi zrobić.</div>
+      </div>
+      <div class="module-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="module-body">
+      <div class="module-inner">
+        <div class="section-label">Ile dni urlopu Ci zostało?</div>
+        <div class="urlop-input-row">
+          <input type="number" id="dniUrlopu" class="urlop-num" value="5" min="1" max="99">
+          <span class="urlop-num-label">dni urlopu<br>do wykorzystania</span>
+        </div>
 
-  <a href="dokumenty.html?open=rozliczenie_delegacji" class="doc-card">
-    <div class="doc-card-icon">🧾</div>
-    <div class="doc-card-title">Rozliczenie delegacji</div>
-    <div class="doc-card-desc">Dokument rozliczeniowy z podróży służbowej — diety, koszty przejazdu i noclegi.</div>
-    <span class="doc-card-cta">Generuj dokument →</span>
-  </a>
+        <div class="section-label">Co chcesz zrobić?</div>
+        <div class="urlop-opts">
+          <button class="urlop-opt active" id="uopt-wyslij" onclick="selectUrlopOpt('wyslij')">
+            <div class="uo-icon">📅</div>
+            <div class="uo-label">Wezmę urlop przed odejściem</div>
+            <div class="uo-sub">Wniosek o urlop na ostatnie dni pracy</div>
+          </button>
+          <button class="urlop-opt" id="uopt-ekwi" onclick="selectUrlopOpt('ekwi')">
+            <div class="uo-icon">💰</div>
+            <div class="uo-label">Chcę ekwiwalent pieniężny</div>
+            <div class="uo-sub">Pracodawca wypłaci ekwiwalent za niewykorzystany urlop</div>
+          </button>
+        </div>
+
+        <div class="ekwi-card" id="ekwiCard">
+          <div class="section-label">Kalkulator ekwiwalentu</div>
+          <div class="ekwi-row">
+            <div class="ekwi-field"><label>Wynagrodzenie brutto (mies.)</label><input type="number" id="ekwiBrutto" placeholder="np. 6000" oninput="obliczEkwi()"></div>
+            <div class="ekwi-field"><label>Wymiar urlopu rocznie (dni)</label><input type="number" id="ekwiWymiar" value="26" oninput="obliczEkwi()"></div>
+          </div>
+          <div class="ekwi-result" id="ekwiResult"></div>
+        </div>
+
+        <button class="cta-btn btn-gold" onclick="generujUrlop()">
+          <span id="ctaUrlopTxt">DOPRECYZUJ URLOP →</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODUŁ 3 -->
+  <div class="module mod-purple" id="mod3">
+    <div class="module-header" onclick="toggleModule('mod3')">
+      <div class="module-icon">📋</div>
+      <div class="module-meta">
+        <div class="module-num">Moduł 03</div>
+        <div class="module-title">Świadectwo Pracy</div>
+        <div class="module-desc">Sprawdź, czy dostałeś poprawne świadectwo. Poznaj swoje prawa.</div>
+      </div>
+      <div class="module-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="module-body">
+      <div class="module-inner">
+        <div class="section-label">Checklista świadectwa pracy — kliknij gdy sprawdziłeś</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)">
+            <div class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="check-title">Poprawny tryb ustania stosunku pracy</div><div class="check-desc">Np. „porozumienie stron" różni się od „wypowiedzenia przez pracodawcę" — ma znaczenie dla zasiłku</div></div>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <div class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="check-title">Liczba dni urlopu i ewentualny ekwiwalent</div><div class="check-desc">Pracodawca musi wpisać ile dni urlopu wykorzystałeś i ile wypłacił jako ekwiwalent</div></div>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <div class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="check-title">Okres zatrudnienia — daty zgodne z umową</div><div class="check-desc">Sprawdź dokładnie daty od–do, szczególnie jeśli miałeś kilka aneksów</div></div>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <div class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="check-title">Brak wpisów o zajęciu komorniczym</div><div class="check-desc">Wpis o egzekucji komorniczej widzi nowy pracodawca — może utrudnić zatrudnienie</div></div>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <div class="check-box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="check-title">Wystawione w terminie (dzień rozwiązania lub 7 dni)</div><div class="check-desc">Opóźnienie to naruszenie prawa — możesz domagać się odszkodowania</div></div>
+          </li>
+        </ul>
+
+        <div class="rights-card">
+          <div class="rc-title">⚡ Twoje prawa</div>
+          <div class="rc-text">Masz <strong>14 dni</strong> na złożenie wniosku o sprostowanie. Jeśli pracodawca odmówi — możesz skierować sprawę do sądu pracy. Możesz też żądać <strong>odszkodowania</strong> za błędne świadectwo.</div>
+        </div>
+
+        <button class="cta-btn btn-purple" onclick="generujKorekta()">
+          <span>GENERUJ PROŚBĘ O KOREKTĘ →</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 
 </div>
 
+<script>
+function toggleModule(id){
+  const m=document.getElementById(id);
+  const wasOpen=m.classList.contains('open');
+  document.querySelectorAll('.module').forEach(el=>el.classList.remove('open'));
+  if(!wasOpen)m.classList.add('open');
+}
+
+function fmtDate(d){return d.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});}
+
+// MOD 1
+let tryb='porozumienie';
+function selectTryb(t){
+  tryb=t;
+  document.getElementById('cb-por').classList.toggle('active',t==='porozumienie');
+  document.getElementById('cb-wyp').classList.toggle('active',t==='wypowiedzenie');
+  document.getElementById('blok-por').style.display=t==='porozumienie'?'block':'none';
+  document.getElementById('blok-wyp').style.display=t==='wypowiedzenie'?'block':'none';
+}
+
+function updatePor(){
+  const val=document.getElementById('dataPor').value;
+  if(!val)return;
+  document.getElementById('valPor').textContent=fmtDate(new Date(val));
+}
+
+function updateWyp(){
+  const weeks=parseInt(document.getElementById('staz').value);
+  const today=new Date();
+  let end;
+  if(weeks===2){end=new Date(today);end.setDate(end.getDate()+14);}
+  else{
+    const m=weeks===4?1:3;
+    const t=new Date(today);t.setMonth(t.getMonth()+m);
+    end=new Date(t.getFullYear(),t.getMonth()+1,0);
+  }
+  document.getElementById('valWyp').textContent=fmtDate(end);
+}
+
+function generujWyp(){
+  const id=tryb==='porozumienie'?'wypowiedzenie_za_porozumieniem':'wypowiedzenie_pracy_pracownik';
+  window.location.href='dokumenty.html?open='+id;
+}
+
+// MOD 2
+let urlopOpt='wyslij';
+function selectUrlopOpt(o){
+  urlopOpt=o;
+  document.getElementById('uopt-wyslij').classList.toggle('active',o==='wyslij');
+  document.getElementById('uopt-ekwi').classList.toggle('active',o==='ekwi');
+  document.getElementById('ekwiCard').classList.toggle('show',o==='ekwi');
+  document.getElementById('ctaUrlopTxt').textContent=o==='ekwi'?'GENERUJ PISMO O EKWIWALENT →':'DOPRECYZUJ URLOP →';
+  if(o==='ekwi')obliczEkwi();
+}
+
+function obliczEkwi(){
+  const brutto=parseFloat(document.getElementById('ekwiBrutto').value);
+  const wymiar=parseInt(document.getElementById('ekwiWymiar').value)||26;
+  const dni=parseInt(document.getElementById('dniUrlopu').value)||0;
+  if(!brutto||!dni){document.getElementById('ekwiResult').innerHTML='';return;}
+  const wsp=(365-52*2-13)/12;
+  const ekwi=(brutto/wsp)*dni;
+  document.getElementById('ekwiResult').innerHTML=
+    'Szacunkowy ekwiwalent za <strong>'+dni+' dni</strong>: <strong>'+Math.round(ekwi).toLocaleString('pl-PL')+' zł brutto</strong>. Dokładna kwota zależy od wszystkich składników wynagrodzenia.';
+}
+
+function generujUrlop(){
+  const id=urlopOpt==='ekwi'?'wniosek_ekwiwalent_urlop':'wniosek_urlop_zalegly';
+  window.location.href='dokumenty.html?open='+id;
+}
+
+// MOD 3
+function toggleCheck(li){li.classList.toggle('checked');}
+function generujKorekta(){window.location.href='dokumenty.html?open=wniosek_korekta_swiadectwa';}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  toggleModule('mod1');
+  updateWyp();
+  // Ustaw domyślna date porozumienia = koniec przyszłego miesiąca
+  const d=new Date();
+  d.setMonth(d.getMonth()+1);
+  const end=new Date(d.getFullYear(),d.getMonth()+1,0);
+  document.getElementById('dataPor').value=end.toISOString().split('T')[0];
+  updatePor();
+});
+</script>
 </body>
 </html>
