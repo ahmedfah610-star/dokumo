@@ -538,13 +538,13 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 
 /* ── KREATOR CV – LAYOUT ── */
 .cv-app { display:flex; flex-direction:column; height:100dvh; height:100vh; }
-.cv-nav { height:54px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 14px; background:var(--white); flex-shrink:0; gap:8px; }
+.cv-nav { height:54px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:rgba(14,15,17,.97); backdrop-filter:blur(12px); flex-shrink:0; gap:8px; }
 .cv-nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.btn-choose-tpl { display:flex; align-items:center; gap:6px; background:var(--bg); border:1px solid var(--border); padding:7px 11px; font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; color:var(--ink); transition:all 0.2s; white-space:nowrap; }
-.btn-choose-tpl:hover { border-color:var(--accent2); color:var(--accent2); }
+.btn-choose-tpl { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:7px 12px; font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; color:rgba(240,237,232,.8); transition:all 0.2s; white-space:nowrap; border-radius:8px; }
+.btn-choose-tpl:hover { border-color:rgba(255,255,255,.3); color:#f0ede8; background:rgba(255,255,255,.1); }
 .tpl-preview-dot { width:12px; height:12px; border-radius:2px; flex-shrink:0; }
-.btn-import-pdf { display:flex; align-items:center; gap:6px; background:var(--accent2); color:#fff; border:none; padding:7px 11px; font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; white-space:nowrap; }
-.btn-import-pdf:hover { background:var(--accent); }
+.btn-import-pdf { display:flex; align-items:center; gap:6px; background:rgba(34,197,94,.15); color:#39ff8a; border:1px solid rgba(57,255,138,.25); padding:7px 12px; font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; white-space:nowrap; border-radius:8px; }
+.btn-import-pdf:hover { background:rgba(34,197,94,.25); border-color:rgba(57,255,138,.4); }
 
 /* CV main area */
 .cv-main { display:flex; flex:1; overflow:hidden; }
@@ -627,21 +627,29 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .tcv-error.show { display:block; }
 .tcv-close { position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
 
+
+/* ── RESIZABLE DIVIDER ── */
+.cv-resizer { width:5px; background:transparent; cursor:col-resize; flex-shrink:0; position:relative; transition:background .2s; z-index:10; }
+.cv-resizer:hover, .cv-resizer.dragging { background:rgba(34,197,94,.4); }
+.cv-resizer::after { content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:1px; height:40px; background:rgba(26,23,20,.12); border-radius:1px; }
+.cv-resizer:hover::after, .cv-resizer.dragging::after { background:#22c55e; }
+@media(max-width:767px) { .cv-resizer { display:none; } }
+
 /* ── DESKTOP KREATOR OVERRIDES ── */
 @media(min-width:768px) {
-  .cv-nav { padding:0 22px; height:58px; }
-  .cv-form-col { width:58%; padding:20px 24px 80px; }
+  .cv-nav { padding:0 20px; height:56px; }
+  .cv-form-col { width:50%; padding:20px 24px 80px; }
   .cv-preview-col { display:flex; }
   .cv-mobile-tabs { display:none; }
-  .cv-pay-bar { bottom:0; width:58%; }
+  .cv-pay-bar { bottom:0; width:50%; }
   .import-modal-overlay { align-items:center; }
   .import-modal { border-radius:0; }
   .tcv-overlay { align-items:center; }
 }
 
 @media(min-width:960px) {
-  .cv-form-col { width:60%; }
-  .cv-pay-bar { width:60%; }
+  .cv-form-col { width:50%; }
+  .cv-pay-bar { width:50%; }
 }
 
 /* ── WYNIK GENEROWANIA — PODGLĄD + POBIERANIE ── */
