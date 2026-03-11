@@ -48,6 +48,39 @@ body { background:#f7f8fa; }
   });
 </script>
 
+
+<style>
+@media (max-width: 640px) {
+  /* Hero section */
+  .max-w-6xl.mx-auto.px-4.pt-10 { padding-top: 24px; padding-bottom: 16px; }
+
+  /* Trust strip - wrap tighter */
+  .flex.flex-wrap.justify-center { gap: 6px !important; }
+  .flex.flex-wrap.justify-center > div { font-size: 11px !important; padding: 5px 10px !important; }
+
+  /* Cards */
+  .card-blue .relative.z-10,
+  .card-green .relative.z-10 {
+    padding: 20px 120px 20px 18px !important;
+    min-height: 0 !important;
+  }
+  /* Eyebrow */
+  .card-blue p, .card-green p { font-size: 9px !important; margin-bottom: 6px !important; }
+  /* Title */
+  .card-blue h2, .card-green h2 { font-size: 18px !important; line-height: 1.15 !important; margin-bottom: 10px !important; }
+  /* CTA button */
+  .card-blue span, .card-green span { font-size: 11.5px !important; padding: 8px 14px !important; }
+
+  /* Illustration smaller */
+  .card-blue .absolute.right-0,
+  .card-green .absolute.right-0 { width: 110px !important; }
+
+  /* How it works section */
+  .max-w-6xl.mx-auto.px-4.py-20 { padding-top: 40px !important; padding-bottom: 40px !important; }
+  .grid.md\:grid-cols-3 { gap: 16px !important; }
+  .p-8.rounded-3xl { padding: 20px !important; }
+}
+</style>
 </head>
 <body class="min-h-screen">
 
