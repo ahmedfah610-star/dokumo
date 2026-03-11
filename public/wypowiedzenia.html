@@ -19,13 +19,13 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .k-back:hover{color:var(--ink);}
 
 /* HERO — clean, centered */
-.hero{background:var(--purple);padding:48px 2rem 42px;text-align:center;}
-.hero-tag{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:16px;}
-.hero-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.9rem,4vw,2.6rem);font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.08;margin-bottom:10px;}
-.hero-sub{font-size:.85rem;color:rgba(255,255,255,.4);line-height:1.65;max-width:380px;margin:0 auto;}
+
+
+
+
 
 /* MODULES */
-.modules{max-width:680px;margin:44px auto 80px;padding:0 1.5rem;display:flex;flex-direction:column;gap:18px;}
+.modules{max-width:680px;margin:20px auto 80px;padding:0 1.5rem;display:flex;flex-direction:column;gap:18px;}
 
 .module{background:var(--cream);border:1.5px solid var(--border);border-radius:22px;overflow:hidden;transition:box-shadow .25s;}
 .module:hover{box-shadow:0 6px 28px rgba(26,23,20,.06);}
@@ -98,8 +98,8 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
   .modules{padding:0 1rem;margin:28px auto 56px;}
   .mod-head{padding:18px 16px;}
   .mod-inner{padding:18px 16px 22px;}
-  .hero{padding:36px 1.2rem 30px;}
-  .hero-title{font-size:1.7rem;}
+  
+  
   .grid2,.choices{grid-template-columns:1fr;}
   .choices.cols3{grid-template-columns:1fr 1fr;}
   .mod-desc{display:none;}
@@ -178,10 +178,19 @@ onAuthStateChanged(auth, async u=>{
   </a>
 </nav>
 
-<div class="hero">
-  <div class="hero-tag">Strefa Kariery</div>
-  <h1 class="hero-title">Kończę<br>współpracę</h1>
-  <p class="hero-sub">Wypełnij formularz — wygenerujemy gotowy dokument do pobrania.</p>
+<div style="background:var(--ink);padding:32px 2rem 28px;text-align:center;position:relative;overflow:hidden;">
+  <!-- subtle grid texture -->
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 1px,transparent 1px,transparent 48px);pointer-events:none;"></div>
+  <div style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 12px 5px 8px;margin-bottom:16px;">
+      <div style="width:20px;height:20px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <span style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);">Dokumo</span>
+    </div>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.1;margin-bottom:6px;">Twój asystent w pracy</h1>
+    <p style="font-size:.8rem;color:rgba(255,255,255,.38);letter-spacing:.01em;">Wybierz dokument, a my przygotujemy go dla Ciebie.</p>
+  </div>
 </div>
 
 <div class="modules">
@@ -652,6 +661,66 @@ Dane do świadectwa:
 
   generate(prompt, 'Świadectwo Pracy', 'swiadectwo_pracy.txt');
 }
+
+// ── AI GENERATION ──
+let genDocContent = '';
+let genDocFilename = 'dokument.txt';
+
+async function generate(prompt, title, filename) {
+  genDocContent = '';
+  genDocFilename = filename;
+  document.getElementById('genTitle').textContent = title;
+  document.getElementById('genSubtitle').textContent = 'Proszę czekać…';
+  document.getElementById('genLoading').style.display = 'flex';
+  document.getElementById('genResultBlock').classList.remove('show');
+  document.getElementById('genError').classList.remove('show');
+  document.getElementById('genError').style.display = 'none';
+  document.getElementById('genOverlay').classList.add('show');
+
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (window._fbToken) headers['Authorization'] = 'Bearer ' + window._fbToken;
+
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ prompt, docId: filename.replace('.txt',''), docName: title, docCat: 'hr', docIcon: '📄', docCatLabel: 'Dokumenty HR' })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    genDocContent = data.text;
+    document.getElementById('genDocText').textContent = data.text;
+    document.getElementById('genLoading').style.display = 'none';
+    document.getElementById('genResultBlock').classList.add('show');
+    document.getElementById('genSubtitle').textContent = 'Dokument gotowy. Skopiuj lub pobierz.';
+  } catch(e) {
+    document.getElementById('genLoading').style.display = 'none';
+    const el = document.getElementById('genError');
+    el.textContent = 'Błąd: ' + e.message;
+    el.style.display = 'block';
+  }
+}
+
+function closeGen() { document.getElementById('genOverlay').classList.remove('show'); }
+function closeOnBg(e) { if(e.target===document.getElementById('genOverlay')) closeGen(); }
+
+function copyDoc() {
+  navigator.clipboard.writeText(genDocContent).then(() => {
+    const btn = document.querySelector('.gen-btn.primary');
+    const orig = btn.textContent;
+    btn.textContent = '✅ Skopiowano!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+function downloadDoc() {
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(genDocContent);
+  a.download = genDocFilename;
+  a.click();
+}
+
 </script>
 
 <!-- ── MODAL GENEROWANIA ── -->
