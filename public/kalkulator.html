@@ -177,9 +177,20 @@ input[type=range]::-webkit-slider-runnable-track {
     messagingSenderId:"1088576029067",
     appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"
   }));
-  onAuthStateChanged(auth, user => {
-    if (user) localStorage.setItem('dokumo_user', JSON.stringify({name:user.displayName||'',email:user.email||'',photo:user.photoURL||''}));
-    else localStorage.removeItem('dokumo_user');
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      localStorage.setItem('dokumo_user', JSON.stringify({name:user.displayName||'',email:user.email||'',photo:user.photoURL||''}));
+      window._fbToken = await user.getIdToken();
+      try {
+        const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + window._fbToken } });
+        const data = await res.json();
+        if (data.active && data.expiresAt) localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
+      } catch(e) {}
+    } else {
+      localStorage.removeItem('dokumo_user');
+      window._fbToken = null;
+    }
+    if (window._renderUNav) window._renderUNav();
   });
 </script>
 </head>
@@ -270,9 +281,10 @@ input[type=range]::-webkit-slider-runnable-track {
       emailEl.textContent=user.email||'';
       if(user.photo){avatar.innerHTML='<img src="'+user.photo+'" alt="">';}
       else{avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();}
-      const isPro=sub&&sub.plan==='pro'&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-      badge.textContent=isPro?'PRO':'Free';
-      badge.className='u-nav-badge '+(isPro?'pro':'free');
+      const isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+      const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+      badge.textContent=isActive?(planNames[sub.plan]||'PRO'):'Free';
+      badge.className='u-nav-badge '+(isActive?'pro':'free');
     } else {
       login.style.display='';
       profile.classList.remove('show');
