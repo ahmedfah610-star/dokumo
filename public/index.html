@@ -405,11 +405,12 @@ function updateNavBadge() {
   const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
   badge.style.display = 'inline-flex';
   if (isPro) {
-    badge.textContent = '★ PRO';
-    badge.style.cssText = 'display:inline-flex;align-items:center;background:#166534;color:#fff;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;text-decoration:none;margin-right:6px;';
+    const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+    badge.textContent = planNames[sub.plan] || 'PRO';
+    badge.style.cssText = 'display:inline-flex;align-items:center;background:#1a3a2e;color:#fff;font-size:0.7rem;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:0.06em;text-decoration:none;margin-right:6px;';
   } else {
-    badge.textContent = '★ KUP PREMIUM';
-    badge.style.cssText = 'display:inline-flex;align-items:center;background:#92400e;color:#fff;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;text-decoration:none;margin-right:6px;';
+    badge.textContent = 'Free';
+    badge.style.cssText = 'display:inline-flex;align-items:center;background:rgba(26,23,20,.08);color:#6b6560;font-size:0.7rem;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:0.06em;text-decoration:none;margin-right:6px;';
   }
 }
 
