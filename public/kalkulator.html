@@ -52,10 +52,13 @@ body { background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);mi
 .slider-val-wrap { display:flex;align-items:center;gap:6px; }
 .slider-val {
   font-family:'Bricolage Grotesque',sans-serif;
-  font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;
-  background:none;border:none;outline:none;width:130px;text-align:right;cursor:text;
+  font-size:1.4rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;
+  background:#fff;border:2px solid rgba(26,23,20,.12);outline:none;
+  width:140px;text-align:center;cursor:text;
+  border-radius:10px;padding:6px 10px;
+  transition:border-color .2s, box-shadow .2s;
 }
-.slider-val:focus { border-bottom:2px solid var(--ink); }
+.slider-val:focus { border-color:var(--ink); box-shadow:0 0 0 3px rgba(26,23,20,.08); }
 .slider-currency { font-size:.85rem;color:var(--ink2);font-weight:500; }
 
 input[type=range] {
@@ -194,14 +197,17 @@ input[type=range]::-webkit-slider-runnable-track {
     <div class="slider-block">
       <div class="slider-top">
         <span class="slider-label">Wynagrodzenie brutto</span>
-        <div class="slider-val-wrap">
-          <input type="text" id="inputVal" class="slider-val" value="6 000" inputmode="numeric">
-          <span class="slider-currency">zł</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+          <div class="slider-val-wrap">
+            <input type="text" id="inputVal" class="slider-val" value="6 000" inputmode="numeric" placeholder="wpisz...">
+            <span class="slider-currency">zł</span>
+          </div>
+          <span style="font-size:.62rem;color:var(--ink2);letter-spacing:.04em;">✏ wpisz lub przesuń suwak</span>
         </div>
       </div>
-      <input type="range" id="slider" min="3000" max="30000" step="100" value="6000">
+      <input type="range" id="slider" min="1000" max="30000" step="100" value="6000">
       <div class="slider-ticks">
-        <span class="slider-tick">3 000 zł</span>
+        <span class="slider-tick">1 000 zł</span>
         <span class="slider-tick">10 000 zł</span>
         <span class="slider-tick">20 000 zł</span>
         <span class="slider-tick">30 000 zł</span>
@@ -399,17 +405,29 @@ document.getElementById('slider').addEventListener('input', update);
 });
 
 // Wpisywanie ręczne
-document.getElementById('inputVal').addEventListener('input', function() {
-  const raw = this.value.replace(/\s/g,'').replace(/[^\d]/g,'');
-  let val = parseInt(raw);
-  if (isNaN(val)) return;
-  val = Math.max(3000, Math.min(30000, val));
-  document.getElementById('slider').value = val;
+const inputEl = document.getElementById('inputVal');
+
+inputEl.addEventListener('focus', function() {
+  const raw = this.value.replace(/\u00a0| /g, '').replace(/[^\d]/g, '');
+  this.value = raw;
+  this.select();
+});
+
+inputEl.addEventListener('input', function() {
+  const raw = this.value.replace(/[^\d]/g, '');
+  const val = parseInt(raw);
+  if (isNaN(val) || val < 100) return;
+  const clamped = Math.max(1000, Math.min(30000, val));
+  document.getElementById('slider').value = clamped;
   update();
 });
 
-document.getElementById('inputVal').addEventListener('blur', function() {
-  update(); // reformat on blur
+inputEl.addEventListener('blur', function() {
+  update();
+});
+
+inputEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') this.blur();
 });
 
 // Init
