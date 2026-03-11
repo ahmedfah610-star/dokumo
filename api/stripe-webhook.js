@@ -11,21 +11,28 @@ const db = getFirestore();
 // WAŻNE: wyłącz parsowanie body przez Vercel
 export const config = { api: { bodyParser: false } };
 
+// Mapowanie Stripe Price ID → plan
+// Uzupełnij po stworzeniu produktów w Stripe Dashboard
+const PRICE_TO_PLAN = {
+  [process.env.STRIPE_PRICE_KARIERA]: 'kariera',
+  [process.env.STRIPE_PRICE_BIZNES]:  'biznes',
+  [process.env.STRIPE_PRICE_PROMAX]:  'promax',
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  // Pobierz raw body
   const rawBody = await new Promise((resolve, reject) => {
-    let data = '';
-    req.on('data', chunk => data += chunk);
-    req.on('end', () => resolve(data));
+    let data = Buffer.alloc(0);
+    req.on('data', chunk => { data = Buffer.concat([data, chunk]); });
+    req.on('end', () => resolve(data.toString()));
     req.on('error', reject);
   });
 
   const sig = req.headers['stripe-signature'];
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  // Weryfikuj podpis
+  // Weryfikuj podpis Stripe
   let event;
   try {
     const parts = {};
@@ -44,23 +51,33 @@ export default async function handler(req, res) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const email = session.customer_email || session.customer_details?.email;
-    console.log('Checkout completed, email:', email);
+    
+    // Pobierz plan z metadata sesji (ustawiamy przy tworzeniu Stripe link)
+    // lub z mapowania price_id → plan
+    const planFromMeta = session.metadata?.plan;
+    const priceId = session.line_items?.data?.[0]?.price?.id;
+    const plan = planFromMeta || PRICE_TO_PLAN[priceId] || 'biznes';
+
+    console.log(`Checkout completed: email=${email}, plan=${plan}, session=${session.id}`);
 
     if (email) {
       try {
         const auth = getAuth();
         const user = await auth.getUserByEmail(email);
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        
         await db.collection('users').doc(user.uid).collection('subscription').doc('current').set({
-          plan: 'biznes',
+          plan,
           expiresAt: Timestamp.fromDate(expiresAt),
           activatedAt: Timestamp.now(),
           stripeSessionId: session.id,
           email,
         });
-        console.log('PRO saved for uid:', user.uid);
+        
+        console.log(`Plan "${plan}" saved for uid: ${user.uid}`);
       } catch(e) {
         console.error('Firestore save failed:', e.message);
+        return res.status(500).json({ error: 'DB error' });
       }
     }
   }
