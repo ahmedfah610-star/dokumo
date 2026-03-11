@@ -630,18 +630,18 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 /* ── DESKTOP KREATOR OVERRIDES ── */
 @media(min-width:768px) {
   .cv-nav { padding:0 22px; height:58px; }
-  .cv-form-col { width:380px; padding:20px 20px 80px; }
+  .cv-form-col { width:58%; padding:20px 24px 80px; }
   .cv-preview-col { display:flex; }
   .cv-mobile-tabs { display:none; }
-  .cv-pay-bar { bottom:0; width:380px; }
+  .cv-pay-bar { bottom:0; width:58%; }
   .import-modal-overlay { align-items:center; }
   .import-modal { border-radius:0; }
   .tcv-overlay { align-items:center; }
 }
 
 @media(min-width:960px) {
-  .cv-form-col { width:400px; }
-  .cv-pay-bar { width:400px; }
+  .cv-form-col { width:60%; }
+  .cv-pay-bar { width:60%; }
 }
 
 /* ── WYNIK GENEROWANIA — PODGLĄD + POBIERANIE ── */
