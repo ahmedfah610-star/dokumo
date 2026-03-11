@@ -477,17 +477,21 @@ let currentDoc = null;
 let currentStep = 0;
 let wizardValues = {};
 
-function openDoc(id) {
-  const form = FORMS[id];
-  if (!form) return;
+function checkAccess() {
   const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
   const hasSub = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
   if (!hasSub || !['biznes','promax','pro'].includes(sub.plan)) {
     sessionStorage.setItem('dokumo_after_sub', window.location.href);
-    window.location.href = 'subskrypcja.html'; return;
+    window.location.href = 'subskrypcja.html'; return false;
   }
   const user = (() => { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } })();
-  if (!user) { window.location.href = 'konto.html'; return; }
+  if (!user) { window.location.href = 'konto.html'; return false; }
+  return true;
+}
+
+function openDoc(id) {
+  const form = FORMS[id];
+  if (!form) return;
 
   currentDoc = id;
   currentStep = 0;
@@ -631,6 +635,7 @@ function closeGen() {
 }
 
 async function generate() {
+  if (!checkAccess()) return;
   document.getElementById('genForm').style.display = 'none';
   document.getElementById('genLoading').style.display = 'block';
   try {
