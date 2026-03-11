@@ -205,7 +205,7 @@ input[type=range]::-webkit-slider-runnable-track {
           <span style="font-size:.62rem;color:var(--ink2);letter-spacing:.04em;">✏ wpisz lub przesuń suwak</span>
         </div>
       </div>
-      <input type="range" id="slider" min="1000" max="30000" step="100" value="6000">
+      <input type="range" id="slider" min="1000" max="30000" step="1" value="6000">
       <div class="slider-ticks">
         <span class="slider-tick">1 000 zł</span>
         <span class="slider-tick">10 000 zł</span>
@@ -345,10 +345,18 @@ function oblicz(brutto) {
   let zus=0, zdr=0, podatek=0;
 
   if (typ === 'uop') {
+    // 1. Skladki ZUS pracownika: emerytalna 9.76% + rentowa 1.5% + chorobowa 2.45%
     zus = brutto * (0.0976 + 0.015 + 0.0245);
+    // 2. Skladka zdrowotna: 9% z (brutto - ZUS) — od 2022 nie odliczamy od PIT
     zdr = (brutto - zus) * 0.09;
+    // 3. Podstawa opodatkowania: brutto - ZUS - koszty uzyskania 250 zl
     const podstawa = Math.round(brutto - zus - 250);
-    podatek = wiek==='do26' ? 0 : Math.max(0, Math.round(podstawa*(prog/100)-300));
+    // 4. Podatek: prog% z podstawy - ulga miesieczna 300 zl
+    if (wiek === 'do26') {
+      podatek = 0;
+    } else {
+      podatek = Math.max(0, Math.round(podstawa * (prog / 100) - 300));
+    }
   } else if (typ === 'zlecenie') {
     zus = brutto * 0.1371;
     zdr = (brutto - zus) * 0.09;
@@ -416,7 +424,8 @@ inputEl.addEventListener('focus', function() {
 inputEl.addEventListener('input', function() {
   const raw = this.value.replace(/[^\d]/g, '');
   const val = parseInt(raw);
-  if (isNaN(val) || val < 100) return;
+  // Nie aktualizuj dopóki user nie wpisze sensownej kwoty (min 4 cyfry)
+  if (isNaN(val) || raw.length < 4) return;
   const clamped = Math.max(1000, Math.min(30000, val));
   document.getElementById('slider').value = clamped;
   update();
