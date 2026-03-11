@@ -541,29 +541,33 @@ function calcStaz(){
   document.getElementById('valWyp').textContent=fmt(end);
 }
 function generujWyp(){
-  const imie=document.getElementById('w-imie').value||'[Imię Nazwisko]';
-  const firma=document.getElementById('w-firma').value||'[Nazwa firmy]';
-  const stanowisko=document.getElementById('w-stanowisko').value||'[Stanowisko]';
-  const dataOd=document.getElementById('w-od').value||'';
+  const dzisiaj=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
+  const imie=document.getElementById('w-imie').value||'';
+  const firma=document.getElementById('w-firma').value||'';
+  const stanowisko=document.getElementById('w-stanowisko').value||'';
+  const odRaw=document.getElementById('w-od').value;
+  const dataOd=odRaw?new Date(odRaw).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
   const tryb=wTryb==='porozumienie'?'za porozumieniem stron':'z zachowaniem okresu wypowiedzenia';
-  let dataTxt='';
+  let dataKoniec='';
   if(wTryb==='porozumienie'){
     const dp=document.getElementById('w-data-por').value;
-    if(dp) dataTxt='Proponowana data zakończenia współpracy: '+new Date(dp).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'})+'.';
+    dataKoniec=dp?new Date(dp).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
   } else {
-    dataTxt='Data ostatniego dnia pracy: '+document.getElementById('valWyp').textContent+'.';
+    dataKoniec=document.getElementById('valWyp').textContent||'';
   }
 
-  const prompt=`Napisz profesjonalne wypowiedzenie umowy o pracę ${tryb} w języku polskim.
-Dane:
-- Pracownik: ${imie}
-- Pracodawca / firma: ${firma}
-- Stanowisko: ${stanowisko}
-- Zatrudniony od: ${dataOd||'[data zatrudnienia]'}
-- ${dataTxt}
+  const prompt=`Napisz wypowiedzenie umowy o prace ${tryb}. Uzyj DOKLADNIE ponizszych danych — nie wymyslaj zadnych innych imion, nazw ani dat.
+
+DANE:
+- Data sporzadzenia dokumentu: ${dzisiaj}
+- Pracownik: ${imie||'[wpisz imie i nazwisko]'}
+- Pracodawca: ${firma||'[wpisz nazwe firmy]'}
+- Stanowisko: ${stanowisko||'[wpisz stanowisko]'}
+- Zatrudniony od: ${dataOd||'[wpisz date]'}
+- Data zakonczenia wspolpracy: ${dataKoniec||'[wpisz date]'}
 - Tryb: ${tryb}
 
-Dokument powinien być formalny, zwięzły i gotowy do wydruku. Zawierać: miejscowość i datę, dane stron, treść wypowiedzenia, podpis pracownika. Nie używaj markdown, tylko czysty tekst.`;
+Wygeneruj gotowy dokument do wydruku. Format: miejscowosc i data w prawym gornym rogu, dane pracownika po lewej, adresat po prawej, tresc, miejsce na podpis. Tylko czysty tekst, zero markdown, zero gwiazdek.`;
 
   generate(prompt, 'Wypowiedzenie umowy o pracę', 'wypowiedzenie.txt');
 }
@@ -588,31 +592,35 @@ function calcUrlopDni(){
   document.getElementById('urlopChip').style.display='flex';
 }
 function generujUrlop(){
-  const imie=document.getElementById('u-imie').value||'[Imię Nazwisko]';
-  const przelozony=document.getElementById('u-przelozony').value||'[Przełożony]';
-  const firma=document.getElementById('u-firma').value||'[Firma]';
+  const dzisiaj=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
+  const imie=document.getElementById('u-imie').value||'';
+  const przelozony=document.getElementById('u-przelozony').value||'';
+  const firma=document.getElementById('u-firma').value||'';
   const od=document.getElementById('u-od').value;
   const doo=document.getElementById('u-do').value;
-  const odFmt=od?new Date(od).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'[data od]';
-  const doFmt=doo?new Date(doo).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'[data do]';
-  const typMap={wypoczynkowy:'wypoczynkowy',zadanie:'na żądanie',okolicznosciowy:'okolicznościowy',bezplatny:'bezpłatny'};
+  const odFmt=od?new Date(od).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
+  const doFmt=doo?new Date(doo).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
+  const typMap={wypoczynkowy:'wypoczynkowy',zadanie:'na zadanie',okolicznosciowy:'okolicznosciowy',bezplatny:'bezplatny'};
   const typTxt=typMap[urlOpTyp]||'wypoczynkowy';
   let okolTxt='';
   if(urlOpTyp==='okolicznosciowy'){
     const powod=document.getElementById('u-okol-powod').value;
-    const powodMap={slub_wlasny:'własny ślub (2 dni)',slub_dziecka:'ślub dziecka (1 dzień)',narodziny:'narodziny dziecka (2 dni)',pogrzeb_malzonek:'pogrzeb małżonka/dziecka/rodzica (2 dni)',pogrzeb_rodzenstwo:'pogrzeb rodzeństwa/teścia (1 dzień)'};
+    const powodMap={slub_wlasny:'wlasny slub (2 dni)',slub_dziecka:'slub dziecka (1 dzien)',narodziny:'narodziny dziecka (2 dni)',pogrzeb_malzonek:'pogrzeb malzonka/dziecka/rodzica (2 dni)',pogrzeb_rodzenstwo:'pogrzeb rodzenstwa/tescia (1 dzien)'};
     okolTxt=' z powodu: '+powodMap[powod];
   }
-  const dni=document.getElementById('urlopDni').textContent||'';
+  const dniEl=document.getElementById('urlopDni');
+  const dni=dniEl&&dniEl.textContent&&dniEl.textContent!='—'?dniEl.textContent:'';
 
-  const prompt=`Napisz formalny wniosek o urlop ${typTxt}${okolTxt} w języku polskim.
-Dane:
-- Pracownik: ${imie}
-- Przełożony / adresat: ${przelozony}
-- Firma: ${firma}
-- Okres urlopu: od ${odFmt} do ${doFmt}${dni?' ('+dni+')':''}
+  const prompt=`Napisz formalny wniosek o urlop ${typTxt}${okolTxt}. Uzyj DOKLADNIE ponizszych danych.
 
-Wniosek powinien być krótki, formalny i gotowy do wydruku. Zawierać: miejscowość i datę, dane pracownika, adresata, treść prośby, podpis. Nie używaj markdown, tylko czysty tekst.`;
+DANE:
+- Data sporzadzenia: ${dzisiaj}
+- Pracownik (wnioskodawca): ${imie||'[wpisz imie i nazwisko]'}
+- Przelozony / adresat: ${przelozony||'[wpisz imie i nazwisko przelozonego]'}
+- Firma: ${firma||'[wpisz nazwe firmy]'}
+- Okres urlopu: od ${odFmt||'[data od]'} do ${doFmt||'[data do]'}${dni?' ('+dni+')':''}
+
+Wniosek ma byc krotki i formalny, gotowy do wydruku. Zawierac: miejscowosc i date, dane pracownika, adresata, tresn prosbe, podpis. Zero markdown, zero gwiazdek.`;
 
   generate(prompt, 'Wniosek o urlop', 'wniosek_urlop.txt');
 }
@@ -632,32 +640,35 @@ function selectSwTryb(t){
   document.getElementById('sr-'+map[t]).classList.add('active');
 }
 function generujSwiadectwo(){
-  const imie=document.getElementById('s-imie').value||'[Imię Nazwisko]';
-  const urodzenie=document.getElementById('s-urodzenie').value||'';
-  const firma=document.getElementById('s-firma').value||'[Firma]';
-  const siedziba=document.getElementById('s-siedziba').value||'[Siedziba]';
+  const dzisiaj=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
+  const imie=document.getElementById('s-imie').value||'';
+  const urodzenie=document.getElementById('s-urodzenie').value;
+  const firma=document.getElementById('s-firma').value||'';
+  const siedziba=document.getElementById('s-siedziba').value||'';
   const od=document.getElementById('s-od').value;
   const doo=document.getElementById('s-do').value;
-  const stanowisko=document.getElementById('s-stanowisko').value||'[Stanowisko]';
+  const stanowisko=document.getElementById('s-stanowisko').value||'';
   const urlop=document.getElementById('s-urlop-dni').value||'0';
   const ekwi=document.getElementById('s-urlop-ekwi').value||'0';
-  const trybMap={porozumienie:'na mocy porozumienia stron (art. 30 § 1 pkt 1 KP)',wypowiedzenie_pracownik:'przez pracownika za wypowiedzeniem (art. 30 § 1 pkt 2 KP)',wypowiedzenie_pracodawca:'przez pracodawcę za wypowiedzeniem (art. 30 § 1 pkt 2 KP)',wygasniecie:'wskutek upływu czasu na który była zawarta (art. 30 § 1 pkt 4 KP)'};
-  const odFmt=od?new Date(od).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'[data od]';
-  const doFmt=doo?new Date(doo).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'[data do]';
+  const trybMap={porozumienie:'na mocy porozumienia stron (art. 30 § 1 pkt 1 KP)',wypowiedzenie_pracownik:'przez pracownika za wypowiedzeniem (art. 30 § 1 pkt 2 KP)',wypowiedzenie_pracodawca:'przez pracodawce za wypowiedzeniem (art. 30 § 1 pkt 2 KP)',wygasniecie:'wskutek uplywy czasu na ktory byla zawarta (art. 30 § 1 pkt 4 KP)'};
+  const odFmt=od?new Date(od).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
+  const doFmt=doo?new Date(doo).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
   const urodzFmt=urodzenie?new Date(urodzenie).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
 
-  const prompt=`Napisz świadectwo pracy zgodne z polskim prawem pracy (Kodeks Pracy). Dokument ma być formalny i gotowy do wydruku.
-Dane do świadectwa:
-- Pracownik: ${imie}${urodzFmt?' ur. '+urodzFmt:''}
-- Pracodawca: ${firma}, ${siedziba}
-- Okres zatrudnienia: od ${odFmt} do ${doFmt}
-- Stanowisko: ${stanowisko}
-- Wymiar czasu pracy: ${swEtat} etatu
-- Rozwiązanie umowy: ${trybMap[swTryb]||swTryb}
-- Urlop wypoczynkowy wykorzystany w roku rozwiązania umowy: ${urlop} dni
-- Ekwiwalent pieniężny za urlop: ${ekwi} dni
+  const prompt=`Napisz swiadectwo pracy zgodne z polskim Kodeksem Pracy. Uzyj DOKLADNIE ponizszych danych — nie zmieniaj zadnych wartosci.
 
-Świadectwo powinno zawierać wszystkie obowiązkowe elementy zgodnie z art. 97 KP i rozporządzeniem MRPiT. Nie używaj markdown — tylko czysty tekst, formatowany jak oficjalny dokument urzędowy.`;
+DANE DO SWIADECTWA:
+- Data wystawienia: ${dzisiaj}
+- Pracownik: ${imie||'[imie i nazwisko]'}${urodzFmt?' ur. '+urodzFmt:''}
+- Pracodawca: ${firma||'[nazwa firmy]'}, ${siedziba||'[siedziba]'}
+- Okres zatrudnienia: od ${odFmt||'[data]'} do ${doFmt||'[data]'}
+- Stanowisko: ${stanowisko||'[stanowisko]'}
+- Wymiar czasu pracy: ${swEtat} etatu
+- Sposob rozwiazania umowy: ${trybMap[swTryb]||swTryb}
+- Urlop wypoczynkowy wykorzystany w roku rozwiazania: ${urlop} dni
+- Ekwiwalent pieniezny za urlop: ${ekwi} dni
+
+Swiadectwo musi zawierac wszystkie obowiazkowe elementy z art. 97 KP. Tylko czysty tekst sformatowany jak oficjalny dokument — zero markdown, zero gwiazdek.`;
 
   generate(prompt, 'Świadectwo Pracy', 'swiadectwo_pracy.txt');
 }
