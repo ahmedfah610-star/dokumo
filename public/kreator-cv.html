@@ -1066,21 +1066,8 @@ onAuthStateChanged(getAuth(app), async u=>{
 </script>
 </head>
 <body>
-<style>
-.u-back-bar{display:flex;align-items:center;gap:8px;padding:8px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.06);}
-.u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
-.u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.09);}
-.u-plan-chip{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;margin-left:auto;text-decoration:none;}
-.u-plan-chip.active{background:#1a3a2e;color:#fff;}
-.u-plan-chip.free{background:rgba(26,23,20,.07);color:#6b6560;}
-</style>
-<div class="u-back-bar">
-  <a href="kariera.html" class="u-back-btn">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    Strefa Kariery
-  </a>
-  <a href="subskrypcja.html" class="u-plan-chip free" id="uPlanChip"></a>
-</div>
+
+
 <script>
 function updateChip(){
   const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
@@ -1089,7 +1076,7 @@ function updateChip(){
   const active=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
   const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
   chip.textContent=active?(names[sub.plan]||'PRO'):'Free';
-  chip.className='u-plan-chip '+(active?'active':'free');
+  chip.className='cv-nav-badge '+(active?'pro':'free');
 }
 updateChip(); // od razu z localStorage
 
@@ -1108,27 +1095,42 @@ window.addEventListener('_fbAuthReady', async ()=>{
 });
 </script>
 
+<style>
+.cv-nav-back-lnk{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:500;color:rgba(240,237,232,.5);text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);margin-left:10px;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.cv-nav-back-lnk:hover{color:#f0ede8;border-color:rgba(255,255,255,.2);}
+.cv-nav-badge{font-size:.62rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;}
+.cv-nav-badge.pro{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.25);}
+.cv-nav-badge.free{background:rgba(255,255,255,.05);color:rgba(240,237,232,.3);border:1px solid rgba(255,255,255,.07);}
+.cv-nav-logo{color:#f0ede8 !important;}
+.cv-nav-logo span{color:#4ade80 !important;}
+</style>
 <div class="cv-app">
 
-  <!-- NAV -->
+  <!-- NAV — ciemny pasek -->
   <div class="cv-nav">
-    <button class="btn-back" onclick="window.location.href='dokumenty.html'">← Wróć</button>
-    <a href="index.html" class="logo cv-nav-logo">Doku<span>mo</span><span class="cv-nav-subtitle"> · Kreator CV</span></a>
+    <a href="index.html" class="logo cv-nav-logo">Doku<span>mo</span></a>
+    <a href="kariera.html" class="cv-nav-back-lnk" title="Strefa Kariery">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span class="cv-btn-label">Strefa Kariery</span>
+    </a>
+    <div style="flex:1;"></div>
     <div class="cv-nav-right">
       <button class="btn-import-pdf" onclick="openImportModal()" title="Importuj CV z PDF">
-        <span>📄</span><span class="cv-btn-label"> Importuj CV z PDF</span>
+        <span>📄</span><span class="cv-btn-label"> Importuj z PDF</span>
       </button>
       <button class="btn-choose-tpl" onclick="openTplDrawer()" title="Wybierz szablon">
-        <span class="tpl-preview-dot" id="tplDot" style="background:#1a3a2e"></span>
+        <span class="tpl-preview-dot" id="tplDot" style="background:#22c55e"></span>
         <span class="cv-btn-label">Wybierz szablon ▾</span>
         <span class="cv-btn-icon">▾</span>
       </button>
+      <span class="cv-nav-badge free" id="uPlanChip"></span>
     </div>
   </div>
 
   <!-- MAIN -->
   <div class="cv-main">
     <div class="cv-form-col" id="cvFormPanel"></div>
+    <div class="cv-resizer" id="cvResizer"></div>
     <div class="cv-preview-col" id="cvPreviewCol">
       <div class="cv-preview-label">Podgląd na żywo · A4</div>
       <div class="cv-preview-doc" id="cvPreviewInner"></div>
@@ -2505,6 +2507,52 @@ function downloadCV() {
   };
   html2pdf().set(opt).from(el).save();
 }
+</script>
+
+<script>
+// ── RESIZABLE DIVIDER ──
+(function(){
+  var resizer = document.getElementById('cvResizer');
+  var formCol = document.getElementById('cvFormPanel');
+  var previewCol = document.getElementById('cvPreviewCol');
+  if (!resizer || !formCol) return;
+
+  var isDown = false, startX = 0, startW = 0;
+
+  resizer.addEventListener('mousedown', function(e) {
+    if (window.innerWidth < 768) return;
+    isDown = true;
+    startX = e.clientX;
+    startW = formCol.getBoundingClientRect().width;
+    resizer.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDown) return;
+    var dx = e.clientX - startX;
+    var container = formCol.parentElement.getBoundingClientRect().width;
+    var newW = startW + dx;
+    var minW = container * 0.25;
+    var maxW = container * 0.75;
+    newW = Math.min(Math.max(newW, minW), maxW);
+    var pct = (newW / container * 100).toFixed(2);
+    formCol.style.width = pct + '%';
+    // Update pay-bar width too
+    var payBar = document.querySelector('.cv-pay-bar');
+    if (payBar) payBar.style.width = pct + '%';
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!isDown) return;
+    isDown = false;
+    resizer.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
 </script>
 </body>
 </html>
