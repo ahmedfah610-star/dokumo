@@ -312,7 +312,6 @@ function openDoc(id) {
   document.getElementById("genTitle").textContent = FORMS[id].title;
   document.getElementById("genLoading").style.display = "none";
   document.getElementById("genResult").style.display = "none";
-  document.getElementById("genResultPlaceholder").style.display = "flex";
   document.getElementById("genForm").style.display = "block";
   renderStep();
   var ov = document.getElementById("genOverlay");
@@ -323,7 +322,7 @@ function openDoc(id) {
 
 function closeGen() {
   var sh = document.getElementById("genSheet");
-  panel.classList.remove("open");
+  sh.style.transform = "translateY(100%)";
   setTimeout(function(){ document.getElementById("genOverlay").style.display = "none"; }, 350);
 }
 
