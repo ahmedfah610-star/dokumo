@@ -199,7 +199,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 <div class="doc-stack">
 
   <!-- 1. Umowa B2B -->
-  <div class="doc-card" onclick="openDoc('b2b')">
+  <div class="doc-card" data-doc="b2b">
     <div class="doc-edge"></div>
     <div class="doc-body">
       <div class="doc-icon">
@@ -220,7 +220,7 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 
   <!-- 2. NDA -->
-  <div class="doc-card" onclick="openDoc('nda')">
+  <div class="doc-card" data-doc="nda">
     <div class="doc-edge"></div>
     <div class="doc-body">
       <div class="doc-icon">
@@ -242,7 +242,7 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 
   <!-- 3. Umowa o dzieło -->
-  <div class="doc-card" onclick="openDoc('dzielo')">
+  <div class="doc-card" data-doc="dzielo">
     <div class="doc-edge"></div>
     <div class="doc-body">
       <div class="doc-icon">
@@ -262,7 +262,7 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 
   <!-- 4. Umowa zlecenie -->
-  <div class="doc-card" onclick="openDoc('zlecenie')">
+  <div class="doc-card" data-doc="zlecenie">
     <div class="doc-edge"></div>
     <div class="doc-body">
       <div class="doc-icon">
@@ -283,7 +283,7 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 
   <!-- 5. Umowa o pracę -->
-  <div class="doc-card" onclick="openDoc('uop')">
+  <div class="doc-card" data-doc="uop">
     <div class="doc-edge"></div>
     <div class="doc-body">
       <div class="doc-icon">
@@ -333,354 +333,300 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 </div>
 
-<script>
 
-/* ── WIZARD CONFIG ── */
-const FORMS = {
+<script>
+var FORMS = {
   b2b: {
-    title: 'Umowa B2B',
+    title: "Umowa B2B",
     steps: [
-      {
-        label: 'Twoja firma',
-        fields: [
-          { id:'zleceniodawca', label:'Nazwa Twojej firmy', placeholder:'np. ABC Sp. z o.o.', icon:'🏢' },
-          { id:'nip', label:'NIP (opcjonalnie)', placeholder:'np. 123-456-78-90', icon:'🔢', optional:true },
-        ]
-      },
-      {
-        label: 'Kontrahent',
-        fields: [
-          { id:'zleceniobiorca', label:'Nazwa firmy kontrahenta', placeholder:'np. XYZ Studio', icon:'🤝' },
-          { id:'zakres', label:'Zakres usług', placeholder:'np. Tworzenie stron, marketing', icon:'⚙️' },
-        ]
-      },
-      {
-        label: 'Warunki',
-        fields: [
-          { id:'wynagrodzenie', label:'Wynagrodzenie miesięczne', placeholder:'np. 10 000 zł netto', icon:'💰' },
-          { id:'okres', label:'Czas trwania', type:'pills', icon:'📅',
-            options:['3 miesiące','6 miesięcy','12 miesięcy','Bezterminowa'] },
-          { id:'zakaz_konkurencji', label:'Zakaz konkurencji?', type:'toggle', icon:'🔒' },
-        ]
-      }
+      { label: "Zleceniodawca", fields: [
+        {id:"zlec_firma", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
+        {id:"zlec_nip", label:"NIP", ph:"np. 1234567890", icon:"🔢", opt:true},
+        {id:"zlec_adres", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Zleceniobiorca", fields: [
+        {id:"wyk_firma", label:"Nazwa firmy / imię nazwisko", ph:"np. Jan Kowalski / JK Studio", icon:"🤝"},
+        {id:"wyk_nip", label:"NIP", ph:"np. 0987654321", icon:"🔢", opt:true},
+        {id:"wyk_adres", label:"Adres", ph:"np. ul. Różana 2, Kraków", icon:"📍", opt:true}
+      ]},
+      { label: "Warunki", fields: [
+        {id:"zakres", label:"Zakres usług", ph:"np. Tworzenie stron, SEO, marketing", icon:"⚙️"},
+        {id:"wynagrodzenie", label:"Wynagrodzenie", ph:"np. 5 000 zł netto miesięcznie", icon:"💰"},
+        {id:"termin", label:"Termin płatności (dni)", ph:"np. 14", icon:"🧾", opt:true},
+        {id:"czas", label:"Czas trwania umowy", type:"pills", icon:"📅", opts:["3 miesiące","6 miesięcy","12 miesięcy","Czas nieokreślony"]},
+        {id:"wypowiedzenie", label:"Okres wypowiedzenia", type:"pills", icon:"📋", opts:["2 tygodnie","1 miesiąc","3 miesiące"]}
+      ]}
     ],
-    prompt: (v) => `Napisz profesjonalną umowę B2B zgodną z polskim prawem.\nZleceniodawca: ${v.zleceniodawca}${v.nip?' NIP:'+v.nip:''}\nZleceniobiorca: ${v.zleceniobiorca}\nZakres: ${v.zakres}\nWynagrodzenie: ${v.wynagrodzenie}\nOkres: ${v.okres}\nZakaz konkurencji: ${v.zakaz_konkurencji||'Nie'}\nUwzględnij: przedmiot umowy, fakturowanie, własność intelektualna, poufność${v.zakaz_konkurencji==='Tak'?', zakaz konkurencji':''}, odpowiedzialność, warunki rozwiązania. Tylko czysty tekst.`
+    prompt: function(v){ return "Napisz umowę o współpracy B2B. Zleceniodawca: "+v.zlec_firma+", NIP: "+(v.zlec_nip||"[brak]")+", adres: "+(v.zlec_adres||"[brak]")+". Zleceniobiorca: "+v.wyk_firma+", NIP: "+(v.wyk_nip||"[brak]")+", adres: "+(v.wyk_adres||"[brak]")+". Zakres: "+v.zakres+". Wynagrodzenie: "+v.wynagrodzenie+". Płatność: "+(v.termin||"14")+" dni. Czas: "+(v.czas||"nieokreślony")+". Wypowiedzenie: "+(v.wypowiedzenie||"1 miesiąc")+". Zacznij od treści umowy. Tylko czysty tekst."; }
   },
   nda: {
-    title: 'NDA — Poufność',
+    title: "NDA — Poufność",
     steps: [
-      {
-        label: 'Strony umowy',
-        fields: [
-          { id:'strona1', label:'Twoja firma', placeholder:'np. ABC Sp. z o.o.', icon:'🏢' },
-          { id:'strona2', label:'Druga strona', placeholder:'np. Jan Kowalski / XYZ', icon:'👤' },
-        ]
-      },
-      {
-        label: 'Szczegóły',
-        fields: [
-          { id:'cel', label:'Cel ujawnienia', placeholder:'np. Rozmowy o współpracy, projekt IT', icon:'🎯' },
-          { id:'okres', label:'Okres zakazu ujawniania', type:'pills', icon:'⏳',
-            options:['1 rok','2 lata','3 lata','5 lat','Bezterminowo'] },
-          { id:'kara', label:'Kara umowna za naruszenie', type:'pills', icon:'⚖️',
-            options:['5 000 zł','10 000 zł','25 000 zł','50 000 zł'] },
-        ]
-      }
+      { label: "Strona ujawniająca", fields: [
+        {id:"str1_nazwa", label:"Nazwa firmy / imię nazwisko", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
+        {id:"str1_adres", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Strona otrzymująca", fields: [
+        {id:"str2_nazwa", label:"Nazwa firmy / imię nazwisko", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"str2_adres", label:"Adres", ph:"np. ul. Różana 2, Kraków", icon:"📍", opt:true}
+      ]},
+      { label: "Warunki", fields: [
+        {id:"cel", label:"Cel ujawnienia informacji", ph:"np. Współpraca przy projekcie XYZ", icon:"🎯"},
+        {id:"zakres_info", label:"Rodzaj informacji poufnych", ph:"np. dane techniczne, know-how, lista klientów", icon:"🔐", opt:true},
+        {id:"czas", label:"Czas obowiązywania", type:"pills", icon:"⏳", opts:["1 rok","2 lata","3 lata","5 lat","Bezterminowo"]},
+        {id:"kara", label:"Kara umowna za naruszenie", type:"pills", icon:"⚖️", opts:["10 000 zł","25 000 zł","50 000 zł","100 000 zł"]}
+      ]}
     ],
-    prompt: (v) => `Napisz NDA zgodny z polskim prawem.\nUjawniający: ${v.strona1}\nOtrzymujący: ${v.strona2}\nCel: ${v.cel}\nOkres zakazu: ${v.okres}\nKara umowna: ${v.kara}\nUwzględnij: definicję informacji poufnych, wyłączenia, zwrot materiałów, kary umowne, postanowienia końcowe. Tylko czysty tekst.`
+    prompt: function(v){ return "Napisz umowę NDA. Strona ujawniająca: "+v.str1_nazwa+", adres: "+(v.str1_adres||"[brak]")+". Strona otrzymująca: "+v.str2_nazwa+", adres: "+(v.str2_adres||"[brak]")+". Cel: "+v.cel+". Informacje poufne: "+(v.zakres_info||"wszelkie informacje biznesowe")+". Czas: "+(v.czas||"2 lata")+". Kara: "+(v.kara||"50 000 zł")+". Zacznij od treści umowy. Tylko czysty tekst."; }
   },
   dzielo: {
-    title: 'Umowa o dzieło',
+    title: "Umowa o dzieło",
     steps: [
-      {
-        label: 'Strony',
-        fields: [
-          { id:'zamawiajacy', label:'Zamawiający (Twoja firma)', placeholder:'np. ABC Sp. z o.o.', icon:'🏢' },
-          { id:'wykonawca', label:'Wykonawca (imię i nazwisko)', placeholder:'np. Jan Kowalski', icon:'✏️' },
-        ]
-      },
-      {
-        label: 'Dzieło',
-        fields: [
-          { id:'dzielo', label:'Opis dzieła', placeholder:'np. Logo + identyfikacja wizualna', icon:'🎨' },
-          { id:'prawa_autorskie', label:'Przeniesienie praw autorskich?', type:'toggle', icon:'📄' },
-        ]
-      },
-      {
-        label: 'Płatność',
-        fields: [
-          { id:'wynagrodzenie', label:'Wynagrodzenie', placeholder:'np. 5 000 zł brutto', icon:'💰' },
-          { id:'termin', label:'Termin realizacji', type:'pills', icon:'📅',
-            options:['7 dni','14 dni','30 dni','60 dni','Inne'] },
-        ]
-      }
+      { label: "Strony", fields: [
+        {id:"zamawiajacy", label:"Zamawiający (Twoja firma)", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
+        {id:"wykonawca", label:"Wykonawca", ph:"np. Jan Kowalski", icon:"✏️"}
+      ]},
+      { label: "Dzieło", fields: [
+        {id:"dzielo", label:"Opis dzieła", ph:"np. Logo i identyfikacja wizualna", icon:"🎨"},
+        {id:"prawa", label:"Przenieść prawa autorskie?", type:"toggle", icon:"📄"}
+      ]},
+      { label: "Płatność", fields: [
+        {id:"wynagrodzenie", label:"Wynagrodzenie", ph:"np. 5 000 zł brutto", icon:"💰"},
+        {id:"termin", label:"Termin realizacji", type:"pills", icon:"📅", opts:["7 dni","14 dni","30 dni","60 dni"]}
+      ]}
     ],
-    prompt: (v) => `Napisz umowę o dzieło zgodną z art. 627 KC.\nZamawiający: ${v.zamawiajacy}\nWykonawca: ${v.wykonawca}\nDzieło: ${v.dzielo}\nPrawa autorskie: ${v.prawa_autorskie||'Tak'}\nWynagrodzenie: ${v.wynagrodzenie}\nTermin: ${v.termin}\nUwzględnij: opis dzieła, odbiór, wynagrodzenie${v.prawa_autorskie==='Tak'?', pełne przeniesienie praw autorskich art.53':''}, wady, odstąpienie. Tylko czysty tekst.`
+    prompt: function(v){ return "Napisz umowę o dzieło zgodną z art. 627 KC.\nZamawiający: "+v.zamawiajacy+"\nWykonawca: "+v.wykonawca+"\nDzieło: "+v.dzielo+"\nPrawa autorskie: "+(v.prawa||"Tak")+"\nWynagrodzenie: "+v.wynagrodzenie+"\nTermin: "+v.termin+"\nUwzględnij: opis dzieła, odbiór, wynagrodzenie, prawa autorskie, wady, odstąpienie. Tylko czysty tekst."; }
   },
   zlecenie: {
-    title: 'Umowa zlecenie',
+    title: "Umowa zlecenie",
     steps: [
-      {
-        label: 'Strony',
-        fields: [
-          { id:'zleceniodawca', label:'Zleceniodawca (Twoja firma)', placeholder:'np. ABC Sp. z o.o.', icon:'🏢' },
-          { id:'zleceniobiorca', label:'Zleceniobiorca (imię, nazwisko)', placeholder:'np. Anna Kowalska', icon:'👤' },
-          { id:'pesel', label:'PESEL zleceniobiorcy', placeholder:'np. 90010112345', icon:'🔢' },
-        ]
-      },
-      {
-        label: 'Warunki',
-        fields: [
-          { id:'zakres', label:'Zakres czynności', placeholder:'np. Obsługa klienta, wsparcie sprzedaży', icon:'📋' },
-          { id:'stawka', label:'Stawka', placeholder:'np. 35 zł / godz.', icon:'💰' },
-          { id:'okres', label:'Okres trwania', type:'pills', icon:'📅',
-            options:['1 miesiąc','3 miesiące','6 miesięcy','12 miesięcy'] },
-        ]
-      }
+      { label: "Zleceniodawca", fields: [
+        {id:"zlec", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
+        {id:"nip", label:"NIP", ph:"np. 123-456-78-90", icon:"🔢", opt:true}
+      ]},
+      { label: "Zleceniobiorca", fields: [
+        {id:"wyk", label:"Imię i nazwisko", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"pesel", label:"PESEL", ph:"np. 85020298765", icon:"🔢", opt:true},
+        {id:"student", label:"Czy student poniżej 26 lat?", type:"pills", icon:"🎓", opts:["Nie","Tak"]}
+      ]},
+      { label: "Warunki", fields: [
+        {id:"zakres", label:"Zakres zlecenia", ph:"np. Obsługa klienta, wsparcie sprzedaży", icon:"📋"},
+        {id:"wynagrodzenie", label:"Wynagrodzenie", ph:"np. 3 500 zł brutto", icon:"💰"},
+        {id:"termin", label:"Termin wykonania", ph:"np. 30.06.2026", icon:"📅", opt:true},
+        {id:"platnosc", label:"Termin płatności", ph:"np. 7 dni od wystawienia rachunku", icon:"🧾", opt:true}
+      ]}
     ],
-    prompt: (v) => `Napisz umowę zlecenie zgodną z art. 734 KC i przepisami ZUS.\nZleceniodawca: ${v.zleceniodawca}\nZleceniobiorca: ${v.zleceniobiorca}, PESEL: ${v.pesel}\nZakres: ${v.zakres}\nWynagrodzenie: ${v.stawka}\nOkres: ${v.okres}\nUwzględnij: ZUS, min. stawka 30 zł/h, warunki rozwiązania, poufność. Tylko czysty tekst.`
+    prompt: function(v){ return "Napisz umowę zlecenie. Zleceniodawca: "+v.zlec+", NIP: "+(v.nip||"[brak]")+". Zleceniobiorca: "+v.wyk+", PESEL: "+(v.pesel||"[brak]")+", student: "+(v.student||"Nie")+". Zakres: "+v.zakres+". Wynagrodzenie: "+v.wynagrodzenie+". Termin: "+(v.termin||"ustalony przez strony")+". Płatność: "+(v.platnosc||"7 dni od wystawienia rachunku")+". Zacznij od treści umowy. Tylko czysty tekst."; }
   },
   uop: {
-    title: 'Umowa o pracę',
+    title: "Umowa o pracę",
     steps: [
-      {
-        label: 'Pracodawca & Pracownik',
-        fields: [
-          { id:'pracodawca', label:'Pracodawca (firma, adres)', placeholder:'np. ABC Sp. z o.o., Warszawa', icon:'🏢' },
-          { id:'pracownik', label:'Pracownik (imię i nazwisko)', placeholder:'np. Anna Nowak', icon:'👤' },
-        ]
-      },
-      {
-        label: 'Stanowisko',
-        fields: [
-          { id:'stanowisko', label:'Stanowisko', placeholder:'np. Specjalista ds. marketingu', icon:'💼' },
-          { id:'etat', label:'Wymiar etatu', type:'pills', icon:'⏱️',
-            options:['Pełny etat','1/2 etatu','3/4 etatu','1/4 etatu'] },
-          { id:'start', label:'Data rozpoczęcia', type:'date', icon:'📅' },
-        ]
-      },
-      {
-        label: 'Wynagrodzenie',
-        fields: [
-          { id:'wynagrodzenie', label:'Wynagrodzenie brutto / miesiąc', placeholder:'np. 8 000 zł', icon:'💰' },
-          { id:'urlop', label:'Wymiar urlopu', type:'pills', icon:'🏖️',
-            options:['20 dni (staż < 10 lat)','26 dni (staż ≥ 10 lat)'] },
-        ]
-      }
+      { label: "Pracodawca", fields: [
+        {id:"pracodawca", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
+        {id:"nip", label:"NIP", ph:"np. 1234567890", icon:"🔢", opt:true},
+        {id:"adres_p", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Pracownik", fields: [
+        {id:"pracownik", label:"Imię i nazwisko", ph:"np. Anna Nowak", icon:"👤"},
+        {id:"pesel", label:"PESEL", ph:"np. 90010112345", icon:"🔢", opt:true},
+        {id:"adres_pr", label:"Adres zamieszkania", ph:"np. ul. Różana 2, Kraków", icon:"📍", opt:true}
+      ]},
+      { label: "Warunki zatrudnienia", fields: [
+        {id:"stanowisko", label:"Stanowisko", ph:"np. Specjalista ds. marketingu", icon:"💼"},
+        {id:"wymiar", label:"Wymiar czasu pracy", type:"pills", icon:"⏱️", opts:["Pełny etat (1/1)","Pół etatu (1/2)","3/4 etatu","1/4 etatu"]},
+        {id:"wynagrodzenie", label:"Wynagrodzenie brutto (zł)", ph:"np. 5 500", icon:"💰"},
+        {id:"data_start", label:"Data rozpoczęcia", type:"date", icon:"📅"},
+        {id:"rodzaj", label:"Rodzaj umowy", type:"pills", icon:"📋", opts:["Na czas nieokreślony","Na czas określony","Na okres próbny"]},
+        {id:"miejsce", label:"Miejsce pracy", ph:"np. Warszawa / praca zdalna", icon:"📍", opt:true}
+      ]}
     ],
-    prompt: (v) => `Napisz umowę o pracę zgodną z art. 29 KP.\nPracodawca: ${v.pracodawca}\nPracownik: ${v.pracownik}\nStanowisko: ${v.stanowisko}\nEtat: ${v.etat}\nData: ${v.start}\nWynagrodzenie: ${v.wynagrodzenie} brutto\nUrlop: ${v.urlop}\nUwzględnij: miejsce pracy, czas pracy, wynagrodzenie, urlop, okres wypowiedzenia, obowiązki stron. Tylko czysty tekst.`
+    prompt: function(v){ return "Napisz umowę o pracę. Pracodawca: "+v.pracodawca+", NIP: "+(v.nip||"[brak]")+", adres: "+(v.adres_p||"[brak]")+". Pracownik: "+v.pracownik+", PESEL: "+(v.pesel||"[brak]")+", adres: "+(v.adres_pr||"[brak]")+". Stanowisko: "+v.stanowisko+". Wymiar: "+(v.wymiar||"pełny etat")+". Wynagrodzenie: "+v.wynagrodzenie+" zł brutto. Data: "+(v.data_start||"[brak]")+". Rodzaj: "+(v.rodzaj||"czas nieokreślony")+". Miejsce: "+(v.miejsce||"siedziba firmy")+". Zgodna z Kodeksem Pracy. Zacznij od treści umowy. Tylko czysty tekst."; }
   }
 };
 
-/* ── WIZARD STATE ── */
-let currentDoc = null;
-let currentStep = 0;
-let wizardValues = {};
-
-function checkAccess() {
-  const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
-  const hasSub = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
-  if (!hasSub || !['biznes','promax','pro'].includes(sub.plan)) {
-    sessionStorage.setItem('dokumo_after_sub', window.location.href);
-    window.location.href = 'subskrypcja.html'; return false;
-  }
-  const user = (() => { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } })();
-  if (!user) { window.location.href = 'konto.html'; return false; }
-  return true;
-}
+var currentDoc = null, currentStep = 0, wizVals = {};
 
 function openDoc(id) {
-  const form = FORMS[id];
-  if (!form) return;
-
-  currentDoc = id;
-  currentStep = 0;
-  wizardValues = {};
-  document.getElementById('genTitle').textContent = form.title;
-  document.getElementById('genLoading').style.display = 'none';
-  document.getElementById('genResult').style.display = 'none';
-  document.getElementById('genForm').style.display = 'block';
+  if (!FORMS[id]) return;
+  currentDoc = id; currentStep = 0; wizVals = {};
+  document.getElementById("genTitle").textContent = FORMS[id].title;
+  document.getElementById("genLoading").style.display = "none";
+  document.getElementById("genResult").style.display = "none";
+  document.getElementById("genForm").style.display = "block";
   renderStep();
-
-  const overlay = document.getElementById('genOverlay');
-  const sheet = document.getElementById('genSheet');
-  overlay.style.display = 'flex';
-  sheet.style.transform = 'translateY(100%)';
-  requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
-}
-
-function renderStep() {
-  const form = FORMS[currentDoc];
-  const steps = form.steps;
-  const step = steps[currentStep];
-  const total = steps.length;
-  const pct = Math.round(((currentStep) / total) * 100);
-
-  let html = `
-    <!-- Progress bar -->
-    <div style="margin-bottom:20px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ${currentStep+1} z ${total}: ${step.label}<\/span>
-        <span style="font-size:.7rem;color:rgba(240,237,232,.3);">${pct}% ukończone<\/span>
-      <\/div>
-      <div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"><\/div>
-      <\/div>
-      <!-- Step dots -->
-      <div style="display:flex;gap:6px;margin-top:10px;">
-        ${steps.map((_,i) => `<div style="flex:1;height:3px;border-radius:99px;background:${i<=currentStep?'#39ff8a':'rgba(255,255,255,.08)'};transition:background .3s;"><\/div>`).join('')}
-      <\/div>
-    <\/div>
-  `;
-
-  // Render fields
-  step.fields.forEach(f => {
-    const val = wizardValues[f.id] || '';
-    if (f.type === 'pills') {
-      html += `<div style="margin-bottom:18px;">
-        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">${f.icon} ${f.label}<\/label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="pills_${f.id}">
-          ${f.options.map(o => `<button type="button" onclick="selectPill('${f.id}','${o.replace(/'/g,"\\'")}',this)"
-            style="padding:8px 16px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid rgba(255,255,255,.12);background:${val===o?'rgba(57,255,138,.15)':'rgba(255,255,255,.05)'};color:${val===o?'#39ff8a':'rgba(240,237,232,.7)'};${val===o?'border-color:rgba(57,255,138,.4);':''}"
-            data-val="${o}">${o}<\/button>`).join('')}
-        <\/div>
-        <input type="hidden" id="gf_${f.id}" value="${val}">
-      <\/div>`;
-    } else if (f.type === 'toggle') {
-      const isYes = val === 'Tak';
-      html += `<div style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;">
-        <span style="font-size:.85rem;font-weight:500;color:rgba(240,237,232,.8);">${f.icon} ${f.label}<\/span>
-        <button type="button" onclick="toggleField('${f.id}',this)" id="toggle_${f.id}"
-          style="width:48px;height:26px;border-radius:13px;border:none;cursor:pointer;transition:all .2s;background:${isYes?'#22c55e':'rgba(255,255,255,.12)};position:relative;">
-          <span style="position:absolute;top:3px;${isYes?'right:3px':'left:3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:all .2s;display:block;"><\/span>
-        <\/button>
-        <input type="hidden" id="gf_${f.id}" value="${val||'Nie'}">
-      <\/div>`;
-    } else if (f.type === 'date') {
-      html += `<div style="margin-bottom:18px;">
-        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${f.icon} ${f.label}<\/label>
-        <input id="gf_${f.id}" type="date" value="${val}" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif;cursor:pointer;color-scheme:dark;">
-      <\/div>`;
-    } else {
-      html += `<div style="margin-bottom:18px;">
-        <label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${f.icon} ${f.label}${f.optional?' <span style="font-weight:400;opacity:.5;">(opcjonalnie)<\/span>':''}<\/label>
-        <input id="gf_${f.id}" type="text" placeholder="${f.placeholder}" value="${val}"
-          style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif;"
-          onkeydown="if(event.key==='Enter'){wizardNext();}">
-      <\/div>`;
-    }
-  });
-
-  // Nav buttons
-  const isLast = currentStep === total - 1;
-  html += `<div style="display:flex;gap:10px;margin-top:8px;">
-    ${currentStep > 0 ? `<button type="button" onclick="wizardBack()" style="flex:0 0 auto;padding:13px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:'DM Sans',sans-serif;">← Wróć<\/button>` : ''}
-    <button type="button" onclick="wizardNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.9rem;transition:all .2s;"
-      onmouseover="this.style.background='rgba(57,255,138,.22)'" onmouseout="this.style.background='rgba(57,255,138,.12)'">
-      ${isLast ? 'Generuj dokument ⚡' : `Dalej: ${steps[currentStep+1]?.label} →`}
-    <\/button>
-  <\/div>`;
-
-  document.getElementById('genForm').innerHTML = html;
-}
-
-function selectPill(fieldId, val, btn) {
-  document.getElementById('gf_' + fieldId).value = val;
-  const container = document.getElementById('pills_' + fieldId);
-  container.querySelectorAll('button').forEach(b => {
-    const isActive = b.dataset.val === val;
-    b.style.background = isActive ? 'rgba(57,255,138,.15)' : 'rgba(255,255,255,.05)';
-    b.style.color = isActive ? '#39ff8a' : 'rgba(240,237,232,.7)';
-    b.style.borderColor = isActive ? 'rgba(57,255,138,.4)' : 'rgba(255,255,255,.12)';
-  });
-}
-
-function toggleField(fieldId, btn) {
-  const inp = document.getElementById('gf_' + fieldId);
-  const isNow = inp.value === 'Tak';
-  inp.value = isNow ? 'Nie' : 'Tak';
-  btn.style.background = !isNow ? '#22c55e' : 'rgba(255,255,255,.12)';
-  const knob = btn.querySelector('span');
-  knob.style.right = !isNow ? '3px' : '';
-  knob.style.left = !isNow ? '' : '3px';
-}
-
-function collectStepValues() {
-  const step = FORMS[currentDoc].steps[currentStep];
-  step.fields.forEach(f => {
-    const el = document.getElementById('gf_' + f.id);
-    if (el) wizardValues[f.id] = el.value;
-  });
-}
-
-function wizardNext() {
-  collectStepValues();
-  const total = FORMS[currentDoc].steps.length;
-  if (currentStep < total - 1) {
-    currentStep++;
-    renderStep();
-  } else {
-    generate();
-  }
-}
-
-function wizardBack() {
-  collectStepValues();
-  if (currentStep > 0) { currentStep--; renderStep(); }
+  var ov = document.getElementById("genOverlay");
+  var sh = document.getElementById("genSheet");
+  ov.style.display = "flex";
+  requestAnimationFrame(function(){ sh.style.transform = "translateY(0)"; });
 }
 
 function closeGen() {
-  const sheet = document.getElementById('genSheet');
-  sheet.style.transform = 'translateY(100%)';
-  const ov=document.getElementById('genOverlay');
-  ov.style.opacity='0';
-  setTimeout(()=>{ ov.style.pointerEvents='none'; }, 300);
+  var sh = document.getElementById("genSheet");
+  sh.style.transform = "translateY(100%)";
+  setTimeout(function(){ document.getElementById("genOverlay").style.display = "none"; }, 350);
 }
 
-async function generate() {
-  if (!checkAccess()) return;
-  document.getElementById('genForm').style.display = 'none';
-  document.getElementById('genLoading').style.display = 'block';
-  try {
-    const prompt = FORMS[currentDoc].prompt(wizardValues);
-    const token = window._fbToken || '';
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ prompt, typeId: currentDoc, typeName: FORMS[currentDoc].title })
-    });
-    const data = await res.json();
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('genText').value = data.text || data.result || 'Błąd generowania';
-    document.getElementById('genResult').style.display = 'block';
-  } catch(e) {
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('genForm').style.display = 'block';
-    renderStep();
-    alert('Błąd połączenia. Spróbuj ponownie.');
+function renderStep() {
+  var form = FORMS[currentDoc];
+  var steps = form.steps;
+  var step = steps[currentStep];
+  var total = steps.length;
+  var pct = Math.round((currentStep / total) * 100);
+  var el = document.getElementById("genForm");
+
+  var segs = "";
+  for (var i = 0; i < total; i++) {
+    segs += '<div style="flex:1;height:3px;border-radius:99px;background:' + (i <= currentStep ? "#39ff8a" : "rgba(255,255,255,.1)") + ';transition:background .3s;"></div>';
+  }
+
+  var progressHTML = '<div style="margin-bottom:20px;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    + '<span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ' + (currentStep+1) + ' z ' + total + ': ' + step.label + '</span>'
+    + '<span style="font-size:.7rem;color:rgba(240,237,232,.3);">' + pct + '% ukończone</span>'
+    + '</div>'
+    + '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">'
+    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:6px;margin-top:10px;">' + segs + '</div>'
+    + '</div>';
+
+  var fieldsHTML = "";
+  var fields = step.fields;
+  for (var j = 0; j < fields.length; j++) {
+    var f = fields[j];
+    var val = wizVals[f.id] || "";
+    var lbl = '<label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">' + f.icon + " " + f.label + (f.opt ? ' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>' : "") + '</label>';
+
+    if (f.type === "pills") {
+      var pills = "";
+      for (var k = 0; k < f.opts.length; k++) {
+        var o = f.opts[k];
+        var active = val === o;
+        pills += '<button type="button" data-field="' + f.id + '" data-val="' + o + '" onclick="pickPill(this)" style="padding:8px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid ' + (active?"rgba(57,255,138,.4)":"rgba(255,255,255,.12)") + ';background:' + (active?"rgba(57,255,138,.15)":"rgba(255,255,255,.05)") + ';color:' + (active?"#39ff8a":"rgba(240,237,232,.7)") + ';">' + o + '</button>';
+      }
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<div style="display:flex;flex-wrap:wrap;gap:8px;" id="pills_' + f.id + '">' + pills + '</div><input type="hidden" id="gf_' + f.id + '" value="' + val + '"></div>';
+    } else if (f.type === "toggle") {
+      var on = val === "Tak";
+      fieldsHTML += '<div style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;">'
+        + '<span style="font-size:.85rem;font-weight:500;color:rgba(240,237,232,.8);">' + f.icon + " " + f.label + '</span>'
+        + '<button type="button" data-field="' + f.id + '" onclick="flipToggle(this)" style="width:48px;height:26px;border-radius:13px;border:none;cursor:pointer;transition:all .2s;background:' + (on?"#22c55e":"rgba(255,255,255,.12)") + ';position:relative;">'
+        + '<span style="position:absolute;top:3px;' + (on?"right":"left") + ':3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:all .2s;display:block;"></span>'
+        + '</button>'
+        + '<input type="hidden" id="gf_' + f.id + '" value="' + (val||"Nie") + '">'
+        + '</div>';
+    } else if (f.type === "date") {
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
+    } else {
+      var inputStyle = 'width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;';
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '"></div>';
+    }
+  }
+
+  var isLast = (currentStep === total - 1);
+  var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
+    + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : "")
+    + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
+    + (isLast ? "Generuj dokument ⚡" : "Dalej: " + steps[currentStep+1].label + " →")
+    + '</button></div>';
+
+  el.innerHTML = progressHTML + fieldsHTML + navHTML;
+}
+
+function pickPill(btn) {
+  var fid = btn.dataset.field;
+  var val = btn.dataset.val;
+  document.getElementById("gf_" + fid).value = val;
+  var container = document.getElementById("pills_" + fid);
+  var btns = container.querySelectorAll("button");
+  for (var i = 0; i < btns.length; i++) {
+    var active = btns[i].dataset.val === val;
+    btns[i].style.background = active ? "rgba(57,255,138,.15)" : "rgba(255,255,255,.05)";
+    btns[i].style.color = active ? "#39ff8a" : "rgba(240,237,232,.7)";
+    btns[i].style.borderColor = active ? "rgba(57,255,138,.4)" : "rgba(255,255,255,.12)";
   }
 }
 
-function copyResult() { navigator.clipboard.writeText(document.getElementById('genText').value); }
+function flipToggle(btn) {
+  var fid = btn.dataset.field;
+  var inp = document.getElementById("gf_" + fid);
+  var on = inp.value !== "Tak";
+  inp.value = on ? "Tak" : "Nie";
+  btn.style.background = on ? "#22c55e" : "rgba(255,255,255,.12)";
+  var knob = btn.querySelector("span");
+  knob.style.right = on ? "3px" : "";
+  knob.style.left = on ? "" : "3px";
+}
+
+function collectVals() {
+  var fields = FORMS[currentDoc].steps[currentStep].fields;
+  for (var i = 0; i < fields.length; i++) {
+    var el = document.getElementById("gf_" + fields[i].id);
+    if (el) wizVals[fields[i].id] = el.value;
+  }
+}
+
+function wizNext() {
+  collectVals();
+  if (currentStep < FORMS[currentDoc].steps.length - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    doGenerate();
+  }
+}
+
+function wizBack() {
+  collectVals();
+  if (currentStep > 0) { currentStep--; renderStep(); }
+}
+
+function checkAccess() {
+  var sub; try { sub = JSON.parse(localStorage.getItem("dokumo_sub")); } catch(e) { sub = null; }
+  var ok = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date() && ["biznes","promax","pro"].indexOf(sub.plan) >= 0;
+  if (!ok) { sessionStorage.setItem("dokumo_after_sub", window.location.href); window.location.href = "subskrypcja.html"; return false; }
+  var user; try { user = JSON.parse(localStorage.getItem("dokumo_user")); } catch(e) { user = null; }
+  if (!user) { window.location.href = "konto.html"; return false; }
+  return true;
+}
+
+async function doGenerate() {
+  if (!checkAccess()) return;
+  document.getElementById("genForm").style.display = "none";
+  document.getElementById("genLoading").style.display = "block";
+  try {
+    var prompt = FORMS[currentDoc].prompt(wizVals);
+    var token = window._fbToken || "";
+    var res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title})
+    });
+    var data = await res.json();
+    document.getElementById("genLoading").style.display = "none";
+    document.getElementById("genText").value = data.text || data.result || "Błąd generowania";
+    document.getElementById("genResult").style.display = "block";
+  } catch(e) {
+    document.getElementById("genLoading").style.display = "none";
+    document.getElementById("genForm").style.display = "block";
+    renderStep();
+    alert("Błąd połączenia. Spróbuj ponownie.");
+  }
+}
+
+function copyResult() { navigator.clipboard.writeText(document.getElementById("genText").value); }
 function downloadResult() {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([document.getElementById('genText').value], {type:'text/plain'}));
-  a.download = (FORMS[currentDoc]?.title||'dokument').toLowerCase().replace(/\s+/g,'_')+'.txt';
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([document.getElementById("genText").value], {type:"text/plain"}));
+  a.download = FORMS[currentDoc].title.toLowerCase().replace(/\s+/g,"_") + ".txt";
   a.click();
 }
 
-document.getElementById('genOverlay').addEventListener('click', function(e) { if(e.target===this) closeGen(); });
-
-// Expose to global scope for inline onclick handlers
-window.openDoc = openDoc;
-window.closeGen = closeGen;
-window.selectPill = selectPill;
-window.toggleField = toggleField;
-window.wizardNext = wizardNext;
-window.wizardBack = wizardBack;
-window.copyResult = copyResult;
-window.downloadResult = downloadResult;
-
+document.getElementById("genOverlay").addEventListener("click", function(e){ if(e.target===this) closeGen(); });
+document.addEventListener("click", function(e){
+  var card = e.target.closest("[data-doc]");
+  if (card) openDoc(card.dataset.doc);
+});
 </script>
+
 </body>
 </html>
