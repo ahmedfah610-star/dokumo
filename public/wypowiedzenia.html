@@ -3,217 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kończę Współpracę – Dokumo</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<title>Zarządzanie pracą – Wypowiedzenie, Urlop, Świadectwo pracy | Dokumo</title>
+<meta name="description" content="Generuj wypowiedzenie umowy o pracę, wnioski o urlop i świadectwo pracy w kilka sekund. Dokumenty zgodne z Kodeksem Pracy, gotowe do druku.">
+<meta name="keywords" content="wypowiedzenie umowy o pracę, wniosek o urlop, świadectwo pracy, wypowiedzenie za porozumieniem stron, generator dokumentów HR">
+<link rel="canonical" href="https://dokumo.vercel.app/wypowiedzenia.html">
+<meta property="og:title" content="Zarządzanie pracą – Dokumo">
+<meta property="og:description" content="Wypowiedzenie, wnioski o urlop i świadectwo pracy — generowane przez AI w sekundy.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f5f3ef;--ink:#1a1714;--ink2:#6b6560;--cream:#faf8f4;--gold:#c9903a;--red:#c0392b;--purple:#2d1f3d;--border:rgba(26,23,20,.09);}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh;}
-
-/* NAV */
-
-
-
-
-
-
-/* HERO — clean, centered */
-
-
-
-
-
-/* MODULES */
-.modules{max-width:680px;margin:20px auto 80px;padding:0 1.5rem;display:flex;flex-direction:column;gap:18px;}
-
-.module{background:var(--cream);border:1.5px solid var(--border);border-radius:22px;overflow:hidden;transition:box-shadow .25s;}
-.module:hover{box-shadow:0 6px 28px rgba(26,23,20,.06);}
-
-.mod-head{display:flex;align-items:center;gap:14px;padding:22px 24px;cursor:pointer;user-select:none;}
-.mod-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
-.mod-red   .mod-icon{background:#fdf0ef;}
-.mod-gold  .mod-icon{background:#fdf6ea;}
-.mod-purple .mod-icon{background:#f0edf7;}
-.mod-info{flex:1;min-width:0;}
-.mod-num{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin-bottom:3px;}
-.mod-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:2px;}
-.mod-desc{font-size:.77rem;color:var(--ink2);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.mod-chev{width:26px;height:26px;border-radius:50%;background:rgba(26,23,20,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s,background .2s;}
-.module.open .mod-chev{transform:rotate(180deg);background:var(--ink);}
-.module.open .mod-chev svg{stroke:#fff;}
-
-.mod-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1);}
-.module.open .mod-body{max-height:1200px;}
-.mod-inner{padding:22px 24px 26px;border-top:1px solid var(--border);}
-
-/* SECTION LABEL */
-.slabel{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:9px;display:block;}
-
-/* TEXT INPUT */
-.k-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:#fff;outline:none;transition:border-color .2s;}
-.k-input:focus{border-color:var(--ink);}
-.k-input::placeholder{color:rgba(107,101,96,.45);}
-
-/* SELECT */
-.k-sel{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:#fff;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
-.k-sel:focus{border-color:var(--ink);}
-
-/* TWO-COL GRID */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
-.field:last-child{margin-bottom:0;}
-
-/* CHOICE BUTTONS */
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
-.choices.cols3{grid-template-columns:repeat(3,1fr);}
-.ch-btn{padding:12px 12px 11px;border-radius:13px;cursor:pointer;border:2px solid var(--border);background:#fff;text-align:left;transition:border-color .2s,background .2s;}
-.ch-btn:hover{border-color:rgba(26,23,20,.18);}
-.ch-btn.active{border-color:var(--ink);background:var(--ink);}
-.ch-em{font-size:1.1rem;margin-bottom:6px;display:block;}
-.ch-label{font-size:.78rem;font-weight:700;color:var(--ink);line-height:1.25;display:block;}
-.ch-sub{font-size:.67rem;color:var(--ink2);margin-top:2px;line-height:1.35;display:block;}
-.ch-btn.active .ch-label,.ch-btn.active .ch-sub{color:rgba(255,255,255,.88);}
-
-/* INFO CHIP */
-.chip{background:#fff;border:1.5px solid var(--border);border-radius:11px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.chip-icon{font-size:1rem;flex-shrink:0;}
-.chip-label{font-size:.63rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:2px;}
-.chip-val{font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;font-weight:800;color:var(--ink);}
-
-/* DIVIDER */
-.divider{height:1px;background:var(--border);margin:18px 0;}
-
-/* CTA */
-.cta{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 18px;border:none;border-radius:13px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-size:.88rem;font-weight:800;letter-spacing:.01em;transition:transform .15s,box-shadow .2s;margin-top:18px;}
-.cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(26,23,20,.15);}
-.cta:active{transform:scale(.98);}
-.cta-red{background:var(--red);color:#fff;}
-.cta-gold{background:var(--gold);color:#fff;}
-.cta-purple{background:var(--purple);color:#fff;}
-.cta svg{opacity:.7;flex-shrink:0;}
-
-/* MOBILE */
-@media(max-width:540px){
-  .modules{padding:0 1rem;margin:28px auto 56px;}
-  .mod-head{padding:18px 16px;}
-  .mod-inner{padding:18px 16px 22px;}
-  
-  
-  .grid2,.choices{grid-template-columns:1fr;}
-  .choices.cols3{grid-template-columns:1fr 1fr;}
-  .mod-desc{display:none;}
-  
+:root {
+  --bg: #f5f3ef; --surface: #141518; --surface2: #1a1c20;
+  --border: rgba(255,255,255,.07); --ink: #f0ede8;
+  --ink2: rgba(240,237,232,.45); --ink3: rgba(240,237,232,.25);
+  --green: #22c55e; --green-dim: rgba(34,197,94,.15);
 }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: "DM Sans", sans-serif; color: var(--ink); min-height: 100vh; }
+.u-nav { background: rgba(14,15,17,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; height: 56px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; }
+.u-nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 1rem; color: var(--ink); letter-spacing: -.02em; flex-shrink: 0; }
+.u-nav-dot { width: 26px; height: 26px; background: var(--ink); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+.u-nav-back { display: flex; align-items: center; gap: 5px; font-size: .73rem; font-weight: 500; color: var(--ink2); text-decoration: none; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); margin-left: 12px; transition: all .2s; white-space: nowrap; flex-shrink: 0; }
+.u-nav-back:hover { color: var(--ink); border-color: rgba(255,255,255,.15); }
+.u-nav-spacer { flex: 1; }
+.u-nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.u-nav-login { font-size: .73rem; font-weight: 500; color: var(--ink2); text-decoration: none; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border); transition: all .2s; }
+.u-nav-badge { font-size: .62rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
+.u-nav-badge.pro { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.25); }
+.u-nav-badge.free { background: rgba(255,255,255,.05); color: var(--ink3); border: 1px solid var(--border); }
+.u-nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface2); color: var(--ink); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
+.u-nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.u-nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
+.u-nav-profile.show { display: flex; }
+.u-nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #1a1c20; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.5); padding: 8px; min-width: 200px; z-index: 200; display: none; }
+.u-nav-dropdown.show { display: block; }
+.u-nav-dd-email { font-size: .72rem; color: var(--ink2); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.u-nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 1px; }
+.u-nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
+.u-nav-dd-link:hover { background: rgba(255,255,255,.05); color: var(--ink); }
+.u-nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+.u-nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #f87171; transition: background .15s; }
+.u-nav-dd-logout:hover { background: rgba(248,113,113,.08); }
+@media(max-width:480px){ .u-nav { padding: 0 1rem; } .u-nav-back span { display: none; } }
+.doc-stack { max-width: 860px; margin: 52px auto 80px; padding: 0 2rem; display: flex; flex-direction: column; gap: 12px; }
+.doc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; display: flex; align-items: center; cursor: pointer; position: relative; overflow: hidden; transition: transform .25s cubic-bezier(.34,1.3,.64,1), box-shadow .25s ease, border-color .25s; text-decoration: none; color: inherit; opacity: 0; animation: slideIn .4s ease both; }
+.doc-card:nth-child(1) { animation-delay: .05s; }
+.doc-card:nth-child(2) { animation-delay: .11s; }
+.doc-card:nth-child(3) { animation-delay: .17s; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.doc-card:hover { transform: translateX(6px) scale(1.008); box-shadow: -6px 0 0 0 var(--green), 0 12px 40px rgba(0,0,0,.35); border-color: rgba(255,255,255,.12); }
+.doc-edge { width: 4px; align-self: stretch; border-radius: 16px 0 0 16px; flex-shrink: 0; background: var(--green); }
+.doc-body { flex: 1; padding: 22px 24px; display: flex; align-items: center; gap: 20px; }
+.doc-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--green-dim); }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name { font-family: "Bricolage Grotesque", sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; margin-bottom: 5px; }
+.doc-desc { font-size: .8rem; color: var(--ink2); line-height: 1.5; font-weight: 300; }
+.doc-action { flex-shrink: 0; padding: 0 24px; }
+.doc-btn { display: inline-flex; align-items: center; gap: 7px; font-family: "Bricolage Grotesque", sans-serif; font-size: .78rem; font-weight: 700; padding: 9px 18px; border-radius: 10px; border: none; cursor: pointer; transition: all .2s; white-space: nowrap; background: rgba(34,197,94,.15); color: #39ff8a; border: 1px solid rgba(57,255,138,.3); }
+.doc-card:hover .doc-btn { background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.4); }
+.doc-status { position: absolute; top: 14px; right: 14px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+.doc-card::after { content: ""; position: absolute; inset: 0; border-radius: 16px; opacity: 0; transition: opacity .3s; pointer-events: none; background: radial-gradient(ellipse at left center, rgba(34,197,94,.04), transparent 60%); }
+.doc-card:hover::after { opacity: 1; }
+@media(max-width:640px){ .doc-body { padding: 18px 16px; gap: 14px; } .doc-icon { width: 38px; height: 38px; } .doc-name { font-size: .9rem; } .doc-card { flex-direction: column; align-items: stretch; } .doc-action { padding: 0 16px 18px; } .doc-btn { width: 100%; justify-content: center; } }
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.module{opacity:0;animation:fadeUp .38s ease both;}
-.module:nth-child(1){animation-delay:.04s}
-.module:nth-child(2){animation-delay:.1s}
-.module:nth-child(3){animation-delay:.16s}
-
-/* ── MODAL GENEROWANIA ── */
-.gen-overlay{position:fixed;inset:0;background:rgba(26,23,20,.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding-bottom:0;}
-.gen-overlay.show{opacity:1;pointer-events:all;}
-.gen-sheet{background:var(--cream);border-radius:24px 24px 0 0;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:32px 28px 40px;transform:translateY(40px);transition:transform .35s cubic-bezier(.34,1.2,.64,1);}
-.gen-overlay.show .gen-sheet{transform:translateY(0);}
-
-.gen-handle{width:36px;height:4px;background:rgba(26,23,20,.12);border-radius:2px;margin:0 auto 24px;}
-.gen-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--ink);margin-bottom:6px;letter-spacing:-.02em;}
-.gen-subtitle{font-size:.8rem;color:var(--ink2);margin-bottom:24px;line-height:1.5;}
-
-/* Loading */
-.gen-loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 0;}
-.gen-spinner{width:40px;height:40px;border:3px solid rgba(26,23,20,.08);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.gen-loading-txt{font-size:.85rem;color:var(--ink2);}
-
-/* Result */
-.gen-result{display:none;}
-.gen-result.show{display:block;}
-.gen-doc{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;font-size:.85rem;line-height:1.8;color:var(--ink);white-space:pre-wrap;max-height:340px;overflow-y:auto;margin-bottom:16px;font-family:'DM Sans',sans-serif;}
-.gen-actions{display:flex;gap:10px;flex-wrap:wrap;}
-.gen-btn{flex:1;min-width:120px;padding:12px 16px;border-radius:12px;border:none;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-size:.82rem;font-weight:700;transition:transform .15s,box-shadow .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
-.gen-btn:hover{transform:translateY(-1px);}
-.gen-btn.primary{background:var(--ink);color:#fff;}
-.gen-btn.secondary{background:rgba(26,23,20,.06);color:var(--ink);}
-.gen-btn.close-btn{background:rgba(26,23,20,.04);color:var(--ink2);}
-
-/* Error */
-.gen-error{background:#fdf0ef;border:1.5px solid rgba(192,57,43,.15);border-radius:12px;padding:16px;font-size:.82rem;color:var(--red);line-height:1.55;display:none;}
-.gen-error.show{display:block;}
-
-@media(max-width:540px){
-  .gen-sheet{padding:24px 16px 32px;border-radius:20px 20px 0 0;}
-  .gen-actions{flex-direction:column;}
-  .gen-btn{min-width:0;}
-}
-
+.gen-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); z-index: 300; align-items: flex-end; justify-content: center; }
+.gen-sheet { background: #0e0f11; border-radius: 24px 24px 0 0; border: 1px solid rgba(255,255,255,.08); width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; padding: 28px 28px 40px; transform: translateY(100%); transition: transform .35s cubic-bezier(.34,1.2,.64,1); }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
+
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth=getAuth(initializeApp({apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",authDomain:"dokumo-c1ccb.firebaseapp.com",projectId:"dokumo-c1ccb",storageBucket:"dokumo-c1ccb.firebasestorage.app",messagingSenderId:"1088576029067",appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"}));
-onAuthStateChanged(auth, async u=>{
+const app=getApps().length?getApps()[0]:initializeApp({apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",authDomain:"dokumo-c1ccb.firebaseapp.com",projectId:"dokumo-c1ccb",storageBucket:"dokumo-c1ccb.firebasestorage.app",messagingSenderId:"1088576029067",appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"});
+onAuthStateChanged(getAuth(app),async u=>{
   if(u){
-    localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
-    window._fbToken = await u.getIdToken();
-    try {
-      const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + window._fbToken } });
-      const data = await res.json();
-      if (data.active && data.expiresAt) localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
-    } catch(e) {}
-  } else {
-    localStorage.removeItem('dokumo_user');
-    window._fbToken = null;
-  }
+    localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));
+    window._fbToken=await u.getIdToken();
+    try{
+      const res=await fetch("/api/check-sub",{headers:{"Authorization":"Bearer "+window._fbToken}});
+      const data=await res.json();
+      if(data.active&&data.expiresAt)localStorage.setItem("dokumo_sub",JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+    }catch(e){}
+  }else{window._fbToken=null;}
   if(window._renderUNav)window._renderUNav();
 });
 </script>
 </head>
 <body>
-<!-- ── UNIVERSAL NAV ── -->
-<style>
-.u-nav{background:#faf8f4;border-bottom:1px solid rgba(26,23,20,.08);position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;padding:0 1.5rem;gap:0;}
-.u-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;color:#1a1714;letter-spacing:-.02em;flex-shrink:0;}
-.u-nav-dot{width:26px;height:26px;background:#1a1714;border-radius:7px;display:flex;align-items:center;justify-content:center;}
-.u-nav-back{display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:#6b6560;text-decoration:none;transition:color .2s;padding:6px 10px;border-radius:8px;background:rgba(26,23,20,.05);margin-left:12px;white-space:nowrap;flex-shrink:0;}
-.u-nav-back:hover{color:#1a1714;background:rgba(26,23,20,.09);}
-.u-nav-spacer{flex:1;}
-.u-nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.u-nav-login{font-size:.75rem;font-weight:600;color:#6b6560;text-decoration:none;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(26,23,20,.12);transition:all .2s;white-space:nowrap;}
-.u-nav-login:hover{border-color:#1a1714;color:#1a1714;}
-.u-nav-badge{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;white-space:nowrap;}
-.u-nav-badge.pro{background:#1a3a2e;color:#fff;}
-.u-nav-badge.free{background:rgba(26,23,20,.07);color:#6b6560;}
-.u-nav-avatar{width:30px;height:30px;border-radius:50%;background:#1a1714;color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;position:relative;}
-.u-nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.u-nav-profile{display:none;align-items:center;gap:8px;position:relative;}
-.u-nav-profile.show{display:flex;}
-.u-nav-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1.5px solid rgba(26,23,20,.08);border-radius:14px;box-shadow:0 8px 32px rgba(26,23,20,.1);padding:8px;min-width:200px;z-index:200;display:none;}
-.u-nav-dropdown.show{display:block;}
-.u-nav-dd-email{font-size:.72rem;color:#6b6560;padding:8px 10px 10px;border-bottom:1px solid rgba(26,23,20,.06);margin-bottom:4px;}
-.u-nav-dd-name{font-size:.82rem;font-weight:700;color:#1a1714;margin-bottom:1px;}
-.u-nav-dd-link{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:.8rem;font-weight:500;color:#1a1714;text-decoration:none;transition:background .15s;}
-.u-nav-dd-link:hover{background:rgba(26,23,20,.05);}
-.u-nav-dd-sep{height:1px;background:rgba(26,23,20,.06);margin:4px 0;}
-.u-nav-dd-logout{width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:.8rem;font-weight:500;color:#c0392b;transition:background .15s;}
-.u-nav-dd-logout:hover{background:#fdf0ef;}
-@media(max-width:480px){
-  .u-nav{padding:0 1rem;}
-  .u-nav-back span.back-label{display:none;}
-  .u-nav-login{padding:6px 9px;font-size:.7rem;}
-}
-</style>
 
-<nav class="u-nav" id="uNav">
+<nav class="u-nav">
   <a href="index.html" class="u-nav-logo">
-    <div class="u-nav-dot"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div class="u-nav-dot"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f5f3ef" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
     Dokumo
   </a>
-  <a href="kariera.html" class="u-nav-back" id="uNavBack">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    <span class="back-label">Strefa Kariery</span>
+  <a href="kariera.html" class="u-nav-back">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>Strefa Kariery</span>
   </a>
   <div class="u-nav-spacer"></div>
   <div class="u-nav-right">
@@ -222,13 +107,10 @@ onAuthStateChanged(auth, async u=>{
       <span class="u-nav-badge free" id="uNavBadge">Free</span>
       <div class="u-nav-avatar" id="uNavAvatar" onclick="toggleUNavDrop(event)">?</div>
       <div class="u-nav-dropdown" id="uNavDrop">
-        <div class="u-nav-dd-email">
-          <div class="u-nav-dd-name" id="uNavName"></div>
-          <div id="uNavEmail"></div>
-        </div>
+        <div class="u-nav-dd-email"><div class="u-nav-dd-name" id="uNavName"></div><div id="uNavEmail"></div></div>
         <a href="konto.html" class="u-nav-dd-link">👤 Moje konto</a>
         <a href="moje-dokumenty.html" class="u-nav-dd-link">📁 Moje dokumenty</a>
-        <a href="subskrypcja.html" class="u-nav-dd-link" onclick="sessionStorage.removeItem('dokumo_after_sub')">⭐ Subskrypcja</a>
+        <a href="subskrypcja.html" class="u-nav-dd-link">⭐ Subskrypcja</a>
         <div class="u-nav-dd-sep"></div>
         <button class="u-nav-dd-logout" onclick="uNavLogout()">← Wyloguj się</button>
       </div>
@@ -238,651 +120,354 @@ onAuthStateChanged(auth, async u=>{
 
 <script>
 (function(){
-  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
-  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
-
+  function getUser(){try{return JSON.parse(localStorage.getItem("dokumo_user"));}catch(e){return null;}}
+  function getSub(){try{return JSON.parse(localStorage.getItem("dokumo_sub"));}catch(e){return null;}}
   function renderUNav(){
-    const user=getUser();
-    const sub=getSub();
-    const login=document.getElementById('uNavLogin');
-    const profile=document.getElementById('uNavProfile');
-    const badge=document.getElementById('uNavBadge');
-    const avatar=document.getElementById('uNavAvatar');
-    const nameEl=document.getElementById('uNavName');
-    const emailEl=document.getElementById('uNavEmail');
+    var user=getUser(),sub=getSub();
+    var login=document.getElementById("uNavLogin"),profile=document.getElementById("uNavProfile");
+    var badge=document.getElementById("uNavBadge"),avatar=document.getElementById("uNavAvatar");
     if(!login)return;
     if(user){
-      login.style.display='none';
-      profile.classList.add('show');
-      nameEl.textContent=user.name||user.email||'';
-      emailEl.textContent=user.email||'';
-      if(user.photo){avatar.innerHTML='<img src="'+user.photo+'" alt="">';}
-      else{avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();}
-      const isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-      const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
-      badge.textContent=isActive?(planNames[sub.plan]||'PRO'):'Free';
-      badge.className='u-nav-badge '+(isActive?'pro':'free');
-    } else {
-      login.style.display='';
-      profile.classList.remove('show');
-    }
+      login.style.display="none";profile.classList.add("show");
+      document.getElementById("uNavName").textContent=user.name||user.email||"";
+      document.getElementById("uNavEmail").textContent=user.email||"";
+      if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="">';
+      else avatar.textContent=(user.name||user.email||"?")[0].toUpperCase();
+      var isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+      var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
+      badge.textContent=isActive?(names[sub.plan]||"PRO"):"Free";
+      badge.className="u-nav-badge "+(isActive?"pro":"free");
+    }else{login.style.display="";profile.classList.remove("show");}
   }
-
-  function toggleUNavDrop(e){
-    e.stopPropagation();
-    document.getElementById('uNavDrop').classList.toggle('show');
-  }
-  function uNavLogout(){
-    localStorage.removeItem('dokumo_user');
-    localStorage.removeItem('dokumo_sub');
-    window.location.href='index.html';
-  }
-  window.toggleUNavDrop=toggleUNavDrop;
-  window.uNavLogout=uNavLogout;
-
-  document.addEventListener('click',function(){
-    const d=document.getElementById('uNavDrop');
-    if(d)d.classList.remove('show');
-  });
-
-  // Run on load + after firebase syncs
-  renderUNav();
-  window._renderUNav=renderUNav;
+  function toggleUNavDrop(e){e.stopPropagation();document.getElementById("uNavDrop").classList.toggle("show");}
+  function uNavLogout(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");window.location.href="index.html";}
+  window.toggleUNavDrop=toggleUNavDrop;window.uNavLogout=uNavLogout;
+  document.addEventListener("click",function(){var d=document.getElementById("uNavDrop");if(d)d.classList.remove("show");});
+  renderUNav();window._renderUNav=renderUNav;
 })();
 </script>
 
-
-
-
-<div style="background:var(--ink);padding:32px 2rem 28px;text-align:center;position:relative;overflow:hidden;">
-  <!-- subtle grid texture -->
-  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 1px,transparent 1px,transparent 48px);pointer-events:none;"></div>
-  <div style="position:relative;z-index:1;">
-    <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 12px 5px 8px;margin-bottom:16px;">
-      <div style="width:20px;height:20px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      </div>
-      <span style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);">Dokumo</span>
-    </div>
-    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.1;margin-bottom:6px;">Twój asystent w pracy</h1>
-    <p style="font-size:.8rem;color:rgba(255,255,255,.38);letter-spacing:.01em;">Wybierz dokument, a my przygotujemy go dla Ciebie.</p>
-  </div>
+<div style="max-width:860px;margin:40px auto 0;padding:0 2rem;">
+  <h1 style="font-family:Bricolage Grotesque,sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:#1a1714;letter-spacing:-.03em;line-height:1.15;">Każde rozstanie wymaga<br><span style="background:linear-gradient(90deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">właściwego dokumentu.</span></h1>
+  <p style="margin-top:12px;font-size:.88rem;color:#6b6860;font-weight:300;max-width:540px;line-height:1.65;">Wypowiedzenie umowy, wnioski o urlop, świadectwo pracy — wygenerowane przez AI w kilka sekund, zgodne z Kodeksem Pracy.</p>
 </div>
 
-<div class="modules">
+<main class="doc-stack" aria-label="Dokumenty pracownicze">
 
-  <!-- ═══ MOD 1: WYPOWIEDZENIE ═══ -->
-  <div class="module mod-red" id="mod1">
-    <div class="mod-head" onclick="toggle('mod1')">
-      <div class="mod-icon">📄</div>
-      <div class="mod-info">
-        <div class="mod-num">01</div>
-        <div class="mod-title">Wypowiedzenie umowy</div>
-        <div class="mod-desc">Podaj dane — system wyliczy ostatni dzień pracy.</div>
+  <article class="doc-card" data-doc="wypowiedzenie" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📄</span></div>
+      <div class="doc-info">
+        <h2 class="doc-name" itemprop="name">Wypowiedzenie umowy o pracę</h2>
+        <p class="doc-desc" itemprop="description">Za porozumieniem stron lub z zachowaniem okresu — system automatycznie wylicza ostatni dzień pracy na podstawie stażu.</p>
       </div>
-      <div class="mod-chev"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
-    <div class="mod-body">
-      <div class="mod-inner">
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj wypowiedzenie umowy o pracę">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
 
-        <!-- Dane pracownika -->
-        <div class="grid2">
-          <div class="field">
-            <label class="slabel">Imię i nazwisko</label>
-            <input type="text" class="k-input" id="w-imie" placeholder="Jan Kowalski">
-          </div>
-          <div class="field">
-            <label class="slabel">Nazwa pracodawcy</label>
-            <input type="text" class="k-input" id="w-firma" placeholder="Firma Sp. z o.o.">
-          </div>
-        </div>
-        <div class="grid2" style="margin-bottom:16px;">
-          <div class="field">
-            <label class="slabel">Stanowisko</label>
-            <input type="text" class="k-input" id="w-stanowisko" placeholder="np. Specjalista ds. sprzedaży">
-          </div>
-          <div class="field">
-            <label class="slabel">Zatrudniony od</label>
-            <input type="date" class="k-input" id="w-od" oninput="calcStaz()">
-          </div>
-        </div>
+  <article class="doc-card" data-doc="urlop" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">🏖️</span></div>
+      <div class="doc-info">
+        <h2 class="doc-name" itemprop="name">Wnioski o urlop</h2>
+        <p class="doc-desc" itemprop="description">Wypoczynkowy, na żądanie, okolicznościowy, bezpłatny — wybierz rodzaj urlopu i podaj daty.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj wniosek o urlop">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
 
-        <div class="divider"></div>
+  <article class="doc-card" data-doc="swiadectwo" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📋</span></div>
+      <div class="doc-info">
+        <h2 class="doc-name" itemprop="name">Świadectwo pracy</h2>
+        <p class="doc-desc" itemprop="description">Dokument potwierdzający przebieg zatrudnienia — zgodny z art. 97 Kodeksu Pracy, gotowy do wydruku.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj świadectwo pracy">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
 
-        <!-- Tryb -->
-        <span class="slabel">Tryb wypowiedzenia</span>
-        <div class="choices">
-          <button class="ch-btn active" id="wt-por" onclick="selectWTryb('porozumienie')">
-            <span class="ch-em">🤝</span>
-            <span class="ch-label">Za porozumieniem stron</span>
-            <span class="ch-sub">Obie strony ustalają datę zakończenia</span>
-          </button>
-          <button class="ch-btn" id="wt-wyp" onclick="selectWTryb('wypowiedzenie')">
-            <span class="ch-em">📅</span>
-            <span class="ch-label">Z zachowaniem okresu wypowiedzenia</span>
-            <span class="ch-sub">Ustawowy termin zależny od stażu</span>
-          </button>
-        </div>
+</main>
 
-        <!-- Porozumienie: data -->
-        <div id="blok-por">
-          <span class="slabel">Proponowana data zakończenia</span>
-          <input type="date" class="k-input" id="w-data-por" style="margin-bottom:12px;" oninput="updatePorChip()">
-          <div class="chip" id="chipPor">
-            <span class="chip-icon">✅</span>
-            <div><div class="chip-label">Ostatni dzień pracy</div><div class="chip-val" id="valPor">—</div></div>
-          </div>
-        </div>
-
-        <!-- Wypowiedzenie: staż calc -->
-        <div id="blok-wyp" style="display:none;">
-          <div class="chip">
-            <span class="chip-icon">📆</span>
-            <div>
-              <div class="chip-label">Okres wypowiedzenia (na podstawie stażu)</div>
-              <div class="chip-val" id="valStaz">Podaj datę zatrudnienia</div>
-            </div>
-          </div>
-          <div class="chip" style="margin-top:-4px;">
-            <span class="chip-icon">🏁</span>
-            <div>
-              <div class="chip-label">Ostatni dzień pracy (jeśli złożysz dziś)</div>
-              <div class="chip-val" id="valWyp">—</div>
-            </div>
-          </div>
-        </div>
-
-        <button class="cta cta-red" onclick="generujWyp()">
-          <span>GENERUJ WYPOWIEDZENIE →</span>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </button>
+<!-- MODAL — bottom sheet jak hr.html -->
+<div class="gen-overlay" id="genOverlay">
+  <div class="gen-sheet" id="genSheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h2 id="genTitle" style="font-family:Bricolage Grotesque,sans-serif;font-size:1.1rem;font-weight:800;color:#f0ede8;letter-spacing:-.02em;"></h2>
+      <button onclick="closeGen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(240,237,232,.6);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.72rem;flex-shrink:0;">✕</button>
+    </div>
+    <div id="genForm"></div>
+    <div id="genLoading" style="display:none;text-align:center;padding:40px 0;">
+      <div style="width:36px;height:36px;border:3px solid rgba(57,255,138,.2);border-top-color:#39ff8a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
+      <p style="color:rgba(240,237,232,.5);font-size:.85rem;">Generowanie dokumentu…</p>
+    </div>
+    <div id="genResult" style="display:none;">
+      <textarea id="genText" style="width:100%;height:260px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#f0ede8;font-size:.8rem;padding:16px;resize:vertical;font-family:DM Sans,sans-serif;line-height:1.6;outline:none;" readonly></textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button onclick="copyResult()" style="flex:1;padding:11px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#39ff8a;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">📋 Kopiuj</button>
+        <button onclick="downloadResult()" style="flex:1;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(240,237,232,.7);border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;">⬇ Pobierz .txt</button>
       </div>
     </div>
   </div>
-
-  <!-- ═══ MOD 2: WNIOSEK O URLOP ═══ -->
-  <div class="module mod-gold" id="mod2">
-    <div class="mod-head" onclick="toggle('mod2')">
-      <div class="mod-icon">🏖️</div>
-      <div class="mod-info">
-        <div class="mod-num">02</div>
-        <div class="mod-title">Wniosek o urlop</div>
-        <div class="mod-desc">Urlop wypoczynkowy, okolicznościowy, na żądanie i inne.</div>
-      </div>
-      <div class="mod-chev"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="mod-body">
-      <div class="mod-inner">
-
-        <div class="grid2">
-          <div class="field">
-            <label class="slabel">Imię i nazwisko pracownika</label>
-            <input type="text" class="k-input" id="u-imie" placeholder="Jan Kowalski">
-          </div>
-          <div class="field">
-            <label class="slabel">Imię i nazwisko przełożonego</label>
-            <input type="text" class="k-input" id="u-przelozony" placeholder="Anna Nowak">
-          </div>
-        </div>
-        <div class="field" style="margin-bottom:16px;">
-          <label class="slabel">Nazwa firmy / pracodawcy</label>
-          <input type="text" class="k-input" id="u-firma" placeholder="Firma Sp. z o.o.">
-        </div>
-
-        <div class="divider"></div>
-
-        <span class="slabel">Rodzaj urlopu</span>
-        <div class="choices" style="grid-template-columns:1fr 1fr;margin-bottom:16px;">
-          <button class="ch-btn active" id="ur-wyp" onclick="selectUrlop('wypoczynkowy')">
-            <span class="ch-em">☀️</span>
-            <span class="ch-label">Wypoczynkowy</span>
-            <span class="ch-sub">Standardowy urlop roczny</span>
-          </button>
-          <button class="ch-btn" id="ur-zad" onclick="selectUrlop('zadanie')">
-            <span class="ch-em">⚡</span>
-            <span class="ch-label">Na żądanie</span>
-            <span class="ch-sub">Do 4 dni rocznie, z dnia na dzień</span>
-          </button>
-          <button class="ch-btn" id="ur-okol" onclick="selectUrlop('okolicznosciowy')">
-            <span class="ch-em">🎉</span>
-            <span class="ch-label">Okolicznościowy</span>
-            <span class="ch-sub">Ślub, narodziny, pogrzeb</span>
-          </button>
-          <button class="ch-btn" id="ur-bezpl" onclick="selectUrlop('bezplatny')">
-            <span class="ch-em">⏸️</span>
-            <span class="ch-label">Bezpłatny</span>
-            <span class="ch-sub">Na wniosek pracownika</span>
-          </button>
-        </div>
-
-        <!-- Okolicznościowy — powód -->
-        <div id="blok-okol" style="display:none;margin-bottom:14px;">
-          <span class="slabel">Powód urlopu okolicznościowego</span>
-          <select class="k-sel" id="u-okol-powod">
-            <option value="slub_wlasny">Własny ślub (2 dni)</option>
-            <option value="slub_dziecka">Ślub dziecka (1 dzień)</option>
-            <option value="narodziny">Narodziny dziecka (2 dni)</option>
-            <option value="pogrzeb_malzonek">Pogrzeb małżonka/dziecka/rodzica (2 dni)</option>
-            <option value="pogrzeb_rodzenstwo">Pogrzeb rodzeństwa/teścia/teściowej (1 dzień)</option>
-          </select>
-        </div>
-
-        <div class="grid2" style="margin-bottom:14px;">
-          <div class="field">
-            <label class="slabel">Data od</label>
-            <input type="date" class="k-input" id="u-od" oninput="calcUrlopDni()">
-          </div>
-          <div class="field">
-            <label class="slabel">Data do</label>
-            <input type="date" class="k-input" id="u-do" oninput="calcUrlopDni()">
-          </div>
-        </div>
-
-        <div class="chip" id="urlopChip" style="display:none;">
-          <span class="chip-icon">📆</span>
-          <div><div class="chip-label">Liczba dni urlopu</div><div class="chip-val" id="urlopDni">—</div></div>
-        </div>
-
-        <button class="cta cta-gold" onclick="generujUrlop()">
-          <span>GENERUJ WNIOSEK O URLOP →</span>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ MOD 3: ŚWIADECTWO PRACY ═══ -->
-  <div class="module mod-purple" id="mod3">
-    <div class="mod-head" onclick="toggle('mod3')">
-      <div class="mod-icon">📋</div>
-      <div class="mod-info">
-        <div class="mod-num">03</div>
-        <div class="mod-title">Świadectwo Pracy</div>
-        <div class="mod-desc">Dokument potwierdzający przebieg zatrudnienia.</div>
-      </div>
-      <div class="mod-chev"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="mod-body">
-      <div class="mod-inner">
-
-        <span class="slabel" style="margin-bottom:12px;display:block;">Dane pracownika</span>
-        <div class="grid2">
-          <div class="field">
-            <label class="slabel">Imię i nazwisko</label>
-            <input type="text" class="k-input" id="s-imie" placeholder="Jan Kowalski">
-          </div>
-          <div class="field">
-            <label class="slabel">Data urodzenia</label>
-            <input type="date" class="k-input" id="s-urodzenie">
-          </div>
-        </div>
-
-        <div class="divider"></div>
-        <span class="slabel" style="margin-bottom:12px;display:block;">Dane pracodawcy</span>
-        <div class="grid2">
-          <div class="field">
-            <label class="slabel">Nazwa firmy</label>
-            <input type="text" class="k-input" id="s-firma" placeholder="Firma Sp. z o.o.">
-          </div>
-          <div class="field">
-            <label class="slabel">Siedziba firmy</label>
-            <input type="text" class="k-input" id="s-siedziba" placeholder="ul. Przykładowa 1, Warszawa">
-          </div>
-        </div>
-
-        <div class="divider"></div>
-        <span class="slabel" style="margin-bottom:12px;display:block;">Przebieg zatrudnienia</span>
-        <div class="grid2">
-          <div class="field">
-            <label class="slabel">Data zatrudnienia od</label>
-            <input type="date" class="k-input" id="s-od">
-          </div>
-          <div class="field">
-            <label class="slabel">Data zatrudnienia do</label>
-            <input type="date" class="k-input" id="s-do">
-          </div>
-        </div>
-        <div class="field" style="margin-bottom:14px;">
-          <label class="slabel">Zajmowane stanowisko / stanowiska</label>
-          <input type="text" class="k-input" id="s-stanowisko" placeholder="np. Specjalista ds. marketingu">
-        </div>
-
-        <span class="slabel">Wymiar czasu pracy</span>
-        <div class="choices cols3" style="margin-bottom:16px;">
-          <button class="ch-btn active" id="se-full" onclick="selectEtat('1/1')">
-            <span class="ch-em">💼</span>
-            <span class="ch-label">Pełny etat</span>
-          </button>
-          <button class="ch-btn" id="se-3q" onclick="selectEtat('3/4')">
-            <span class="ch-em">¾</span>
-            <span class="ch-label">3/4 etatu</span>
-          </button>
-          <button class="ch-btn" id="se-half" onclick="selectEtat('1/2')">
-            <span class="ch-em">½</span>
-            <span class="ch-label">1/2 etatu</span>
-          </button>
-        </div>
-
-        <div class="divider"></div>
-        <span class="slabel" style="margin-bottom:12px;display:block;">Rozwiązanie umowy</span>
-        <span class="slabel">Tryb ustania stosunku pracy</span>
-        <div class="choices" style="margin-bottom:14px;">
-          <button class="ch-btn active" id="sr-por" onclick="selectSwTryb('porozumienie')">
-            <span class="ch-label">🤝 Za porozumieniem stron</span>
-          </button>
-          <button class="ch-btn" id="sr-wyp-pr" onclick="selectSwTryb('wypowiedzenie_pracownik')">
-            <span class="ch-label">📄 Wypowiedzenie przez pracownika</span>
-          </button>
-          <button class="ch-btn" id="sr-wyp-fm" onclick="selectSwTryb('wypowiedzenie_pracodawca')">
-            <span class="ch-label">🏢 Wypowiedzenie przez pracodawcę</span>
-          </button>
-          <button class="ch-btn" id="sr-wyg" onclick="selectSwTryb('wygasniecie')">
-            <span class="ch-label">⏰ Wygaśnięcie umowy (koniec okresu)</span>
-          </button>
-        </div>
-
-        <div class="grid2" style="margin-bottom:14px;">
-          <div class="field">
-            <label class="slabel">Urlop wypoczynkowy wykorzystany (dni)</label>
-            <input type="number" class="k-input" id="s-urlop-dni" placeholder="np. 14" min="0">
-          </div>
-          <div class="field">
-            <label class="slabel">Ekwiwalent za urlop (dni)</label>
-            <input type="number" class="k-input" id="s-urlop-ekwi" placeholder="np. 6" min="0">
-          </div>
-        </div>
-
-        <button class="cta cta-purple" onclick="generujSwiadectwo()">
-          <span>GENERUJ ŚWIADECTWO PRACY →</span>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-</div>
+</div></div>
 
 <script>
-// ── ACCORDION ──
-function toggle(id){
-  const m=document.getElementById(id),was=m.classList.contains('open');
-  document.querySelectorAll('.module').forEach(el=>el.classList.remove('open'));
-  if(!was)m.classList.add('open');
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  toggle('mod1');
-  // default dates
-  const today=new Date();
-  const eom=new Date(today.getFullYear(),today.getMonth()+2,0);
-  document.getElementById('w-data-por').value=eom.toISOString().split('T')[0];
-  updatePorChip();
-  calcStaz();
-});
-
-// ── HELPERS ──
-function fmt(d){return d.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});}
-function endOfMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0);}
-
-// ── MOD 1: WYPOWIEDZENIE ──
-let wTryb='porozumienie';
-function selectWTryb(t){
-  wTryb=t;
-  document.getElementById('wt-por').classList.toggle('active',t==='porozumienie');
-  document.getElementById('wt-wyp').classList.toggle('active',t==='wypowiedzenie');
-  document.getElementById('blok-por').style.display=t==='porozumienie'?'block':'none';
-  document.getElementById('blok-wyp').style.display=t==='wypowiedzenie'?'block':'none';
-}
-function updatePorChip(){
-  const v=document.getElementById('w-data-por').value;
-  if(!v)return;
-  document.getElementById('valPor').textContent=fmt(new Date(v));
-}
-function calcStaz(){
-  const odVal=document.getElementById('w-od').value;
-  if(!odVal){document.getElementById('valStaz').textContent='Podaj datę zatrudnienia';return;}
-  const od=new Date(odVal),today=new Date();
-  const ms=today-od,years=ms/(1000*60*60*24*365.25);
-  let okres,days;
-  if(years<0.5){okres='2 tygodnie';days=14;}
-  else if(years<3){okres='1 miesiąc';days=null;} // end of month +1
-  else{okres='3 miesiące';days=null;}
-  let end;
-  if(days){end=new Date(today);end.setDate(end.getDate()+days);}
-  else{
-    const m=years<3?1:3;
-    const t=new Date(today);t.setMonth(t.getMonth()+m);
-    end=endOfMonth(t);
+var FORMS = {
+  wypowiedzenie: {
+    title: "Wypowiedzenie umowy o pracę",
+    steps: [
+      { label: "Dane pracownika", fields: [
+        {id:"w_imie",  label:"Imię i nazwisko pracownika", ph:"np. Jan Kowalski",               icon:"👤"},
+        {id:"w_firma", label:"Nazwa pracodawcy",              ph:"np. ABC Sp. z o.o.",             icon:"🏢"},
+        {id:"w_st",    label:"Stanowisko",                    ph:"np. Specjalista ds. sprzedaży", icon:"💼"},
+        {id:"w_od",    label:"Zatrudniony od",                type:"date",                        icon:"📅"}
+      ]},
+      { label: "Tryb wypowiedzenia", fields: [
+        {id:"w_tryb", label:"Sposób zakończenia", type:"pills", icon:"📋",
+         opts:["Za porozumieniem stron","Z zachowaniem okresu wypowiedzenia"]},
+        {id:"w_kon",  label:"Data zakończenia współpracy", type:"date", icon:"🏁"}
+      ]}
+    ],
+    prompt: function(v) {
+      var tryb = (v.w_tryb || "za porozumieniem stron").toLowerCase();
+      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      return "Napisz wypowiedzenie umowy o prace " + tryb + ". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracownik: " + (v.w_imie||"[imie]") + "\n- Pracodawca: " + (v.w_firma||"[firma]") + "\n- Stanowisko: " + (v.w_st||"[stanowisko]") + "\n- Zatrudniony od: " + (v.w_od||"[data]") + "\n- Data zakonczenia: " + (v.w_kon||"[data]") + "\n- Tryb: " + tryb + "\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
+    }
+  },
+  urlop: {
+    title: "Wniosek o urlop",
+    steps: [
+      { label: "Dane pracownika", fields: [
+        {id:"u_imie", label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",       icon:"👤"},
+        {id:"u_prz",  label:"Imię i nazwisko przełożonego", ph:"np. Anna Nowak",        icon:"👔"},
+        {id:"u_firma",label:"Nazwa firmy",                   ph:"np. ABC Sp. z o.o.",   icon:"🏢"}
+      ]},
+      { label: "Rodzaj urlopu", fields: [
+        {id:"u_typ", label:"Rodzaj urlopu", type:"pills", icon:"☀️",
+         opts:["Wypoczynkowy","Na żądanie","Okolicznościowy","Bezpłatny"]},
+        {id:"u_okol", label:"Powód urlopu okolicznościowego", type:"pills", icon:"🎉", opt:true,
+         opts:["Własny ślub (2 dni)","Œlub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica (2 dni)","Pogrzeb rodzeństwa (1 dzień)"]}
+      ]},
+      { label: "Daty urlopu", fields: [
+        {id:"u_od", label:"Data od", type:"date", icon:"📅"},
+        {id:"u_do", label:"Data do", type:"date", icon:"📅"}
+      ]}
+    ],
+    prompt: function(v) {
+      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      var odFmt = v.u_od ? new Date(v.u_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data od]";
+      var doFmt = v.u_do ? new Date(v.u_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data do]";
+      var typ = (v.u_typ || "wypoczynkowy").toLowerCase();
+      var okol = (v.u_okol && v.u_typ === "Okolicznościowy") ? " z powodu: " + v.u_okol.toLowerCase() : "";
+      return "Napisz formalny wniosek o urlop " + typ + okol + ". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracownik: " + (v.u_imie||"[imie]") + "\n- Przelozony: " + (v.u_prz||"[przelozony]") + "\n- Firma: " + (v.u_firma||"[firma]") + "\n- Okres urlopu: od " + odFmt + " do " + doFmt + "\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
+    }
+  },
+  swiadectwo: {
+    title: "Świadectwo pracy",
+    steps: [
+      { label: "Pracownik", fields: [
+        {id:"s_imie", label:"Imię i nazwisko pracownika", ph:"np. Jan Kowalski", icon:"👤"},
+        {id:"s_ur",   label:"Data urodzenia", type:"date", icon:"🎂", opt:true}
+      ]},
+      { label: "Pracodawca", fields: [
+        {id:"s_firma", label:"Nazwa firmy",     ph:"np. ABC Sp. z o.o.",              icon:"🏢"},
+        {id:"s_siedz", label:"Siedziba firmy",  ph:"np. ul. Kwiatowa 1, Warszawa",    icon:"📍", opt:true}
+      ]},
+      { label: "Zatrudnienie", fields: [
+        {id:"s_st",    label:"Stanowisko",       ph:"np. Specjalista ds. marketingu", icon:"💼"},
+        {id:"s_od",    label:"Zatrudniony od",   type:"date",                        icon:"📅"},
+        {id:"s_do",    label:"Zatrudniony do",   type:"date",                        icon:"📅"},
+        {id:"s_wym",   label:"Wymiar czasu pracy", type:"pills",                     icon:"⏱️",
+         opts:["Pełny etat","3/4 etatu","1/2 etatu","1/4 etatu"]}
+      ]},
+      { label: "Rozwiązanie umowy", fields: [
+        {id:"s_tryb",  label:"Sposób rozwiązania", type:"pills", icon:"📋",
+         opts:["Za porozumieniem stron","Wypowiedzenie przez pracownika","Wypowiedzenie przez pracodawcę","Wygaśnięcie umowy"]},
+        {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)", ph:"np. 14", icon:"🏖️", opt:true},
+        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",          ph:"np. 6",  icon:"💵", opt:true}
+      ]}
+    ],
+    prompt: function(v) {
+      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      var odF = v.s_od ? new Date(v.s_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data]";
+      var doF = v.s_do ? new Date(v.s_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data]";
+      var urF = v.s_ur ? new Date(v.s_ur).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "";
+      var tm = {"Za porozumieniem stron":"na mocy porozumienia stron (art. 30 par. 1 pkt 1 KP)","Wypowiedzenie przez pracownika":"przez pracownika za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wypowiedzenie przez pracodawcę":"przez pracodawce za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wygaśnięcie umowy":"wskutek uplywy czasu (art. 30 par. 1 pkt 4 KP)"};
+      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: " + dz + "\n- Pracownik: " + (v.s_imie||"[imie]") + (urF?" ur. "+urF:"") + "\n- Pracodawca: " + (v.s_firma||"[firma]") + ", " + (v.s_siedz||"[siedziba]") + "\n- Okres: od " + odF + " do " + doF + "\n- Stanowisko: " + (v.s_st||"[stanowisko]") + "\n- Wymiar: " + (v.s_wym||"pelny etat") + "\n- Rozwiazanie: " + (tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron") + "\n- Urlop: " + (v.s_urlop||"0") + " dni\n- Ekwiwalent: " + (v.s_ekwi||"0") + " dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
+    }
   }
-  document.getElementById('valStaz').textContent=okres+' ('+Math.floor(years)+' lat stażu)';
-  document.getElementById('valWyp').textContent=fmt(end);
+};
+
+var currentDoc = null, currentStep = 0, wizVals = {};
+
+function openDoc(id) {
+  if (!FORMS[id]) return;
+  currentDoc = id; currentStep = 0; wizVals = {};
+  document.getElementById("genTitle").textContent = FORMS[id].title;
+  document.getElementById("genLoading").style.display = "none";
+  document.getElementById("genResult").style.display = "none";
+  document.getElementById("genResultPlaceholder").style.display = "flex";
+  document.getElementById("genForm").style.display = "block";
+  renderStep();
+  var ov = document.getElementById("genOverlay");
+  var sh = document.getElementById("genSheet");
+  ov.style.display = "flex";
+  requestAnimationFrame(function(){ sh.style.transform = "translateY(0)"; });
 }
-function generujWyp(){
-  const dzisiaj=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
-  const imie=document.getElementById('w-imie').value||'';
-  const firma=document.getElementById('w-firma').value||'';
-  const stanowisko=document.getElementById('w-stanowisko').value||'';
-  const odRaw=document.getElementById('w-od').value;
-  const dataOd=odRaw?new Date(odRaw).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
-  const tryb=wTryb==='porozumienie'?'za porozumieniem stron':'z zachowaniem okresu wypowiedzenia';
-  let dataKoniec='';
-  if(wTryb==='porozumienie'){
-    const dp=document.getElementById('w-data-por').value;
-    dataKoniec=dp?new Date(dp).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
+
+function closeGen() {
+  var sh = document.getElementById("genSheet");
+  panel.classList.remove("open");
+  setTimeout(function(){ document.getElementById("genOverlay").style.display = "none"; }, 350);
+}
+
+function renderStep() {
+  var form = FORMS[currentDoc];
+  var steps = form.steps;
+  var step = steps[currentStep];
+  var total = steps.length;
+  var pct = Math.round((currentStep / total) * 100);
+  var el = document.getElementById("genForm");
+
+  var segs = "";
+  for (var i = 0; i < total; i++) {
+    segs += '<div style="flex:1;height:3px;border-radius:99px;background:' + (i <= currentStep ? "#39ff8a" : "rgba(255,255,255,.1)") + ';transition:background .3s;"></div>';
+  }
+
+  var progressHTML = '<div style="margin-bottom:20px;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    + '<span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ' + (currentStep+1) + ' z ' + total + ': ' + step.label + '</span>'
+    + '<span style="font-size:.7rem;color:rgba(240,237,232,.3);">' + pct + '% ukończono</span>'
+    + '</div>'
+    + '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">'
+    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:6px;margin-top:10px;">' + segs + '</div>'
+    + '</div>';
+
+  var fieldsHTML = "";
+  var fields = step.fields;
+  for (var j = 0; j < fields.length; j++) {
+    var f = fields[j];
+    var val = wizVals[f.id] || "";
+    var lbl = '<label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">' + f.icon + " " + f.label + (f.opt ? ' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>' : "") + '</label>';
+
+    if (f.type === "pills") {
+      var pills = "";
+      for (var k = 0; k < f.opts.length; k++) {
+        var o = f.opts[k];
+        var active = val === o;
+        pills += '<button type="button" data-field="' + f.id + '" data-val="' + o + '" onclick="pickPill(this)" style="padding:8px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid ' + (active?"rgba(57,255,138,.4)":"rgba(255,255,255,.12)") + ';background:' + (active?"rgba(57,255,138,.15)":"rgba(255,255,255,.05)") + ';color:' + (active?"#39ff8a":"rgba(240,237,232,.7)") + ';">' + o + '</button>';
+      }
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<div style="display:flex;flex-wrap:wrap;gap:8px;" id="pills_' + f.id + '">' + pills + '</div><input type="hidden" id="gf_' + f.id + '" value="' + val + '"></div>';
+    } else if (f.type === "date") {
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
+    } else {
+      var inputStyle = "width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;";
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '"></div>';
+    }
+  }
+
+  var isLast = (currentStep === total - 1);
+  var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
+    + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : "")
+    + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
+    + (isLast ? "Generuj dokument ⚡" : "Dalej: " + steps[currentStep+1].label + " →")
+    + '</button></div>';
+
+  el.innerHTML = progressHTML + fieldsHTML + navHTML;
+}
+
+function pickPill(btn) {
+  var fid = btn.dataset.field;
+  var val = btn.dataset.val;
+  document.getElementById("gf_" + fid).value = val;
+  var container = document.getElementById("pills_" + fid);
+  var btns = container.querySelectorAll("button");
+  for (var i = 0; i < btns.length; i++) {
+    var active = btns[i].dataset.val === val;
+    btns[i].style.background = active ? "rgba(57,255,138,.15)" : "rgba(255,255,255,.05)";
+    btns[i].style.color = active ? "#39ff8a" : "rgba(240,237,232,.7)";
+    btns[i].style.borderColor = active ? "rgba(57,255,138,.4)" : "rgba(255,255,255,.12)";
+  }
+}
+
+function collectVals() {
+  var fields = FORMS[currentDoc].steps[currentStep].fields;
+  for (var i = 0; i < fields.length; i++) {
+    var el = document.getElementById("gf_" + fields[i].id);
+    if (el) wizVals[fields[i].id] = el.value;
+  }
+}
+
+function wizNext() {
+  collectVals();
+  if (currentStep < FORMS[currentDoc].steps.length - 1) {
+    currentStep++;
+    renderStep();
   } else {
-    dataKoniec=document.getElementById('valWyp').textContent||'';
+    doGenerate();
   }
-
-  const prompt=`Napisz wypowiedzenie umowy o prace ${tryb}. Uzyj DOKLADNIE ponizszych danych — nie wymyslaj zadnych innych imion, nazw ani dat.
-
-DANE:
-- Data sporzadzenia dokumentu: ${dzisiaj}
-- Pracownik: ${imie||'[wpisz imie i nazwisko]'}
-- Pracodawca: ${firma||'[wpisz nazwe firmy]'}
-- Stanowisko: ${stanowisko||'[wpisz stanowisko]'}
-- Zatrudniony od: ${dataOd||'[wpisz date]'}
-- Data zakonczenia wspolpracy: ${dataKoniec||'[wpisz date]'}
-- Tryb: ${tryb}
-
-Wygeneruj gotowy dokument do wydruku. Format: miejscowosc i data w prawym gornym rogu, dane pracownika po lewej, adresat po prawej, tresc, miejsce na podpis. Tylko czysty tekst, zero markdown, zero gwiazdek.`;
-
-  generate(prompt, 'Wypowiedzenie umowy o pracę', 'wypowiedzenie.txt');
 }
 
-// ── MOD 2: URLOP ──
-let urlOpTyp='wypoczynkowy';
-function selectUrlop(t){
-  urlOpTyp=t;
-  ['wyp','zad','okol','bezpl'].forEach(k=>document.getElementById('ur-'+k).classList.remove('active'));
-  const map={wypoczynkowy:'wyp',zadanie:'zad',okolicznosciowy:'okol',bezplatny:'bezpl'};
-  document.getElementById('ur-'+map[t]).classList.add('active');
-  document.getElementById('blok-okol').style.display=t==='okolicznosciowy'?'block':'none';
-}
-function calcUrlopDni(){
-  const od=document.getElementById('u-od').value,doo=document.getElementById('u-do').value;
-  if(!od||!doo)return;
-  const d1=new Date(od),d2=new Date(doo);
-  if(d2<d1)return;
-  let dni=0,cur=new Date(d1);
-  while(cur<=d2){const dow=cur.getDay();if(dow!==0&&dow!==6)dni++;cur.setDate(cur.getDate()+1);}
-  document.getElementById('urlopDni').textContent=dni+' dni roboczych';
-  document.getElementById('urlopChip').style.display='flex';
-}
-function generujUrlop(){
-  const dzisiaj=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
-  const imie=document.getElementById('u-imie').value||'';
-  const przelozony=document.getElementById('u-przelozony').value||'';
-  const firma=document.getElementById('u-firma').value||'';
-  const od=document.getElementById('u-od').value;
-  const doo=document.getElementById('u-do').value;
-  const odFmt=od?new Date(od).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
-  const doFmt=doo?new Date(doo).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
-  const typMap={wypoczynkowy:'wypoczynkowy',zadanie:'na zadanie',okolicznosciowy:'okolicznosciowy',bezplatny:'bezplatny'};
-  const typTxt=typMap[urlOpTyp]||'wypoczynkowy';
-  let okolTxt='';
-  if(urlOpTyp==='okolicznosciowy'){
-    const powod=document.getElementById('u-okol-powod').value;
-    const powodMap={slub_wlasny:'wlasny slub (2 dni)',slub_dziecka:'slub dziecka (1 dzien)',narodziny:'narodziny dziecka (2 dni)',pogrzeb_malzonek:'pogrzeb malzonka/dziecka/rodzica (2 dni)',pogrzeb_rodzenstwo:'pogrzeb rodzenstwa/tescia (1 dzien)'};
-    okolTxt=' z powodu: '+powodMap[powod];
-  }
-  const dniEl=document.getElementById('urlopDni');
-  const dni=dniEl&&dniEl.textContent&&dniEl.textContent!='—'?dniEl.textContent:'';
-
-  const prompt=`Napisz formalny wniosek o urlop ${typTxt}${okolTxt}. Uzyj DOKLADNIE ponizszych danych.
-
-DANE:
-- Data sporzadzenia: ${dzisiaj}
-- Pracownik (wnioskodawca): ${imie||'[wpisz imie i nazwisko]'}
-- Przelozony / adresat: ${przelozony||'[wpisz imie i nazwisko przelozonego]'}
-- Firma: ${firma||'[wpisz nazwe firmy]'}
-- Okres urlopu: od ${odFmt||'[data od]'} do ${doFmt||'[data do]'}${dni?' ('+dni+')':''}
-
-Wniosek ma byc krotki i formalny, gotowy do wydruku. Zawierac: miejscowosc i date, dane pracownika, adresata, tresn prosbe, podpis. Zero markdown, zero gwiazdek.`;
-
-  generate(prompt, 'Wniosek o urlop', 'wniosek_urlop.txt');
+function wizBack() {
+  collectVals();
+  if (currentStep > 0) { currentStep--; renderStep(); }
 }
 
-// ── MOD 3: ŚWIADECTWO ──
-let swEtat='1/1',swTryb='porozumienie';
-function selectEtat(e){
-  swEtat=e;
-  ['full','3q','half'].forEach(k=>document.getElementById('se-'+k).classList.remove('active'));
-  const map={'1/1':'full','3/4':'3q','1/2':'half'};
-  document.getElementById('se-'+map[e]).classList.add('active');
-}
-function selectSwTryb(t){
-  swTryb=t;
-  ['por','wyp-pr','wyp-fm','wyg'].forEach(k=>document.getElementById('sr-'+k).classList.remove('active'));
-  const map={porozumienie:'por',wypowiedzenie_pracownik:'wyp-pr',wypowiedzenie_pracodawca:'wyp-fm',wygasniecie:'wyg'};
-  document.getElementById('sr-'+map[t]).classList.add('active');
-}
-function generujSwiadectwo(){
-  const dzisiaj=new Date().toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
-  const imie=document.getElementById('s-imie').value||'';
-  const urodzenie=document.getElementById('s-urodzenie').value;
-  const firma=document.getElementById('s-firma').value||'';
-  const siedziba=document.getElementById('s-siedziba').value||'';
-  const od=document.getElementById('s-od').value;
-  const doo=document.getElementById('s-do').value;
-  const stanowisko=document.getElementById('s-stanowisko').value||'';
-  const urlop=document.getElementById('s-urlop-dni').value||'0';
-  const ekwi=document.getElementById('s-urlop-ekwi').value||'0';
-  const trybMap={porozumienie:'na mocy porozumienia stron (art. 30 § 1 pkt 1 KP)',wypowiedzenie_pracownik:'przez pracownika za wypowiedzeniem (art. 30 § 1 pkt 2 KP)',wypowiedzenie_pracodawca:'przez pracodawce za wypowiedzeniem (art. 30 § 1 pkt 2 KP)',wygasniecie:'wskutek uplywy czasu na ktory byla zawarta (art. 30 § 1 pkt 4 KP)'};
-  const odFmt=od?new Date(od).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
-  const doFmt=doo?new Date(doo).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
-  const urodzFmt=urodzenie?new Date(urodzenie).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}):'';
-
-  const prompt=`Napisz swiadectwo pracy zgodne z polskim Kodeksem Pracy. Uzyj DOKLADNIE ponizszych danych — nie zmieniaj zadnych wartosci.
-
-DANE DO SWIADECTWA:
-- Data wystawienia: ${dzisiaj}
-- Pracownik: ${imie||'[imie i nazwisko]'}${urodzFmt?' ur. '+urodzFmt:''}
-- Pracodawca: ${firma||'[nazwa firmy]'}, ${siedziba||'[siedziba]'}
-- Okres zatrudnienia: od ${odFmt||'[data]'} do ${doFmt||'[data]'}
-- Stanowisko: ${stanowisko||'[stanowisko]'}
-- Wymiar czasu pracy: ${swEtat} etatu
-- Sposob rozwiazania umowy: ${trybMap[swTryb]||swTryb}
-- Urlop wypoczynkowy wykorzystany w roku rozwiazania: ${urlop} dni
-- Ekwiwalent pieniezny za urlop: ${ekwi} dni
-
-Swiadectwo musi zawierac wszystkie obowiazkowe elementy z art. 97 KP. Tylko czysty tekst sformatowany jak oficjalny dokument — zero markdown, zero gwiazdek.`;
-
-  generate(prompt, 'Świadectwo Pracy', 'swiadectwo_pracy.txt');
+function checkAccess() {
+  var sub; try { sub = JSON.parse(localStorage.getItem("dokumo_sub")); } catch(e) { sub = null; }
+  var ok = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date() && ["kariera","promax","pro"].indexOf(sub.plan) >= 0;
+  if (!ok) { sessionStorage.setItem("dokumo_after_sub", window.location.href); window.location.href = "subskrypcja.html"; return false; }
+  var user; try { user = JSON.parse(localStorage.getItem("dokumo_user")); } catch(e) { user = null; }
+  if (!user) { window.location.href = "konto.html"; return false; }
+  return true;
 }
 
-// ── AI GENERATION ──
-let genDocContent = '';
-let genDocFilename = 'dokument.txt';
-
-async function generate(prompt, title, filename) {
-  // Sprawdź dostęp
-  const sub = (()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
-  const hasSub = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
-  const allowed = hasSub && ['kariera','promax','pro'].includes(sub.plan);
-  if (!allowed) {
-    sessionStorage.setItem('dokumo_after_sub', window.location.href);
-    window.location.href = 'subskrypcja.html';
-    return;
-  }
-  genDocContent = '';
-  genDocFilename = filename;
-  document.getElementById('genTitle').textContent = title;
-  document.getElementById('genSubtitle').textContent = 'Proszę czekać…';
-  document.getElementById('genLoading').style.display = 'flex';
-  document.getElementById('genResultBlock').classList.remove('show');
-  document.getElementById('genError').classList.remove('show');
-  document.getElementById('genError').style.display = 'none';
-  document.getElementById('genOverlay').classList.add('show');
-
+async function doGenerate() {
+  if (!checkAccess()) return;
+  document.getElementById("genForm").style.display = "none";
+  document.getElementById("genLoading").style.display = "block";
   try {
-    const headers = { 'Content-Type': 'application/json' };
-    if (window._fbToken) headers['Authorization'] = 'Bearer ' + window._fbToken;
-
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ prompt, docId: filename.replace('.txt',''), docName: title, docCat: 'hr', docIcon: '📄', docCatLabel: 'Dokumenty HR' })
+    var prompt = FORMS[currentDoc].prompt(wizVals);
+    var token = window._fbToken || "";
+    var res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title})
     });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-
-    genDocContent = data.text;
-    document.getElementById('genDocText').textContent = data.text;
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('genResultBlock').classList.add('show');
-    document.getElementById('genSubtitle').textContent = 'Dokument gotowy. Skopiuj lub pobierz.';
+    var data = await res.json();
+    document.getElementById("genLoading").style.display = "none";
+    document.getElementById("genText").value = data.text || data.result || "Błąd generowania";
+    document.getElementById("genResult").style.display = "flex";
   } catch(e) {
-    document.getElementById('genLoading').style.display = 'none';
-    const el = document.getElementById('genError');
-    el.textContent = 'Błąd: ' + e.message;
-    el.style.display = 'block';
+    document.getElementById("genLoading").style.display = "none";
+    document.getElementById("genForm").style.display = "block";
+    renderStep();
+    alert("Błąd połączenia. Spróbuj ponownie.");
   }
 }
 
-function closeGen() { document.getElementById('genOverlay').classList.remove('show'); }
-function closeOnBg(e) { if(e.target===document.getElementById('genOverlay')) closeGen(); }
-
-function copyDoc() {
-  navigator.clipboard.writeText(genDocContent).then(() => {
-    const btn = document.querySelector('.gen-btn.primary');
-    const orig = btn.textContent;
-    btn.textContent = '✅ Skopiowano!';
-    setTimeout(() => btn.textContent = orig, 2000);
-  });
-}
-
-function downloadDoc() {
-  const a = document.createElement('a');
-  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(genDocContent);
-  a.download = genDocFilename;
+function copyResult() { navigator.clipboard.writeText(document.getElementById("genText").value); }
+function downloadResult() {
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([document.getElementById("genText").value], {type:"text/plain"}));
+  a.download = FORMS[currentDoc].title.toLowerCase().replace(/\s+/g,"_") + ".txt";
   a.click();
 }
 
+document.getElementById("genOverlay").addEventListener("click", function(e){ if(e.target===this) closeGen(); });
+document.addEventListener("click", function(e){
+  var card = e.target.closest("[data-doc]");
+  if (card) openDoc(card.dataset.doc);
+});
 </script>
-
-<!-- ── MODAL GENEROWANIA ── -->
-<div class="gen-overlay" id="genOverlay" onclick="closeOnBg(event)">
-  <div class="gen-sheet">
-    <div class="gen-handle"></div>
-    <div class="gen-title" id="genTitle">Generuję dokument…</div>
-    <div class="gen-subtitle" id="genSubtitle">To zajmie kilka sekund.</div>
-
-    <div class="gen-loading" id="genLoading">
-      <div class="gen-spinner"></div>
-      <div class="gen-loading-txt">AI tworzy Twój dokument…</div>
-    </div>
-
-    <div class="gen-error" id="genError"></div>
-
-    <div class="gen-result" id="genResultBlock">
-      <div class="gen-doc" id="genDocText"></div>
-      <div class="gen-actions">
-        <button class="gen-btn primary" onclick="copyDoc()">📋 Kopiuj</button>
-        <button class="gen-btn secondary" onclick="downloadDoc()">⬇️ Pobierz .txt</button>
-        <button class="gen-btn close-btn" onclick="closeGen()">✕ Zamknij</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
