@@ -158,12 +158,16 @@ onAuthStateChanged(auth, async u=>{
   if(u){
     localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
     window._fbToken = await u.getIdToken();
-    if(window._renderUNav)window._renderUNav();
+    try {
+      const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + window._fbToken } });
+      const data = await res.json();
+      if (data.active && data.expiresAt) localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
+    } catch(e) {}
   } else {
     localStorage.removeItem('dokumo_user');
     window._fbToken = null;
-    if(window._renderUNav)window._renderUNav();
   }
+  if(window._renderUNav)window._renderUNav();
 });
 </script>
 </head>
