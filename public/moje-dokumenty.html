@@ -223,14 +223,16 @@ function updateNavBadge() {
   const user = getUser();
   if (!user) { badge.style.display = 'none'; return; }
   const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
-  const isPro = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  const isActive = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
+  const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+  const planName = isActive ? (planNames[sub.plan] || 'PRO') : 'Free';
   badge.style.display = 'inline-flex';
-  badge.style.cssText = isPro
-    ? 'display:inline-flex;align-items:center;gap:5px;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#16a34a;color:#fff;padding:7px 13px;text-decoration:none;white-space:nowrap;'
-    : 'display:inline-flex;align-items:center;gap:5px;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:#c8963c;color:#fff;padding:7px 13px;text-decoration:none;white-space:nowrap;';
+  badge.style.cssText = isActive
+    ? 'display:inline-flex;align-items:center;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:#1a3a2e;color:#fff;padding:5px 12px;border-radius:999px;text-decoration:none;white-space:nowrap;'
+    : 'display:inline-flex;align-items:center;font-family:Syne,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(26,23,20,.08);color:#6b6560;padding:5px 12px;border-radius:999px;text-decoration:none;white-space:nowrap;';
   badge.href = 'subskrypcja.html';
-  badge.innerHTML = isPro ? '&#9733; PRO' : '&#9733; KUP PREMIUM';
-  if (!isPro) {
+  badge.textContent = planName;
+  if (!isActive) {
     badge.onmouseover = () => badge.style.background = '#a87830';
     badge.onmouseout  = () => badge.style.background = '#c8963c';
   }
@@ -383,7 +385,29 @@ function downloadDoc(docId, format) {
     var win = window.open('', '_blank');
     win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>');
     win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
-    win.document.write('</head><body><pre>' + safe + '</pre>');
+    win.document.write('</head><body>
+<style>
+.u-back-bar{display:flex;align-items:center;gap:8px;padding:8px 1.5rem;background:#f5f3ef;border-bottom:1px solid rgba(26,23,20,.06);}
+.u-back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;color:#6b6560;text-decoration:none;padding:5px 10px;border-radius:8px;background:rgba(26,23,20,.05);transition:all .2s;}
+.u-back-btn:hover{color:#1a1714;background:rgba(26,23,20,.09);}
+.u-sub-status{margin-left:auto;font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;text-transform:uppercase;}
+.u-sub-status.pro{background:#1a3a2e;color:#fff;}
+.u-sub-status.free{background:rgba(26,23,20,.07);color:#6b6560;}
+</style>
+<div class="u-back-bar" id="uBackBar">
+  <a href="index.html" class="u-back-btn">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Strona główna
+  </a>
+
+</div>
+<script>
+(function(){
+  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
+  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
+  const user=getUser();
+  const sub=getSub();
+</script><pre>' + safe + '</pre>');
     win.document.write('<script>window.onload=function(){window.print()}<\/script>');
     win.document.write('</body></html>');
     win.document.close();
