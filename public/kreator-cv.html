@@ -2590,6 +2590,7 @@ function setColorTheme(c1, c2) {
   cvCustomColor = { c1, c2 };
   updateCVPreview();
   renderColorPicker();
+  renderTplGrid();
   document.getElementById('tplDot').style.background = c1;
 }
 
@@ -2599,6 +2600,7 @@ function resetColorTheme() {
   if (t) document.getElementById('tplDot').style.background = t.color1;
   updateCVPreview();
   renderColorPicker();
+  renderTplGrid();
 }
 
 function getTplPreviewHTML(t) {
