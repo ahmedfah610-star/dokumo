@@ -50,6 +50,8 @@ body { background: var(--bg); font-family: "DM Sans", sans-serif; color: var(--i
 .doc-card:nth-child(1) { animation-delay: .05s; }
 .doc-card:nth-child(2) { animation-delay: .11s; }
 .doc-card:nth-child(3) { animation-delay: .17s; }
+.doc-card:nth-child(4) { animation-delay: .23s; }
+.doc-card:nth-child(5) { animation-delay: .29s; }
 @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 .doc-card:hover { transform: translateX(6px) scale(1.008); box-shadow: -6px 0 0 0 var(--green), 0 12px 40px rgba(0,0,0,.35); border-color: rgba(255,255,255,.12); }
 .doc-edge { width: 4px; align-self: stretch; border-radius: 16px 0 0 16px; flex-shrink: 0; background: var(--green); }
@@ -192,6 +194,32 @@ onAuthStateChanged(getAuth(app),async u=>{
     <div class="doc-status" aria-hidden="true"></div>
   </article>
 
+  <article class="doc-card" data-doc="umowa_pracy" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">👔</span></div>
+      <div class="doc-info">
+        <h2 class="doc-name" itemprop="name">Umowa o pracę</h2>
+        <p class="doc-desc" itemprop="description">Umowa o pracę na czas nieokreślony, określony lub próbny — zgodna z art. 29 Kodeksu Pracy, gotowa do podpisu.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj umowę o pracę">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
+  <article class="doc-card" data-doc="umowa_zlecenie" itemscope itemtype="https://schema.org/Service">
+    <div class="doc-edge"></div>
+    <div class="doc-body">
+      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📝</span></div>
+      <div class="doc-info">
+        <h2 class="doc-name" itemprop="name">Umowa zlecenie</h2>
+        <p class="doc-desc" itemprop="description">Umowa cywilnoprawna z uwzględnieniem ZUS i podatku. Dla studentów poniżej 26 lat — automatycznie bez składek ZUS.</p>
+      </div>
+    </div>
+    <div class="doc-action"><button class="doc-btn" aria-label="Generuj umowę zlecenie">Generuj →</button></div>
+    <div class="doc-status" aria-hidden="true"></div>
+  </article>
+
 </main>
 
 <!-- MODAL — bottom sheet jak hr.html -->
@@ -221,22 +249,25 @@ var FORMS = {
   wypowiedzenie: {
     title: "Wypowiedzenie umowy o pracę",
     steps: [
-      { label: "Dane pracownika", fields: [
-        {id:"w_imie",  label:"Imię i nazwisko pracownika", ph:"np. Jan Kowalski",               icon:"👤"},
-        {id:"w_firma", label:"Nazwa pracodawcy",              ph:"np. ABC Sp. z o.o.",             icon:"🏢"},
-        {id:"w_st",    label:"Stanowisko",                    ph:"np. Specjalista ds. sprzedaży", icon:"💼"},
-        {id:"w_od",    label:"Zatrudniony od",                type:"date",                        icon:"📅"}
+      { label: "Strony umowy", fields: [
+        {id:"w_imie",       label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",             icon:"👤"},
+        {id:"w_adres",      label:"Adres pracownika",             ph:"np. ul. Różana 2, Kraków",     icon:"🏠", opt:true},
+        {id:"w_firma",      label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
+        {id:"w_adres_firma",label:"Adres pracodawcy",             ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
+        {id:"w_st",         label:"Stanowisko",                   ph:"np. Specjalista ds. sprzedaży",icon:"💼"},
+        {id:"w_od",         label:"Zatrudniony od",               type:"date",                       icon:"📅"}
       ]},
       { label: "Tryb wypowiedzenia", fields: [
         {id:"w_tryb", label:"Sposób zakończenia", type:"pills", icon:"📋",
-         opts:["Za porozumieniem stron","Z zachowaniem okresu wypowiedzenia"]},
-        {id:"w_kon",  label:"Data zakończenia współpracy", type:"date", icon:"🏁"}
+         opts:["Za porozumieniem stron","Z zachowaniem okresu wypowiedzenia","Bez zachowania okresu (dyscyplinarne)"]},
+        {id:"w_kon",   label:"Data zakończenia współpracy", type:"date", icon:"🏁"},
+        {id:"w_powod", label:"Powód / uzasadnienie", ph:"np. przyczyny osobiste, rezygnacja z powodów zawodowych...", icon:"📝", opt:true}
       ]}
     ],
     prompt: function(v) {
       var tryb = (v.w_tryb || "za porozumieniem stron").toLowerCase();
       var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      return "Napisz wypowiedzenie umowy o prace " + tryb + ". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracownik: " + (v.w_imie||"[imie]") + "\n- Pracodawca: " + (v.w_firma||"[firma]") + "\n- Stanowisko: " + (v.w_st||"[stanowisko]") + "\n- Zatrudniony od: " + (v.w_od||"[data]") + "\n- Data zakonczenia: " + (v.w_kon||"[data]") + "\n- Tryb: " + tryb + "\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
+      return "Napisz wypowiedzenie umowy o prace " + tryb + ". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracownik: " + (v.w_imie||"[imie]") + (v.w_adres?", adres: "+v.w_adres:"") + "\n- Pracodawca: " + (v.w_firma||"[firma]") + (v.w_adres_firma?", adres: "+v.w_adres_firma:"") + "\n- Stanowisko: " + (v.w_st||"[stanowisko]") + "\n- Zatrudniony od: " + (v.w_od||"[data]") + "\n- Data zakonczenia: " + (v.w_kon||"[data]") + "\n- Tryb: " + tryb + (v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"") + "\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
     }
   },
   urlop: {
@@ -289,7 +320,8 @@ var FORMS = {
         {id:"s_tryb",  label:"Sposób rozwiązania", type:"pills", icon:"📋",
          opts:["Za porozumieniem stron","Wypowiedzenie przez pracownika","Wypowiedzenie przez pracodawcę","Wygaśnięcie umowy"]},
         {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)", ph:"np. 14", icon:"🏖️", opt:true},
-        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",          ph:"np. 6",  icon:"💵", opt:true}
+        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",      ph:"np. 6",  icon:"💵", opt:true},
+        {id:"s_pesel", label:"PESEL pracownika",                ph:"np. 90010112345", icon:"🆔", opt:true}
       ]}
     ],
     prompt: function(v) {
@@ -298,7 +330,62 @@ var FORMS = {
       var doF = v.s_do ? new Date(v.s_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data]";
       var urF = v.s_ur ? new Date(v.s_ur).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "";
       var tm = {"Za porozumieniem stron":"na mocy porozumienia stron (art. 30 par. 1 pkt 1 KP)","Wypowiedzenie przez pracownika":"przez pracownika za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wypowiedzenie przez pracodawcę":"przez pracodawce za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wygaśnięcie umowy":"wskutek uplywy czasu (art. 30 par. 1 pkt 4 KP)"};
-      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: " + dz + "\n- Pracownik: " + (v.s_imie||"[imie]") + (urF?" ur. "+urF:"") + "\n- Pracodawca: " + (v.s_firma||"[firma]") + ", " + (v.s_siedz||"[siedziba]") + "\n- Okres: od " + odF + " do " + doF + "\n- Stanowisko: " + (v.s_st||"[stanowisko]") + "\n- Wymiar: " + (v.s_wym||"pelny etat") + "\n- Rozwiazanie: " + (tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron") + "\n- Urlop: " + (v.s_urlop||"0") + " dni\n- Ekwiwalent: " + (v.s_ekwi||"0") + " dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
+      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: " + dz + "\n- Pracownik: " + (v.s_imie||"[imie]") + (urF?" ur. "+urF:"") + (v.s_pesel?", PESEL: "+v.s_pesel:"") + "\n- Pracodawca: " + (v.s_firma||"[firma]") + ", " + (v.s_siedz||"[siedziba]") + "\n- Okres: od " + odF + " do " + doF + "\n- Stanowisko: " + (v.s_st||"[stanowisko]") + "\n- Wymiar: " + (v.s_wym||"pelny etat") + "\n- Rozwiazanie: " + (tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron") + "\n- Urlop: " + (v.s_urlop||"0") + " dni\n- Ekwiwalent: " + (v.s_ekwi||"0") + " dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
+    }
+  },
+
+  umowa_pracy: {
+    title: "Umowa o pracę",
+    steps: [
+      { label: "Pracodawca", fields: [
+        {id:"up_pracodawca", label:"Nazwa firmy (pracodawcy)",     ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
+        {id:"up_nip",        label:"NIP pracodawcy",               ph:"np. 1234567890",               icon:"🔢", opt:true},
+        {id:"up_adres_p",    label:"Adres pracodawcy",             ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
+      ]},
+      { label: "Pracownik", fields: [
+        {id:"up_pracownik",  label:"Imię i nazwisko pracownika",   ph:"np. Anna Nowak",               icon:"👤"},
+        {id:"up_pesel",      label:"PESEL pracownika",             ph:"np. 90010112345",              icon:"🆔", opt:true},
+        {id:"up_adres_pr",   label:"Adres zamieszkania pracownika",ph:"np. ul. Różana 2, Kraków",     icon:"🏠", opt:true}
+      ]},
+      { label: "Warunki zatrudnienia", fields: [
+        {id:"up_st",     label:"Stanowisko",            ph:"np. Specjalista ds. marketingu",  icon:"💼"},
+        {id:"up_rodzaj", label:"Rodzaj umowy",          type:"pills", icon:"📋",
+         opts:["Na czas nieokreślony","Na czas określony","Na okres próbny (3 miesiące)"]},
+        {id:"up_wym",    label:"Wymiar czasu pracy",    type:"pills", icon:"⏱️",
+         opts:["Pełny etat","3/4 etatu","1/2 etatu","1/4 etatu"]},
+        {id:"up_wyn",    label:"Wynagrodzenie brutto",  ph:"np. 5 500 zł",                   icon:"💰"},
+        {id:"up_od",     label:"Data rozpoczęcia",      type:"date",                         icon:"📅"},
+        {id:"up_miejsce",label:"Miejsce pracy",         ph:"np. Warszawa / praca zdalna",    icon:"📍", opt:true}
+      ]}
+    ],
+    prompt: function(v) {
+      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      return "Napisz umowe o prace zgodna z art. 29 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracodawca: " + (v.up_pracodawca||"[firma]") + (v.up_nip?", NIP: "+v.up_nip:"") + (v.up_adres_p?", adres: "+v.up_adres_p:"") + "\n- Pracownik: " + (v.up_pracownik||"[imie]") + (v.up_pesel?", PESEL: "+v.up_pesel:"") + (v.up_adres_pr?", adres: "+v.up_adres_pr:"") + "\n- Stanowisko: " + (v.up_st||"[stanowisko]") + "\n- Rodzaj umowy: " + (v.up_rodzaj||"na czas nieokreslony") + "\n- Wymiar: " + (v.up_wym||"pelny etat") + "\n- Wynagrodzenie: " + (v.up_wyn||"[kwota]") + " brutto\n- Data od: " + (v.up_od||"[data]") + "\n- Miejsce pracy: " + (v.up_miejsce||"siedziba pracodawcy") + "\n\nZawrzyj wszystkie obowiazkowe elementy z art. 29 KP. Gotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
+    }
+  },
+
+  umowa_zlecenie: {
+    title: "Umowa zlecenie",
+    steps: [
+      { label: "Strony umowy", fields: [
+        {id:"uz_firma",   label:"Nazwa zleceniodawcy (firma)",       ph:"np. ABC Sp. z o.o.",   icon:"🏢"},
+        {id:"uz_nip",     label:"NIP zleceniodawcy",                 ph:"np. 1234567890",       icon:"🔢", opt:true},
+        {id:"uz_wyk",     label:"Imię i nazwisko zleceniobiorcy",    ph:"np. Jan Kowalski",     icon:"👤"},
+        {id:"uz_pesel",   label:"PESEL zleceniobiorcy",              ph:"np. 85020298765",      icon:"🆔", opt:true},
+        {id:"uz_student", label:"Czy zleceniobiorca to student poniżej 26 lat?", type:"pills", icon:"🎓",
+         opts:["Nie","Tak – zwolnienie ze składek ZUS"]}
+      ]},
+      { label: "Warunki zlecenia", fields: [
+        {id:"uz_zakres",  label:"Zakres zlecenia",    ph:"np. prowadzenie social mediów, tworzenie grafik", icon:"📋"},
+        {id:"uz_wyn",     label:"Wynagrodzenie",      ph:"np. 3 000 zł brutto lub 80 zł/h",                icon:"💰"},
+        {id:"uz_termin",  label:"Termin wykonania",   type:"date",                                         icon:"🏁"},
+        {id:"uz_platnosc",label:"Termin płatności",   ph:"np. 7 dni od wystawienia rachunku",              icon:"📅", opt:true}
+      ]}
+    ],
+    prompt: function(v) {
+      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      var student = (v.uz_student||"Nie").indexOf("Tak") >= 0;
+      return "Napisz umowe zlecenie zgodna z Kodeksem Cywilnym. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Zleceniodawca: " + (v.uz_firma||"[firma]") + (v.uz_nip?", NIP: "+v.uz_nip:"") + "\n- Zleceniobiorca: " + (v.uz_wyk||"[imie]") + (v.uz_pesel?", PESEL: "+v.uz_pesel:"") + "\n- Student ponizej 26 lat: " + (student?"TAK – zwolnienie ze skladek ZUS (art. 6 ust. 4 ustawy o sus)":"NIE – standardowe skladki ZUS") + "\n- Zakres zlecenia: " + (v.uz_zakres||"[zakres]") + "\n- Wynagrodzenie: " + (v.uz_wyn||"[kwota]") + "\n- Termin wykonania: " + (v.uz_termin||"[data]") + "\n- Termin platnosci: " + (v.uz_platnosc||"7 dni od wystawienia rachunku") + "\n\nZawrzyj informacje o podlezeniu pod ZUS, podatku dochodowym i obowiazkach stron. Gotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
     }
   }
 };
@@ -307,13 +394,26 @@ var currentDoc = null, currentStep = 0, wizVals = {};
 
 // Mapowanie pól formularza → klucze z profilu użytkownika
 var PROFILE_AUTOFILL = {
-  w_imie: function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  w_firma: function(p){ return p.firma || ''; },
-  u_imie: function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  u_firma: function(p){ return p.firma || ''; },
-  s_imie: function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  s_firma: function(p){ return p.firma || ''; },
-  s_siedz: function(p){ return p.adres || ''; },
+  // Wypowiedzenie
+  w_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  w_adres:       function(p){ return p.adres || ''; },
+  w_firma:       function(p){ return p.firma || ''; },
+  // Urlop
+  u_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  u_firma:       function(p){ return p.firma || ''; },
+  // Świadectwo
+  s_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  s_firma:       function(p){ return p.firma || ''; },
+  s_siedz:       function(p){ return p.adres || ''; },
+  // Umowa o pracę
+  up_pracodawca: function(p){ return p.firma || ''; },
+  up_nip:        function(p){ return p.nip || ''; },
+  up_adres_p:    function(p){ return p.adres || ''; },
+  up_pracownik:  function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  // Umowa zlecenie
+  uz_firma:      function(p){ return p.firma || ''; },
+  uz_nip:        function(p){ return p.nip || ''; },
+  uz_wyk:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
 };
 
 function getProfile() {
