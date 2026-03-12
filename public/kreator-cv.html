@@ -1229,7 +1229,10 @@ async function loadCVDraft() {
   } catch(e) {}
 }
 
-document.addEventListener('DOMContentLoaded', function() { updateCVNavProfile(); });
+document.addEventListener('DOMContentLoaded', function() {
+  updateCVNavProfile();
+  if (new URLSearchParams(location.search).get('mode') === 'import') openImportModal();
+});
 </script>
 
 <style>
@@ -1267,9 +1270,6 @@ document.addEventListener('DOMContentLoaded', function() { updateCVNavProfile();
     </a>
     <div style="flex:1;"></div>
     <div class="cv-nav-right">
-      <button class="btn-import-pdf" onclick="openImportModal()" title="Importuj CV z PDF">
-        <span>📄</span><span class="cv-btn-label"> Importuj z PDF</span>
-      </button>
       <button class="btn-choose-tpl" onclick="openTplDrawer()" title="Wybierz szablon">
         <span class="tpl-preview-dot" id="tplDot" style="background:#22c55e"></span>
         <span class="cv-btn-label">Wybierz szablon ▾</span>
