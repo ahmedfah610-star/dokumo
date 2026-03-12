@@ -370,6 +370,204 @@ body {
   /* Hide illustration on very small screens */
   .k-card > div.absolute { display:none; }
 }
+
+/* ══════════════════════════════════════════
+   JOB MODAL
+══════════════════════════════════════════ */
+.jm-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(15,14,12,.55);
+  backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s;
+}
+.jm-overlay.open { opacity: 1; pointer-events: all; }
+
+.jm-box {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%; max-width: 540px;
+  box-shadow: 0 40px 100px rgba(15,14,12,.22), 0 4px 20px rgba(15,14,12,.1);
+  overflow: hidden;
+  transform: scale(.95) translateY(12px);
+  transition: transform .32s cubic-bezier(.34,1.42,.64,1);
+}
+.jm-overlay.open .jm-box { transform: scale(1) translateY(0); }
+
+/* Header */
+.jm-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid rgba(26,23,20,.07);
+}
+.jm-header-left { display: flex; align-items: center; gap: 12px; }
+.jm-header-icon {
+  width: 40px; height: 40px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .25s;
+}
+.jm-header-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1rem; font-weight: 800; color: #1a1714; letter-spacing: -.02em;
+}
+.jm-header-sub { font-size: .73rem; color: #9a9690; margin-top: 2px; }
+.jm-close {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: rgba(26,23,20,.06); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #6b6560; transition: background .15s, color .15s; flex-shrink: 0;
+}
+.jm-close:hover { background: rgba(26,23,20,.12); color: #1a1714; }
+
+/* Stepper */
+.jm-stepper {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 14px 24px 0;
+}
+.jm-step-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(26,23,20,.12); transition: background .3s, transform .3s; flex-shrink: 0;
+}
+.jm-step-dot.active { background: #1c2e4a; transform: scale(1.5); }
+.jm-step-dot.done   { background: #1c2e4a; opacity: .45; }
+.jm-step-line {
+  width: 36px; height: 2px; border-radius: 99px;
+  background: rgba(26,23,20,.09); margin: 0 5px; transition: background .3s;
+}
+.jm-step-line.done { background: #1c2e4a; opacity: .45; }
+
+/* Content */
+.jm-content { padding: 18px 22px 22px; }
+.jm-panel {
+  display: none; flex-direction: column; gap: 10px;
+  animation: jmIn .28s ease both;
+}
+.jm-panel.active { display: flex; }
+
+@keyframes jmIn   { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+@keyframes jmBack { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+
+.jm-panel-label {
+  font-size: .68rem; font-weight: 700; letter-spacing: .13em;
+  text-transform: uppercase; color: #9a9690; margin-bottom: 2px;
+}
+
+/* Back button */
+.jm-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .74rem; font-weight: 600; color: #6b6560;
+  background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 6px;
+  transition: color .15s;
+}
+.jm-back:hover { color: #1a1714; }
+
+/* Choice cards — step 1 */
+.jm-choice-grid { display: flex; flex-direction: column; gap: 10px; }
+.jm-choice {
+  display: flex; align-items: center; gap: 14px;
+  padding: 17px 18px; width: 100%; text-align: left;
+  background: #faf8f4; border: 1.5px solid rgba(26,23,20,.08);
+  border-radius: 16px; cursor: pointer;
+  transition: border-color .2s, background .2s, transform .15s;
+}
+.jm-choice:hover { border-color: rgba(26,23,20,.22); background: #f5f2ec; transform: translateY(-2px); }
+.jm-choice:active { transform: scale(.985); }
+
+.jm-choice-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.jm-icon-blue   { background: #eff6ff; color: #2563eb; }
+.jm-icon-purple { background: #f5f3ff; color: #7c3aed; }
+.jm-icon-green  { background: #ecfdf5; color: #059669; }
+.jm-icon-slate  { background: #f1f5f9; color: #475569; }
+
+.jm-choice-text { flex: 1; min-width: 0; }
+.jm-choice-title { font-size: .9rem; font-weight: 700; color: #1a1714; }
+.jm-choice-desc  { font-size: .76rem; color: #9a9690; margin-top: 3px; }
+.jm-choice-arrow { color: #c5c0ba; flex-shrink: 0; transition: transform .2s, color .2s; }
+.jm-choice:hover .jm-choice-arrow { transform: translateX(3px); color: #1a1714; }
+
+/* Path list — step 2a */
+.jm-path-list { display: flex; flex-direction: column; gap: 9px; }
+.jm-path {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 16px; width: 100%; text-align: left;
+  background: #faf8f4; border: 1.5px solid rgba(26,23,20,.08);
+  border-radius: 14px; cursor: pointer;
+  transition: border-color .2s, background .2s, transform .15s;
+}
+.jm-path:hover { border-color: rgba(26,23,20,.2); background: #f5f2ec; transform: translateY(-1px); }
+.jm-path.recommended { border-color: #1c2e4a; background: #f6f8fc; }
+.jm-path.recommended:hover { background: #edf1f9; }
+
+.jm-path-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
+.jm-path-icon {
+  width: 40px; height: 40px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.jm-path-title {
+  font-size: .85rem; font-weight: 700; color: #1a1714;
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+.jm-path-desc { font-size: .74rem; color: #9a9690; margin-top: 3px; }
+
+.jm-badge {
+  font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  background: #1c2e4a; color: #fff; padding: 2px 8px; border-radius: 999px;
+}
+
+/* Wizard — step 2b */
+.jm-wiz-progress { display: flex; gap: 4px; margin-bottom: 18px; }
+.jm-wdot { height: 3px; border-radius: 99px; flex: 1; background: rgba(26,23,20,.1); transition: background .3s; }
+.jm-wdot.done   { background: #1c2e4a; }
+.jm-wdot.active { background: #1c2e4a; opacity: .45; }
+
+.jm-wiz-q    { font-family:'Bricolage Grotesque',sans-serif; font-size:1.05rem; font-weight:800; color:#1a1714; line-height:1.35; letter-spacing:-.01em; }
+.jm-wiz-hint { font-size:.74rem; color:#9a9690; margin-top:5px; margin-bottom:14px; }
+
+.jm-wiz-input {
+  width: 100%; padding: 13px 14px;
+  border: 1.5px solid rgba(26,23,20,.12); border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: .9rem; color: #1a1714;
+  background: #faf8f4; outline: none; resize: none;
+  transition: border-color .2s, background .2s;
+}
+.jm-wiz-input:focus { border-color: #1c2e4a; background: #fff; }
+
+.jm-wiz-next {
+  width: 100%; padding: 13px; margin-top: 8px;
+  background: #1c2e4a; color: #fff; border: none; border-radius: 12px;
+  font-family: 'Bricolage Grotesque', sans-serif; font-size: .88rem; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background .2s, transform .1s;
+}
+.jm-wiz-next:hover { background: #263f5c; }
+.jm-wiz-next:active { transform: scale(.98); }
+.jm-wiz-next:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+
+/* Generating */
+.jm-generating {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 0 12px; gap: 14px; text-align: center;
+}
+.jm-gen-spinner {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 3px solid rgba(26,23,20,.08); border-top-color: #1c2e4a;
+  animation: jmSpin .75s linear infinite;
+}
+@keyframes jmSpin { to { transform: rotate(360deg); } }
+.jm-gen-title { font-family:'Bricolage Grotesque',sans-serif; font-size:.98rem; font-weight:800; color:#1a1714; }
+.jm-gen-sub { font-size:.75rem; color:#9a9690; }
+
+@media (max-width: 560px) {
+  .jm-box { border-radius: 20px; }
+  .jm-content { padding: 14px 14px 18px; }
+  .jm-header  { padding: 15px 14px 12px; }
+  .jm-choice-icon { width:40px; height:40px; border-radius:12px; }
+}
 </style>
 
 <!-- Firebase -->
@@ -536,7 +734,7 @@ body {
 <section class="k-cards">
 
   <!-- KARTA 1 — Szukam pracy -->
-  <a href="kreator-cv.html" class="k-card k-card-1">
+  <a href="kreator-cv.html" class="k-card k-card-1" onclick="openJobModal(event)" role="button">
     <div class="k-card-num">01</div>
     <div class="k-card-icon">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -605,6 +803,338 @@ body {
 
 </section>
 
+
+<!-- ══════════════════════════════════════════
+     JOB MODAL
+══════════════════════════════════════════ -->
+<div id="jobModal" class="jm-overlay" role="dialog" aria-modal="true" aria-label="Szukam pracy">
+  <div class="jm-box" role="document">
+
+    <!-- Header -->
+    <div class="jm-header">
+      <div class="jm-header-left">
+        <div class="jm-header-icon" id="jmHeaderIcon" style="background:#eff6ff;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        </div>
+        <div>
+          <div class="jm-header-title" id="jmHeaderTitle">Szukam pracy</div>
+          <div class="jm-header-sub" id="jmHeaderSub">Wybierz dokument do stworzenia</div>
+        </div>
+      </div>
+      <button class="jm-close" onclick="closeJobModal()" aria-label="Zamknij">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="jm-stepper">
+      <div class="jm-step-dot active" id="jmDot0"></div>
+      <div class="jm-step-line" id="jmLine01"></div>
+      <div class="jm-step-dot" id="jmDot1"></div>
+      <div class="jm-step-line" id="jmLine12"></div>
+      <div class="jm-step-dot" id="jmDot2"></div>
+    </div>
+
+    <!-- Panels -->
+    <div class="jm-content">
+
+      <!-- STEP 0: Wybór główny -->
+      <div class="jm-panel active" id="jmStep0">
+        <p class="jm-panel-label">Co chcesz stworzyć?</p>
+        <div class="jm-choice-grid">
+
+          <button class="jm-choice" onclick="jmChooseCV()">
+            <div class="jm-choice-icon jm-icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+            <div class="jm-choice-text">
+              <div class="jm-choice-title">Chcę stworzyć CV</div>
+              <div class="jm-choice-desc">Profesjonalne CV w nowoczesnym szablonie</div>
+            </div>
+            <svg class="jm-choice-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+          <button class="jm-choice" onclick="jmChooseLetter()">
+            <div class="jm-choice-icon jm-icon-purple">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="jm-choice-text">
+              <div class="jm-choice-title">Chcę stworzyć list motywacyjny</div>
+              <div class="jm-choice-desc">Spersonalizowany list napisany przez AI</div>
+            </div>
+            <svg class="jm-choice-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- STEP 1a: Ścieżki CV -->
+      <div class="jm-panel" id="jmStep1cv">
+        <button class="jm-back" onclick="jmGoBack()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Wróć
+        </button>
+        <p class="jm-panel-label">Jak chcesz zacząć?</p>
+        <div class="jm-path-list">
+
+          <button class="jm-path recommended" onclick="window.location.href='kreator-cv.html?mode=scratch'">
+            <div class="jm-path-left">
+              <div class="jm-path-icon jm-icon-blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              </div>
+              <div>
+                <div class="jm-path-title">
+                  Zbuduj CV od zera z pomocą AI
+                  <span class="jm-badge">Polecane</span>
+                </div>
+                <div class="jm-path-desc">Kreator krok po kroku — AI podpowie treść i układ</div>
+              </div>
+            </div>
+            <svg class="jm-choice-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+          <button class="jm-path" onclick="jmTriggerUpload()">
+            <div class="jm-path-left">
+              <div class="jm-path-icon jm-icon-slate">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div>
+                <div class="jm-path-title">Wgraj istniejące CV</div>
+                <div class="jm-path-desc">Importuj dane z pliku PDF lub DOCX</div>
+              </div>
+            </div>
+            <svg class="jm-choice-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+          <button class="jm-path" onclick="window.location.href='kreator-cv.html?mode=match'">
+            <div class="jm-path-left">
+              <div class="jm-path-icon jm-icon-green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              </div>
+              <div>
+                <div class="jm-path-title">Dopasuj CV do ogłoszenia</div>
+                <div class="jm-path-desc">AI przeanalizuje treść ogłoszenia i dostosuje Twoje CV</div>
+              </div>
+            </div>
+            <svg class="jm-choice-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+        </div>
+        <input type="file" id="jmFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="jmHandleUpload(this)">
+      </div>
+
+      <!-- STEP 1b: Wizard list motywacyjny -->
+      <div class="jm-panel" id="jmStep1letter">
+        <button class="jm-back" onclick="jmGoBack()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Wróć
+        </button>
+        <div id="jmWizardContainer"></div>
+      </div>
+
+    </div><!-- /jm-content -->
+  </div><!-- /jm-box -->
+</div><!-- /jobModal -->
+
+<script>
+// ─────────────────────────────────────────
+// JOB MODAL — state machine
+// ─────────────────────────────────────────
+var _jm = {
+  step: 'choose',   // 'choose' | 'cv-paths' | 'cover-letter'
+  wizardQ: 0,
+  answers: {},
+  back: false
+};
+
+var _jmQuestions = [
+  {
+    q: 'Na jakie stanowisko aplikujesz?',
+    hint: 'Np. „Specjalista ds. marketingu", „Frontend Developer"',
+    key: 'position', type: 'input',
+    placeholder: 'Wpisz nazwę stanowiska…'
+  },
+  {
+    q: 'Jak nazywa się firma?',
+    hint: 'Podaj pełną nazwę firmy, do której aplikujesz',
+    key: 'company', type: 'input',
+    placeholder: 'Np. Allegro, mBank, startup XYZ…'
+  },
+  {
+    q: 'Opisz 2–3 kluczowe osiągnięcia zawodowe',
+    hint: 'Konkretne liczby i efekty przekonują rekruterów bardziej niż ogólne stwierdzenia',
+    key: 'achievements', type: 'textarea', rows: 3,
+    placeholder: 'Np. „Zwiększyłem sprzedaż o 30% w 6 miesięcy", „Zarządzałem projektem z budżetem 500k PLN"…'
+  },
+  {
+    q: 'Dlaczego chcesz pracować właśnie tutaj?',
+    hint: 'Pokaż, że znasz firmę — to wyróżni Cię spośród innych kandydatów',
+    key: 'motivation', type: 'textarea', rows: 3,
+    placeholder: 'Co Cię przyciąga do tej firmy lub tego stanowiska?…'
+  }
+];
+
+function openJobModal(e) {
+  if (e) e.preventDefault();
+  _jm.step = 'choose'; _jm.wizardQ = 0; _jm.answers = {}; _jm.back = false;
+  _jmRender();
+  var m = document.getElementById('jobModal');
+  m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeJobModal() {
+  document.getElementById('jobModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on backdrop click
+document.getElementById('jobModal').addEventListener('click', function(e) {
+  if (e.target === this) closeJobModal();
+});
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeJobModal();
+});
+
+function jmChooseCV()     { _jm.back = false; _jm.step = 'cv-paths';     _jmRender(); }
+function jmChooseLetter() { _jm.back = false; _jm.step = 'cover-letter'; _jm.wizardQ = 0; _jmRender(); }
+function jmGoBack()       { _jm.back = true;  _jm.step = 'choose';       _jmRender(); }
+
+function jmTriggerUpload() { document.getElementById('jmFileInput').click(); }
+function jmHandleUpload(input) {
+  if (input.files && input.files[0]) {
+    window.location.href = 'kreator-cv.html?mode=import';
+  }
+}
+
+function _jmRender() {
+  var s = _jm;
+  var panelMap = { 'choose': 'jmStep0', 'cv-paths': 'jmStep1cv', 'cover-letter': 'jmStep1letter' };
+  var stepIdx  = s.step === 'choose' ? 0 : (s.step === 'cover-letter' && s.wizardQ >= _jmQuestions.length ? 2 : 1);
+
+  // Stepper
+  ['jmDot0','jmDot1','jmDot2'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    el.className = 'jm-step-dot' + (i < stepIdx ? ' done' : i === stepIdx ? ' active' : '');
+  });
+  ['jmLine01','jmLine12'].forEach(function(id, i) {
+    document.getElementById(id).className = 'jm-step-line' + (i < stepIdx ? ' done' : '');
+  });
+
+  // Header
+  var headers = {
+    'choose':       { title:'Szukam pracy',        sub:'Wybierz dokument do stworzenia', bg:'#eff6ff', stroke:'#2563eb', icon:'briefcase' },
+    'cv-paths':     { title:'Tworzę CV',            sub:'Jak chcesz zacząć?',             bg:'#eff6ff', stroke:'#2563eb', icon:'file' },
+    'cover-letter': { title:'List motywacyjny',     sub:'Kilka pytań — AI pisze za Ciebie', bg:'#f5f3ff', stroke:'#7c3aed', icon:'mail' }
+  };
+  var h = headers[s.step] || headers['choose'];
+  document.getElementById('jmHeaderTitle').textContent = h.title;
+  document.getElementById('jmHeaderSub').textContent   = h.sub;
+  var iconEl = document.getElementById('jmHeaderIcon');
+  iconEl.style.background = h.bg;
+  var icons = {
+    briefcase: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'+h.stroke+'" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>',
+    file:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'+h.stroke+'" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    mail:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'+h.stroke+'" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+  };
+  iconEl.innerHTML = icons[h.icon];
+
+  // Panels
+  var activeId = panelMap[s.step];
+  ['jmStep0','jmStep1cv','jmStep1letter'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (id === activeId) {
+      el.style.display = 'flex';
+      el.style.animation = 'none';
+      el.offsetHeight; // force reflow
+      el.style.animation = (s.back ? 'jmBack' : 'jmIn') + ' .28s ease both';
+      el.classList.add('active');
+    } else {
+      el.style.display = 'none';
+      el.classList.remove('active');
+    }
+  });
+
+  if (s.step === 'cover-letter') _jmRenderWizard();
+}
+
+function _jmRenderWizard() {
+  var container = document.getElementById('jmWizardContainer');
+  var qs = _jmQuestions;
+  var qi = _jm.wizardQ;
+
+  // Generating state
+  if (qi >= qs.length) {
+    container.innerHTML =
+      '<div class="jm-generating">' +
+        '<div class="jm-gen-spinner"></div>' +
+        '<div class="jm-gen-title">AI tworzy Twój list motywacyjny…</div>' +
+        '<div class="jm-gen-sub">Przygotowujemy spersonalizowaną treść na podstawie Twoich odpowiedzi.</div>' +
+      '</div>';
+    // mark step 3
+    document.getElementById('jmDot2').className = 'jm-step-dot active';
+    document.getElementById('jmLine12').className = 'jm-step-line done';
+    document.getElementById('jmHeaderSub').textContent = 'Generowanie…';
+    setTimeout(function() {
+      var params = new URLSearchParams(_jm.answers).toString();
+      window.location.href = 'generator.html?type=cover-letter&' + params;
+    }, 2400);
+    return;
+  }
+
+  var q = qs[qi];
+
+  // Progress bar
+  var prog = '<div class="jm-wiz-progress">';
+  for (var i = 0; i < qs.length; i++) {
+    prog += '<div class="jm-wdot' + (i < qi ? ' done' : i === qi ? ' active' : '') + '"></div>';
+  }
+  prog += '</div>';
+
+  var inputHtml = q.type === 'textarea'
+    ? '<textarea class="jm-wiz-input" id="jmWizInput" rows="' + (q.rows||3) + '" placeholder="' + q.placeholder + '"></textarea>'
+    : '<input type="text" class="jm-wiz-input" id="jmWizInput" placeholder="' + q.placeholder + '">';
+
+  var isLast = qi === qs.length - 1;
+  var btnLabel = isLast
+    ? 'Generuj list motywacyjny <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+    : 'Dalej <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+  container.innerHTML =
+    prog +
+    '<div class="jm-wiz-q">' + q.q + '</div>' +
+    '<div class="jm-wiz-hint">' + q.hint + '</div>' +
+    inputHtml +
+    '<button class="jm-wiz-next" id="jmWizNext" disabled onclick="jmWizAdvance()">' + btnLabel + '</button>';
+
+  setTimeout(function() {
+    var inp = document.getElementById('jmWizInput');
+    if (!inp) return;
+    inp.focus();
+    inp.addEventListener('input', function() {
+      document.getElementById('jmWizNext').disabled = inp.value.trim().length < 2;
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && q.type !== 'textarea') jmWizAdvance();
+    });
+  }, 40);
+}
+
+function jmWizAdvance() {
+  var inp = document.getElementById('jmWizInput');
+  if (!inp || inp.value.trim().length < 2) return;
+  _jm.answers[_jmQuestions[_jm.wizardQ].key] = inp.value.trim();
+  _jm.wizardQ++;
+  // animate wizard container
+  var c = document.getElementById('jmWizardContainer');
+  c.style.animation = 'none';
+  c.offsetHeight;
+  c.style.animation = 'jmIn .25s ease both';
+  _jmRenderWizard();
+}
+</script>
 
 <script>
 // ── NAV JS ──
