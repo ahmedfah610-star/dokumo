@@ -370,21 +370,32 @@ select.gf-input { cursor: pointer; }
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const auth = getAuth(initializeApp({
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const fbApp = initializeApp({
     apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
     authDomain:"dokumo-c1ccb.firebaseapp.com",
     projectId:"dokumo-c1ccb",
     storageBucket:"dokumo-c1ccb.firebasestorage.app",
     messagingSenderId:"1088576029067",
     appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"
-  }));
-  onAuthStateChanged(auth, u => {
+  });
+  const auth = getAuth(fbApp);
+  const db = getFirestore(fbApp);
+  onAuthStateChanged(auth, async u => {
     window._fbReady = true;
     window._fbToken = u ? () => u.getIdToken(true) : null;
     if (u) {
       localStorage.setItem('dokumo_user', JSON.stringify({
         name: u.displayName || '', email: u.email || '', photo: u.photoURL || ''
       }));
+      // Załaduj profil z Firestore jeśli brak w localStorage
+      try {
+        const cached = localStorage.getItem('dokumo_profile');
+        if (!cached || cached === '{}') {
+          const snap = await getDoc(doc(db, 'users', u.uid, 'profile', 'main'));
+          if (snap.exists()) localStorage.setItem('dokumo_profile', JSON.stringify(snap.data()));
+        }
+      } catch(e) {}
     } else {
       localStorage.removeItem('dokumo_user');
     }

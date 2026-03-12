@@ -3,480 +3,571 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dokumo – Konto</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<title>Dokumo – Moje konto</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
-/* ── PAGE ── */
-.konto-page { min-height:100vh; display:flex; flex-direction:column; background:var(--bg); }
-.konto-main {
-  flex:1; display:flex; align-items:center; justify-content:center;
-  padding:40px 20px 60px;
+:root {
+  --bg: #0b0c0e;
+  --surface: #141518;
+  --surface2: #1a1c20;
+  --surface3: #21242a;
+  --border: rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.12);
+  --ink: #f0ede8;
+  --ink2: rgba(240,237,232,.55);
+  --ink3: rgba(240,237,232,.3);
+  --green: #22c55e;
+  --green-glow: rgba(34,197,94,.18);
+  --green-bright: #39ff8a;
+  --red: #f87171;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--bg); color:var(--ink);
+  font-family:"DM Sans",sans-serif; font-size:15px;
+  min-height:100vh; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* ── CARD ── */
-.konto-card {
-  background:var(--white); border:1px solid var(--border);
-  width:100%; max-width:480px; position:relative;
-  box-shadow:0 8px 40px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);
-  animation:konto-fadein 0.35s ease both;
+/* ── NAV ── */
+.k-nav {
+  height:56px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px;
+  background:rgba(11,12,14,.92); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
 }
-@keyframes konto-fadein {
-  from { opacity:0; transform:translateY(12px); }
+.k-nav-logo {
+  display:flex; align-items:center; gap:8px;
+  text-decoration:none; font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800; font-size:1rem; color:var(--ink); letter-spacing:-.02em;
+}
+.k-nav-logo-dot {
+  width:26px; height:26px; background:var(--ink); border-radius:7px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.k-nav-back {
+  display:flex; align-items:center; gap:5px;
+  font-size:.73rem; font-weight:500; color:var(--ink2);
+  text-decoration:none; padding:5px 11px; border-radius:8px;
+  border:1px solid var(--border); transition:all .2s;
+}
+.k-nav-back:hover { color:var(--ink); border-color:var(--border2); }
+
+/* ── MAIN ── */
+.k-main {
+  min-height:calc(100vh - 56px);
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:48px 16px 80px;
+}
+.k-container { width:100%; max-width:500px; }
+
+/* ── LOGIN PANEL ── */
+.k-login-panel {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:40px 36px 36px;
+  animation:fadeUp .4s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
   to   { opacity:1; transform:translateY(0); }
 }
-.konto-card-bar {
-  height:3px;
-  background:linear-gradient(90deg, var(--accent) 0%, var(--accent2) 55%, var(--gold) 100%);
+.k-logo-mark {
+  width:48px; height:48px; background:var(--surface2);
+  border-radius:14px; display:flex; align-items:center; justify-content:center;
+  margin-bottom:20px; border:1px solid var(--border);
 }
-.konto-card-body { padding:44px 40px 48px; }
-
-/* ── LOGIN STATE ── */
-.konto-logo { font-family:'Instrument Serif',serif; font-size:1.55rem; color:var(--ink); margin-bottom:6px; }
-.konto-logo span { color:var(--accent2); }
-.konto-headline { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; color:var(--ink); margin-bottom:5px; }
-.konto-sub { font-size:0.82rem; color:var(--muted); line-height:1.65; margin-bottom:32px; }
-
-.oauth-btns { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
-.oauth-btn {
-  display:flex; align-items:center; gap:14px;
-  padding:13px 16px; border:1.5px solid var(--border);
-  background:var(--white); cursor:pointer; transition:all 0.2s;
-  font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600;
-  color:var(--ink); text-align:left; width:100%; -webkit-appearance:none; position:relative;
-  border-radius:2px;
+.k-login-title {
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-size:1.5rem; font-weight:800; letter-spacing:-.02em;
+  color:var(--ink); margin-bottom:6px;
 }
-.oauth-btn:hover {
-  border-color:var(--accent2); background:var(--bg);
-  transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,0,0,0.08);
+.k-login-sub {
+  font-size:.85rem; color:var(--ink2); line-height:1.6; margin-bottom:32px;
 }
-.oauth-btn-icon { width:20px; height:20px; flex-shrink:0; }
-.oauth-btn-text { flex:1; }
-.oauth-btn-label { display:block; font-size:0.82rem; font-weight:700; }
-.oauth-btn-sub { display:block; font-size:0.67rem; color:var(--muted); font-weight:400; margin-top:1px; }
-.oauth-arrow { font-size:0.9rem; color:var(--muted); transition:transform 0.2s; }
-.oauth-btn:hover .oauth-arrow { transform:translateX(3px); }
 
-.konto-divider { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
-.konto-divider-line { flex:1; height:1px; background:var(--border); }
-.konto-divider-text { font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
-
-.konto-benefits-title { font-size:0.6rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
-.benefit-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; }
-.benefit-icon {
-  width:22px; height:22px; border-radius:50%;
-  background:rgba(26,58,46,0.08); color:var(--accent2);
-  display:flex; align-items:center; justify-content:center;
-  font-size:0.65rem; flex-shrink:0; margin-top:1px;
+.k-oauth-btn {
+  width:100%; display:flex; align-items:center; gap:14px;
+  padding:14px 18px;
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:12px; cursor:pointer;
+  font-family:"DM Sans",sans-serif; font-size:.88rem; font-weight:600;
+  color:var(--ink); transition:all .2s; -webkit-appearance:none;
+  margin-bottom:12px;
 }
-.benefit-text { font-size:0.78rem; color:var(--ink2); line-height:1.55; }
+.k-oauth-btn:hover {
+  background:var(--surface3); border-color:rgba(255,255,255,.2);
+  transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+.k-oauth-icon { width:20px; height:20px; flex-shrink:0; }
+.k-oauth-label { flex:1; text-align:left; }
+.k-oauth-arrow { color:var(--ink3); font-size:.85rem; transition:transform .2s; }
+.k-oauth-btn:hover .k-oauth-arrow { transform:translateX(3px); color:var(--ink2); }
 
-.konto-privacy { font-size:0.68rem; color:var(--muted); line-height:1.55; margin-top:22px; text-align:center; }
-.konto-privacy a { color:var(--accent2); text-decoration:none; }
-.konto-privacy a:hover { text-decoration:underline; }
+.k-divider {
+  display:flex; align-items:center; gap:12px; margin:24px 0;
+}
+.k-divider-line { flex:1; height:1px; background:var(--border); }
+.k-divider-text { font-size:.65rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); }
+
+.k-benefits { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+.k-benefit {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 14px; background:var(--surface2);
+  border:1px solid var(--border); border-radius:10px;
+}
+.k-benefit-icon {
+  width:28px; height:28px; border-radius:8px;
+  background:var(--green-glow); display:flex; align-items:center;
+  justify-content:center; font-size:.85rem; flex-shrink:0;
+}
+.k-benefit-text { font-size:.8rem; color:var(--ink2); line-height:1.45; }
+
+.k-privacy {
+  font-size:.68rem; color:var(--ink3); text-align:center; line-height:1.55;
+}
+.k-privacy a { color:var(--ink2); text-decoration:none; }
+.k-privacy a:hover { color:var(--ink); }
 
 /* ── SUCCESS ── */
-.konto-success {
-  display:none; text-align:center; padding:24px 0;
+.k-success {
+  display:none; text-align:center; padding:28px 0;
 }
-.konto-success-check {
-  width:56px; height:56px; border-radius:50%;
-  background:linear-gradient(135deg, var(--accent2), var(--accent));
-  color:#fff; font-size:1.4rem; display:flex; align-items:center;
-  justify-content:center; margin:0 auto 16px;
-  animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-}
-@keyframes pop { from { transform:scale(0); } to { transform:scale(1); } }
-.konto-success-title { font-family:'Instrument Serif',serif; font-size:1.5rem; color:var(--ink); margin-bottom:6px; }
-.konto-success-sub { font-size:0.83rem; color:var(--muted); line-height:1.6; }
-
-/* ── PROFILE STATE ── */
-.profile-wrap { display:none; flex-direction:column; gap:0; }
-
-.profile-header {
-  display:flex; align-items:center; gap:16px; margin-bottom:24px;
-  padding-bottom:24px; border-bottom:1px solid var(--border2);
-}
-.profile-avatar-ring {
-  width:58px; height:58px; border-radius:50%; flex-shrink:0;
-  background:linear-gradient(135deg, var(--accent2), var(--accent));
-  padding:2px;
-}
-.profile-avatar {
-  width:100%; height:100%; border-radius:50%;
-  background:var(--white); color:var(--accent);
-  font-family:'Instrument Serif',serif; font-size:1.4rem;
+.k-success-check {
+  width:60px; height:60px; border-radius:50%;
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  color:#fff; font-size:1.5rem; font-weight:700;
   display:flex; align-items:center; justify-content:center;
+  margin:0 auto 18px;
+  box-shadow:0 0 0 12px var(--green-glow);
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+.k-success-title {
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-size:1.3rem; font-weight:800; color:var(--ink); margin-bottom:6px;
+}
+.k-success-sub { font-size:.83rem; color:var(--ink2); }
+
+/* ── PROFILE PANEL ── */
+.k-profile-panel { display:none; flex-direction:column; gap:16px; }
+
+/* Header card */
+.k-profile-header {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px; padding:24px;
+  display:flex; align-items:center; gap:16px;
+  animation:fadeUp .35s ease both;
+}
+.k-avatar-wrap {
+  width:60px; height:60px; flex-shrink:0; border-radius:50%;
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  padding:2px; position:relative;
+}
+.k-avatar-inner {
+  width:100%; height:100%; border-radius:50%;
+  background:var(--surface2);
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-size:1.3rem; font-weight:800; color:var(--ink);
   overflow:hidden;
 }
-.profile-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-.profile-info { flex:1; min-width:0; }
-.profile-name { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:var(--ink); }
-.profile-email { font-size:0.75rem; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.profile-sync-badge {
-  font-size:0.6rem; font-weight:700; letter-spacing:0.08em;
-  text-transform:uppercase; color:var(--accent2);
-  background:rgba(26,58,46,0.08); border:1px solid rgba(26,58,46,0.15);
-  padding:3px 8px; border-radius:99px; margin-top:4px; display:inline-block;
+.k-avatar-inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.k-profile-meta { flex:1; min-width:0; }
+.k-profile-name {
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:3px;
+}
+.k-profile-email { font-size:.78rem; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.k-sync-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  padding:4px 9px; border-radius:999px; margin-top:6px;
+  background:var(--green-glow); color:var(--green-bright);
+  border:1px solid rgba(34,197,94,.25);
+}
+.k-sync-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+/* Form card */
+.k-form-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px; padding:28px;
+  animation:fadeUp .4s ease both;
+  animation-delay:.05s;
+}
+.k-form-header {
+  display:flex; align-items:center; gap:10px; margin-bottom:6px;
+}
+.k-form-icon {
+  width:32px; height:32px; border-radius:9px;
+  background:var(--green-glow); display:flex; align-items:center;
+  justify-content:center; font-size:.85rem; flex-shrink:0;
+}
+.k-form-title {
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-size:1rem; font-weight:700; color:var(--ink);
+}
+.k-form-hint {
+  font-size:.75rem; color:var(--ink2); margin-bottom:22px; line-height:1.5;
+  padding:10px 13px; background:var(--surface2);
+  border:1px solid var(--border); border-radius:10px;
+  display:flex; gap:8px; align-items:flex-start;
+}
+.k-form-hint-icon { flex-shrink:0; color:var(--green); margin-top:1px; }
+
+.k-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.k-field { display:flex; flex-direction:column; gap:6px; }
+.k-field.full { grid-column:1/-1; }
+.k-field label {
+  font-size:.67rem; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink3);
+}
+.k-input {
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--ink); font-family:"DM Sans",sans-serif; font-size:.85rem;
+  padding:10px 13px; outline:none; border-radius:10px;
+  transition:border-color .18s, box-shadow .18s; width:100%;
+}
+.k-input::placeholder { color:var(--ink3); }
+.k-input:focus {
+  border-color:rgba(34,197,94,.5);
+  box-shadow:0 0 0 3px rgba(34,197,94,.1);
 }
 
-.profile-autofill-hint {
-  display:flex; align-items:flex-start; gap:10px;
-  background:rgba(26,58,46,0.05); border:1px solid rgba(26,58,46,0.12);
-  padding:10px 14px; margin-bottom:20px; font-size:0.74rem; color:var(--accent2); line-height:1.55;
+.k-save-row { display:flex; align-items:center; gap:12px; margin-top:20px; }
+.k-save-btn {
+  flex:1; background:rgba(34,197,94,.15); color:var(--green-bright);
+  border:1.5px solid rgba(57,255,138,.3); border-radius:12px;
+  padding:12px 16px; font-family:"DM Sans",sans-serif;
+  font-size:.85rem; font-weight:700; cursor:pointer;
+  transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px;
 }
-.profile-autofill-icon { font-size:0.9rem; flex-shrink:0; margin-top:1px; }
-
-.profile-section-title {
-  font-size:0.6rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
-  color:var(--muted); margin-bottom:12px; margin-top:4px;
-  padding-bottom:8px; border-bottom:1px solid var(--border2);
-}
-.profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.profile-field { display:flex; flex-direction:column; gap:5px; }
-.profile-field.full { grid-column:1/-1; }
-.profile-field label {
-  font-size:0.6rem; font-weight:700; letter-spacing:0.1em;
-  text-transform:uppercase; color:var(--ink2);
-}
-.profile-input {
-  background:var(--bg); border:1.5px solid var(--border);
-  color:var(--ink); font-family:'Syne',sans-serif; font-size:0.82rem;
-  padding:9px 11px; outline:none; transition:border-color 0.18s, box-shadow 0.18s; width:100%;
-  border-radius:2px;
-}
-.profile-input:focus {
-  border-color:var(--accent2);
-  box-shadow:0 0 0 3px rgba(45,107,82,0.1);
-}
-.profile-save-row { display:flex; align-items:center; gap:12px; margin-top:20px; }
-.profile-save-btn {
-  flex:1;
-  background:var(--accent); color:#fff; border:none;
-  padding:12px; font-family:'Syne',sans-serif; font-size:0.8rem;
-  font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-  cursor:pointer; transition:background 0.2s, transform 0.1s;
-  border-radius:2px; display:flex; align-items:center; justify-content:center; gap:8px;
-}
-.profile-save-btn:hover { background:var(--accent2); }
-.profile-save-btn:active { transform:scale(0.98); }
-.profile-save-btn.saving { opacity:0.7; pointer-events:none; }
-.profile-save-spinner {
+.k-save-btn:hover { background:rgba(34,197,94,.22); border-color:rgba(57,255,138,.45); }
+.k-save-btn:active { transform:scale(.98); }
+.k-save-btn.saving { opacity:.6; pointer-events:none; }
+.k-save-spinner {
   display:none; width:14px; height:14px; border-radius:50%;
-  border:2px solid rgba(255,255,255,0.3); border-top-color:#fff;
-  animation:spin 0.7s linear infinite; flex-shrink:0;
+  border:2px solid rgba(57,255,138,.3); border-top-color:var(--green-bright);
+  animation:spin .7s linear infinite; flex-shrink:0;
 }
 @keyframes spin { to { transform:rotate(360deg); } }
-.profile-save-ok {
-  display:none; font-size:0.72rem; color:var(--accent2);
-  font-weight:600; white-space:nowrap;
+.k-save-ok {
+  display:none; font-size:.75rem; color:var(--green);
+  font-weight:600; white-space:nowrap; gap:4px;
+  display:none; align-items:center;
 }
 
-.profile-links { display:flex; flex-direction:column; gap:6px; margin-top:22px; border-top:1px solid var(--border2); padding-top:18px; }
-.profile-link {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:11px 14px; border:1px solid var(--border);
-  text-decoration:none; color:var(--ink); font-size:0.8rem; font-weight:600;
-  font-family:'Syne',sans-serif; transition:all 0.18s; background:var(--white);
-  border-radius:2px;
+/* Links card */
+.k-links-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px; overflow:hidden;
+  animation:fadeUp .45s ease both;
+  animation-delay:.1s;
 }
-.profile-link:hover { border-color:var(--accent2); background:var(--bg); transform:translateX(2px); }
-.profile-link-icon { font-size:1rem; }
-.profile-link-text { flex:1; padding:0 10px; }
-.profile-link-arrow { font-size:0.8rem; color:var(--muted); transition:transform 0.18s; }
-.profile-link:hover .profile-link-arrow { transform:translateX(3px); color:var(--accent2); }
+.k-link {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 22px; text-decoration:none; color:var(--ink);
+  border-bottom:1px solid var(--border);
+  transition:background .18s;
+}
+.k-link:last-child { border-bottom:none; }
+.k-link:hover { background:var(--surface2); }
+.k-link-icon {
+  width:36px; height:36px; border-radius:10px;
+  background:var(--surface2); display:flex; align-items:center;
+  justify-content:center; font-size:.95rem; flex-shrink:0;
+  border:1px solid var(--border); transition:background .18s;
+}
+.k-link:hover .k-link-icon { background:var(--surface3); }
+.k-link-text { flex:1; font-size:.88rem; font-weight:600; }
+.k-link-arrow { color:var(--ink3); font-size:.85rem; transition:transform .18s; }
+.k-link:hover .k-link-arrow { transform:translateX(3px); color:var(--ink2); }
 
-.profile-logout-btn {
-  margin-top:10px; width:100%; background:transparent;
-  border:1px solid var(--border); color:var(--muted);
-  padding:10px; font-family:'Syne',sans-serif; font-size:0.75rem;
-  font-weight:600; cursor:pointer; transition:all 0.18s; letter-spacing:0.06em;
-  text-transform:uppercase; border-radius:2px;
+/* Logout */
+.k-logout-btn {
+  width:100%; background:transparent;
+  border:1px solid var(--border); color:var(--ink3);
+  padding:12px; font-family:"DM Sans",sans-serif; font-size:.8rem;
+  font-weight:600; cursor:pointer; transition:all .2s;
+  border-radius:12px;
 }
-.profile-logout-btn:hover { border-color:var(--red); color:var(--red); }
+.k-logout-btn:hover { border-color:var(--red); color:var(--red); }
 
 @media(max-width:480px) {
-  .konto-card-body { padding:32px 22px 36px; }
-  .profile-grid { grid-template-columns:1fr; }
+  .k-login-panel, .k-form-card, .k-profile-header { padding:24px 20px; }
+  .k-grid { grid-template-columns:1fr; }
+  .k-main { padding:24px 12px 60px; }
 }
 </style>
 </head>
-<body class="konto-page">
+<body>
 
-<nav style="padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); background:var(--white);">
-  <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <a href="dokumenty.html" style="font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; display:flex; align-items:center; gap:5px;">
-    <span style="font-size:0.8rem;">←</span> Dokumenty
+<nav class="k-nav">
+  <a href="index.html" class="k-nav-logo">
+    <div class="k-nav-logo-dot">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0b0c0e" stroke-width="2.5" stroke-linecap="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+    </div>
+    Dokumo
+  </a>
+  <a href="dokumenty.html" class="k-nav-back">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>Dokumenty</span>
   </a>
 </nav>
 
-<main class="konto-main">
-  <div class="konto-card">
-    <div class="konto-card-bar"></div>
-    <div class="konto-card-body">
+<main class="k-main">
+  <div class="k-container">
 
-      <!-- NIEZALOGOWANY -->
-      <div id="kontoDefault">
-        <div class="konto-logo">Doku<span>mo</span></div>
-        <div class="konto-headline">Zaloguj się lub utwórz konto</div>
-        <p class="konto-sub">Bezpieczne logowanie przez Twoje istniejące konto — bez haseł do zapamiętania.</p>
+    <!-- NIEZALOGOWANY -->
+    <div class="k-login-panel" id="kontoDefault">
+      <div class="k-logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f0ede8" stroke-width="2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div class="k-login-title">Witaj w Dokumo</div>
+      <p class="k-login-sub">Zaloguj się, by zapisać swoje dane i nie wypełniać formularzy dwa razy.</p>
 
-        <div class="oauth-btns">
-          <button class="oauth-btn" onclick="handleOAuth('Google')">
-            <svg class="oauth-btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            <span class="oauth-btn-text">
-              <span class="oauth-btn-label">Kontynuuj z Google</span>
-              <span class="oauth-btn-sub">Gmail, Google Workspace</span>
-            </span>
-            <span class="oauth-arrow">→</span>
-          </button>
-        </div>
+      <button class="k-oauth-btn" onclick="handleOAuth('Google')">
+        <svg class="k-oauth-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        <span class="k-oauth-label">Kontynuuj z Google</span>
+        <span class="k-oauth-arrow">→</span>
+      </button>
 
-        <div class="konto-divider">
-          <div class="konto-divider-line"></div>
-          <div class="konto-divider-text">Co zyskujesz z kontem?</div>
-          <div class="konto-divider-line"></div>
-        </div>
-
-        <div class="benefit-item">
-          <div class="benefit-icon">📄</div>
-          <div class="benefit-text">Historia wygenerowanych dokumentów — zawsze pod ręką</div>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">✦</div>
-          <div class="benefit-text">Zapisane dane firmy — wypełniasz formularze jeden raz</div>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">⭐</div>
-          <div class="benefit-text">Dostęp do Planu Biznes i dokumentów premium</div>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">🔔</div>
-          <div class="benefit-text">Powiadomienia o zmianach w prawie dotyczących Twoich dokumentów</div>
-        </div>
-
-        <p class="konto-privacy">
-          Logując się akceptujesz <a href="#">Regulamin</a> i <a href="#">Politykę prywatności</a> Dokumo.<br>
-          Nie przechowujemy Twojego hasła — używamy bezpiecznego OAuth 2.0.
-        </p>
+      <div class="k-divider">
+        <div class="k-divider-line"></div>
+        <div class="k-divider-text">Co zyskujesz?</div>
+        <div class="k-divider-line"></div>
       </div>
 
-      <!-- SUKCES -->
-      <div class="konto-success" id="kontoSuccess">
-        <div class="konto-success-check">✓</div>
-        <div class="konto-success-title">Zalogowano!</div>
-        <p class="konto-success-sub" id="successMsg">Witaj w Dokumo. Ładowanie profilu…</p>
+      <div class="k-benefits">
+        <div class="k-benefit">
+          <div class="k-benefit-icon">✦</div>
+          <div class="k-benefit-text">Dane firmy zapisane raz — dokumenty wypełniają się automatycznie</div>
+        </div>
+        <div class="k-benefit">
+          <div class="k-benefit-icon">📄</div>
+          <div class="k-benefit-text">Historia wygenerowanych dokumentów zawsze pod ręką</div>
+        </div>
+        <div class="k-benefit">
+          <div class="k-benefit-icon">⭐</div>
+          <div class="k-benefit-text">Dostęp do Planu Biznes i dokumentów premium</div>
+        </div>
       </div>
 
-      <!-- ZALOGOWANY: profil -->
-      <div class="profile-wrap" id="profileWrap">
+      <p class="k-privacy">
+        Logując się akceptujesz <a href="#">Regulamin</a> i <a href="#">Politykę prywatności</a>.<br>
+        Logowanie tylko przez OAuth 2.0 — bez przechowywania hasła.
+      </p>
+    </div>
 
-        <div class="profile-header">
-          <div class="profile-avatar-ring">
-            <div class="profile-avatar" id="profileAvatar">?</div>
+    <!-- SUKCES -->
+    <div class="k-login-panel k-success" id="kontoSuccess">
+      <div class="k-success-check">✓</div>
+      <div class="k-success-title">Zalogowano!</div>
+      <p class="k-success-sub" id="successMsg">Ładowanie profilu…</p>
+    </div>
+
+    <!-- ZALOGOWANY -->
+    <div class="k-profile-panel" id="profileWrap">
+
+      <!-- Header -->
+      <div class="k-profile-header">
+        <div class="k-avatar-wrap">
+          <div class="k-avatar-inner" id="profileAvatar">?</div>
+        </div>
+        <div class="k-profile-meta">
+          <div class="k-profile-name" id="profileName">—</div>
+          <div class="k-profile-email" id="profileEmail">—</div>
+          <div class="k-sync-badge" id="syncBadge">
+            <span class="k-sync-dot"></span>
+            <span id="syncText">Synchronizacja…</span>
           </div>
-          <div class="profile-info">
-            <div class="profile-name" id="profileName">—</div>
-            <div class="profile-email" id="profileEmail">—</div>
-            <div class="profile-sync-badge" id="profileSyncBadge">● Synchronizacja…</div>
-          </div>
         </div>
-
-        <div class="profile-autofill-hint">
-          <span class="profile-autofill-icon">✦</span>
-          <span>Dane poniżej automatycznie wypełniają formularze dokumentów — wystarczy zapisać raz.</span>
-        </div>
-
-        <div class="profile-section-title">Moje dane do dokumentów</div>
-        <div class="profile-grid">
-          <div class="profile-field"><label>Imię</label><input class="profile-input" id="pImie" placeholder="Jan"></div>
-          <div class="profile-field"><label>Nazwisko</label><input class="profile-input" id="pNazwisko" placeholder="Kowalski"></div>
-          <div class="profile-field full"><label>Firma / Pracodawca</label><input class="profile-input" id="pFirma" placeholder="ABC Sp. z o.o."></div>
-          <div class="profile-field full"><label>NIP</label><input class="profile-input" id="pNip" placeholder="1234567890"></div>
-          <div class="profile-field full"><label>Adres / Siedziba</label><input class="profile-input" id="pAdres" placeholder="ul. Przykładowa 1, 00-001 Warszawa"></div>
-          <div class="profile-field full"><label>E-mail kontaktowy</label><input class="profile-input" id="pEmail" type="email" placeholder="jan@firma.pl"></div>
-          <div class="profile-field full"><label>Telefon</label><input class="profile-input" id="pTel" placeholder="+48 123 456 789"></div>
-        </div>
-
-        <div class="profile-save-row">
-          <button class="profile-save-btn" id="profileSaveBtn" onclick="saveProfile()">
-            <div class="profile-save-spinner" id="profileSaveSpinner"></div>
-            <span id="profileSaveBtnText">Zapisz dane</span>
-          </button>
-          <div class="profile-save-ok" id="profileSaveOk">✓ Zapisano</div>
-        </div>
-
-        <div class="profile-links">
-          <a href="dokumenty.html" class="profile-link">
-            <span class="profile-link-icon">📄</span>
-            <span class="profile-link-text">Moje dokumenty</span>
-            <span class="profile-link-arrow">→</span>
-          </a>
-          <a href="subskrypcja.html" class="profile-link">
-            <span class="profile-link-icon">⭐</span>
-            <span class="profile-link-text">Subskrypcja</span>
-            <span class="profile-link-arrow">→</span>
-          </a>
-          <a href="moje-dokumenty.html" class="profile-link">
-            <span class="profile-link-icon">📁</span>
-            <span class="profile-link-text">Historia dokumentów</span>
-            <span class="profile-link-arrow">→</span>
-          </a>
-        </div>
-
-        <button class="profile-logout-btn" onclick="logoutUser()">Wyloguj się</button>
       </div>
+
+      <!-- Form -->
+      <div class="k-form-card">
+        <div class="k-form-header">
+          <div class="k-form-icon">✦</div>
+          <div class="k-form-title">Dane do dokumentów</div>
+        </div>
+        <div class="k-form-hint">
+          <span class="k-form-hint-icon">→</span>
+          <span>Te dane automatycznie uzupełniają formularze — wypełnij raz i zapomnij.</span>
+        </div>
+
+        <div class="k-grid">
+          <div class="k-field"><label>Imię</label><input class="k-input" id="pImie" placeholder="Jan"></div>
+          <div class="k-field"><label>Nazwisko</label><input class="k-input" id="pNazwisko" placeholder="Kowalski"></div>
+          <div class="k-field full"><label>Firma / Pracodawca</label><input class="k-input" id="pFirma" placeholder="ABC Sp. z o.o."></div>
+          <div class="k-field full"><label>NIP</label><input class="k-input" id="pNip" placeholder="1234567890"></div>
+          <div class="k-field full"><label>Adres / Siedziba</label><input class="k-input" id="pAdres" placeholder="ul. Przykładowa 1, 00-001 Warszawa"></div>
+          <div class="k-field full"><label>E-mail kontaktowy</label><input class="k-input" id="pEmail" type="email" placeholder="jan@firma.pl"></div>
+          <div class="k-field full"><label>Telefon</label><input class="k-input" id="pTel" placeholder="+48 123 456 789"></div>
+        </div>
+
+        <div class="k-save-row">
+          <button class="k-save-btn" id="profileSaveBtn" onclick="saveProfile()">
+            <div class="k-save-spinner" id="saveSpinner"></div>
+            <span id="saveBtnText">Zapisz dane</span>
+          </button>
+          <div class="k-save-ok" id="saveOk">✓ Zapisano</div>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div class="k-links-card">
+        <a href="dokumenty.html" class="k-link">
+          <div class="k-link-icon">📄</div>
+          <span class="k-link-text">Dokumenty</span>
+          <span class="k-link-arrow">→</span>
+        </a>
+        <a href="subskrypcja.html" class="k-link">
+          <div class="k-link-icon">⭐</div>
+          <span class="k-link-text">Subskrypcja</span>
+          <span class="k-link-arrow">→</span>
+        </a>
+        <a href="moje-dokumenty.html" class="k-link">
+          <div class="k-link-icon">📁</div>
+          <span class="k-link-text">Historia dokumentów</span>
+          <span class="k-link-arrow">→</span>
+        </a>
+      </div>
+
+      <button class="k-logout-btn" onclick="logoutUser()">Wyloguj się</button>
 
     </div>
   </div>
 </main>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
-    authDomain: "dokumo-c1ccb.firebaseapp.com",
-    projectId: "dokumo-c1ccb",
-    storageBucket: "dokumo-c1ccb.firebasestorage.app",
-    messagingSenderId: "1088576029067",
-    appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
-  };
+const app = initializeApp({
+  apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
+  authDomain: "dokumo-c1ccb.firebaseapp.com",
+  projectId: "dokumo-c1ccb",
+  storageBucket: "dokumo-c1ccb.firebasestorage.app",
+  messagingSenderId: "1088576029067",
+  appId: "1:1088576029067:web:e99734e4d50b398aa92f8e"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+window._db = db;
+window._uid = null;
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
-
-  window._firestoreDb = db;
-  window._currentUid = null;
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      window._currentUid = user.uid;
-      localStorage.setItem('dokumo_user', JSON.stringify({
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL
-      }));
-      showProfile(user);
-
-      // Załaduj profil z Firestore
-      try {
-        const snap = await getDoc(doc(db, 'users', user.uid, 'profile', 'main'));
-        const badge = document.getElementById('profileSyncBadge');
-        if (snap.exists()) {
-          const p = snap.data();
-          // Zaktualizuj localStorage
-          localStorage.setItem('dokumo_profile', JSON.stringify(p));
-          // Wypełnij pola
-          fillFormFields(p);
-          if (badge) { badge.textContent = '✓ Zsynchronizowano'; badge.style.color = 'var(--accent2)'; }
-        } else {
-          // Brak danych w Firestore — spróbuj z localStorage
-          const cached = JSON.parse(localStorage.getItem('dokumo_profile') || '{}');
-          fillFormFields(cached);
-          if (badge) { badge.textContent = '○ Brak danych w chmurze'; badge.style.color = 'var(--muted)'; }
-        }
-      } catch(e) {
-        const cached = JSON.parse(localStorage.getItem('dokumo_profile') || '{}');
-        fillFormFields(cached);
-        const badge = document.getElementById('profileSyncBadge');
-        if (badge) { badge.textContent = '○ Tryb offline'; badge.style.color = 'var(--muted)'; }
-      }
-    } else {
-      window._currentUid = null;
-      showLogin();
-    }
-  });
-
-  window.handleOAuth = async function(providerName) {
-    const btn = event.currentTarget;
-    btn.style.opacity = '0.65';
-    btn.style.pointerEvents = 'none';
-    btn.querySelector('.oauth-btn-label').textContent = 'Łączenie…';
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    window._uid = user.uid;
+    localStorage.setItem('dokumo_user', JSON.stringify({
+      name: user.displayName, email: user.email, photo: user.photoURL
+    }));
+    showProfile(user);
+    // Wczytaj z Firestore
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      localStorage.setItem('dokumo_user', JSON.stringify({
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL
-      }));
-      document.getElementById('kontoDefault').style.display = 'none';
-      const success = document.getElementById('kontoSuccess');
-      success.style.display = 'block';
-      document.getElementById('successMsg').textContent =
-        'Zalogowano jako ' + user.displayName + '. Ładowanie profilu…';
-      setTimeout(() => { showProfile(user); success.style.display = 'none'; }, 1400);
-    } catch(err) {
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-      btn.querySelector('.oauth-btn-label').textContent = 'Kontynuuj z Google';
-      if (err.code !== 'auth/popup-closed-by-user') {
-        alert('Błąd logowania: ' + err.message);
-      }
-    }
-  };
-
-  window.saveProfile = async function() {
-    const profile = {
-      imie: document.getElementById('pImie').value.trim(),
-      nazwisko: document.getElementById('pNazwisko').value.trim(),
-      firma: document.getElementById('pFirma').value.trim(),
-      nip: document.getElementById('pNip').value.trim(),
-      adres: document.getElementById('pAdres').value.trim(),
-      email: document.getElementById('pEmail').value.trim(),
-      tel: document.getElementById('pTel').value.trim(),
-    };
-
-    // Zapisz w localStorage (szybki dostęp)
-    localStorage.setItem('dokumo_profile', JSON.stringify(profile));
-
-    // UI loading state
-    const btn = document.getElementById('profileSaveBtn');
-    const spinner = document.getElementById('profileSaveSpinner');
-    const btnText = document.getElementById('profileSaveBtnText');
-    const ok = document.getElementById('profileSaveOk');
-    btn.classList.add('saving');
-    spinner.style.display = 'block';
-    btnText.textContent = 'Zapisywanie…';
-    ok.style.display = 'none';
-
-    // Zapisz w Firestore
-    try {
-      if (window._currentUid) {
-        await setDoc(doc(window._firestoreDb, 'users', window._currentUid, 'profile', 'main'), profile);
-        const badge = document.getElementById('profileSyncBadge');
-        if (badge) { badge.textContent = '✓ Zsynchronizowano'; badge.style.color = 'var(--accent2)'; }
+      const snap = await getDoc(doc(db, 'users', user.uid, 'profile', 'main'));
+      if (snap.exists()) {
+        const p = snap.data();
+        localStorage.setItem('dokumo_profile', JSON.stringify(p));
+        fillFields(p);
+        setSyncBadge('✓ Zsynchronizowano', true);
+      } else {
+        fillFields(JSON.parse(localStorage.getItem('dokumo_profile') || '{}'));
+        setSyncBadge('Brak danych w chmurze', false);
       }
     } catch(e) {
-      console.warn('Firestore save failed:', e);
+      fillFields(JSON.parse(localStorage.getItem('dokumo_profile') || '{}'));
+      setSyncBadge('Tryb offline', false);
     }
-
-    // UI success state
-    btn.classList.remove('saving');
-    spinner.style.display = 'none';
-    btnText.textContent = 'Zapisz dane';
-    ok.style.display = 'block';
-    setTimeout(() => { ok.style.display = 'none'; }, 3000);
-  };
-
-  window.logoutUser = async function() {
-    await signOut(auth);
-    localStorage.removeItem('dokumo_user');
-    localStorage.removeItem('dokumo_sub');
-    window._currentUid = null;
+  } else {
+    window._uid = null;
     showLogin();
+  }
+});
+
+window.handleOAuth = async function() {
+  const btn = event.currentTarget;
+  btn.style.opacity = '.6'; btn.style.pointerEvents = 'none';
+  btn.querySelector('.k-oauth-label').textContent = 'Łączenie…';
+  try {
+    const { user } = await signInWithPopup(auth, provider);
+    localStorage.setItem('dokumo_user', JSON.stringify({
+      name: user.displayName, email: user.email, photo: user.photoURL
+    }));
+    document.getElementById('kontoDefault').style.display = 'none';
+    const s = document.getElementById('kontoSuccess');
+    s.style.display = 'block';
+    document.getElementById('successMsg').textContent = 'Zalogowano jako ' + user.displayName;
+    setTimeout(() => { showProfile(user); s.style.display = 'none'; }, 1400);
+  } catch(err) {
+    btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+    btn.querySelector('.k-oauth-label').textContent = 'Kontynuuj z Google';
+    if (err.code !== 'auth/popup-closed-by-user') alert('Błąd logowania: ' + err.message);
+  }
+};
+
+window.saveProfile = async function() {
+  const profile = {
+    imie: v('pImie'), nazwisko: v('pNazwisko'), firma: v('pFirma'),
+    nip: v('pNip'), adres: v('pAdres'), email: v('pEmail'), tel: v('pTel'),
   };
+  localStorage.setItem('dokumo_profile', JSON.stringify(profile));
+
+  const btn = document.getElementById('profileSaveBtn');
+  const spinner = document.getElementById('saveSpinner');
+  const btnText = document.getElementById('saveBtnText');
+  const ok = document.getElementById('saveOk');
+  btn.classList.add('saving');
+  spinner.style.display = 'block';
+  btnText.textContent = 'Zapisywanie…';
+  ok.style.display = 'none';
+
+  try {
+    if (window._uid) {
+      await setDoc(doc(window._db, 'users', window._uid, 'profile', 'main'), profile);
+      setSyncBadge('✓ Zsynchronizowano', true);
+    }
+  } catch(e) { console.warn('Firestore:', e); }
+
+  btn.classList.remove('saving');
+  spinner.style.display = 'none';
+  btnText.textContent = 'Zapisz dane';
+  ok.style.display = 'flex';
+  setTimeout(() => { ok.style.display = 'none'; }, 3000);
+};
+
+window.logoutUser = async function() {
+  await signOut(auth);
+  localStorage.removeItem('dokumo_user');
+  localStorage.removeItem('dokumo_sub');
+  window._uid = null;
+  showLogin();
+};
+
+function v(id) { return (document.getElementById(id)?.value || '').trim(); }
 </script>
 
 <script>
@@ -484,12 +575,10 @@ function showLogin() {
   document.getElementById('kontoDefault').style.display = 'block';
   document.getElementById('profileWrap').style.display = 'none';
 }
-
 function showProfile(user) {
   document.getElementById('kontoDefault').style.display = 'none';
   const wrap = document.getElementById('profileWrap');
   wrap.style.display = 'flex';
-
   const av = document.getElementById('profileAvatar');
   if (user.photoURL) {
     av.innerHTML = '<img src="' + user.photoURL + '" alt="">';
@@ -499,8 +588,7 @@ function showProfile(user) {
   document.getElementById('profileName').textContent = user.displayName || '—';
   document.getElementById('profileEmail').textContent = user.email || '—';
 }
-
-function fillFormFields(p) {
+function fillFields(p) {
   if (!p) return;
   document.getElementById('pImie').value = p.imie || '';
   document.getElementById('pNazwisko').value = p.nazwisko || '';
@@ -509,6 +597,15 @@ function fillFormFields(p) {
   document.getElementById('pAdres').value = p.adres || '';
   document.getElementById('pEmail').value = p.email || '';
   document.getElementById('pTel').value = p.tel || '';
+}
+function setSyncBadge(text, ok) {
+  const badge = document.getElementById('syncBadge');
+  const textEl = document.getElementById('syncText');
+  if (!badge || !textEl) return;
+  textEl.textContent = text;
+  badge.style.background = ok ? 'rgba(34,197,94,.18)' : 'rgba(255,255,255,.05)';
+  badge.style.color = ok ? '#39ff8a' : 'rgba(240,237,232,.4)';
+  badge.style.borderColor = ok ? 'rgba(34,197,94,.25)' : 'rgba(255,255,255,.07)';
 }
 </script>
 
