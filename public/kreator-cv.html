@@ -1748,7 +1748,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Finanse i Rachunkowość', langPlaceholder: 'Angielski',
     fillBelow: 'Uzupełnij dane poniżej',
     fullNamePlaceholder: 'Twoje imię i nazwisko',
-    autocorrectLabel: 'Używaj autokorekty',
+    autocorrectLabel: 'Sprawdzanie pisowni',
   },
   en: {
     experience: 'Work Experience', education: 'Education',
@@ -1773,7 +1773,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Finance and Accounting', langPlaceholder: 'English',
     fillBelow: 'Fill in details below',
     fullNamePlaceholder: 'Your full name',
-    autocorrectLabel: 'Use spell check',
+    autocorrectLabel: 'Spell checking',
   },
   de: {
     experience: 'Berufserfahrung', education: 'Ausbildung',
@@ -1925,37 +1925,7 @@ function toggleAutocorrect(on) {
     el.setAttribute('spellcheck', on ? 'true' : 'false');
     el.setAttribute('autocorrect', on ? 'on' : 'off');
     el.setAttribute('autocapitalize', on ? 'sentences' : 'off');
-    if (on) {
-      el.addEventListener('blur', _cvAutocorrectBlur);
-    } else {
-      el.removeEventListener('blur', _cvAutocorrectBlur);
-    }
   });
-}
-
-async function _cvAutocorrectBlur(e) {
-  if (!_cvAutocorrect) return;
-  var el = e.target;
-  var text = el.value ? el.value.trim() : '';
-  if (!text || text.length < 8) return;
-  // Only correct textarea-type inputs (prose text, not short names/emails)
-  if (el.tagName !== 'TEXTAREA' && !['duties','opis'].some(function(k){ return (el.getAttribute('oninput')||'').includes(k); })) return;
-  try {
-    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
-    var headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = 'Bearer ' + token;
-    var r = await fetch('/api/generate', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({ prompt: 'Popraw TYLKO błędy ortograficzne i interpunkcyjne w poniższym tekście. Nie zmieniaj słów, stylu ani treści. Zwróć TYLKO poprawiony tekst:\n\n' + text })
-    });
-    var d = await r.json();
-    var corrected = (d.text || '').trim();
-    if (corrected && corrected !== text) {
-      el.value = corrected;
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  } catch(e2) {}
 }
 
 function renderCVForm() {
