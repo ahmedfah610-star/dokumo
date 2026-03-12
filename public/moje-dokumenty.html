@@ -698,8 +698,13 @@ function editDoc(docId) {
   var doc = (window._allDocs || []).find(function(d) { return d.id === docId; });
   if (!doc) return;
   // CV → redirect to kreator
-  if (doc.text && doc.text.indexOf('__CV_HTML__:') === 0) {
-    window.location.href = 'kreator-cv.html?editId=' + encodeURIComponent(docId);
+  if (doc.typeId === 'cv' || (doc.text && doc.text.indexOf('__CV_HTML__:') === 0)) {
+    if (doc.cvDataJson) {
+      sessionStorage.setItem('dokumo_editCvData', doc.cvDataJson);
+    } else {
+      sessionStorage.removeItem('dokumo_editCvData');
+    }
+    window.location.href = 'kreator-cv.html';
     return;
   }
   // Other docs → inline editor

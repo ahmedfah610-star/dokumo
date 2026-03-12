@@ -1118,24 +1118,6 @@ window.addEventListener('_fbAuthReady', async ()=>{
     }
   }catch(e){}
 
-  // Wczytaj CV do edycji jeśli editId w URL
-  const editId = new URLSearchParams(window.location.search).get('editId');
-  if (editId) {
-    try {
-      const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
-      const res = await fetch('/api/get-docs', { headers: { 'Authorization': 'Bearer ' + token } });
-      const data = await res.json();
-      const doc = (data.docs || []).find(function(d) { return d.id === editId; });
-      if (doc && doc.cvDataJson) {
-        const loaded = JSON.parse(doc.cvDataJson);
-        Object.assign(cvData, loaded);
-        renderCVForm();
-        updateCVPreview();
-        // usuń param z URL bez przeładowania
-        history.replaceState(null, '', 'kreator-cv.html');
-      }
-    } catch(e) {}
-  }
 });
 </script>
 
@@ -1537,6 +1519,15 @@ let cvData = {
   jezyki:[{ jezyk:'', poziom:'B2' }],
   zainteresowania:''
 };
+// Wczytaj CV do edycji jeśli przyszliśmy z moje-dokumenty.html
+(function() {
+  var saved = sessionStorage.getItem('dokumo_editCvData');
+  if (saved) {
+    sessionStorage.removeItem('dokumo_editCvData');
+    try { Object.assign(cvData, JSON.parse(saved)); } catch(e) {}
+  }
+})();
+
 let cvTemplate = 'timeline';
 
 const CV_TEMPLATES = [
