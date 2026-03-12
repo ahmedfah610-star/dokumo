@@ -315,7 +315,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <!-- GENERATOR MODAL -->
 <div id="genOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;display:none;align-items:flex-end;justify-content:center;transition:opacity .25s;">
-  <div id="genSheet" style="background:#141518;border:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0;padding:32px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.6,1);">
+  <div id="genSheet" style="background:#141518;border:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0;padding:32px;width:100%;max-width:960px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.6,1);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
       <h2 id="genTitle" style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:#f0ede8;letter-spacing:-.02em;"></h2>
       <button onclick="closeGen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(240,237,232,.6);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.72rem;flex-shrink:0;">✕</button>
@@ -329,7 +329,9 @@ onAuthStateChanged(getAuth(app),async u=>{
       <textarea id="genText" style="width:100%;min-height:340px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;color:#f0ede8;font-size:.82rem;line-height:1.7;resize:vertical;font-family:'DM Sans',sans-serif;"></textarea>
       <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
         <button onclick="copyResult()" style="flex:1;padding:11px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#39ff8a;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;">📋 Kopiuj</button>
-        <button onclick="downloadResult()" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;">⬇ Pobierz .txt</button>
+        <button onclick="downloadResultAs('pdf')" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;">⬇ PDF</button>
+        <button onclick="downloadResultAs('rtf')" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;">⬇ Word</button>
+        <button onclick="downloadResultAs('txt')" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;">⬇ TXT</button>
       </div>
     </div>
   </div>
@@ -712,11 +714,31 @@ async function doGenerate() {
 }
 
 function copyResult() { navigator.clipboard.writeText(document.getElementById("genText").value); }
-function downloadResult() {
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([document.getElementById("genText").value], {type:"text/plain"}));
-  a.download = FORMS[currentDoc].title.toLowerCase().replace(/\s+/g,"_") + ".txt";
-  a.click();
+function downloadResultAs(format) {
+  var text = document.getElementById("genText").value;
+  var title = FORMS[currentDoc].title;
+  var safeName = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,"_");
+  if (format === 'txt') {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], {type:"text/plain;charset=utf-8"}));
+    a.download = safeName + ".txt"; a.click();
+  } else if (format === 'pdf') {
+    var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var win = window.open('','_blank');
+    if (!win) { alert('Zezwól na otwieranie okien dla tej strony.'); return; }
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>');
+    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
+    win.document.write('</head><body><pre>'+safe+'</pre>');
+    win.document.write('<script>window.onload=function(){window.print()}<\/script>');
+    win.document.write('</body></html>'); win.document.close();
+  } else if (format === 'rtf') {
+    var esc = function(s){ return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';}); };
+    var lines = text.split('\n').map(function(l){var e=esc(l);return e.trim()?e+'\\par':'\\par';}).join('\n');
+    var rtf = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 {\\b\\fs28 '+esc(title)+'}\\par\\par '+lines+'}';
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([rtf],{type:'application/rtf'}));
+    a.download = safeName + ".rtf"; a.click();
+  }
 }
 
 document.getElementById("genOverlay").addEventListener("click", function(e){ if(e.target===this) closeGen(); });
