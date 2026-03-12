@@ -1181,7 +1181,7 @@ async function saveCVDraft() {
     if (!token) return;
     var cvPreviewEl = document.getElementById('cvPreviewInner');
     var cvText = cvPreviewEl ? '__CV_HTML__:' + cvPreviewEl.outerHTML : '';
-    var resp = await fetch('/api/save-draft', {
+    var resp = await fetch('/api/draft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
@@ -1204,7 +1204,7 @@ async function loadCVDraft() {
   try {
     var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
     if (!token) return;
-    var resp = await fetch('/api/load-draft', { headers: { 'Authorization': 'Bearer ' + token } });
+    var resp = await fetch('/api/draft', { headers: { 'Authorization': 'Bearer ' + token } });
     if (!resp.ok) return;
     var data = await resp.json();
     if (!data.cvDataJson) return;
@@ -2992,7 +2992,7 @@ async function saveCVToMyDocs(fullName) {
 <script>
 (function(){try{
   var uid=null;try{uid=JSON.parse(localStorage.getItem('dokumo_user'))?.email||null;}catch(e){}
-  fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({page:location.pathname,referrer:document.referrer,uid:uid})
   }).catch(function(){});
 }catch(e){}})();

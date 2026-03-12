@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(node --check \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\ecommerce.html\" 2>&1 || echo \"Not a JS file, checking with grep...\"\ngrep -c \"steps:\" \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\ecommerce.html\"\ngrep -c \"fields:\" \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\ecommerce.html\"\ngrep -c \"renderStep\" \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\ecommerce.html\"\ngrep -c \"buildFieldHTML\\\\|form\\\\.fields\" \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\ecommerce.html\")",
+      "Bash(git commit:*)",
+      "Bash(ls \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\server\\\\routes\\\\\" 2>/dev/null || ls \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\server\\\\\" 2>/dev/null | head -20)",
+      "Bash(ls C:/Users/asus/Desktop/dokumo/api/track.js C:/Users/asus/Desktop/dokumo/api/admin-stats.js C:/Users/asus/Desktop/dokumo/public/panel.html && grep -c \"payments\" C:/Users/asus/Desktop/dokumo/api/stripe-webhook.js && grep -l \"/api/track\" C:/Users/asus/Desktop/dokumo/public/*.html | wc -l)",
+      "Bash(cd C:/Users/asus/Desktop/dokumo && sed -i \"s|'/api/track'|'/api/analytics'|g\" public/admin.html public/biznes.html public/dokumenty.html public/ecommerce.html public/hr.html public/index.html public/kalkulator.html public/kariera.html public/konto.html public/moje-dokumenty.html public/subskrypcja.html public/wypowiedzenia.html)"
+    ]
+  }
+}
