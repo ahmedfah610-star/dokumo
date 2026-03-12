@@ -1519,22 +1519,6 @@ let cvData = {
   jezyki:[{ jezyk:'', poziom:'B2' }],
   zainteresowania:''
 };
-// Wczytaj CV do edycji jeśli przyszliśmy z moje-dokumenty.html
-(function() {
-  var saved = sessionStorage.getItem('dokumo_editCvData');
-  if (saved) {
-    sessionStorage.removeItem('dokumo_editCvData');
-    try {
-      var loaded = JSON.parse(saved);
-      if (loaded.__template) cvTemplate = loaded.__template;
-      if (loaded.__color) cvCustomColor = loaded.__color;
-      delete loaded.__template;
-      delete loaded.__color;
-      Object.assign(cvData, loaded);
-    } catch(e) {}
-  }
-})();
-
 let cvTemplate = 'timeline';
 
 const CV_TEMPLATES = [
@@ -2575,6 +2559,21 @@ const COLOR_THEMES = [
   { name:'Szary',    c1:'#334155', c2:'#64748b' },
 ];
 let cvCustomColor = null; // null = use template default
+
+// Wczytaj CV do edycji jeśli przyszliśmy z moje-dokumenty.html
+(function() {
+  var saved = sessionStorage.getItem('dokumo_editCvData');
+  if (!saved) return;
+  sessionStorage.removeItem('dokumo_editCvData');
+  try {
+    var loaded = JSON.parse(saved);
+    if (loaded.__template) cvTemplate = loaded.__template;
+    if (loaded.__color) cvCustomColor = loaded.__color;
+    delete loaded.__template;
+    delete loaded.__color;
+    Object.assign(cvData, loaded);
+  } catch(e) {}
+})();
 
 function renderColorPicker() {
   const el = document.getElementById('colorThemePicker');

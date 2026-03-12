@@ -577,7 +577,7 @@ async function doGenerate() {
     var res = await fetch("/api/generate", {
       method: "POST",
       headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
-      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title, docCat:'kariera', docCatLabel:'Kariera'})
+      body: JSON.stringify({prompt:prompt, docId:currentDoc, docName:FORMS[currentDoc].title, docCat:'kariera', docCatLabel:'Kariera', docIcon:'📄'})
     });
     var data = await res.json();
     document.getElementById("genLoading").style.display = "none";
