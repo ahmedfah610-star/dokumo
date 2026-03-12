@@ -1923,14 +1923,39 @@ function toggleAutocorrect(on) {
   _cvAutocorrect = on;
   document.querySelectorAll('.cvf-input').forEach(function(el) {
     el.setAttribute('spellcheck', on ? 'true' : 'false');
+    el.setAttribute('autocorrect', on ? 'on' : 'off');
+    el.setAttribute('autocapitalize', on ? 'sentences' : 'off');
     if (on) {
-      el.setAttribute('autocorrect', 'on');
-      el.setAttribute('autocapitalize', 'sentences');
+      el.addEventListener('blur', _cvAutocorrectBlur);
     } else {
-      el.setAttribute('autocorrect', 'off');
-      el.setAttribute('autocapitalize', 'off');
+      el.removeEventListener('blur', _cvAutocorrectBlur);
     }
   });
+}
+
+async function _cvAutocorrectBlur(e) {
+  if (!_cvAutocorrect) return;
+  var el = e.target;
+  var text = el.value ? el.value.trim() : '';
+  if (!text || text.length < 8) return;
+  // Only correct textarea-type inputs (prose text, not short names/emails)
+  if (el.tagName !== 'TEXTAREA' && !['duties','opis'].some(function(k){ return (el.getAttribute('oninput')||'').includes(k); })) return;
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    var r = await fetch('/api/generate', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ prompt: 'Popraw TYLKO błędy ortograficzne i interpunkcyjne w poniższym tekście. Nie zmieniaj słów, stylu ani treści. Zwróć TYLKO poprawiony tekst:\n\n' + text })
+    });
+    var d = await r.json();
+    var corrected = (d.text || '').trim();
+    if (corrected && corrected !== text) {
+      el.value = corrected;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  } catch(e2) {}
 }
 
 function renderCVForm() {
@@ -2128,10 +2153,14 @@ function buildSectionBodyHTML(sec) {
           <button class="acc-remove-x" onclick="removeCVLang(${i})" ${i===0&&cvData.jezyki.length===1?'style="visibility:hidden"':''}>✕</button>
         </div>`).join('')}
     </div>
-    <select class="cvf-input" id="addLangSelect" onchange="addLangFromSelect(this)" style="margin-top:8px;cursor:pointer">
-      <option value="">＋ ${L("addLang")}</option>
-      ${TOP_LANGS.map(l => `<option value="${l}">${l}</option>`).join('')}
-    </select>`;
+    <div style="margin-top:8px">
+      <button class="acc-add-more" id="addLangBtn" onclick="toggleLangPicker()" style="display:flex;align-items:center;gap:6px">
+        <span id="addLangArrow" style="font-size:0.7rem;transition:transform 0.2s">▼</span> ${L("addLang")}
+      </button>
+      <div id="langPicker" style="display:none;margin-top:4px;border:1px solid #dedad4;border-radius:8px;background:var(--white,#fff);overflow:hidden">
+        ${TOP_LANGS.map(l => `<div style="padding:8px 14px;cursor:pointer;font-size:0.88rem;color:var(--ink,#3d3c3a);border-bottom:1px solid #f0ede8" onmousedown="event.preventDefault();addLangFromPicker('${l}')" onmouseenter="this.style.background='var(--bg,#f5f3ef)'" onmouseleave="this.style.background=''">${l}</div>`).join('')}
+      </div>
+    </div>`;
 
   if (sec === 'certyfikaty') return `
     <input class="cvf-input" id="certInput" oninput="cvData.certyfikaty=this.value;updateCVPreview();updateCertChips()" value="${cvData.certyfikaty}" placeholder="np. Google Analytics, Scrum Master...">
@@ -2390,10 +2419,19 @@ function removeCVLang(i) {
   updateCVPreview();
 }
 
-function addLangFromSelect(sel) {
-  var lang = sel.value;
-  sel.value = '';
-  if (!lang) return;
+function toggleLangPicker() {
+  var picker = document.getElementById('langPicker');
+  var arrow = document.getElementById('addLangArrow');
+  if (!picker) return;
+  var open = picker.style.display !== 'none';
+  picker.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+function addLangFromPicker(lang) {
+  var picker = document.getElementById('langPicker');
+  var arrow = document.getElementById('addLangArrow');
+  if (picker) picker.style.display = 'none';
+  if (arrow) arrow.style.transform = '';
   var existing = cvData.jezyki.find(function(l){ return l.jezyk.toLowerCase() === lang.toLowerCase(); });
   if (!existing) {
     var empty = cvData.jezyki.find(function(l){ return !l.jezyk; });
@@ -2404,7 +2442,7 @@ function addLangFromSelect(sel) {
   if (item) { var body = item.querySelector('.acc-body'); if (body) body.innerHTML = buildSectionBodyHTML('jezyki'); }
   updateCVPreview();
 }
-function addLangFromDd(lang) { addLangFromSelect({ value: lang }); }
+function addLangFromDd(lang) { addLangFromPicker(lang); }
 
 async function useAISummary() {
   const text = cvData.podsumowanie;
