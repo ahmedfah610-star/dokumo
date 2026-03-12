@@ -11,7 +11,31 @@ const auth = getAuth();
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { prompt, docId, docName, docCat, docIcon, docCatLabel } = req.body;
+  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel } = req.body;
+
+  // ── Tryb pobierania URL (fetch-url wbudowany) ──
+  if (url) {
+    try { new URL(url); } catch { return res.status(400).json({ error: 'Nieprawidłowy URL' }); }
+    try {
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
+        redirect: 'follow', signal: AbortSignal.timeout(8000)
+      });
+      if (!r.ok) return res.status(422).json({ error: 'Strona niedostępna (' + r.status + ')' });
+      const html = await r.text();
+      const text = html
+        .replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+        .replace(/\s{2,}/g, ' ').trim().substring(0, 12000);
+      if (text.length < 100) return res.status(422).json({ error: 'Nie udało się pobrać treści strony' });
+      return res.status(200).json({ text });
+    } catch(err) {
+      const msg = err.name === 'TimeoutError' ? 'Przekroczono czas pobierania strony' : 'Nie udało się pobrać treści ogłoszenia';
+      return res.status(422).json({ error: msg });
+    }
+  }
+
   if (!prompt) return res.status(400).json({ error: 'Brak zapytania' });
 
   const apiKey = process.env.GEMINI_API_KEY;
