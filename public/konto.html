@@ -7,201 +7,332 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
+/* ── PAGE ── */
 .konto-page { min-height:100vh; display:flex; flex-direction:column; background:var(--bg); }
-.konto-main { flex:1; display:flex; align-items:center; justify-content:center; padding:60px 20px; }
+.konto-main {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:40px 20px 60px;
+}
+
+/* ── CARD ── */
 .konto-card {
   background:var(--white); border:1px solid var(--border);
-  padding:48px 44px 52px; width:100%; max-width:420px; position:relative;
+  width:100%; max-width:480px; position:relative;
+  box-shadow:0 8px 40px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);
+  animation:konto-fadein 0.35s ease both;
 }
-.konto-card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg, var(--accent) 0%, var(--accent2) 60%, #c8963c 100%);
+@keyframes konto-fadein {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
 }
-.konto-logo { font-family:'Instrument Serif',serif; font-size:1.6rem; color:var(--ink); margin-bottom:8px; }
+.konto-card-bar {
+  height:3px;
+  background:linear-gradient(90deg, var(--accent) 0%, var(--accent2) 55%, var(--gold) 100%);
+}
+.konto-card-body { padding:44px 40px 48px; }
+
+/* ── LOGIN STATE ── */
+.konto-logo { font-family:'Instrument Serif',serif; font-size:1.55rem; color:var(--ink); margin-bottom:6px; }
 .konto-logo span { color:var(--accent2); }
-.konto-headline { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:var(--ink); margin-bottom:6px; }
-.konto-sub { font-size:0.83rem; color:var(--muted); line-height:1.6; margin-bottom:36px; }
-.oauth-btns { display:flex; flex-direction:column; gap:12px; margin-bottom:32px; }
+.konto-headline { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; color:var(--ink); margin-bottom:5px; }
+.konto-sub { font-size:0.82rem; color:var(--muted); line-height:1.65; margin-bottom:32px; }
+
+.oauth-btns { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
 .oauth-btn {
   display:flex; align-items:center; gap:14px;
-  padding:14px 18px; border:1.5px solid var(--border);
-  background:var(--white); cursor:pointer; transition:all 0.18s;
+  padding:13px 16px; border:1.5px solid var(--border);
+  background:var(--white); cursor:pointer; transition:all 0.2s;
   font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600;
   color:var(--ink); text-align:left; width:100%; -webkit-appearance:none; position:relative;
+  border-radius:2px;
 }
-.oauth-btn:hover { border-color:var(--accent2); background:#f9f8f5; transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.07); }
-.oauth-btn-icon { width:22px; height:22px; flex-shrink:0; }
+.oauth-btn:hover {
+  border-color:var(--accent2); background:var(--bg);
+  transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+.oauth-btn-icon { width:20px; height:20px; flex-shrink:0; }
 .oauth-btn-text { flex:1; }
 .oauth-btn-label { display:block; font-size:0.82rem; font-weight:700; }
 .oauth-btn-sub { display:block; font-size:0.67rem; color:var(--muted); font-weight:400; margin-top:1px; }
-.oauth-arrow { font-size:1rem; color:var(--muted); }
-.konto-benefits { border-top:1px solid var(--border2); padding-top:24px; }
-.konto-benefits-title { font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
-.benefit-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:11px; }
-.benefit-dot { width:6px; height:6px; border-radius:50%; background:var(--accent2); margin-top:6px; flex-shrink:0; }
-.benefit-text { font-size:0.8rem; color:var(--ink2); line-height:1.55; }
-.konto-privacy { font-size:0.7rem; color:var(--muted); line-height:1.55; margin-top:24px; text-align:center; }
-.konto-privacy a { color:var(--accent2); text-decoration:none; }
-.konto-success { display:none; text-align:center; padding:20px 0; }
-.konto-success-icon { font-size:3rem; margin-bottom:16px; display:block; }
-.konto-success-title { font-family:'Instrument Serif',serif; font-size:1.6rem; color:var(--ink); margin-bottom:8px; }
-.konto-success-sub { font-size:0.85rem; color:var(--muted); line-height:1.6; }
+.oauth-arrow { font-size:0.9rem; color:var(--muted); transition:transform 0.2s; }
+.oauth-btn:hover .oauth-arrow { transform:translateX(3px); }
 
-/* === PROFIL (zalogowany) === */
-.profile-wrap { display:none; flex-direction:column; gap:0; }
-.profile-header { display:flex; align-items:center; gap:14px; margin-bottom:28px; }
-.profile-avatar {
-  width:52px; height:52px; border-radius:50%;
-  background:var(--accent); color:#fff;
-  font-family:'Instrument Serif',serif; font-size:1.3rem;
+.konto-divider { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+.konto-divider-line { flex:1; height:1px; background:var(--border); }
+.konto-divider-text { font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+
+.konto-benefits-title { font-size:0.6rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.benefit-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; }
+.benefit-icon {
+  width:22px; height:22px; border-radius:50%;
+  background:rgba(26,58,46,0.08); color:var(--accent2);
   display:flex; align-items:center; justify-content:center;
-  overflow:hidden; flex-shrink:0; border:2px solid var(--border);
+  font-size:0.65rem; flex-shrink:0; margin-top:1px;
+}
+.benefit-text { font-size:0.78rem; color:var(--ink2); line-height:1.55; }
+
+.konto-privacy { font-size:0.68rem; color:var(--muted); line-height:1.55; margin-top:22px; text-align:center; }
+.konto-privacy a { color:var(--accent2); text-decoration:none; }
+.konto-privacy a:hover { text-decoration:underline; }
+
+/* ── SUCCESS ── */
+.konto-success {
+  display:none; text-align:center; padding:24px 0;
+}
+.konto-success-check {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent2), var(--accent));
+  color:#fff; font-size:1.4rem; display:flex; align-items:center;
+  justify-content:center; margin:0 auto 16px;
+  animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes pop { from { transform:scale(0); } to { transform:scale(1); } }
+.konto-success-title { font-family:'Instrument Serif',serif; font-size:1.5rem; color:var(--ink); margin-bottom:6px; }
+.konto-success-sub { font-size:0.83rem; color:var(--muted); line-height:1.6; }
+
+/* ── PROFILE STATE ── */
+.profile-wrap { display:none; flex-direction:column; gap:0; }
+
+.profile-header {
+  display:flex; align-items:center; gap:16px; margin-bottom:24px;
+  padding-bottom:24px; border-bottom:1px solid var(--border2);
+}
+.profile-avatar-ring {
+  width:58px; height:58px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg, var(--accent2), var(--accent));
+  padding:2px;
+}
+.profile-avatar {
+  width:100%; height:100%; border-radius:50%;
+  background:var(--white); color:var(--accent);
+  font-family:'Instrument Serif',serif; font-size:1.4rem;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
 }
 .profile-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-.profile-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--ink); }
-.profile-email { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+.profile-info { flex:1; min-width:0; }
+.profile-name { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:var(--ink); }
+.profile-email { font-size:0.75rem; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.profile-sync-badge {
+  font-size:0.6rem; font-weight:700; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--accent2);
+  background:rgba(26,58,46,0.08); border:1px solid rgba(26,58,46,0.15);
+  padding:3px 8px; border-radius:99px; margin-top:4px; display:inline-block;
+}
+
+.profile-autofill-hint {
+  display:flex; align-items:flex-start; gap:10px;
+  background:rgba(26,58,46,0.05); border:1px solid rgba(26,58,46,0.12);
+  padding:10px 14px; margin-bottom:20px; font-size:0.74rem; color:var(--accent2); line-height:1.55;
+}
+.profile-autofill-icon { font-size:0.9rem; flex-shrink:0; margin-top:1px; }
 
 .profile-section-title {
-  font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
-  color:var(--muted); margin-bottom:14px; margin-top:22px;
+  font-size:0.6rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:12px; margin-top:4px;
   padding-bottom:8px; border-bottom:1px solid var(--border2);
 }
 .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .profile-field { display:flex; flex-direction:column; gap:5px; }
 .profile-field.full { grid-column:1/-1; }
-.profile-field label { font-size:0.63rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink2); }
-.profile-input {
-  background:var(--bg); border:1px solid var(--border);
-  color:var(--ink); font-family:'Syne',sans-serif; font-size:0.83rem;
-  padding:9px 12px; outline:none; transition:border-color 0.18s; width:100%;
+.profile-field label {
+  font-size:0.6rem; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--ink2);
 }
-.profile-input:focus { border-color:var(--accent2); }
+.profile-input {
+  background:var(--bg); border:1.5px solid var(--border);
+  color:var(--ink); font-family:'Syne',sans-serif; font-size:0.82rem;
+  padding:9px 11px; outline:none; transition:border-color 0.18s, box-shadow 0.18s; width:100%;
+  border-radius:2px;
+}
+.profile-input:focus {
+  border-color:var(--accent2);
+  box-shadow:0 0 0 3px rgba(45,107,82,0.1);
+}
+.profile-save-row { display:flex; align-items:center; gap:12px; margin-top:20px; }
 .profile-save-btn {
-  margin-top:20px; width:100%;
+  flex:1;
   background:var(--accent); color:#fff; border:none;
-  padding:13px; font-family:'Syne',sans-serif; font-size:0.82rem;
+  padding:12px; font-family:'Syne',sans-serif; font-size:0.8rem;
   font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-  cursor:pointer; transition:background 0.2s;
+  cursor:pointer; transition:background 0.2s, transform 0.1s;
+  border-radius:2px; display:flex; align-items:center; justify-content:center; gap:8px;
 }
 .profile-save-btn:hover { background:var(--accent2); }
+.profile-save-btn:active { transform:scale(0.98); }
+.profile-save-btn.saving { opacity:0.7; pointer-events:none; }
+.profile-save-spinner {
+  display:none; width:14px; height:14px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.3); border-top-color:#fff;
+  animation:spin 0.7s linear infinite; flex-shrink:0;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
 .profile-save-ok {
-  display:none; text-align:center; font-size:0.78rem;
-  color:var(--accent2); margin-top:10px; font-weight:600;
+  display:none; font-size:0.72rem; color:var(--accent2);
+  font-weight:600; white-space:nowrap;
 }
 
-.profile-links { display:flex; flex-direction:column; gap:8px; margin-top:24px; border-top:1px solid var(--border2); padding-top:20px; }
+.profile-links { display:flex; flex-direction:column; gap:6px; margin-top:22px; border-top:1px solid var(--border2); padding-top:18px; }
 .profile-link {
   display:flex; align-items:center; justify-content:space-between;
   padding:11px 14px; border:1px solid var(--border);
-  text-decoration:none; color:var(--ink); font-size:0.83rem; font-weight:600;
+  text-decoration:none; color:var(--ink); font-size:0.8rem; font-weight:600;
   font-family:'Syne',sans-serif; transition:all 0.18s; background:var(--white);
+  border-radius:2px;
 }
-.profile-link:hover { border-color:var(--accent2); background:var(--bg); }
-.profile-link span { font-size:0.85rem; color:var(--muted); }
+.profile-link:hover { border-color:var(--accent2); background:var(--bg); transform:translateX(2px); }
+.profile-link-icon { font-size:1rem; }
+.profile-link-text { flex:1; padding:0 10px; }
+.profile-link-arrow { font-size:0.8rem; color:var(--muted); transition:transform 0.18s; }
+.profile-link:hover .profile-link-arrow { transform:translateX(3px); color:var(--accent2); }
+
 .profile-logout-btn {
   margin-top:10px; width:100%; background:transparent;
   border:1px solid var(--border); color:var(--muted);
-  padding:10px; font-family:'Syne',sans-serif; font-size:0.78rem;
-  font-weight:600; cursor:pointer; transition:all 0.18s; letter-spacing:0.06em; text-transform:uppercase;
+  padding:10px; font-family:'Syne',sans-serif; font-size:0.75rem;
+  font-weight:600; cursor:pointer; transition:all 0.18s; letter-spacing:0.06em;
+  text-transform:uppercase; border-radius:2px;
 }
-.profile-logout-btn:hover { border-color:#c0392b; color:#c0392b; }
-.profile-autofill-hint {
-  background:rgba(26,58,46,0.06); border:1px solid rgba(26,58,46,0.15);
-  padding:10px 13px; font-size:0.75rem; color:var(--accent2);
-  line-height:1.55; margin-bottom:4px;
-}
+.profile-logout-btn:hover { border-color:var(--red); color:var(--red); }
+
 @media(max-width:480px) {
-  .konto-card { padding:36px 24px 40px; }
+  .konto-card-body { padding:32px 22px 36px; }
   .profile-grid { grid-template-columns:1fr; }
 }
 </style>
 </head>
 <body class="konto-page">
 
-<nav style="padding:0 28px; height:64px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); background:var(--white);">
+<nav style="padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); background:var(--white);">
   <a href="index.html" class="logo">Doku<span>mo</span></a>
-  <a href="dokumenty.html" style="font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none;">← Dokumenty</a>
+  <a href="dokumenty.html" style="font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; display:flex; align-items:center; gap:5px;">
+    <span style="font-size:0.8rem;">←</span> Dokumenty
+  </a>
 </nav>
 
 <main class="konto-main">
   <div class="konto-card">
+    <div class="konto-card-bar"></div>
+    <div class="konto-card-body">
 
-    <!-- NIEZALOGOWANY: formularz logowania -->
-    <div id="kontoDefault">
-      <div class="konto-logo">Doku<span>mo</span></div>
-      <div class="konto-headline">Zaloguj się lub utwórz konto</div>
-      <p class="konto-sub">Bezpieczne logowanie przez Twoje istniejące konto — bez haseł do zapamiętania.</p>
-      <div class="oauth-btns">
-        <button class="oauth-btn" onclick="handleOAuth('Google')">
-          <svg class="oauth-btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span class="oauth-btn-text">
-            <span class="oauth-btn-label">Kontynuuj z Google</span>
-            <span class="oauth-btn-sub">Gmail, Google Workspace</span>
-          </span>
-          <span class="oauth-arrow">→</span>
-        </button>
-      </div>
-      <div class="konto-benefits">
-        <div class="konto-benefits-title">Co zyskujesz z kontem?</div>
-        <div class="benefit-item"><div class="benefit-dot"></div><div class="benefit-text">Historia wygenerowanych dokumentów — zawsze pod ręką</div></div>
-        <div class="benefit-item"><div class="benefit-dot"></div><div class="benefit-text">Zapisane dane firmy — wypełniasz formularze raz</div></div>
-        <div class="benefit-item"><div class="benefit-dot"></div><div class="benefit-text">Dostęp do Planu Biznes i dokumentów premium</div></div>
-        <div class="benefit-item"><div class="benefit-dot"></div><div class="benefit-text">Powiadomienia o zmianach w prawie dotyczących Twoich dokumentów</div></div>
-      </div>
-      <p class="konto-privacy">
-        Logując się akceptujesz <a href="#">Regulamin</a> i <a href="#">Politykę prywatności</a> Dokumo.<br>
-        Nie przechowujemy Twojego hasła — używamy bezpiecznego OAuth 2.0.
-      </p>
-    </div>
+      <!-- NIEZALOGOWANY -->
+      <div id="kontoDefault">
+        <div class="konto-logo">Doku<span>mo</span></div>
+        <div class="konto-headline">Zaloguj się lub utwórz konto</div>
+        <p class="konto-sub">Bezpieczne logowanie przez Twoje istniejące konto — bez haseł do zapamiętania.</p>
 
-    <!-- SUKCES logowania -->
-    <div class="konto-success" id="kontoSuccess">
-      <span class="konto-success-icon">✓</span>
-      <div class="konto-success-title">Zalogowano!</div>
-      <p class="konto-success-sub" id="successMsg">Witaj w Dokumo. Przekierowujemy Cię…</p>
-    </div>
-
-    <!-- ZALOGOWANY: profil + ustawienia -->
-    <div class="profile-wrap" id="profileWrap">
-      <div class="profile-header">
-        <div class="profile-avatar" id="profileAvatar">?</div>
-        <div>
-          <div class="profile-name" id="profileName">—</div>
-          <div class="profile-email" id="profileEmail">—</div>
+        <div class="oauth-btns">
+          <button class="oauth-btn" onclick="handleOAuth('Google')">
+            <svg class="oauth-btn-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <span class="oauth-btn-text">
+              <span class="oauth-btn-label">Kontynuuj z Google</span>
+              <span class="oauth-btn-sub">Gmail, Google Workspace</span>
+            </span>
+            <span class="oauth-arrow">→</span>
+          </button>
         </div>
+
+        <div class="konto-divider">
+          <div class="konto-divider-line"></div>
+          <div class="konto-divider-text">Co zyskujesz z kontem?</div>
+          <div class="konto-divider-line"></div>
+        </div>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">📄</div>
+          <div class="benefit-text">Historia wygenerowanych dokumentów — zawsze pod ręką</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">✦</div>
+          <div class="benefit-text">Zapisane dane firmy — wypełniasz formularze jeden raz</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">⭐</div>
+          <div class="benefit-text">Dostęp do Planu Biznes i dokumentów premium</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">🔔</div>
+          <div class="benefit-text">Powiadomienia o zmianach w prawie dotyczących Twoich dokumentów</div>
+        </div>
+
+        <p class="konto-privacy">
+          Logując się akceptujesz <a href="#">Regulamin</a> i <a href="#">Politykę prywatności</a> Dokumo.<br>
+          Nie przechowujemy Twojego hasła — używamy bezpiecznego OAuth 2.0.
+        </p>
       </div>
 
-      <div class="profile-autofill-hint">
-        ✦ Dane poniżej będą automatycznie uzupełniać formularze dokumentów.
+      <!-- SUKCES -->
+      <div class="konto-success" id="kontoSuccess">
+        <div class="konto-success-check">✓</div>
+        <div class="konto-success-title">Zalogowano!</div>
+        <p class="konto-success-sub" id="successMsg">Witaj w Dokumo. Ładowanie profilu…</p>
       </div>
 
-      <div class="profile-section-title">Moje dane do dokumentów</div>
-      <div class="profile-grid">
-        <div class="profile-field"><label>Imię</label><input class="profile-input" id="pImie" placeholder="Jan"></div>
-        <div class="profile-field"><label>Nazwisko</label><input class="profile-input" id="pNazwisko" placeholder="Kowalski"></div>
-        <div class="profile-field full"><label>Firma / Pracodawca</label><input class="profile-input" id="pFirma" placeholder="ABC Sp. z o.o."></div>
-        <div class="profile-field full"><label>NIP</label><input class="profile-input" id="pNip" placeholder="1234567890"></div>
-        <div class="profile-field full"><label>Adres / Siedziba</label><input class="profile-input" id="pAdres" placeholder="ul. Przykładowa 1, 00-001 Warszawa"></div>
-        <div class="profile-field full"><label>E-mail kontaktowy</label><input class="profile-input" id="pEmail" type="email" placeholder="jan@firma.pl"></div>
-        <div class="profile-field full"><label>Telefon</label><input class="profile-input" id="pTel" placeholder="+48 123 456 789"></div>
-      </div>
-      <button class="profile-save-btn" onclick="saveProfile()">Zapisz dane</button>
-      <div class="profile-save-ok" id="profileSaveOk">✓ Dane zapisane — będą auto-uzupełniać formularze</div>
+      <!-- ZALOGOWANY: profil -->
+      <div class="profile-wrap" id="profileWrap">
 
-      <div class="profile-links">
-        <a href="dokumenty.html" class="profile-link">📄 Moje dokumenty <span>→</span></a>
-        <a href="subskrypcja.html" class="profile-link">⭐ Subskrypcja <span>→</span></a>
-        <a href="moje-dokumenty.html" class="profile-link">📁 Historia dokumentów <span>→</span></a>
+        <div class="profile-header">
+          <div class="profile-avatar-ring">
+            <div class="profile-avatar" id="profileAvatar">?</div>
+          </div>
+          <div class="profile-info">
+            <div class="profile-name" id="profileName">—</div>
+            <div class="profile-email" id="profileEmail">—</div>
+            <div class="profile-sync-badge" id="profileSyncBadge">● Synchronizacja…</div>
+          </div>
+        </div>
+
+        <div class="profile-autofill-hint">
+          <span class="profile-autofill-icon">✦</span>
+          <span>Dane poniżej automatycznie wypełniają formularze dokumentów — wystarczy zapisać raz.</span>
+        </div>
+
+        <div class="profile-section-title">Moje dane do dokumentów</div>
+        <div class="profile-grid">
+          <div class="profile-field"><label>Imię</label><input class="profile-input" id="pImie" placeholder="Jan"></div>
+          <div class="profile-field"><label>Nazwisko</label><input class="profile-input" id="pNazwisko" placeholder="Kowalski"></div>
+          <div class="profile-field full"><label>Firma / Pracodawca</label><input class="profile-input" id="pFirma" placeholder="ABC Sp. z o.o."></div>
+          <div class="profile-field full"><label>NIP</label><input class="profile-input" id="pNip" placeholder="1234567890"></div>
+          <div class="profile-field full"><label>Adres / Siedziba</label><input class="profile-input" id="pAdres" placeholder="ul. Przykładowa 1, 00-001 Warszawa"></div>
+          <div class="profile-field full"><label>E-mail kontaktowy</label><input class="profile-input" id="pEmail" type="email" placeholder="jan@firma.pl"></div>
+          <div class="profile-field full"><label>Telefon</label><input class="profile-input" id="pTel" placeholder="+48 123 456 789"></div>
+        </div>
+
+        <div class="profile-save-row">
+          <button class="profile-save-btn" id="profileSaveBtn" onclick="saveProfile()">
+            <div class="profile-save-spinner" id="profileSaveSpinner"></div>
+            <span id="profileSaveBtnText">Zapisz dane</span>
+          </button>
+          <div class="profile-save-ok" id="profileSaveOk">✓ Zapisano</div>
+        </div>
+
+        <div class="profile-links">
+          <a href="dokumenty.html" class="profile-link">
+            <span class="profile-link-icon">📄</span>
+            <span class="profile-link-text">Moje dokumenty</span>
+            <span class="profile-link-arrow">→</span>
+          </a>
+          <a href="subskrypcja.html" class="profile-link">
+            <span class="profile-link-icon">⭐</span>
+            <span class="profile-link-text">Subskrypcja</span>
+            <span class="profile-link-arrow">→</span>
+          </a>
+          <a href="moje-dokumenty.html" class="profile-link">
+            <span class="profile-link-icon">📁</span>
+            <span class="profile-link-text">Historia dokumentów</span>
+            <span class="profile-link-arrow">→</span>
+          </a>
+        </div>
+
+        <button class="profile-logout-btn" onclick="logoutUser()">Wyloguj się</button>
       </div>
 
-      <button class="profile-logout-btn" onclick="logoutUser()">Wyloguj się</button>
     </div>
-
   </div>
 </main>
 
@@ -209,6 +340,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",
@@ -221,24 +353,54 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
-  onAuthStateChanged(auth, (user) => {
+  window._firestoreDb = db;
+  window._currentUid = null;
+
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
+      window._currentUid = user.uid;
       localStorage.setItem('dokumo_user', JSON.stringify({
         name: user.displayName,
         email: user.email,
         photo: user.photoURL
       }));
       showProfile(user);
+
+      // Załaduj profil z Firestore
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid, 'profile', 'main'));
+        const badge = document.getElementById('profileSyncBadge');
+        if (snap.exists()) {
+          const p = snap.data();
+          // Zaktualizuj localStorage
+          localStorage.setItem('dokumo_profile', JSON.stringify(p));
+          // Wypełnij pola
+          fillFormFields(p);
+          if (badge) { badge.textContent = '✓ Zsynchronizowano'; badge.style.color = 'var(--accent2)'; }
+        } else {
+          // Brak danych w Firestore — spróbuj z localStorage
+          const cached = JSON.parse(localStorage.getItem('dokumo_profile') || '{}');
+          fillFormFields(cached);
+          if (badge) { badge.textContent = '○ Brak danych w chmurze'; badge.style.color = 'var(--muted)'; }
+        }
+      } catch(e) {
+        const cached = JSON.parse(localStorage.getItem('dokumo_profile') || '{}');
+        fillFormFields(cached);
+        const badge = document.getElementById('profileSyncBadge');
+        if (badge) { badge.textContent = '○ Tryb offline'; badge.style.color = 'var(--muted)'; }
+      }
     } else {
+      window._currentUid = null;
       showLogin();
     }
   });
 
   window.handleOAuth = async function(providerName) {
     const btn = event.currentTarget;
-    btn.style.opacity = '0.6';
+    btn.style.opacity = '0.65';
     btn.style.pointerEvents = 'none';
     btn.querySelector('.oauth-btn-label').textContent = 'Łączenie…';
     try {
@@ -253,8 +415,8 @@
       const success = document.getElementById('kontoSuccess');
       success.style.display = 'block';
       document.getElementById('successMsg').textContent =
-        'Zalogowano jako ' + user.displayName + '. Za chwilę przekierujemy Cię…';
-      setTimeout(() => { showProfile(user); success.style.display = 'none'; }, 1600);
+        'Zalogowano jako ' + user.displayName + '. Ładowanie profilu…';
+      setTimeout(() => { showProfile(user); success.style.display = 'none'; }, 1400);
     } catch(err) {
       btn.style.opacity = '1';
       btn.style.pointerEvents = 'auto';
@@ -265,10 +427,54 @@
     }
   };
 
+  window.saveProfile = async function() {
+    const profile = {
+      imie: document.getElementById('pImie').value.trim(),
+      nazwisko: document.getElementById('pNazwisko').value.trim(),
+      firma: document.getElementById('pFirma').value.trim(),
+      nip: document.getElementById('pNip').value.trim(),
+      adres: document.getElementById('pAdres').value.trim(),
+      email: document.getElementById('pEmail').value.trim(),
+      tel: document.getElementById('pTel').value.trim(),
+    };
+
+    // Zapisz w localStorage (szybki dostęp)
+    localStorage.setItem('dokumo_profile', JSON.stringify(profile));
+
+    // UI loading state
+    const btn = document.getElementById('profileSaveBtn');
+    const spinner = document.getElementById('profileSaveSpinner');
+    const btnText = document.getElementById('profileSaveBtnText');
+    const ok = document.getElementById('profileSaveOk');
+    btn.classList.add('saving');
+    spinner.style.display = 'block';
+    btnText.textContent = 'Zapisywanie…';
+    ok.style.display = 'none';
+
+    // Zapisz w Firestore
+    try {
+      if (window._currentUid) {
+        await setDoc(doc(window._firestoreDb, 'users', window._currentUid, 'profile', 'main'), profile);
+        const badge = document.getElementById('profileSyncBadge');
+        if (badge) { badge.textContent = '✓ Zsynchronizowano'; badge.style.color = 'var(--accent2)'; }
+      }
+    } catch(e) {
+      console.warn('Firestore save failed:', e);
+    }
+
+    // UI success state
+    btn.classList.remove('saving');
+    spinner.style.display = 'none';
+    btnText.textContent = 'Zapisz dane';
+    ok.style.display = 'block';
+    setTimeout(() => { ok.style.display = 'none'; }, 3000);
+  };
+
   window.logoutUser = async function() {
     await signOut(auth);
     localStorage.removeItem('dokumo_user');
     localStorage.removeItem('dokumo_sub');
+    window._currentUid = null;
     showLogin();
   };
 </script>
@@ -284,7 +490,6 @@ function showProfile(user) {
   const wrap = document.getElementById('profileWrap');
   wrap.style.display = 'flex';
 
-  // Avatar
   const av = document.getElementById('profileAvatar');
   if (user.photoURL) {
     av.innerHTML = '<img src="' + user.photoURL + '" alt="">';
@@ -293,34 +498,17 @@ function showProfile(user) {
   }
   document.getElementById('profileName').textContent = user.displayName || '—';
   document.getElementById('profileEmail').textContent = user.email || '—';
-
-  // Załaduj zapisany profil
-  try {
-    const p = JSON.parse(localStorage.getItem('dokumo_profile') || '{}');
-    document.getElementById('pImie').value = p.imie || '';
-    document.getElementById('pNazwisko').value = p.nazwisko || '';
-    document.getElementById('pFirma').value = p.firma || '';
-    document.getElementById('pNip').value = p.nip || '';
-    document.getElementById('pAdres').value = p.adres || '';
-    document.getElementById('pEmail').value = p.email || '';
-    document.getElementById('pTel').value = p.tel || '';
-  } catch(e) {}
 }
 
-function saveProfile() {
-  const profile = {
-    imie: document.getElementById('pImie').value.trim(),
-    nazwisko: document.getElementById('pNazwisko').value.trim(),
-    firma: document.getElementById('pFirma').value.trim(),
-    nip: document.getElementById('pNip').value.trim(),
-    adres: document.getElementById('pAdres').value.trim(),
-    email: document.getElementById('pEmail').value.trim(),
-    tel: document.getElementById('pTel').value.trim(),
-  };
-  localStorage.setItem('dokumo_profile', JSON.stringify(profile));
-  const ok = document.getElementById('profileSaveOk');
-  ok.style.display = 'block';
-  setTimeout(() => { ok.style.display = 'none'; }, 3000);
+function fillFormFields(p) {
+  if (!p) return;
+  document.getElementById('pImie').value = p.imie || '';
+  document.getElementById('pNazwisko').value = p.nazwisko || '';
+  document.getElementById('pFirma').value = p.firma || '';
+  document.getElementById('pNip').value = p.nip || '';
+  document.getElementById('pAdres').value = p.adres || '';
+  document.getElementById('pEmail').value = p.email || '';
+  document.getElementById('pTel').value = p.tel || '';
 }
 </script>
 

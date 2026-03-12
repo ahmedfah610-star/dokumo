@@ -305,9 +305,53 @@ var FORMS = {
 
 var currentDoc = null, currentStep = 0, wizVals = {};
 
+// Mapowanie pól formularza → klucze z profilu użytkownika
+var PROFILE_AUTOFILL = {
+  w_imie: function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  w_firma: function(p){ return p.firma || ''; },
+  u_imie: function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  u_firma: function(p){ return p.firma || ''; },
+  s_imie: function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
+  s_firma: function(p){ return p.firma || ''; },
+  s_siedz: function(p){ return p.adres || ''; },
+};
+
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem('dokumo_profile') || '{}'); } catch(e) { return {}; }
+}
+
+function saveWizSession() {
+  try {
+    sessionStorage.setItem('dokumo_wiz_' + currentDoc, JSON.stringify({ step: currentStep, vals: wizVals }));
+  } catch(e) {}
+}
+
+function loadWizSession(id) {
+  try {
+    var s = JSON.parse(sessionStorage.getItem('dokumo_wiz_' + id) || 'null');
+    if (s) { currentStep = s.step || 0; wizVals = s.vals || {}; return true; }
+  } catch(e) {}
+  return false;
+}
+
 function openDoc(id) {
   if (!FORMS[id]) return;
-  currentDoc = id; currentStep = 0; wizVals = {};
+  currentDoc = id;
+
+  // Spróbuj przywrócić sesję, jeśli nie ma — zacznij od nowa
+  var restored = loadWizSession(id);
+  if (!restored) {
+    currentStep = 0; wizVals = {};
+    // Autofill z profilu
+    var p = getProfile();
+    if (p && Object.keys(p).length > 0) {
+      Object.keys(PROFILE_AUTOFILL).forEach(function(fieldId) {
+        var val = PROFILE_AUTOFILL[fieldId](p);
+        if (val) wizVals[fieldId] = val;
+      });
+    }
+  }
+
   document.getElementById("genTitle").textContent = FORMS[id].title;
   document.getElementById("genLoading").style.display = "none";
   document.getElementById("genResult").style.display = "none";
@@ -402,6 +446,7 @@ function collectVals() {
     var el = document.getElementById("gf_" + fields[i].id);
     if (el) wizVals[fields[i].id] = el.value;
   }
+  saveWizSession();
 }
 
 function wizNext() {
@@ -444,6 +489,8 @@ async function doGenerate() {
     document.getElementById("genLoading").style.display = "none";
     document.getElementById("genText").value = data.text || data.result || "Błąd generowania";
     document.getElementById("genResult").style.display = "flex";
+    // Wyczyść sesję po wygenerowaniu
+    try { sessionStorage.removeItem('dokumo_wiz_' + currentDoc); } catch(e) {}
   } catch(e) {
     document.getElementById("genLoading").style.display = "none";
     document.getElementById("genForm").style.display = "block";

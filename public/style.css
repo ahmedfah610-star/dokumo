@@ -561,7 +561,7 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .cv-tab-btn.active::after { content:''; display:block; position:absolute; bottom:0; width:40px; height:2px; background:var(--accent2); }
 
 /* CV pay bar */
-.cv-pay-bar { position:fixed; bottom:60px; left:0; width:100%; background:rgba(247,245,240,0.98); backdrop-filter:blur(10px); border-top:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; z-index:300; box-shadow:0 -4px 20px rgba(0,0,0,0.08); }
+.cv-pay-bar { position:fixed; bottom:60px; left:0; width:100%; background:rgba(247,245,240,0.98); backdrop-filter:blur(10px); border-top:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:center; gap:10px; z-index:300; box-shadow:0 -4px 20px rgba(0,0,0,0.08); }
 .cv-pay-bar-left { font-size:0.7rem; color:var(--muted); line-height:1.4; }
 .cv-pay-bar-left strong { color:var(--ink); display:block; font-size:0.78rem; }
 .btn-pay-subtle { background:var(--accent); color:#fff; border:none; padding:9px 16px; font-family:'Syne',sans-serif; font-size:0.73rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:background 0.2s; -webkit-appearance:none; }
@@ -578,12 +578,12 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .cv-tpl-drawer-head { padding:18px 22px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
 .cv-tpl-drawer-head h3 { font-family:'Instrument Serif',serif; font-size:1.1rem; }
 .cv-tpl-drawer-head button { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); }
-.cv-tpl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px 22px; overflow-y:auto; }
-.cv-tpl-card { border:2px solid var(--border); cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; border-radius:4px; }
+.cv-tpl-grid { display:grid; grid-template-columns:repeat(auto-fill, 105px); justify-content:center; gap:10px; padding:14px 22px; overflow-y:auto; }
+.cv-tpl-card { border:2px solid var(--border); cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; border-radius:4px; width:105px; }
 .cv-tpl-card:hover { border-color:var(--accent2); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.1); }
 .cv-tpl-card.active { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
 .cv-tpl-card.active::after { content:'✓'; position:absolute; top:7px; right:7px; background:var(--accent); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; z-index:2; }
-.cv-tpl-thumb { height:120px; overflow:hidden; pointer-events:none; user-select:none; }
+.cv-tpl-thumb { width:105px; height:148px; overflow:hidden; pointer-events:none; user-select:none; }
 .cv-tpl-name { padding:8px 10px; font-size:0.7rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink2); background:var(--white); border-top:1px solid var(--border); }
 .cv-tpl-section-label { grid-column:1/-1; font-size:0.63rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); padding:10px 0 4px; border-bottom:1px solid var(--border); margin-bottom:2px; }
 
