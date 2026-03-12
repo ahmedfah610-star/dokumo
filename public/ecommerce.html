@@ -503,176 +503,282 @@ onAuthStateChanged(getAuth(app),async u=>{
 </div>
 
 <script>
-const FORMS = {
+var FORMS = {
   regulamin: {
     title: 'Regulamin Sklepu',
     icon: '🛒',
-    fields: [
-      {s:'Dane firmy (sprzedawcy)'},
-      {id:'firma',l:'Pełna nazwa firmy',p:'MójSklep Sp. z o.o.',r:true},
-      {id:'forma_prawna',l:'Forma prawna',t:'select',o:['Sp. z o.o.','Jednoosobowa działalność gospodarcza','Spółka cywilna','S.A.','Spółka jawna']},
-      {id:'nip',l:'NIP',p:'1234567890',r:true},
-      {id:'regon',l:'REGON',p:'123456789'},
-      {id:'adres',l:'Adres siedziby',p:'ul. Kwiatowa 1, 00-001 Warszawa',r:true},
-      {id:'email',l:'Email kontaktowy / reklamacje',p:'kontakt@mojsklep.pl',r:true},
-      {id:'tel',l:'Telefon',p:'+48 600 000 000'},
-      {id:'godziny',l:'Godziny obsługi klienta',p:'pon–pt 9:00–17:00'},
-      {s:'Sklep internetowy'},
-      {id:'url',l:'Adres strony (URL)',p:'www.mojsklep.pl',r:true},
-      {id:'branza',l:'Rodzaj sprzedawanych produktów / usług',p:'odzież damska, akcesoria, obuwie',r:true},
-      {id:'produkty_cyfrowe',l:'Czy sprzedajesz produkty cyfrowe?',t:'select',o:['Nie','Tak – pliki do pobrania','Tak – dostęp online / subskrypcja']},
-      {id:'konto_uzytkownika',l:'Czy sklep posiada konto użytkownika?',t:'select',o:['Tak, zakup wymaga rejestracji','Tak, ale zakup możliwy bez rejestracji','Nie, tylko zakupy bez rejestracji']},
-      {s:'Płatności'},
-      {id:'metody_platnosci',l:'Dostępne metody płatności',t:'chips',o:['BLIK','Karta płatnicza','Przelew tradycyjny','PayPal','Apple Pay','Google Pay','Płatność przy odbiorze'],p:'lub wpisz własne...',r:true},
-      {id:'operator_platnosci',l:'Operator płatności',t:'chips',o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'],p:'lub wpisz własny...'},
-      {id:'platnosc_pobranie',l:'Płatność przy odbiorze?',t:'select',o:['Nie','Tak']},
-      {id:'raty',l:'Płatności ratalne?',t:'select',o:['Nie','Tak – Twisto / PayPo / inne']},
-      {s:'Dostawa'},
-      {id:'firmy_kurierskie',l:'Firmy dostawcze',t:'chips',o:['InPost Paczkomat','InPost Kurier','DPD','DHL','Poczta Polska','GLS','FedEx','Orlen Paczka'],p:'lub wpisz własne...'},
-      {id:'czas_dostawy',l:'Czas realizacji / dostawy',p:'1–3 dni robocze'},
-      {id:'koszt_dostawy',l:'Koszt dostawy',p:'od 9,99 zł – zależy od wybranej opcji'},
-      {id:'darmowa_dostawa',l:'Darmowa dostawa od kwoty',p:'199 zł (lub wpisz "brak")'},
-      {id:'dostawa_zagranica',l:'Dostawa za granicę?',t:'select',o:['Nie','Tak – tylko UE','Tak – cały świat']},
-      {s:'Zwroty i reklamacje'},
-      {id:'termin_zwrotu',l:'Termin zwrotu',t:'select',o:['14 dni (ustawowe minimum)','30 dni','60 dni']},
-      {id:'koszty_zwrotu',l:'Koszty odesłania towaru przy zwrocie ponosi',t:'select',o:['Kupujący','Sprzedawca (bezpłatny zwrot)']},
-      {id:'czas_zwrotu_pieniedzy',l:'Czas na zwrot pieniędzy',t:'select',o:['14 dni (ustawowe)','7 dni','3 dni robocze']},
-      {id:'metoda_zwrotu_pieniedzy',l:'Metoda zwrotu pieniędzy',p:'przelewem na konto bankowe podane przez klienta'},
-      {id:'wyjatki_zwrotu',l:'Produkty wyłączone ze zwrotu',p:'produkty personalizowane, treści cyfrowe po pobraniu'},
-      {id:'podstawa_reklamacji',l:'Podstawa reklamacji',t:'select',o:['Rękojmia (2 lata – Kodeks Cywilny)','Rękojmia + gwarancja producenta','Tylko gwarancja producenta']},
-      {id:'czas_reklamacji',l:'Czas rozpatrzenia reklamacji',t:'select',o:['14 dni (ustawowe)','7 dni roboczych']},
-      {s:'Postanowienia dodatkowe'},
-      {id:'newsletter',l:'Czy sklep prowadzi newsletter?',t:'select',o:['Nie','Tak']},
-      {id:'program_lojalnosciowy',l:'Czy jest program lojalnościowy / punkty?',t:'select',o:['Nie','Tak']},
-      {id:'sad_polubowny',l:'Pozasądowe rozwiązywanie sporów (ODR)',t:'select',o:['Tak – link do platformy ODR','Nie']},
-      {id:'extra',l:'Dodatkowe informacje / ustalenia',p:'np. sprzedaż hurtowa, specjalne warunki...',t:'textarea'},
+    steps: [
+      { label: 'Dane firmy', fields: [
+        {id:'nip', l:'NIP', p:'1234567890'},
+        {id:'firma', l:'Pełna nazwa firmy', p:'MójSklep Sp. z o.o.', r:true},
+        {id:'forma_prawna', l:'Forma prawna', t:'select', o:['Sp. z o.o.','Jednoosobowa działalność gospodarcza','Spółka cywilna','S.A.','Spółka jawna']},
+        {id:'regon', l:'REGON', p:'123456789'},
+        {id:'adres', l:'Adres siedziby', p:'ul. Kwiatowa 1, 00-001 Warszawa', r:true},
+        {id:'email', l:'Email kontaktowy / reklamacje', p:'kontakt@mojsklep.pl', r:true},
+        {id:'tel', l:'Telefon', p:'+48 600 000 000'},
+        {id:'godziny', l:'Godziny obsługi klienta', p:'pon–pt 9:00–17:00'}
+      ]},
+      { label: 'Sklep internetowy', fields: [
+        {id:'url', l:'Adres strony (URL)', p:'www.mojsklep.pl', r:true},
+        {id:'branza', l:'Rodzaj sprzedawanych produktów / usług', p:'odzież damska, akcesoria, obuwie', r:true},
+        {id:'produkty_cyfrowe', l:'Czy sprzedajesz produkty cyfrowe?', t:'select', o:['Nie','Tak – pliki do pobrania','Tak – dostęp online / subskrypcja']},
+        {id:'konto_uzytkownika', l:'Czy sklep posiada konto użytkownika?', t:'select', o:['Tak, zakup wymaga rejestracji','Tak, ale zakup możliwy bez rejestracji','Nie, tylko zakupy bez rejestracji']}
+      ]},
+      { label: 'Płatności', fields: [
+        {id:'metody_platnosci', l:'Dostępne metody płatności', t:'chips', o:['BLIK','Karta płatnicza','Przelew tradycyjny','PayPal','Apple Pay','Google Pay','Płatność przy odbiorze'], p:'lub wpisz własne...', r:true},
+        {id:'operator_platnosci', l:'Operator płatności', t:'chips', o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'], p:'lub wpisz własny...'},
+        {id:'platnosc_pobranie', l:'Płatność przy odbiorze?', t:'select', o:['Nie','Tak']},
+        {id:'raty', l:'Płatności ratalne?', t:'select', o:['Nie','Tak – Twisto / PayPo / inne']}
+      ]},
+      { label: 'Dostawa', fields: [
+        {id:'firmy_kurierskie', l:'Firmy dostawcze', t:'chips', o:['InPost Paczkomat','InPost Kurier','DPD','DHL','Poczta Polska','GLS','FedEx','Orlen Paczka'], p:'lub wpisz własne...'},
+        {id:'czas_dostawy', l:'Czas realizacji / dostawy', p:'1–3 dni robocze'},
+        {id:'koszt_dostawy', l:'Koszt dostawy', p:'od 9,99 zł – zależy od wybranej opcji'},
+        {id:'darmowa_dostawa', l:'Darmowa dostawa od kwoty', p:'199 zł (lub wpisz "brak")'},
+        {id:'dostawa_zagranica', l:'Dostawa za granicę?', t:'select', o:['Nie','Tak – tylko UE','Tak – cały świat']}
+      ]},
+      { label: 'Zwroty & Reklamacje', fields: [
+        {id:'termin_zwrotu', l:'Termin zwrotu', t:'select', o:['14 dni (ustawowe minimum)','30 dni','60 dni']},
+        {id:'koszty_zwrotu', l:'Koszty odesłania towaru przy zwrocie ponosi', t:'select', o:['Kupujący','Sprzedawca (bezpłatny zwrot)']},
+        {id:'czas_zwrotu_pieniedzy', l:'Czas na zwrot pieniędzy', t:'select', o:['14 dni (ustawowe)','7 dni','3 dni robocze']},
+        {id:'metoda_zwrotu_pieniedzy', l:'Metoda zwrotu pieniędzy', p:'przelewem na konto bankowe podane przez klienta'},
+        {id:'wyjatki_zwrotu', l:'Produkty wyłączone ze zwrotu', p:'produkty personalizowane, treści cyfrowe po pobraniu'},
+        {id:'podstawa_reklamacji', l:'Podstawa reklamacji', t:'select', o:['Rękojmia (2 lata – Kodeks Cywilny)','Rękojmia + gwarancja producenta','Tylko gwarancja producenta']},
+        {id:'czas_reklamacji', l:'Czas rozpatrzenia reklamacji', t:'select', o:['14 dni (ustawowe)','7 dni roboczych']}
+      ]},
+      { label: 'Postanowienia', fields: [
+        {id:'newsletter', l:'Czy sklep prowadzi newsletter?', t:'select', o:['Nie','Tak']},
+        {id:'program_lojalnosciowy', l:'Czy jest program lojalnościowy / punkty?', t:'select', o:['Nie','Tak']},
+        {id:'sad_polubowny', l:'Pozasądowe rozwiązywanie sporów (ODR)', t:'select', o:['Tak – link do platformy ODR','Nie']}
+      ]}
     ],
-    prompt:(v)=>`Napisz bardzo szczegółowy i profesjonalny regulamin sklepu internetowego zgodny z polskim prawem. Dane sprzedawcy: ${v.firma||'[?]'} (${v.forma_prawna||'[?]'}), NIP: ${v.nip||'[?]'}, REGON: ${v.regon||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, godziny obsługi: ${v.godziny||'[?]'}. URL sklepu: ${v.url||'[?]'}, sprzedawane produkty: ${v.branza||'[?]'}. Produkty cyfrowe: ${v.produkty_cyfrowe||'nie'}. Konto użytkownika: ${v.konto_uzytkownika||'[?]'}. Metody płatności: ${v.metody_platnosci||'[?]'}, operator: ${v.operator_platnosci||'[?]'}, za pobraniem: ${v.platnosc_pobranie||'nie'}, raty: ${v.raty||'nie'}. Dostawa: ${v.firmy_kurierskie||'[?]'}, czas: ${v.czas_dostawy||'[?]'}, koszt: ${v.koszt_dostawy||'[?]'}, darmowa od: ${v.darmowa_dostawa||'[?]'}, zagranica: ${v.dostawa_zagranica||'nie'}. Zwroty: termin ${v.termin_zwrotu||'14 dni'}, koszty zwrotu ponosi ${v.koszty_zwrotu||'kupujący'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wyjątki: ${v.wyjatki_zwrotu||'brak'}. Reklamacje: podstawa ${v.podstawa_reklamacji||'rękojmia'}, czas rozpatrzenia ${v.czas_reklamacji||'14 dni'}. Newsletter: ${v.newsletter||'nie'}. Program lojalnościowy: ${v.program_lojalnosciowy||'nie'}. ODR: ${v.sad_polubowny||'tak'}. Dodatkowe: ${v.extra||'brak'}. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Rejestracja i konto, §3 Składanie zamówień, §4 Ceny i płatności, §5 Dostawa, §6 Prawo odstąpienia, §7 Reklamacje i rękojmia, §8 Ochrona danych, §9 Pliki cookies, §10 Postanowienia końcowe. Zacznij od razu od treści regulaminu.`
+    prompt:(v)=>`Napisz bardzo szczegółowy i profesjonalny regulamin sklepu internetowego zgodny z polskim prawem. Dane sprzedawcy: ${v.firma||'[?]'} (${v.forma_prawna||'[?]'}), NIP: ${v.nip||'[?]'}, REGON: ${v.regon||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, godziny obsługi: ${v.godziny||'[?]'}. URL sklepu: ${v.url||'[?]'}, sprzedawane produkty: ${v.branza||'[?]'}. Produkty cyfrowe: ${v.produkty_cyfrowe||'nie'}. Konto użytkownika: ${v.konto_uzytkownika||'[?]'}. Metody płatności: ${v.metody_platnosci||'[?]'}, operator: ${v.operator_platnosci||'[?]'}, za pobraniem: ${v.platnosc_pobranie||'nie'}, raty: ${v.raty||'nie'}. Dostawa: ${v.firmy_kurierskie||'[?]'}, czas: ${v.czas_dostawy||'[?]'}, koszt: ${v.koszt_dostawy||'[?]'}, darmowa od: ${v.darmowa_dostawa||'[?]'}, zagranica: ${v.dostawa_zagranica||'nie'}. Zwroty: termin ${v.termin_zwrotu||'14 dni'}, koszty zwrotu ponosi ${v.koszty_zwrotu||'kupujący'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wyjątki: ${v.wyjatki_zwrotu||'brak'}. Reklamacje: podstawa ${v.podstawa_reklamacji||'rękojmia'}, czas rozpatrzenia ${v.czas_reklamacji||'14 dni'}. Newsletter: ${v.newsletter||'nie'}. Program lojalnościowy: ${v.program_lojalnosciowy||'nie'}. ODR: ${v.sad_polubowny||'tak'}. Dodatkowe: ${v._extra_info||'brak'}. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Rejestracja i konto, §3 Składanie zamówień, §4 Ceny i płatności, §5 Dostawa, §6 Prawo odstąpienia, §7 Reklamacje i rękojmia, §8 Ochrona danych, §9 Pliki cookies, §10 Postanowienia końcowe. Zacznij od razu od treści regulaminu.`
   },
   rodo: {
     title: 'Polityka Prywatności & Cookies',
     icon: '🔒',
-    fields: [
-      {s:'Administrator danych'},
-      {id:'firma',l:'Pełna nazwa firmy (Administrator danych)',p:'MójSklep Sp. z o.o.',r:true},
-      {id:'nip',l:'NIP',p:'1234567890'},
-      {id:'adres',l:'Adres siedziby',p:'ul. Kwiatowa 1, 00-001 Warszawa',r:true},
-      {id:'email',l:'Email kontaktowy / do spraw RODO',p:'rodo@mojsklep.pl',r:true},
-      {id:'tel',l:'Telefon kontaktowy',p:'+48 600 000 000'},
-      {id:'url',l:'Adres strony internetowej',p:'www.mojsklep.pl',r:true},
-      {id:'iod',l:'Czy jest wyznaczony Inspektor Ochrony Danych (IOD)?',t:'select',o:['Nie','Tak – i podaję adres email IOD']},
-      {id:'iod_email',l:'Email IOD (jeśli dotyczy)',p:'iod@mojsklep.pl'},
-      {s:'Cele i podstawy przetwarzania danych'},
-      {id:'cel_sprzedaz',l:'Realizacja zamówień / umów?',t:'select',o:['Tak','Nie']},
-      {id:'cel_newsletter',l:'Newsletter / marketing emailowy?',t:'select',o:['Nie','Tak – na podstawie zgody']},
-      {id:'cel_marketing',l:'Marketing własny (retargeting, reklamy)?',t:'select',o:['Nie','Tak – na podstawie prawnie uzasadnionego interesu']},
-      {id:'cel_ksiegowosc',l:'Obowiązki podatkowe / księgowość?',t:'select',o:['Tak','Nie']},
-      {s:'Narzędzia i podmioty trzecie'},
-      {id:'google_analytics',l:'Google Analytics / Google Tag Manager?',t:'select',o:['Nie','Tak']},
-      {id:'facebook_pixel',l:'Facebook Pixel / Meta Ads?',t:'select',o:['Nie','Tak']},
-      {id:'inne_narzedzia',l:'Inne narzędzia marketingowe / analityczne',t:'chips',o:['Hotjar','HubSpot','Mailchimp','TikTok Pixel','LinkedIn Insight Tag','Klaviyo'],p:'lub wpisz własne...'},
-      {id:'operator_platnosci',l:'Operator płatności (przekazywanie danych)',t:'chips',o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'],p:'lub wpisz własny...'},
-      {id:'firma_kurierska',l:'Firmy kurierskie / logistyczne',t:'chips',o:['InPost','DPD','DHL','Poczta Polska','GLS'],p:'lub wpisz własne...'},
-      {id:'transfer_poza_ue',l:'Czy przekazujesz dane poza EOG?',t:'select',o:['Nie','Tak (np. serwery USA – Google, Meta)']},
-      {s:'Cookies i retencja danych'},
-      {id:'cookies',l:'Czy używasz plików cookies?',t:'select',o:['Tak','Nie']},
-      {id:'cookies_rodzaje',l:'Rodzaje cookies',t:'chips',o:['Niezbędne','Analityczne','Marketingowe','Funkcjonalne'],p:'lub wpisz własne...'},
-      {id:'okres_przechowywania',l:'Jak długo przechowujesz dane zamówień?',t:'select',o:['5 lat (obowiązek podatkowy)','3 lata','10 lat']},
-      {id:'okres_newsletter',l:'Jak długo przechowujesz dane do newslettera?',t:'select',o:['Do czasu wycofania zgody','2 lata bez aktywności']},
-      {s:'Prawa użytkowników'},
-      {id:'prawo_dostepu',l:'Czy zapewniasz dostęp do danych na żądanie?',t:'select',o:['Tak','Nie']},
-      {id:'czas_odpowiedzi',l:'Czas odpowiedzi na żądania',t:'select',o:['30 dni (ustawowy maksimum)','14 dni','7 dni roboczych']},
+    steps: [
+      { label: 'Administrator danych', fields: [
+        {id:'nip', l:'NIP', p:'1234567890'},
+        {id:'firma', l:'Pełna nazwa firmy', p:'MójSklep Sp. z o.o.', r:true},
+        {id:'adres', l:'Adres siedziby', p:'ul. Kwiatowa 1, 00-001 Warszawa', r:true},
+        {id:'email', l:'Email kontaktowy / do spraw RODO', p:'rodo@mojsklep.pl', r:true},
+        {id:'tel', l:'Telefon kontaktowy', p:'+48 600 000 000'},
+        {id:'url', l:'Adres strony internetowej', p:'www.mojsklep.pl', r:true},
+        {id:'iod', l:'Czy jest wyznaczony Inspektor Ochrony Danych (IOD)?', t:'select', o:['Nie','Tak – i podaję adres email IOD']},
+        {id:'iod_email', l:'Email IOD (jeśli dotyczy)', p:'iod@mojsklep.pl'}
+      ]},
+      { label: 'Cele przetwarzania', fields: [
+        {id:'cel_sprzedaz', l:'Realizacja zamówień / umów?', t:'select', o:['Tak','Nie']},
+        {id:'cel_newsletter', l:'Newsletter / marketing emailowy?', t:'select', o:['Nie','Tak – na podstawie zgody']},
+        {id:'cel_marketing', l:'Marketing własny (retargeting, reklamy)?', t:'select', o:['Nie','Tak – na podstawie prawnie uzasadnionego interesu']},
+        {id:'cel_ksiegowosc', l:'Obowiązki podatkowe / księgowość?', t:'select', o:['Tak','Nie']}
+      ]},
+      { label: 'Narzędzia & Podmioty', fields: [
+        {id:'google_analytics', l:'Google Analytics / Google Tag Manager?', t:'select', o:['Nie','Tak']},
+        {id:'facebook_pixel', l:'Facebook Pixel / Meta Ads?', t:'select', o:['Nie','Tak']},
+        {id:'inne_narzedzia', l:'Inne narzędzia marketingowe / analityczne', t:'chips', o:['Hotjar','HubSpot','Mailchimp','TikTok Pixel','LinkedIn Insight Tag','Klaviyo'], p:'lub wpisz własne...'},
+        {id:'operator_platnosci', l:'Operator płatności (przekazywanie danych)', t:'chips', o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'], p:'lub wpisz własny...'},
+        {id:'firma_kurierska', l:'Firmy kurierskie / logistyczne', t:'chips', o:['InPost','DPD','DHL','Poczta Polska','GLS'], p:'lub wpisz własne...'},
+        {id:'transfer_poza_ue', l:'Czy przekazujesz dane poza EOG?', t:'select', o:['Nie','Tak (np. serwery USA – Google, Meta)']}
+      ]},
+      { label: 'Cookies & Retencja', fields: [
+        {id:'cookies', l:'Czy używasz plików cookies?', t:'select', o:['Tak','Nie']},
+        {id:'cookies_rodzaje', l:'Rodzaje cookies', t:'chips', o:['Niezbędne','Analityczne','Marketingowe','Funkcjonalne'], p:'lub wpisz własne...'},
+        {id:'okres_przechowywania', l:'Jak długo przechowujesz dane zamówień?', t:'select', o:['5 lat (obowiązek podatkowy)','3 lata','10 lat']},
+        {id:'okres_newsletter', l:'Jak długo przechowujesz dane do newslettera?', t:'select', o:['Do czasu wycofania zgody','2 lata bez aktywności']}
+      ]},
+      { label: 'Prawa użytkowników', fields: [
+        {id:'prawo_dostepu', l:'Czy zapewniasz dostęp do danych na żądanie?', t:'select', o:['Tak','Nie']},
+        {id:'czas_odpowiedzi', l:'Czas odpowiedzi na żądania', t:'select', o:['30 dni (ustawowy maksimum)','14 dni','7 dni roboczych']}
+      ]}
     ],
-    prompt:(v)=>`Napisz bardzo szczegółową i profesjonalną politykę prywatności zgodną z RODO. Administrator: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, strona: ${v.url||'[?]'}. IOD: ${v.iod||'nie wyznaczono'}${v.iod_email?', email IOD: '+v.iod_email:''}. Cele przetwarzania: realizacja zamówień (${v.cel_sprzedaz||'tak'}), newsletter (${v.cel_newsletter||'nie'}), marketing (${v.cel_marketing||'nie'}), księgowość (${v.cel_ksiegowosc||'tak'}). Narzędzia: Google Analytics (${v.google_analytics||'nie'}), Facebook Pixel (${v.facebook_pixel||'nie'}), inne: ${v.inne_narzedzia||'brak'}. Operator płatności: ${v.operator_platnosci||'[?]'}. Firmy kurierskie: ${v.firma_kurierska||'[?]'}. Transfer poza EOG: ${v.transfer_poza_ue||'nie'}. Cookies: ${v.cookies||'tak'}, rodzaje: ${v.cookies_rodzaje||'niezbędne, analityczne'}. Retencja zamówień: ${v.okres_przechowywania||'5 lat'}, newsletter: ${v.okres_newsletter||'do wycofania zgody'}. Prawa: dostęp (${v.prawo_dostepu||'tak'}), odpowiedź w ${v.czas_odpowiedzi||'30 dni'}. Zawrzyj sekcje: 1. Administrator danych, 2. Inspektor Ochrony Danych, 3. Cele i podstawy prawne przetwarzania, 4. Kategorie danych, 5. Odbiorcy danych, 6. Transfer poza EOG, 7. Okres przechowywania, 8. Prawa osób, 9. Pliki cookies, 10. Prawo skargi do UODO. Zacznij od razu od treści dokumentu.`
+    prompt:(v)=>`Napisz bardzo szczegółową i profesjonalną politykę prywatności zgodną z RODO. Administrator: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, strona: ${v.url||'[?]'}. IOD: ${v.iod||'nie wyznaczono'}${v.iod_email?', email IOD: '+v.iod_email:''}. Cele przetwarzania: realizacja zamówień (${v.cel_sprzedaz||'tak'}), newsletter (${v.cel_newsletter||'nie'}), marketing (${v.cel_marketing||'nie'}), księgowość (${v.cel_ksiegowosc||'tak'}). Narzędzia: Google Analytics (${v.google_analytics||'nie'}), Facebook Pixel (${v.facebook_pixel||'nie'}), inne: ${v.inne_narzedzia||'brak'}. Operator płatności: ${v.operator_platnosci||'[?]'}. Firmy kurierskie: ${v.firma_kurierska||'[?]'}. Transfer poza EOG: ${v.transfer_poza_ue||'nie'}. Cookies: ${v.cookies||'tak'}, rodzaje: ${v.cookies_rodzaje||'niezbędne, analityczne'}. Retencja zamówień: ${v.okres_przechowywania||'5 lat'}, newsletter: ${v.okres_newsletter||'do wycofania zgody'}. Prawa: dostęp (${v.prawo_dostepu||'tak'}), odpowiedź w ${v.czas_odpowiedzi||'30 dni'}. Dodatkowe: ${v._extra_info||'brak'}. Zawrzyj sekcje: 1. Administrator danych, 2. Inspektor Ochrony Danych, 3. Cele i podstawy prawne przetwarzania, 4. Kategorie danych, 5. Odbiorcy danych, 6. Transfer poza EOG, 7. Okres przechowywania, 8. Prawa osób, 9. Pliki cookies, 10. Prawo skargi do UODO. Zacznij od razu od treści dokumentu.`
   },
   zwroty: {
     title: 'Zwroty & Reklamacje',
     icon: '↩',
-    fields: [
-      {s:'Dane firmy'},
-      {id:'firma',l:'Nazwa firmy',p:'MójSklep Sp. z o.o.',r:true},
-      {id:'nip',l:'NIP',p:'1234567890'},
-      {id:'adres_firmy',l:'Adres siedziby',p:'ul. Kwiatowa 1, 00-001 Warszawa'},
-      {id:'email',l:'Email do spraw zwrotów i reklamacji',p:'zwroty@mojsklep.pl',r:true},
-      {id:'tel',l:'Telefon kontaktowy',p:'+48 600 000 000'},
-      {id:'adres_zwroty',l:'Adres do odsyłania towaru (magazyn)',p:'ul. Magazynowa 5, 00-002 Warszawa',r:true},
-      {s:'Prawo odstąpienia od umowy (zwroty)'},
-      {id:'termin_zwrotu',l:'Termin na złożenie zwrotu',t:'select',o:['14 dni (ustawowe minimum)','30 dni','60 dni']},
-      {id:'jak_zlozyc_zwrot',l:'Jak klient składa zwrot?',p:'przez formularz na stronie / emailem / listownie'},
-      {id:'koszty_zwrotu',l:'Koszty odesłania towaru ponosi',t:'select',o:['Kupujący (klient)','Sprzedawca – bezpłatny zwrot','Sprzedawca – przy zamówieniach powyżej X zł']},
-      {id:'darmowy_zwrot_od',l:'Jeśli darmowy od kwoty – od jakiej?',p:'np. 200 zł (lub zostaw puste)'},
-      {id:'stan_towaru',l:'Warunek stanu towaru przy zwrocie',p:'towar nieużywany, w oryginalnym opakowaniu, z metkami'},
-      {id:'czas_zwrotu_pieniedzy',l:'Czas na zwrot pieniędzy klientowi',t:'select',o:['14 dni od otrzymania towaru (ustawowe)','7 dni od otrzymania towaru','3 dni robocze od otrzymania towaru']},
-      {id:'metoda_zwrotu_pieniedzy',l:'Metoda zwrotu pieniędzy',p:'przelewem na konto bankowe wskazane przez klienta'},
-      {id:'wymiana',l:'Czy jest możliwa wymiana towaru?',t:'select',o:['Nie','Tak – na inny rozmiar / kolor','Tak – na dowolny produkt']},
-      {s:'Wyjątki – towary wyłączone ze zwrotu'},
-      {id:'wyjatki_personalizacja',l:'Produkty spersonalizowane / na zamówienie?',t:'select',o:['Tak – wyłączone ze zwrotu','Nie sprzedajemy takich']},
-      {id:'wyjatki_cyfrowe',l:'Treści cyfrowe (e-booki, pliki po pobraniu)?',t:'select',o:['Tak – wyłączone ze zwrotu po dostarczeniu','Nie sprzedajemy']},
-      {id:'wyjatki_higieniczne',l:'Produkty higieniczne / zapieczętowane?',t:'select',o:['Tak – wyłączone po otwarciu opakowania','Nie dotyczy']},
-      {id:'wyjatki_inne',l:'Inne wyjątki',p:'np. bilety, kwiaty, produkty szybko psujące się...'},
-      {s:'Reklamacje (rękojmia / gwarancja)'},
-      {id:'podstawa_reklamacji',l:'Podstawa reklamacji',t:'select',o:['Rękojmia – Kodeks Cywilny (2 lata)','Rękojmia + gwarancja producenta','Rozszerzona gwarancja sprzedawcy']},
-      {id:'jak_zlozyc_reklamacje',l:'Jak składać reklamację?',p:'emailem na adres kontakt@sklep.pl lub listownie'},
-      {id:'czas_rozpatrzenia',l:'Czas rozpatrzenia reklamacji',t:'select',o:['14 dni (ustawowe)','7 dni roboczych','5 dni roboczych']},
-      {id:'decyzja_reklamacji',l:'Możliwe decyzje przy uwzględnieniu reklamacji',t:'select',o:['Wymiana na nowy, naprawa lub zwrot pieniędzy','Naprawa lub wymiana','Zwrot pieniędzy']},
-      {s:'Pozasądowe rozwiązywanie sporów'},
-      {id:'sad_polubowny',l:'Stały polubowny sąd konsumencki?',t:'select',o:['Tak – informacja zawarta w dokumencie','Nie']},
-      {id:'platforma_odr',l:'Platforma ODR (ec.europa.eu/consumers/odr)?',t:'select',o:['Tak – link w dokumencie','Nie']},
-      {id:'extra',l:'Dodatkowe ustalenia',p:'np. szczególne warunki dla klientów B2B...',t:'textarea'},
+    steps: [
+      { label: 'Dane firmy', fields: [
+        {id:'nip', l:'NIP', p:'1234567890'},
+        {id:'firma', l:'Nazwa firmy', p:'MójSklep Sp. z o.o.', r:true},
+        {id:'adres_firmy', l:'Adres siedziby', p:'ul. Kwiatowa 1, 00-001 Warszawa'},
+        {id:'email', l:'Email do spraw zwrotów i reklamacji', p:'zwroty@mojsklep.pl', r:true},
+        {id:'tel', l:'Telefon kontaktowy', p:'+48 600 000 000'},
+        {id:'adres_zwroty', l:'Adres do odsyłania towaru (magazyn)', p:'ul. Magazynowa 5, 00-002 Warszawa', r:true}
+      ]},
+      { label: 'Prawo odstąpienia', fields: [
+        {id:'termin_zwrotu', l:'Termin na złożenie zwrotu', t:'select', o:['14 dni (ustawowe minimum)','30 dni','60 dni']},
+        {id:'jak_zlozyc_zwrot', l:'Jak klient składa zwrot?', p:'przez formularz na stronie / emailem / listownie'},
+        {id:'koszty_zwrotu', l:'Koszty odesłania towaru ponosi', t:'select', o:['Kupujący (klient)','Sprzedawca – bezpłatny zwrot','Sprzedawca – przy zamówieniach powyżej X zł']},
+        {id:'darmowy_zwrot_od', l:'Jeśli darmowy od kwoty – od jakiej?', p:'np. 200 zł (lub zostaw puste)'},
+        {id:'stan_towaru', l:'Warunek stanu towaru przy zwrocie', p:'towar nieużywany, w oryginalnym opakowaniu, z metkami'},
+        {id:'czas_zwrotu_pieniedzy', l:'Czas na zwrot pieniędzy klientowi', t:'select', o:['14 dni od otrzymania towaru (ustawowe)','7 dni od otrzymania towaru','3 dni robocze od otrzymania towaru']},
+        {id:'metoda_zwrotu_pieniedzy', l:'Metoda zwrotu pieniędzy', p:'przelewem na konto bankowe wskazane przez klienta'},
+        {id:'wymiana', l:'Czy jest możliwa wymiana towaru?', t:'select', o:['Nie','Tak – na inny rozmiar / kolor','Tak – na dowolny produkt']}
+      ]},
+      { label: 'Wyjątki ze zwrotu', fields: [
+        {id:'wyjatki_personalizacja', l:'Produkty spersonalizowane / na zamówienie?', t:'select', o:['Tak – wyłączone ze zwrotu','Nie sprzedajemy takich']},
+        {id:'wyjatki_cyfrowe', l:'Treści cyfrowe (e-booki, pliki po pobraniu)?', t:'select', o:['Tak – wyłączone ze zwrotu po dostarczeniu','Nie sprzedajemy']},
+        {id:'wyjatki_higieniczne', l:'Produkty higieniczne / zapieczętowane?', t:'select', o:['Tak – wyłączone po otwarciu opakowania','Nie dotyczy']},
+        {id:'wyjatki_inne', l:'Inne wyjątki', p:'np. bilety, kwiaty, produkty szybko psujące się...'}
+      ]},
+      { label: 'Reklamacje', fields: [
+        {id:'podstawa_reklamacji', l:'Podstawa reklamacji', t:'select', o:['Rękojmia – Kodeks Cywilny (2 lata)','Rękojmia + gwarancja producenta','Rozszerzona gwarancja sprzedawcy']},
+        {id:'jak_zlozyc_reklamacje', l:'Jak składać reklamację?', p:'emailem na adres kontakt@sklep.pl lub listownie'},
+        {id:'czas_rozpatrzenia', l:'Czas rozpatrzenia reklamacji', t:'select', o:['14 dni (ustawowe)','7 dni roboczych','5 dni roboczych']},
+        {id:'decyzja_reklamacji', l:'Możliwe decyzje przy uwzględnieniu reklamacji', t:'select', o:['Wymiana na nowy, naprawa lub zwrot pieniędzy','Naprawa lub wymiana','Zwrot pieniędzy']}
+      ]},
+      { label: 'Rozwiązywanie sporów', fields: [
+        {id:'sad_polubowny', l:'Stały polubowny sąd konsumencki?', t:'select', o:['Tak – informacja zawarta w dokumencie','Nie']},
+        {id:'platforma_odr', l:'Platforma ODR (ec.europa.eu/consumers/odr)?', t:'select', o:['Tak – link w dokumencie','Nie']}
+      ]}
     ],
-    prompt:(v)=>`Napisz bardzo szczegółową politykę zwrotów i reklamacji dla sklepu internetowego. Dane firmy: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres_firmy||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, adres do zwrotów: ${v.adres_zwroty||'[?]'}. ZWROTY: termin ${v.termin_zwrotu||'14 dni'}, jak złożyć: ${v.jak_zlozyc_zwrot||'emailem'}, koszty zwrotu: ${v.koszty_zwrotu||'kupujący'}${v.darmowy_zwrot_od?', darmowy od: '+v.darmowy_zwrot_od:''}, stan towaru: ${v.stan_towaru||'oryginalny'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wymiana: ${v.wymiana||'nie'}. WYJĄTKI ze zwrotu: personalizacja (${v.wyjatki_personalizacja||'nie dotyczy'}), treści cyfrowe (${v.wyjatki_cyfrowe||'nie dotyczy'}), higieniczne (${v.wyjatki_higieniczne||'nie dotyczy'}), inne: ${v.wyjatki_inne||'brak'}. REKLAMACJE: podstawa ${v.podstawa_reklamacji||'rękojmia 2 lata'}, jak złożyć: ${v.jak_zlozyc_reklamacje||'emailem'}, czas rozpatrzenia ${v.czas_rozpatrzenia||'14 dni'}, decyzja: ${v.decyzja_reklamacji||'wymiana/naprawa/zwrot'}. Spory: sąd polubowny (${v.sad_polubowny||'tak'}), ODR (${v.platforma_odr||'tak'}). Extra: ${v.extra||'brak'}. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Prawo odstąpienia od umowy (z gotowym wzorem formularza), §3 Towary wyłączone z prawa odstąpienia, §4 Procedura zwrotu, §5 Zwrot należności, §6 Wymiana towaru, §7 Reklamacje – podstawa prawna, §8 Procedura reklamacyjna, §9 Pozasądowe rozwiązywanie sporów. Zacznij od razu od treści dokumentu.`
+    prompt:(v)=>`Napisz bardzo szczegółową politykę zwrotów i reklamacji dla sklepu internetowego. Dane firmy: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres_firmy||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, adres do zwrotów: ${v.adres_zwroty||'[?]'}. ZWROTY: termin ${v.termin_zwrotu||'14 dni'}, jak złożyć: ${v.jak_zlozyc_zwrot||'emailem'}, koszty zwrotu: ${v.koszty_zwrotu||'kupujący'}${v.darmowy_zwrot_od?', darmowy od: '+v.darmowy_zwrot_od:''}, stan towaru: ${v.stan_towaru||'oryginalny'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wymiana: ${v.wymiana||'nie'}. WYJĄTKI ze zwrotu: personalizacja (${v.wyjatki_personalizacja||'nie dotyczy'}), treści cyfrowe (${v.wyjatki_cyfrowe||'nie dotyczy'}), higieniczne (${v.wyjatki_higieniczne||'nie dotyczy'}), inne: ${v.wyjatki_inne||'brak'}. REKLAMACJE: podstawa ${v.podstawa_reklamacji||'rękojmia 2 lata'}, jak złożyć: ${v.jak_zlozyc_reklamacje||'emailem'}, czas rozpatrzenia ${v.czas_rozpatrzenia||'14 dni'}, decyzja: ${v.decyzja_reklamacji||'wymiana/naprawa/zwrot'}. Spory: sąd polubowny (${v.sad_polubowny||'tak'}), ODR (${v.platforma_odr||'tak'}). Dodatkowe: ${v._extra_info||'brak'}. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Prawo odstąpienia od umowy (z gotowym wzorem formularza), §3 Towary wyłączone z prawa odstąpienia, §4 Procedura zwrotu, §5 Zwrot należności, §6 Wymiana towaru, §7 Reklamacje – podstawa prawna, §8 Procedura reklamacyjna, §9 Pozasądowe rozwiązywanie sporów. Zacznij od razu od treści dokumentu.`
   }
 };
 
 // ── NIP Lookup ────────────────────────────────────────────────────────────
+var NIP_FIELD_MAP_EC = {
+  nip: { name: 'firma', adres: 'adres', adres2: 'adres_firmy' }
+};
 
-async function lookupNIP() {
-  var input = document.getElementById('gf_nip');
-  if (!input) return;
-  var raw = input.value.replace(/[\s\-\.]/g, '');
-  if (raw.length !== 10) return;
-  var origPlaceholder = input.placeholder;
-  input.disabled = true;
-  input.placeholder = '⏳ Pobieranie danych...';
+async function lookupNIP(fieldId) {
+  var el = document.getElementById('gf_' + fieldId);
+  if (!el) return;
+  var nip = el.value.replace(/[\s\-\.]/g, '');
+  if (!/^\d{10}$/.test(nip)) return;
+  var origPh = el.placeholder;
+  el.placeholder = '⏳ Pobieranie danych...';
+  el.disabled = true;
+  el.style.borderColor = 'rgba(57,255,138,.5)';
   try {
-    var res = await fetch('/api/nip-lookup?nip=' + raw);
-    if (!res.ok) throw new Error();
-    var data = await res.json();
+    var r = await fetch('/api/nip-lookup?nip=' + nip);
+    el.disabled = false;
+    if (!r.ok) { el.placeholder = origPh; el.style.borderColor = ''; return; }
+    var data = await r.json();
+    var map = NIP_FIELD_MAP_EC[fieldId];
+    if (!map) { el.placeholder = origPh; el.style.borderColor = ''; return; }
     function flashFill(id, val) {
-      var el = document.getElementById('gf_' + id);
-      if (!el || !val) return;
-      el.value = val;
-      el.style.transition = 'border-color .3s, background .3s';
-      el.style.borderColor = '#22c55e';
-      el.style.background = 'rgba(34,197,94,.12)';
-      setTimeout(function(){ el.style.borderColor = ''; el.style.background = 'rgba(255,255,255,.05)'; }, 1800);
+      if (!id || !val) return;
+      var t = document.getElementById('gf_' + id);
+      if (t && !t.value) {
+        t.value = val; wizVals[id] = val;
+        t.style.transition = 'background .4s';
+        t.style.background = 'rgba(57,255,138,.12)';
+        setTimeout(function(){ t.style.background = ''; }, 1800);
+      }
     }
-    if (data.name) flashFill('firma', data.name);
-    if (data.adres) {
-      flashFill('adres', data.adres);
-      flashFill('adres_firmy', data.adres);
-    }
-    input.placeholder = '✓ ' + (data.name || raw);
-    setTimeout(function(){ input.placeholder = origPlaceholder; }, 3500);
+    flashFill(map.name, data.name);
+    flashFill(map.adres, data.adres);
+    flashFill(map.adres2, data.adres);
+    el.placeholder = '✓ ' + (data.name ? data.name.split(' ').slice(0,3).join(' ') : 'Pobrano');
+    el.style.borderColor = 'rgba(57,255,138,.5)';
+    setTimeout(function(){ el.placeholder = origPh; el.style.borderColor = ''; }, 3500);
   } catch(e) {
-    input.placeholder = origPlaceholder;
+    el.disabled = false;
+    el.placeholder = origPh;
+    el.style.borderColor = '';
   }
-  input.disabled = false;
 }
 
 function attachNIPListeners() {
-  var el = document.getElementById('gf_nip');
-  if (!el || el._nipBound) return;
-  el._nipBound = true;
-  el.addEventListener('blur', lookupNIP);
-  el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key==='Tab') lookupNIP(); });
+  Object.keys(NIP_FIELD_MAP_EC).forEach(function(id) {
+    var el = document.getElementById('gf_' + id);
+    if (!el || el._nipListened) return;
+    el._nipListened = true;
+    el.addEventListener('blur', function(){ lookupNIP(id); });
+    el.addEventListener('input', function(){
+      if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupNIP(id);
+    });
+  });
 }
 
-// ── Chips widget ──────────────────────────────────────────────────────────
+// ── Wizard ────────────────────────────────────────────────────────────────
+var currentDoc = null, currentStep = 0, wizVals = {};
 
-function toggleChip(btn, inputId) {
-  var inp = document.getElementById(inputId);
+var LABEL_STYLE = 'display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;';
+var INPUT_STYLE = 'width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:\'DM Sans\',sans-serif;';
+
+function renderStep() {
+  var form = FORMS[currentDoc];
+  var steps = form.steps;
+  var step = steps[currentStep];
+  var total = steps.length;
+  var pct = Math.round((currentStep / total) * 100);
+  var el = document.getElementById('genForm');
+
+  var segs = '';
+  for (var i = 0; i < total; i++) {
+    segs += '<div style="flex:1;height:3px;border-radius:99px;background:' + (i <= currentStep ? '#39ff8a' : 'rgba(255,255,255,.1)') + ';transition:background .3s;"></div>';
+  }
+
+  var progressHTML = '<div style="margin-bottom:20px;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    + '<span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ' + (currentStep+1) + ' z ' + total + ': ' + step.label + '</span>'
+    + '<span style="font-size:.7rem;color:rgba(240,237,232,.3);">' + pct + '% ukończone</span>'
+    + '</div>'
+    + '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">'
+    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:6px;margin-top:10px;">' + segs + '</div>'
+    + '</div>';
+
+  var fieldsHTML = '';
+  var fields = step.fields;
+  for (var j = 0; j < fields.length; j++) {
+    var f = fields[j];
+    var label = f.l || f.label || '';
+    var ph = f.p || f.placeholder || '';
+    var type = f.t || f.type || '';
+    var val = wizVals[f.id] !== undefined ? wizVals[f.id] : '';
+    var optLabel = '<label style="' + LABEL_STYLE + '">' + label + (f.r ? '' : ' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>') + '</label>';
+
+    if (type === 'select') {
+      var opts = (f.o || []).map(function(o){
+        return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' + o + '</option>';
+      }).join('');
+      fieldsHTML += '<div style="margin-bottom:16px;">' + optLabel
+        + '<select id="gf_' + f.id + '" style="' + INPUT_STYLE + 'cursor:pointer;">' + opts + '</select></div>';
+    } else if (type === 'chips') {
+      var currentVals = val ? val.split(',').map(function(s){return s.trim();}) : [];
+      var chips = (f.o || []).map(function(o){
+        var active = currentVals.indexOf(o) !== -1;
+        return '<button type="button" data-val="' + o + '" data-inp="gf_' + f.id + '" onclick="toggleChip(this)" style="padding:6px 12px;background:' + (active?'rgba(34,197,94,.2)':'rgba(255,255,255,.05)') + ';border:1px solid ' + (active?'rgba(34,197,94,.4)':'rgba(255,255,255,.12)') + ';border-radius:20px;color:' + (active?'#4ade80':'rgba(240,237,232,.5)') + ';font-size:.75rem;cursor:pointer;white-space:nowrap;">' + o + '</button>';
+      }).join('');
+      fieldsHTML += '<div style="margin-bottom:16px;">' + optLabel
+        + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' + chips + '</div>'
+        + '<input id="gf_' + f.id + '" type="text" placeholder="' + ph + '" value="' + val + '" style="' + INPUT_STYLE + '"></div>';
+    } else {
+      var nipHint = f.id === 'nip'
+        ? '<p style="font-size:.7rem;color:rgba(57,255,138,.55);margin:5px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>'
+        : '';
+      fieldsHTML += '<div style="margin-bottom:16px;">' + optLabel
+        + '<input id="gf_' + f.id + '" type="text" placeholder="' + ph + '" value="' + val + '" style="' + INPUT_STYLE + '">' + nipHint + '</div>';
+    }
+  }
+
+  if (currentStep === total - 1) {
+    var extraVal = wizVals['_extra_info'] || '';
+    fieldsHTML += '<div style="margin-bottom:16px;">'
+      + '<label style="' + LABEL_STYLE + '">📝 Dodatkowe informacje <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span></label>'
+      + '<textarea id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi lub wymagania..." style="' + INPUT_STYLE + 'resize:vertical;">' + extraVal + '</textarea></div>';
+  }
+
+  var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
+    + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : '')
+    + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
+    + (currentStep === total - 1 ? 'Generuj dokument ⚡' : 'Dalej: ' + steps[currentStep+1].label + ' →')
+    + '</button></div>';
+
+  el.innerHTML = progressHTML + fieldsHTML + navHTML;
+  attachNIPListeners();
+}
+
+function toggleChip(btn) {
+  var inputId = btn.dataset.inp;
   var val = btn.dataset.val;
+  var inp = document.getElementById(inputId);
   var current = inp.value ? inp.value.split(',').map(function(s){return s.trim();}).filter(Boolean) : [];
   var idx = current.indexOf(val);
   if (idx === -1) {
@@ -689,159 +795,99 @@ function toggleChip(btn, inputId) {
   inp.value = current.join(', ');
 }
 
-// ── Form builder ──────────────────────────────────────────────────────────
-
-function buildFieldHTML(f) {
-  var label = f.l || f.label || '';
-  var placeholder = f.p || f.placeholder || '';
-  var type = f.t || f.type || '';
-  var LABEL_STYLE = 'display:block;font-size:.75rem;font-weight:600;color:rgba(240,237,232,.5);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;';
-  var INPUT_STYLE = 'width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:\'DM Sans\',sans-serif;';
-  var WRAP_STYLE = 'margin-bottom:16px;';
-
-  if (f.s) {
-    return '<div style="margin:22px 0 10px;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,237,232,.3);border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:6px;">' + f.s + '</div>';
+function collectVals() {
+  var fields = FORMS[currentDoc].steps[currentStep].fields;
+  for (var i = 0; i < fields.length; i++) {
+    var el = document.getElementById('gf_' + fields[i].id);
+    if (el) wizVals[fields[i].id] = el.value;
   }
-  if (type === 'select') {
-    var opts = (f.o || f.options || []).map(function(o){ return '<option value="' + o + '">' + o + '</option>'; }).join('');
-    return '<div style="' + WRAP_STYLE + '"><label style="' + LABEL_STYLE + '">' + label + '</label>' +
-      '<select id="gf_' + f.id + '" style="' + INPUT_STYLE + 'cursor:pointer;">' + opts + '</select></div>';
-  }
-  if (type === 'textarea') {
-    return '<div style="' + WRAP_STYLE + '"><label style="' + LABEL_STYLE + '">' + label + '</label>' +
-      '<textarea id="gf_' + f.id + '" rows="3" placeholder="' + placeholder + '" style="' + INPUT_STYLE + 'resize:vertical;"></textarea></div>';
-  }
-  if (type === 'chips') {
-    var chips = (f.o || []).map(function(o){
-      return '<button type="button" data-val="' + o + '" onclick="toggleChip(this,\'gf_' + f.id + '\')" style="padding:5px 11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;color:rgba(240,237,232,.5);font-size:.75rem;cursor:pointer;white-space:nowrap;">' + o + '</button>';
-    }).join('');
-    return '<div style="' + WRAP_STYLE + '"><label style="' + LABEL_STYLE + '">' + label + '</label>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' + chips + '</div>' +
-      '<input id="gf_' + f.id + '" type="text" placeholder="' + placeholder + '" style="' + INPUT_STYLE + '" /></div>';
-  }
-  return '<div style="' + WRAP_STYLE + '"><label style="' + LABEL_STYLE + '">' + label + '</label>' +
-    '<input id="gf_' + f.id + '" type="text" placeholder="' + placeholder + '" style="' + INPUT_STYLE + '" /></div>';
+  var extraEl = document.getElementById('gf__extra_info');
+  if (extraEl) wizVals['_extra_info'] = extraEl.value;
 }
 
-// ── Main logic ────────────────────────────────────────────────────────────
+function wizNext() {
+  collectVals();
+  if (currentStep < FORMS[currentDoc].steps.length - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    doGenerate();
+  }
+}
 
-let currentDoc = null;
+function wizBack() {
+  collectVals();
+  if (currentStep > 0) { currentStep--; renderStep(); }
+}
 
 function openDoc(id) {
-  const form = FORMS[id];
-  if (!form) return;
-  currentDoc = id;
-  const _prof = (function(){ try{return JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){return{};} })();
-  document.getElementById('genTitle').textContent = form.title;
+  if (!FORMS[id]) return;
+  currentDoc = id; currentStep = 0; wizVals = {};
+  var _prof = (function(){ try{return JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){return{};} })();
+  if (_prof) {
+    if (_prof.firma) wizVals['firma'] = _prof.firma;
+    if (_prof.adres) { wizVals['adres'] = _prof.adres; wizVals['adres_firmy'] = _prof.adres; }
+    if (_prof.email) wizVals['email'] = _prof.email;
+    if (_prof.nip) wizVals['nip'] = _prof.nip;
+  }
+  document.getElementById('genTitle').textContent = FORMS[id].title;
   document.getElementById('genLoading').style.display = 'none';
   document.getElementById('genResult').style.display = 'none';
-
-  const html = form.fields.map(buildFieldHTML).join('');
-
-  document.getElementById('genForm').innerHTML = html +
-    '<div style="margin-bottom:16px;">' +
-    '<label style="display:block;font-size:.75rem;font-weight:600;color:rgba(240,237,232,.5);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">📝 Dodatkowe informacje <span style="opacity:.5;font-weight:400">(opcjonalnie)</span></label>' +
-    '<textarea id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi lub wymagania..." style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;resize:vertical;font-family:\'DM Sans\',sans-serif;"></textarea>' +
-    '</div>' +
-    '<button onclick="generate()" style="width:100%;padding:14px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.25);color:#4ade80;border-radius:12px;cursor:pointer;font-family:\'Bricolage Grotesque\',sans-serif;font-weight:800;font-size:.9rem;margin-top:8px;transition:all .2s;" onmouseover="this.style.background=\'rgba(34,197,94,.25)\'" onmouseout="this.style.background=\'rgba(34,197,94,.15)\'">Generuj dokument ⚡</button>';
-
-  requestAnimationFrame(() => {
-    if (_prof.firma && document.getElementById('gf_firma')) document.getElementById('gf_firma').value = _prof.firma;
-    if (_prof.adres && document.getElementById('gf_adres')) document.getElementById('gf_adres').value = _prof.adres;
-    if (_prof.email && document.getElementById('gf_email')) document.getElementById('gf_email').value = _prof.email;
-    if (_prof.nip && document.getElementById('gf_nip')) document.getElementById('gf_nip').value = _prof.nip;
-    attachNIPListeners();
-  });
-
-  const overlay = document.getElementById('genOverlay');
-  const sheet = document.getElementById('genSheet');
+  document.getElementById('genForm').style.display = 'block';
+  renderStep();
+  var overlay = document.getElementById('genOverlay');
+  var sheet = document.getElementById('genSheet');
   overlay.style.opacity = '1';
   overlay.style.pointerEvents = 'auto';
-  requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
+  requestAnimationFrame(function(){ sheet.style.transform = 'translateY(0)'; });
 }
 
 function closeGen() {
-  const sheet = document.getElementById('genSheet');
+  var sheet = document.getElementById('genSheet');
   sheet.style.transform = 'translateY(100%)';
-  const ov = document.getElementById('genOverlay');
+  var ov = document.getElementById('genOverlay');
   ov.style.opacity = '0';
-  setTimeout(()=>{ ov.style.pointerEvents = 'none'; }, 300);
+  setTimeout(function(){ ov.style.pointerEvents = 'none'; }, 300);
 }
 
-async function generate() {
-  const sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
-  const hasSub = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
-  const allowed = hasSub && ['biznes','promax','pro'].includes(sub.plan);
-  if (!allowed) {
-    sessionStorage.setItem('dokumo_after_sub', window.location.href);
-    window.location.href = 'subskrypcja.html';
-    return;
-  }
-
-  const user = (() => { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } })();
+async function doGenerate() {
+  var sub; try { sub = JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { sub = null; }
+  var ok = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date() && ['biznes','promax','pro'].indexOf(sub.plan) >= 0;
+  if (!ok) { sessionStorage.setItem('dokumo_after_sub', window.location.href); window.location.href = 'subskrypcja.html'; return; }
+  var user; try { user = JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { user = null; }
   if (!user) { window.location.href = 'konto.html'; return; }
-
-  const form = FORMS[currentDoc];
-  const vals = {};
-  form.fields.forEach(f => {
-    if (!f.id) return;
-    const el = document.getElementById('gf_' + f.id);
-    vals[f.id] = el ? el.value : '';
-  });
 
   document.getElementById('genForm').style.display = 'none';
   document.getElementById('genLoading').style.display = 'block';
-
   try {
-    let prompt = form.prompt(vals);
-    const extraInfo = document.getElementById('gf__extra_info')?.value || '';
-    if (extraInfo) prompt += '\nDodatkowe informacje: ' + extraInfo;
-    const token = window._fbToken || '';
-    const res = await fetch('/api/generate', {
+    var prompt = FORMS[currentDoc].prompt(wizVals);
+    var token = window._fbToken || '';
+    var res = await fetch('/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({
-        prompt,
-        docId: currentDoc,
-        docName: form.title,
-        docCat: 'biznes',
-        docIcon: form.icon || '📄',
-        docCatLabel: 'Biznes'
-      })
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title, docCat:'biznes', docCatLabel:'Biznes'})
     });
-    const data = await res.json();
-    const text = data.text || data.result || 'Błąd generowania';
+    var data = await res.json();
     document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('genText').value = text;
+    document.getElementById('genText').value = data.text || data.result || 'Błąd generowania';
     document.getElementById('genResult').style.display = 'block';
   } catch(e) {
     document.getElementById('genLoading').style.display = 'none';
     document.getElementById('genForm').style.display = 'block';
+    renderStep();
     alert('Błąd połączenia. Spróbuj ponownie.');
   }
 }
 
-function copyResult() {
-  navigator.clipboard.writeText(document.getElementById('genText').value);
-}
+function copyResult() { navigator.clipboard.writeText(document.getElementById('genText').value); }
 function downloadResult() {
-  const text = document.getElementById('genText').value;
-  const blob = new Blob([text], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = (FORMS[currentDoc]?.title || 'dokument').toLowerCase().replace(/\s+/g,'_') + '.txt';
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([document.getElementById('genText').value], {type:'text/plain'}));
+  a.download = FORMS[currentDoc].title.toLowerCase().replace(/\s+/g,'_') + '.txt';
   a.click();
 }
 
-document.getElementById('genOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeGen();
-});
-
-window.openDoc = openDoc;
-window.closeGen = closeGen;
-window.copyResult = copyResult;
-window.downloadResult = downloadResult;
-window.toggleChip = toggleChip;
+document.getElementById('genOverlay').addEventListener('click', function(e){ if(e.target===this) closeGen(); });
 </script>
 </body>
 </html>

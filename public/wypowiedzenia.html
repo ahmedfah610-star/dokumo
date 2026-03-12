@@ -196,31 +196,6 @@ onAuthStateChanged(getAuth(app),async u=>{
     <div class="doc-status" aria-hidden="true"></div>
   </article>
 
-  <article class="doc-card" data-doc="umowa_pracy" itemscope itemtype="https://schema.org/Service">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">👔</span></div>
-      <div class="doc-info">
-        <h2 class="doc-name" itemprop="name">Umowa o pracę</h2>
-        <p class="doc-desc" itemprop="description">Umowa o pracę na czas nieokreślony, określony lub próbny — zgodna z art. 29 Kodeksu Pracy, gotowa do podpisu.</p>
-      </div>
-    </div>
-    <div class="doc-action"><button class="doc-btn" aria-label="Generuj umowę o pracę">Generuj →</button></div>
-    <div class="doc-status" aria-hidden="true"></div>
-  </article>
-
-  <article class="doc-card" data-doc="umowa_zlecenie" itemscope itemtype="https://schema.org/Service">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📝</span></div>
-      <div class="doc-info">
-        <h2 class="doc-name" itemprop="name">Umowa zlecenie</h2>
-        <p class="doc-desc" itemprop="description">Umowa cywilnoprawna z uwzględnieniem ZUS i podatku. Dla studentów poniżej 26 lat — automatycznie bez składek ZUS.</p>
-      </div>
-    </div>
-    <div class="doc-action"><button class="doc-btn" aria-label="Generuj umowę zlecenie">Generuj →</button></div>
-    <div class="doc-status" aria-hidden="true"></div>
-  </article>
 
 </main>
 
@@ -336,69 +311,12 @@ var FORMS = {
     }
   },
 
-  umowa_pracy: {
-    title: "Umowa o pracę",
-    steps: [
-      { label: "Pracodawca", fields: [
-        {id:"up_nip",        label:"NIP pracodawcy",               ph:"np. 1234567890",               icon:"🔢", opt:true},
-        {id:"up_pracodawca", label:"Nazwa firmy (pracodawcy)",     ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
-        {id:"up_adres_p",    label:"Adres pracodawcy",             ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
-      ]},
-      { label: "Pracownik", fields: [
-        {id:"up_pracownik",  label:"Imię i nazwisko pracownika",   ph:"np. Anna Nowak",               icon:"👤"},
-        {id:"up_pesel",      label:"PESEL pracownika",             ph:"np. 90010112345",              icon:"🆔", opt:true},
-        {id:"up_adres_pr",   label:"Adres zamieszkania pracownika",ph:"np. ul. Różana 2, Kraków",     icon:"🏠", opt:true}
-      ]},
-      { label: "Warunki zatrudnienia", fields: [
-        {id:"up_st",     label:"Stanowisko",            ph:"np. Specjalista ds. marketingu",  icon:"💼"},
-        {id:"up_rodzaj", label:"Rodzaj umowy",          type:"pills", icon:"📋",
-         opts:["Na czas nieokreślony","Na czas określony","Na okres próbny (3 miesiące)"]},
-        {id:"up_wym",    label:"Wymiar czasu pracy",    type:"pills", icon:"⏱️",
-         opts:["Pełny etat","3/4 etatu","1/2 etatu","1/4 etatu"]},
-        {id:"up_wyn",    label:"Wynagrodzenie brutto",  ph:"np. 5 500 zł",                   icon:"💰"},
-        {id:"up_od",     label:"Data rozpoczęcia",      type:"date",                         icon:"📅"},
-        {id:"up_miejsce",label:"Miejsce pracy",         ph:"np. Warszawa / praca zdalna",    icon:"📍", opt:true}
-      ]}
-    ],
-    prompt: function(v) {
-      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      return "Napisz umowe o prace zgodna z art. 29 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracodawca: " + (v.up_pracodawca||"[firma]") + (v.up_nip?", NIP: "+v.up_nip:"") + (v.up_adres_p?", adres: "+v.up_adres_p:"") + "\n- Pracownik: " + (v.up_pracownik||"[imie]") + (v.up_pesel?", PESEL: "+v.up_pesel:"") + (v.up_adres_pr?", adres: "+v.up_adres_pr:"") + "\n- Stanowisko: " + (v.up_st||"[stanowisko]") + "\n- Rodzaj umowy: " + (v.up_rodzaj||"na czas nieokreslony") + "\n- Wymiar: " + (v.up_wym||"pelny etat") + "\n- Wynagrodzenie: " + (v.up_wyn||"[kwota]") + " brutto\n- Data od: " + (v.up_od||"[data]") + "\n- Miejsce pracy: " + (v.up_miejsce||"siedziba pracodawcy") + "\n\nZawrzyj wszystkie obowiazkowe elementy z art. 29 KP. Gotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
-    }
-  },
-
-  umowa_zlecenie: {
-    title: "Umowa zlecenie",
-    steps: [
-      { label: "Strony umowy", fields: [
-        {id:"uz_nip",     label:"NIP zleceniodawcy",                 ph:"np. 1234567890",       icon:"🔢", opt:true},
-        {id:"uz_firma",   label:"Nazwa zleceniodawcy (firma)",       ph:"np. ABC Sp. z o.o.",   icon:"🏢"},
-        {id:"uz_wyk",     label:"Imię i nazwisko zleceniobiorcy",    ph:"np. Jan Kowalski",     icon:"👤"},
-        {id:"uz_pesel",   label:"PESEL zleceniobiorcy",              ph:"np. 85020298765",      icon:"🆔", opt:true},
-        {id:"uz_student", label:"Czy zleceniobiorca to student poniżej 26 lat?", type:"pills", icon:"🎓",
-         opts:["Nie","Tak – zwolnienie ze składek ZUS"]}
-      ]},
-      { label: "Warunki zlecenia", fields: [
-        {id:"uz_zakres",  label:"Zakres zlecenia",    ph:"np. prowadzenie social mediów, tworzenie grafik", icon:"📋"},
-        {id:"uz_wyn",     label:"Wynagrodzenie",      ph:"np. 3 000 zł brutto lub 80 zł/h",                icon:"💰"},
-        {id:"uz_termin",  label:"Termin wykonania",   type:"date",                                         icon:"🏁"},
-        {id:"uz_platnosc",label:"Termin płatności",   ph:"np. 7 dni od wystawienia rachunku",              icon:"📅", opt:true}
-      ]}
-    ],
-    prompt: function(v) {
-      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      var student = (v.uz_student||"Nie").indexOf("Tak") >= 0;
-      return "Napisz umowe zlecenie zgodna z Kodeksem Cywilnym. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Zleceniodawca: " + (v.uz_firma||"[firma]") + (v.uz_nip?", NIP: "+v.uz_nip:"") + "\n- Zleceniobiorca: " + (v.uz_wyk||"[imie]") + (v.uz_pesel?", PESEL: "+v.uz_pesel:"") + "\n- Student ponizej 26 lat: " + (student?"TAK – zwolnienie ze skladek ZUS (art. 6 ust. 4 ustawy o sus)":"NIE – standardowe skladki ZUS") + "\n- Zakres zlecenia: " + (v.uz_zakres||"[zakres]") + "\n- Wynagrodzenie: " + (v.uz_wyn||"[kwota]") + "\n- Termin wykonania: " + (v.uz_termin||"[data]") + "\n- Termin platnosci: " + (v.uz_platnosc||"7 dni od wystawienia rachunku") + "\n\nZawrzyj informacje o podlezeniu pod ZUS, podatku dochodowym i obowiazkach stron. Gotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
-    }
-  }
 };
 
 var currentDoc = null, currentStep = 0, wizVals = {};
 
 // ── NIP Lookup (Biała Lista MF) ───────────────────────────────────────────
-var NIP_FIELD_MAP = {
-  up_nip: { name: 'up_pracodawca', adres: 'up_adres_p' },
-  uz_nip: { name: 'uz_firma' },
-};
+var NIP_FIELD_MAP = {};
 
 async function lookupNIP(fieldId) {
   var el = document.getElementById('gf_' + fieldId);
@@ -473,15 +391,6 @@ var PROFILE_AUTOFILL = {
   s_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
   s_firma:       function(p){ return p.firma || ''; },
   s_siedz:       function(p){ return p.adres || ''; },
-  // Umowa o pracę
-  up_pracodawca: function(p){ return p.firma || ''; },
-  up_nip:        function(p){ return p.nip || ''; },
-  up_adres_p:    function(p){ return p.adres || ''; },
-  up_pracownik:  function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  // Umowa zlecenie
-  uz_firma:      function(p){ return p.firma || ''; },
-  uz_nip:        function(p){ return p.nip || ''; },
-  uz_wyk:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
 };
 
 function getProfile() {

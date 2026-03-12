@@ -396,6 +396,7 @@ var FORMS = {
     title: "Biznesplan dla banku",
     steps: [
       { label: "Firma", fields: [
+        {id:"nip", label:"NIP firmy", ph:"np. 1234567890", icon:"🔢", opt:true},
         {id:"firma", label:"Nazwa firmy", ph:"np. MójBiznes Sp. z o.o.", icon:"🏢"},
         {id:"branza", label:"Branża", ph:"np. e-commerce, sprzedaż online", icon:"🏭"},
         {id:"adres", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
@@ -457,6 +458,61 @@ var FORMS = {
 };
 
 var currentDoc = null, currentStep = 0, wizVals = {};
+
+// ── NIP Lookup ────────────────────────────────────────────────────────────
+var NIP_FIELD_MAP = {
+  nip: { name: 'firma', adres: 'adres' }
+};
+
+async function lookupNIP(fieldId) {
+  var el = document.getElementById('gf_' + fieldId);
+  if (!el) return;
+  var nip = el.value.replace(/[\s\-\.]/g, '');
+  if (!/^\d{10}$/.test(nip)) return;
+  var origPh = el.placeholder;
+  el.placeholder = '⏳ Pobieranie danych...';
+  el.disabled = true;
+  el.style.borderColor = 'rgba(57,255,138,.5)';
+  try {
+    var r = await fetch('/api/nip-lookup?nip=' + nip);
+    el.disabled = false;
+    if (!r.ok) { el.placeholder = origPh; el.style.borderColor = ''; return; }
+    var data = await r.json();
+    var map = NIP_FIELD_MAP[fieldId];
+    if (!map) { el.placeholder = origPh; el.style.borderColor = ''; return; }
+    function flashFill(id, val) {
+      if (!id || !val) return;
+      var t = document.getElementById('gf_' + id);
+      if (t && !t.value) {
+        t.value = val; wizVals[id] = val;
+        t.style.transition = 'background .4s';
+        t.style.background = 'rgba(57,255,138,.12)';
+        setTimeout(function(){ t.style.background = ''; }, 1800);
+      }
+    }
+    flashFill(map.name, data.name);
+    flashFill(map.adres, data.adres);
+    el.placeholder = '✓ ' + (data.name ? data.name.split(' ').slice(0,3).join(' ') : 'Pobrano');
+    el.style.borderColor = 'rgba(57,255,138,.5)';
+    setTimeout(function(){ el.placeholder = origPh; el.style.borderColor = ''; }, 3500);
+  } catch(e) {
+    el.disabled = false;
+    el.placeholder = origPh;
+    el.style.borderColor = '';
+  }
+}
+
+function attachNIPListeners() {
+  Object.keys(NIP_FIELD_MAP).forEach(function(id) {
+    var el = document.getElementById('gf_' + id);
+    if (!el || el._nipListened) return;
+    el._nipListened = true;
+    el.addEventListener('blur', function(){ lookupNIP(id); });
+    el.addEventListener('input', function(){
+      if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupNIP(id);
+    });
+  });
+}
 
 function openDoc(id) {
   if (!FORMS[id]) return;
@@ -534,7 +590,10 @@ function renderStep() {
       fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
     } else {
       var inputStyle = "width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;";
-      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '"></div>';
+      var nipHint = (f.id === 'nip' || f.id.indexOf('_nip') !== -1)
+        ? '<p style="font-size:.7rem;color:rgba(57,255,138,.55);margin:5px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>'
+        : '';
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '">' + nipHint + '</div>';
     }
   }
 
@@ -556,6 +615,7 @@ function renderStep() {
     + '</button></div>';
 
   el.innerHTML = progressHTML + fieldsHTML + navHTML;
+  attachNIPListeners();
 }
 
 function pickPill(btn) {
