@@ -79,7 +79,8 @@ onAuthStateChanged(auth, async u=>{
     window._fbToken=await u.getIdToken();
     window._fbReady=true;
     if(window._renderUNav)window._renderUNav();
-    checkSubFromAPI();
+    await checkSubFromAPI();
+    renderPage();
   } else {
     localStorage.removeItem('dokumo_user');
     window._fbToken=null;window._fbReady=true;
@@ -225,8 +226,8 @@ onAuthStateChanged(auth, async u=>{
   </div>
 </div>
 
-<!-- Aktywny plan msg -->
-<div id="activePlanMsg" style="display:none;max-width:860px;margin:12px auto 0;padding:0 1.5rem;"></div>
+<!-- Status subskrypcji -->
+<div id="subStatus" style="display:none;max-width:860px;margin:12px auto 0;padding:0 1.5rem;"></div>
 
 <div class="plans">
 
@@ -304,48 +305,87 @@ const STRIPE_LINKS = {
 function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
 function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
 
-function activePlan(){
-  const sub=getSub();
-  if(!sub||!sub.expiresAt||new Date(sub.expiresAt)<=new Date())return null;
-  return sub.plan;
-}
+const PLAN_NAMES={kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'};
+const BTN_DEFAULTS={
+  kariera:{text:'Kup Pakiet Kariera →',cls:'plan-btn dark'},
+  biznes:{text:'Kup Pakiet Biznes →',cls:'plan-btn green'},
+  promax:{text:'Kup Pro Max →',cls:'plan-btn gold'},
+};
 
 function renderPage(){
-  const plan=activePlan();
+  const sub=getSub();
   const user=getUser();
-  const names={kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'};
+  const now=new Date();
 
-  // Aktywny plan - pokaż komunikat nad kartą
-  const activeMsg=document.getElementById('activePlanMsg');
-  if(activeMsg){
-    if(plan&&user){
-      activeMsg.style.display='block';
-      activeMsg.innerHTML=`<span style="font-size:.78rem;color:#1a3a2e;font-weight:600;">✓ Aktywny pakiet: <strong>${names[plan]||plan}</strong></span>`;
-    } else {
-      activeMsg.style.display='none';
+  let plan=null, daysLeft=0, isCancelled=false, expiresAt=null;
+  if(sub&&sub.expiresAt){
+    expiresAt=new Date(sub.expiresAt);
+    isCancelled=!!sub.cancelled;
+    if(expiresAt>now){
+      plan=sub.plan;
+      daysLeft=Math.ceil((expiresAt-now)/86400000);
     }
   }
 
-  // Anuluj
-  const cw=document.getElementById('cancelWrap');
-  if(cw) cw.style.display=plan?'block':'none';
+  // ── Status banner ──
+  const statusDiv=document.getElementById('subStatus');
+  if(statusDiv){
+    if(user&&plan){
+      const expStr=expiresAt?expiresAt.toLocaleDateString('pl-PL'):'';
+      const daysLabel=daysLeft===1?'dzień':'dni';
+      const cancelledBadge=isCancelled?`<span style="font-size:.73rem;background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:999px;font-weight:700;">Anulowana</span>`:'';
+      const cancelledNote=isCancelled?`<p style="font-size:.8rem;color:#b91c1c;margin-top:6px;">Twoja subskrypcja została anulowana i jest ważna do <strong>${expStr}</strong>. Po tym terminie dostęp wygasa.</p>`:'';
+      const upgradeNote=(!isCancelled&&plan!=='promax')?`<p style="font-size:.78rem;color:#6b6560;margin-top:6px;">Chcesz więcej? Wybierz wyższy pakiet poniżej.</p>`:'';
+      statusDiv.innerHTML=`<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:16px;padding:18px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;font-weight:800;color:#14532d;">✓ Posiadasz: ${PLAN_NAMES[plan]||plan}</span>
+          <span style="font-size:.73rem;background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:999px;font-weight:700;">${daysLeft} ${daysLabel} pozostało</span>
+          ${cancelledBadge}
+        </div>
+        ${cancelledNote}${upgradeNote}
+      </div>`;
+      statusDiv.style.display='block';
+    } else {
+      statusDiv.style.display='none';
+    }
+  }
 
+  // ── Cancel link ──
+  const cw=document.getElementById('cancelWrap');
+  if(cw) cw.style.display=(plan&&!isCancelled)?'block':'none';
+
+  // ── Plan cards ──
   ['kariera','biznes','promax'].forEach(p=>{
     const btn=document.getElementById('btn-'+p);
     const card=document.getElementById('card-'+p);
     const topBadge=document.getElementById('badge-'+p);
     if(!btn)return;
+    card.classList.remove('active-plan');
+
     if(plan===p){
-      btn.textContent='✓ Aktywny';
+      // Current active plan
+      btn.textContent='✓ Twój aktywny plan';
       btn.className='plan-btn outline';
+      btn.onclick=null;
       card.classList.add('active-plan');
       if(topBadge){topBadge.textContent='✓ Aktywny';topBadge.className='plan-top-badge active';}
-    } else {
-      // reset
-      card.classList.remove('active-plan');
-    }
-    if(!user){
+    } else if(isCancelled&&plan){
+      // Cancelled sub — disable all other buttons
+      btn.textContent='Niedostępny';
+      btn.className='plan-btn outline';
+      btn.onclick=null;
+    } else if(!user){
+      // Not logged in
+      const d=BTN_DEFAULTS[p];
+      btn.textContent=d.text;btn.className=d.cls;
       btn.onclick=()=>{sessionStorage.setItem('dokumo_after_sub',window.location.href);window.location.href='konto.html';};
+    } else {
+      // Logged in, available to buy (upgrade or fresh)
+      const d=BTN_DEFAULTS[p];
+      btn.textContent=d.text;btn.className=d.cls;
+      btn.onclick=()=>kupPakiet(p);
+      // Reset badge to default
+      if(p==='promax'&&topBadge&&topBadge.className.includes('active')){topBadge.textContent='⭐ Najpopularniejszy';topBadge.className='plan-top-badge popular';}
     }
   });
 }
@@ -355,9 +395,9 @@ async function checkSubFromAPI(){
   try{
     const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
     const data=await res.json();
-    if(data.active&&data.expiresAt){
-      localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
-      return true;
+    if(data.expiresAt){
+      localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));
+      return data.active;
     }
   }catch(e){}
   return false;
@@ -375,7 +415,7 @@ async function pollForPayment(plan){
     await new Promise(r=>setTimeout(r,5000));
     attempts++;
     const ok=await checkSubFromAPI();
-    if(ok){
+    if(ok||getSub()?.plan){
       if(msg) msg.innerHTML='<span style="font-size:1.5rem">✅</span><br>Płatność potwierdzona!<br><strong>'+({kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'}[plan]||plan)+'</strong> aktywny.';
       if(window._renderUNav) window._renderUNav();
       renderPage();
