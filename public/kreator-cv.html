@@ -997,7 +997,8 @@ body { overflow:hidden; }
   box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);
 }
 .cv-tpl-thumb-inner {
-  width:595px;
+  position:absolute; top:0; left:0;
+  width:595px; height:842px;
   transform-origin:top left;
   pointer-events:none;
 }
@@ -2469,7 +2470,7 @@ async function useAIDuties(i) {
     if (token) headers['Authorization'] = 'Bearer ' + token;
     var langNames = {pl:'polskim',en:'English',de:'Deutsch',uk:'українською',es:'español',cs:'češtině',nl:'Nederlands'};
     var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
-    var prompt = 'Na podstawie poniższych danych napisz profesjonalny opis obowiązków do CV. WAŻNE: korzystaj TYLKO z informacji które są podane poniżej — nie wymyślaj nowych obowiązków. Sformułuj je profesjonalnie jako 3-5 punktów lub zdań. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst:\n\n' + context;
+    var prompt = 'Przepisz poniższy opis obowiązków z CV tak, żeby brzmiał profesjonalnie i naturalnie. WAŻNE: zachowaj DOKŁADNIE te same informacje — nie dodawaj nowych obowiązków, nie usuwaj żadnych. Bez punktowania, bez list. Tylko ciągły, profesjonalny tekst. Bez żadnych komentarzy ani wstępów. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst:\n\n' + context;
     var res = await fetch('/api/generate', { method:'POST', headers:headers, body:JSON.stringify({ prompt:prompt }) });
     var data = await res.json();
     var suggestion = (data.text || '').trim();
@@ -2621,8 +2622,7 @@ function getTplPreviewHTML(t) {
   cvData.podsumowanie = savedPods; cvData.umiejetnosci = savedUm;
   cvData.doswiadczenie = savedDosw; cvData.wyksztalcenie = savedWyksztalcenie; cvData.jezyki = savedJezyki;
   cvCustomColor = savedColor;
-  const scale = 270 / 595;
-  return `<div class="cv-tpl-thumb-inner" style="transform:scale(${scale})">${html}</div>`;
+  return `<div class="cv-tpl-thumb-inner" style="transform:scale(0.32)">${html}</div>`;
 }
 
 
@@ -2651,17 +2651,16 @@ function renderTplGrid() {
   });
   grid.innerHTML = html;
 
-  // Scale thumbnails to fit actual card width (A4 portrait)
+  // Scale thumbnails: full 595x842 A4 content -> fit inside .cv-tpl-thumb
   requestAnimationFrame(() => {
-    const cards = grid.querySelectorAll('.cv-tpl-card');
-    if (cards.length) {
-      const cardW = cards[0].clientWidth || 400;
-      const scale = (cardW - 4) / 595;
-      grid.querySelectorAll('.cv-tpl-thumb-inner').forEach(el => {
-        el.style.transform = `scale(${scale})`;
-        el.style.transformOrigin = 'top left';
-      });
-    }
+    const thumbs = grid.querySelectorAll('.cv-tpl-thumb');
+    thumbs.forEach(thumb => {
+      const w = thumb.getBoundingClientRect().width;
+      if (!w) return;
+      const scale = w / 595;
+      const inner = thumb.querySelector('.cv-tpl-thumb-inner');
+      if (inner) inner.style.transform = `scale(${scale})`;
+    });
   });
 
   // Use event delegation - click anywhere on grid picks the card
