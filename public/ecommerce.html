@@ -323,7 +323,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     try{
       const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
       const data=await res.json();
-      if(data.active&&data.expiresAt) localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+      if(data.expiresAt) localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));
     }catch(e){}
   }else{window._fbToken=null;window._fbReady=true;}
   if(window._renderUNav)window._renderUNav();
