@@ -577,22 +577,22 @@ function downloadDoc(docId, format) {
 
   } else if (format === 'pdf') {
     if (text.indexOf('__CV_HTML__:') === 0) {
-      // CV with template — use html2pdf
+      // CV with template — open dedicated window with fonts then pdf2html
       var cvHtml = text.slice('__CV_HTML__:'.length);
-      var wrapper = document.createElement('div');
-      wrapper.innerHTML = cvHtml;
-      wrapper.style.cssText = 'position:absolute;visibility:hidden;top:0;left:0;width:210mm;background:#fff;z-index:-1';
-      document.body.appendChild(wrapper);
-      var opt = {
-        margin: 0,
-        filename: safeName + '.pdf',
-        image: { type: 'jpeg', quality: 0.97 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(wrapper).save().then(function() {
-        document.body.removeChild(wrapper);
-      });
+      var fname = safeName + '.pdf';
+      var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+        '<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">' +
+        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
+        '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff}</style>' +
+        '</head><body>' + cvHtml +
+        '<script>document.fonts.ready.then(function(){' +
+        'html2pdf().set({margin:0,filename:"' + fname + '",image:{type:"jpeg",quality:0.97},html2canvas:{scale:2,useCORS:true,letterRendering:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}})' +
+        '.from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},1000)});' +
+        '});<\/script>' +
+        '</body></html>';
+      var win = window.open('', '_blank');
+      if (win) { win.document.write(fullDoc); win.document.close(); }
+      else { showToast('Zezwól na otwieranie okien dla tej strony.'); }
     } else {
       var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       var win = window.open('', '_blank');

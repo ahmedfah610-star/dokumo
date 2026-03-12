@@ -1921,7 +1921,16 @@ var _cvAutocorrect = false;
 
 function toggleAutocorrect(on) {
   _cvAutocorrect = on;
-  document.querySelectorAll('.cvf-input').forEach(el => { el.spellcheck = on; });
+  document.querySelectorAll('.cvf-input').forEach(function(el) {
+    el.setAttribute('spellcheck', on ? 'true' : 'false');
+    if (on) {
+      el.setAttribute('autocorrect', 'on');
+      el.setAttribute('autocapitalize', 'sentences');
+    } else {
+      el.setAttribute('autocorrect', 'off');
+      el.setAttribute('autocapitalize', 'off');
+    }
+  });
 }
 
 function renderCVForm() {
@@ -2119,7 +2128,10 @@ function buildSectionBodyHTML(sec) {
           <button class="acc-remove-x" onclick="removeCVLang(${i})" ${i===0&&cvData.jezyki.length===1?'style="visibility:hidden"':''}>✕</button>
         </div>`).join('')}
     </div>
-    <button class="acc-add-more" id="addLangBtn" onclick="toggleLangDropdown(this)" style="margin-top:8px">${L("addLang")}</button>`;
+    <select class="cvf-input" id="addLangSelect" onchange="addLangFromSelect(this)" style="margin-top:8px;cursor:pointer">
+      <option value="">＋ ${L("addLang")}</option>
+      ${TOP_LANGS.map(l => `<option value="${l}">${l}</option>`).join('')}
+    </select>`;
 
   if (sec === 'certyfikaty') return `
     <input class="cvf-input" id="certInput" oninput="cvData.certyfikaty=this.value;updateCVPreview();updateCertChips()" value="${cvData.certyfikaty}" placeholder="np. Google Analytics, Scrum Master...">
@@ -2378,34 +2390,10 @@ function removeCVLang(i) {
   updateCVPreview();
 }
 
-function toggleLangDropdown(btn) {
-  var existing = document.getElementById('langDropdownPortal');
-  if (existing) { document.body.removeChild(existing); return; }
-  var rect = btn.getBoundingClientRect();
-  var dd = document.createElement('div');
-  dd.id = 'langDropdownPortal';
-  dd.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + (rect.bottom + 4) + 'px;background:#fff;border:1px solid #e0ddd8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:9999;min-width:180px;padding:6px 0;max-height:240px;overflow-y:auto';
-  TOP_LANGS.forEach(function(lang) {
-    var item = document.createElement('div');
-    item.textContent = lang;
-    item.style.cssText = 'padding:8px 16px;cursor:pointer;font-size:0.9rem;color:#3d3c3a;transition:background 0.1s';
-    item.onmouseenter = function() { this.style.background = '#f5f3ef'; };
-    item.onmouseleave = function() { this.style.background = ''; };
-    item.onmousedown = function(e) { e.preventDefault(); addLangFromDd(lang); };
-    dd.appendChild(item);
-  });
-  document.body.appendChild(dd);
-  setTimeout(function() {
-    document.addEventListener('click', function _closeLangPortal(e) {
-      document.removeEventListener('click', _closeLangPortal);
-      var portal = document.getElementById('langDropdownPortal');
-      if (portal) document.body.removeChild(portal);
-    });
-  }, 0);
-}
-function addLangFromDd(lang) {
-  var portal = document.getElementById('langDropdownPortal');
-  if (portal) document.body.removeChild(portal);
+function addLangFromSelect(sel) {
+  var lang = sel.value;
+  sel.value = '';
+  if (!lang) return;
   var existing = cvData.jezyki.find(function(l){ return l.jezyk.toLowerCase() === lang.toLowerCase(); });
   if (!existing) {
     var empty = cvData.jezyki.find(function(l){ return !l.jezyk; });
@@ -2416,6 +2404,7 @@ function addLangFromDd(lang) {
   if (item) { var body = item.querySelector('.acc-body'); if (body) body.innerHTML = buildSectionBodyHTML('jezyki'); }
   updateCVPreview();
 }
+function addLangFromDd(lang) { addLangFromSelect({ value: lang }); }
 
 async function useAISummary() {
   const text = cvData.podsumowanie;
@@ -2431,7 +2420,7 @@ async function useAISummary() {
     if (token) headers['Authorization'] = 'Bearer ' + token;
     var langNames = {pl:'polskim',en:'English',de:'Deutsch',uk:'українською',es:'español',cs:'češtině',nl:'Nederlands'};
     var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
-    var aiPrompt = 'Popraw i ulepsz poniższy profil osobisty z CV. Odpowiedz TYLKO ulepszoną wersją tekstu w języku ' + promptLang + ', bez żadnych komentarzy ani dodatkowych wyjaśnień:\n\n' + text;
+    var aiPrompt = 'Przepisz poniższy profil osobisty z CV tak, żeby brzmiał profesjonalnie i naturalnie. WAŻNE: zachowaj DOKŁADNIE te same informacje co w oryginale — nie dodawaj nowych faktów, nie usuwaj żadnych informacji, nie zmieniaj stanowisk ani doświadczeń. Tylko popraw styl, płynność i profesjonalizm. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst, bez komentarzy:\n\n' + text;
     var res = await fetch('/api/generate', {
       method: 'POST',
       headers: headers,
