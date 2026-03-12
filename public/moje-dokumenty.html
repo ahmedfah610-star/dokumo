@@ -252,6 +252,51 @@ body {
 }
 .m-empty-btn:hover { background: rgba(34,197,94,.22); border-color: rgba(34,197,94,.45); }
 
+/* ── EDIT MODAL ── */
+.m-edit-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
+  z-index: 800; align-items: center; justify-content: center;
+}
+.m-edit-overlay.open { display: flex; }
+.m-edit-box {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 18px; padding: 24px;
+  width: 100%; max-width: 680px; margin: 16px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+  animation: fadeUp .25s ease both;
+  display: flex; flex-direction: column; gap: 14px;
+  max-height: 85vh;
+}
+.m-edit-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem; font-weight: 800; color: var(--ink);
+}
+.m-edit-textarea {
+  flex: 1; min-height: 320px; max-height: 55vh;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--ink);
+  font-family: "DM Sans", sans-serif; font-size: .84rem; line-height: 1.7;
+  padding: 14px; resize: vertical; outline: none;
+  transition: border-color .18s;
+}
+.m-edit-textarea:focus { border-color: rgba(34,197,94,.4); }
+.m-edit-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.m-edit-cancel {
+  padding: 10px 20px; border: 1px solid var(--border);
+  background: var(--surface2); border-radius: 10px;
+  font-family: "DM Sans", sans-serif; font-size: .78rem; font-weight: 700;
+  color: var(--ink2); cursor: pointer; transition: all .15s;
+}
+.m-edit-cancel:hover { border-color: var(--border2); color: var(--ink); }
+.m-edit-save {
+  padding: 10px 24px; border: 1px solid rgba(34,197,94,.3);
+  background: rgba(34,197,94,.15); border-radius: 10px;
+  font-family: "DM Sans", sans-serif; font-size: .78rem; font-weight: 700;
+  color: var(--green-bright); cursor: pointer; transition: all .15s;
+}
+.m-edit-save:hover { background: rgba(34,197,94,.22); border-color: rgba(34,197,94,.45); }
+
 /* ── CONFIRM MODAL ── */
 .m-confirm-overlay {
   display: none; position: fixed; inset: 0;
@@ -374,6 +419,18 @@ body {
 <!-- CONTENT -->
 <div class="m-content">
   <div id="myDocGrid"><div style="padding:40px;text-align:center;color:var(--ink3);font-size:.85rem;">Ładowanie…</div></div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="m-edit-overlay" id="editOverlay">
+  <div class="m-edit-box">
+    <div class="m-edit-title" id="editTitle">Edytuj dokument</div>
+    <textarea class="m-edit-textarea" id="editTextarea" spellcheck="true"></textarea>
+    <div class="m-edit-btns">
+      <button class="m-edit-cancel" onclick="closeEdit()">Anuluj</button>
+      <button class="m-edit-save" onclick="saveEdit()">Zapisz</button>
+    </div>
+  </div>
 </div>
 
 <!-- CONFIRM MODAL -->
@@ -552,7 +609,8 @@ function filterAndRender() {
       html += '<button class="d-action-btn" onclick="downloadDoc(\'' + id + '\',\'txt\')">TXT</button>';
       html += '<button class="d-action-btn" onclick="downloadDoc(\'' + id + '\',\'docx\')">Word</button>';
     }
-    html += '<button class="d-action-btn danger" style="margin-left:auto" onclick="askDelete(\'' + id + '\')">&#10005; Usuń</button>';
+    html += '<button class="d-action-btn" title="Edytuj" onclick="editDoc(\'' + id + '\')" style="margin-left:auto">✏️</button>';
+    html += '<button class="d-action-btn danger" onclick="askDelete(\'' + id + '\')">&#10005; Usuń</button>';
     html += '</div></div>';
   });
   html += '</div>';
@@ -631,6 +689,55 @@ function buildRTF(text, title) {
   return '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}' +
     '{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 ' +
     '{\\b\\fs28 ' + esc(title) + '}\\par\\par ' + lines + '}';
+}
+
+// ── EDIT ──
+var _editDocId = null;
+
+function editDoc(docId) {
+  var doc = (window._allDocs || []).find(function(d) { return d.id === docId; });
+  if (!doc) return;
+  // CV → redirect to kreator
+  if (doc.text && doc.text.indexOf('__CV_HTML__:') === 0) {
+    window.location.href = 'kreator-cv.html?editId=' + encodeURIComponent(docId);
+    return;
+  }
+  // Other docs → inline editor
+  _editDocId = docId;
+  document.getElementById('editTitle').textContent = 'Edytuj: ' + (doc.name || 'Dokument');
+  document.getElementById('editTextarea').value = doc.text || '';
+  document.getElementById('editOverlay').classList.add('open');
+  document.getElementById('editTextarea').focus();
+}
+
+function closeEdit() {
+  document.getElementById('editOverlay').classList.remove('open');
+  _editDocId = null;
+}
+
+async function saveEdit() {
+  if (!_editDocId) return;
+  var text = document.getElementById('editTextarea').value;
+  var token = await getToken();
+  if (!token) { showToast('Błąd autoryzacji.'); return; }
+  var btn = document.querySelector('.m-edit-save');
+  btn.textContent = 'Zapisywanie…'; btn.disabled = true;
+  try {
+    var res = await fetch('/api/update-doc', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ docId: _editDocId, text: text })
+    });
+    if (!res.ok) throw new Error();
+    var doc = (window._allDocs || []).find(function(d) { return d.id === _editDocId; });
+    if (doc) doc.text = text;
+    closeEdit();
+    showToast('Dokument zapisany.');
+  } catch(e) {
+    showToast('Błąd zapisu. Spróbuj ponownie.');
+  } finally {
+    btn.textContent = 'Zapisz'; btn.disabled = false;
+  }
 }
 
 // ── DELETE ──

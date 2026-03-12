@@ -1117,6 +1117,25 @@ window.addEventListener('_fbAuthReady', async ()=>{
       updateChip();
     }
   }catch(e){}
+
+  // Wczytaj CV do edycji jeśli editId w URL
+  const editId = new URLSearchParams(window.location.search).get('editId');
+  if (editId) {
+    try {
+      const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+      const res = await fetch('/api/get-docs', { headers: { 'Authorization': 'Bearer ' + token } });
+      const data = await res.json();
+      const doc = (data.docs || []).find(function(d) { return d.id === editId; });
+      if (doc && doc.cvDataJson) {
+        const loaded = JSON.parse(doc.cvDataJson);
+        Object.assign(cvData, loaded);
+        renderCVForm();
+        updateCVPreview();
+        // usuń param z URL bez przeładowania
+        history.replaceState(null, '', 'kreator-cv.html');
+      }
+    } catch(e) {}
+  }
 });
 </script>
 
@@ -2789,7 +2808,8 @@ async function saveCVToMyDocs(fullName) {
         docCat: 'kariera',
         docIcon: '📋',
         docCatLabel: 'Kariera',
-        text: cvText
+        text: cvText,
+        cvDataJson: JSON.stringify(cvData)
       })
     });
   } catch(e) {}
