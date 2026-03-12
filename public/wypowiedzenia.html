@@ -340,8 +340,8 @@ var FORMS = {
     title: "Umowa o pracę",
     steps: [
       { label: "Pracodawca", fields: [
-        {id:"up_pracodawca", label:"Nazwa firmy (pracodawcy)",     ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
         {id:"up_nip",        label:"NIP pracodawcy",               ph:"np. 1234567890",               icon:"🔢", opt:true},
+        {id:"up_pracodawca", label:"Nazwa firmy (pracodawcy)",     ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
         {id:"up_adres_p",    label:"Adres pracodawcy",             ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
       ]},
       { label: "Pracownik", fields: [
@@ -370,8 +370,8 @@ var FORMS = {
     title: "Umowa zlecenie",
     steps: [
       { label: "Strony umowy", fields: [
-        {id:"uz_firma",   label:"Nazwa zleceniodawcy (firma)",       ph:"np. ABC Sp. z o.o.",   icon:"🏢"},
         {id:"uz_nip",     label:"NIP zleceniodawcy",                 ph:"np. 1234567890",       icon:"🔢", opt:true},
+        {id:"uz_firma",   label:"Nazwa zleceniodawcy (firma)",       ph:"np. ABC Sp. z o.o.",   icon:"🏢"},
         {id:"uz_wyk",     label:"Imię i nazwisko zleceniobiorcy",    ph:"np. Jan Kowalski",     icon:"👤"},
         {id:"uz_pesel",   label:"PESEL zleceniobiorcy",              ph:"np. 85020298765",      icon:"🆔", opt:true},
         {id:"uz_student", label:"Czy zleceniobiorca to student poniżej 26 lat?", type:"pills", icon:"🎓",
@@ -580,7 +580,10 @@ function renderStep() {
       fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
     } else {
       var inputStyle = "width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;";
-      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '"></div>';
+      var nipHint = (f.id === 'nip' || f.id.indexOf('_nip') !== -1)
+        ? '<p style="font-size:.7rem;color:rgba(57,255,138,.55);margin:5px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>'
+        : '';
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '">' + nipHint + '</div>';
     }
   }
 

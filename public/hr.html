@@ -342,13 +342,13 @@ var FORMS = {
     title: "Umowa B2B",
     steps: [
       { label: "Zleceniodawca", fields: [
+        {id:"zlec_nip", label:"NIP firmy", ph:"np. 1234567890", icon:"🔢", opt:true},
         {id:"zlec_firma", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
-        {id:"zlec_nip", label:"NIP", ph:"np. 1234567890", icon:"🔢", opt:true},
         {id:"zlec_adres", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
       ]},
       { label: "Zleceniobiorca", fields: [
+        {id:"wyk_nip", label:"NIP firmy (jeśli firma)", ph:"np. 0987654321", icon:"🔢", opt:true},
         {id:"wyk_firma", label:"Nazwa firmy / imię nazwisko", ph:"np. Jan Kowalski / JK Studio", icon:"🤝"},
-        {id:"wyk_nip", label:"NIP", ph:"np. 0987654321", icon:"🔢", opt:true},
         {id:"wyk_adres", label:"Adres", ph:"np. ul. Różana 2, Kraków", icon:"📍", opt:true}
       ]},
       { label: "Warunki", fields: [
@@ -403,8 +403,8 @@ var FORMS = {
     title: "Umowa zlecenie",
     steps: [
       { label: "Zleceniodawca", fields: [
-        {id:"zlec", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
-        {id:"nip", label:"NIP", ph:"np. 123-456-78-90", icon:"🔢", opt:true}
+        {id:"nip", label:"NIP firmy", ph:"np. 1234567890", icon:"🔢", opt:true},
+        {id:"zlec", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"}
       ]},
       { label: "Zleceniobiorca", fields: [
         {id:"wyk", label:"Imię i nazwisko", ph:"np. Jan Kowalski", icon:"👤"},
@@ -424,8 +424,8 @@ var FORMS = {
     title: "Umowa o pracę",
     steps: [
       { label: "Pracodawca", fields: [
+        {id:"nip", label:"NIP pracodawcy", ph:"np. 1234567890", icon:"🔢", opt:true},
         {id:"pracodawca", label:"Nazwa firmy", ph:"np. ABC Sp. z o.o.", icon:"🏢"},
-        {id:"nip", label:"NIP", ph:"np. 1234567890", icon:"🔢", opt:true},
         {id:"adres_p", label:"Adres", ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true}
       ]},
       { label: "Pracownik", fields: [
@@ -599,7 +599,10 @@ function renderStep() {
       fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
     } else {
       var inputStyle = 'width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;';
-      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '"></div>';
+      var nipHint = (f.id === 'nip' || f.id.indexOf('_nip') !== -1)
+        ? '<p style="font-size:.7rem;color:rgba(57,255,138,.55);margin:5px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>'
+        : '';
+      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '">' + nipHint + '</div>';
     }
   }
 
