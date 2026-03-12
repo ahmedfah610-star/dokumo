@@ -631,6 +631,7 @@ body {
 .jm-result-cta:active { transform:scale(.98); }
 
 .jm-match-error { background:#fef2f2; border:1.5px solid #fca5a5; border-radius:12px; padding:12px 14px; font-size:.8rem; color:#991b1b; margin-bottom:10px; }
+.jm-match-url-error { background:#fff7ed; border:1.5px solid #fed7aa; border-radius:10px; padding:10px 13px; font-size:.78rem; color:#9a3412; margin-bottom:6px; }
 
 .jm-cv-upload-btn {
   display:flex; align-items:center; gap:9px; width:100%;
@@ -1037,7 +1038,9 @@ var _jm = {
   matchResult: null,
   matchCvText: '',
   matchCvName: '',
-  matchJobText: ''
+  matchJobText: '',
+  matchUrl: '',
+  matchUrlFailed: false
 };
 
 var _jmQuestions = [
@@ -1093,7 +1096,7 @@ document.addEventListener('keydown', function(e) {
 
 function jmChooseCV()     { _jm.back = false; _jm.step = 'cv-paths';  _jmRender(); }
 function jmChooseLetter() { _jm.back = false; _jm.step = 'cover-letter'; _jm.wizardQ = 0; _jmRender(); }
-function jmChooseMatch()  { _jm.back = false; _jm.step = 'cv-match'; _jm.matchState = 'input'; _jm.matchResult = null; _jm.matchCvText = ''; _jm.matchCvName = ''; _jm.matchJobText = ''; _jmRender(); }
+function jmChooseMatch()  { _jm.back = false; _jm.step = 'cv-match'; _jm.matchState = 'input'; _jm.matchResult = null; _jm.matchCvText = ''; _jm.matchCvName = ''; _jm.matchJobText = ''; _jm.matchUrl = ''; _jm.matchUrlFailed = false; _jmRender(); }
 function jmGoBack()       { _jm.back = true;  _jm.step = 'choose';   _jmRender(); }
 function jmGoBackToCV()   { _jm.back = true;  _jm.step = 'cv-paths'; _jmRender(); }
 
@@ -1319,21 +1322,23 @@ function _jmRenderMatch() {
     return;
   }
 
-  // Przywróć poprzednio wgrany plik (jeśli użytkownik wrócił)
-  var savedCv = _jm.matchCvText || '';
-  var savedCvName = _jm.matchCvName || '';
-
-  var cvUploadHtml = savedCv
-    ? '<div class="jm-cv-uploaded" id="jmCvUploaded">' +
+  var cvUploadHtml = _jm.matchCvText
+    ? '<div class="jm-cv-uploaded">' +
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' +
-        '<span>' + savedCvName + '</span>' +
-        '<button onclick="jmClearCv()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#9a9690;font-size:.8rem;padding:0">Usuń</button>' +
+        '<span>' + _jm.matchCvName + '</span>' +
+        '<button onclick="jmClearCv()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#9a9690;font-size:.75rem;padding:0">Usuń</button>' +
       '</div>'
     : '<button class="jm-cv-upload-btn" onclick="document.getElementById(\'jmCvFile\').click()">' +
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
         'Wgraj swoje CV (PDF lub TXT)' +
       '</button>' +
       '<input type="file" id="jmCvFile" accept=".pdf,.txt" style="display:none" onchange="jmLoadCvFile(this)">';
+
+  // Fallback textarea (widoczna gdy nie udało się pobrać linku)
+  var jobFallbackHtml = _jm.matchUrlFailed
+    ? '<div class="jm-match-url-error">Nie udało się pobrać treści z linku. Wklej treść ogłoszenia poniżej.</div>' +
+      '<textarea class="jm-match-input" id="jmMatchJob" rows="6" placeholder="Wklej tutaj treść ogłoszenia o pracę…">' + (_jm.matchJobText || '') + '</textarea>'
+    : '';
 
   c.innerHTML =
     '<div class="jm-match-group">' +
@@ -1342,9 +1347,8 @@ function _jmRenderMatch() {
     '</div>' +
     '<div class="jm-match-group">' +
       '<div class="jm-match-label">Ogłoszenie o pracę</div>' +
-      '<input type="url" class="jm-match-input" id="jmMatchUrl" placeholder="Link do ogłoszenia (opcjonalnie)">' +
-      '<div class="jm-match-or">lub wklej treść</div>' +
-      '<textarea class="jm-match-input" id="jmMatchJob" rows="6" placeholder="Wklej tutaj treść ogłoszenia o pracę…">' + (_jm.matchJobText || '') + '</textarea>' +
+      '<input type="url" class="jm-match-input" id="jmMatchUrl" placeholder="Wklej link do ogłoszenia…" value="' + (_jm.matchUrl || '') + '">' +
+      jobFallbackHtml +
     '</div>' +
     '<button class="jm-wiz-next" id="jmMatchBtn" disabled onclick="jmRunMatch()">' +
       'Analizuj dopasowanie' +
@@ -1352,19 +1356,17 @@ function _jmRenderMatch() {
     '</button>';
 
   setTimeout(function() {
+    var urlEl = document.getElementById('jmMatchUrl');
     var jobEl = document.getElementById('jmMatchJob');
     function checkReady() {
       var hasCV  = !!_jm.matchCvText;
-      var hasJob = jobEl && jobEl.value.trim().length > 20;
+      var hasJob = (urlEl && urlEl.value.trim().length > 5) || (jobEl && jobEl.value.trim().length > 20);
       var btn = document.getElementById('jmMatchBtn');
       if (btn) btn.disabled = !(hasCV && hasJob);
     }
-    if (jobEl) jobEl.addEventListener('input', function() {
-      _jm.matchJobText = jobEl.value;
-      checkReady();
-    });
+    if (urlEl) urlEl.addEventListener('input', function() { _jm.matchUrl = urlEl.value; checkReady(); });
+    if (jobEl) jobEl.addEventListener('input', function() { _jm.matchJobText = jobEl.value; checkReady(); });
     checkReady();
-    if (jobEl && !_jm.matchCvText) jobEl.focus();
   }, 40);
 }
 
@@ -1425,11 +1427,38 @@ async function _jmExtractPdf(file) {
 }
 
 async function jmRunMatch() {
+  var urlEl = document.getElementById('jmMatchUrl');
   var jobEl = document.getElementById('jmMatchJob');
-  if (!jobEl) return;
   var cvText  = _jm.matchCvText || '';
-  var jobText = jobEl.value.trim();
-  if (cvText.length < 20 || jobText.length < 20) return;
+  var urlVal  = (urlEl && urlEl.value.trim()) || _jm.matchUrl || '';
+  var jobText = (jobEl && jobEl.value.trim()) || _jm.matchJobText || '';
+
+  if (!cvText || cvText.length < 20) return;
+
+  // Jeśli jest URL — próbuj pobrać treść z serwera
+  if (urlVal && jobText.length < 20) {
+    _jm.matchState = 'loading';
+    _jmRenderMatch();
+    try {
+      var fr = await fetch('/api/fetch-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: urlVal })
+      });
+      var fd = await fr.json();
+      if (!fr.ok || !fd.text) throw new Error(fd.error || 'Nie udało się pobrać treści');
+      jobText = fd.text;
+    } catch(err) {
+      // Fallback — pokaż textarea z błędem
+      _jm.matchState = 'input';
+      _jm.matchUrlFailed = true;
+      _jm.matchUrl = urlVal;
+      _jmRenderMatch();
+      return;
+    }
+  }
+
+  if (!jobText || jobText.length < 20) return;
 
   _jm.matchState = 'loading';
   _jmRenderMatch();
