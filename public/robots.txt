@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Prywatne strony użytkownika
+Disallow: /konto.html
+Disallow: /moje-dokumenty.html
+
+# API
+Disallow: /api/
+
+Sitemap: https://dokumo.vercel.app/sitemap.xml

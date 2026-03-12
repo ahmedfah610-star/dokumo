@@ -10,6 +10,8 @@
 <meta property="og:title" content="Zarządzanie pracą – Dokumo">
 <meta property="og:description" content="Wypowiedzenie, wnioski o urlop i świadectwo pracy — generowane przez AI w sekundy.">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -392,6 +394,72 @@ var FORMS = {
 
 var currentDoc = null, currentStep = 0, wizVals = {};
 
+// ── NIP Lookup (Biała Lista MF) ───────────────────────────────────────────
+var NIP_FIELD_MAP = {
+  up_nip: { name: 'up_pracodawca', adres: 'up_adres_p' },
+  uz_nip: { name: 'uz_firma' },
+};
+
+async function lookupNIP(fieldId) {
+  var el = document.getElementById('gf_' + fieldId);
+  if (!el) return;
+  var nip = el.value.replace(/[\s\-\.]/g, '');
+  if (!/^\d{10}$/.test(nip)) return;
+
+  var origPh = el.placeholder;
+  el.placeholder = '⏳ Pobieranie danych...';
+  el.disabled = true;
+  el.style.borderColor = 'rgba(57,255,138,.5)';
+
+  try {
+    var r = await fetch('/api/nip-lookup?nip=' + nip);
+    el.disabled = false;
+    if (!r.ok) { el.placeholder = origPh; el.style.borderColor = ''; return; }
+    var data = await r.json();
+
+    var map = NIP_FIELD_MAP[fieldId];
+    if (!map) {
+      if (document.getElementById('gf_pracodawca')) map = { name: 'pracodawca', adres: 'adres_p' };
+      else if (document.getElementById('gf_zlec')) map = { name: 'zlec' };
+    }
+    if (!map) { el.placeholder = origPh; el.style.borderColor = ''; return; }
+
+    function flashFill(id, val) {
+      if (!id || !val) return;
+      var t = document.getElementById('gf_' + id);
+      if (t && !t.value) {
+        t.value = val; wizVals[id] = val;
+        t.style.transition = 'background .4s';
+        t.style.background = 'rgba(57,255,138,.12)';
+        setTimeout(function(){ t.style.background = ''; }, 1800);
+      }
+    }
+    flashFill(map.name, data.name);
+    flashFill(map.adres, data.adres);
+
+    el.placeholder = '✓ ' + (data.name ? data.name.split(' ').slice(0,3).join(' ') : 'Pobrano');
+    el.style.borderColor = 'rgba(57,255,138,.5)';
+    setTimeout(function(){ el.placeholder = origPh; el.style.borderColor = ''; }, 3500);
+  } catch(e) {
+    el.disabled = false;
+    el.placeholder = origPh;
+    el.style.borderColor = '';
+  }
+}
+
+function attachNIPListeners() {
+  var ids = Object.keys(NIP_FIELD_MAP).concat(['nip']);
+  ids.forEach(function(id) {
+    var el = document.getElementById('gf_' + id);
+    if (!el || el._nipListened) return;
+    el._nipListened = true;
+    el.addEventListener('blur', function(){ lookupNIP(id); });
+    el.addEventListener('input', function(){
+      if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupNIP(id);
+    });
+  });
+}
+
 // Mapowanie pól formularza → klucze z profilu użytkownika
 var PROFILE_AUTOFILL = {
   // Wypowiedzenie
@@ -534,6 +602,7 @@ function renderStep() {
     + '</button></div>';
 
   el.innerHTML = progressHTML + fieldsHTML + navHTML;
+  attachNIPListeners();
 }
 
 function pickPill(btn) {
