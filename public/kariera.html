@@ -439,7 +439,7 @@ body {
 .jm-step-line.done { background: #1c2e4a; opacity: .45; }
 
 /* Content */
-.jm-content { padding: 18px 22px 22px; }
+.jm-content { padding: 10px 22px 22px; }
 .jm-panel {
   display: none; flex-direction: column; gap: 10px;
   animation: jmIn .28s ease both;
@@ -840,7 +840,6 @@ body {
 
       <!-- STEP 0: Wybór główny -->
       <div class="jm-panel active" id="jmStep0">
-        <p class="jm-panel-label">Co chcesz stworzyć?</p>
         <div class="jm-choice-grid">
 
           <button class="jm-choice" onclick="jmChooseCV()">
@@ -874,7 +873,6 @@ body {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Wróć
         </button>
-        <p class="jm-panel-label">Jak chcesz zacząć?</p>
         <div class="jm-path-list">
 
           <button class="jm-path recommended" onclick="window.location.href='kreator-cv.html?mode=scratch'">
