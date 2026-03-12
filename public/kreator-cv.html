@@ -1039,21 +1039,14 @@ body { overflow:hidden; }
   text-transform:uppercase; color:var(--muted);
   margin-bottom:8px;
 }
-.cv-lang-options {
-  display:flex; gap:6px; flex-wrap:wrap;
-}
-.cv-lang-btn {
+.cv-lang-select {
+  width:100%; padding:7px 10px;
   background:var(--bg); border:1.5px solid var(--border);
-  padding:6px 12px; cursor:pointer;
-  font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:600;
-  color:var(--ink2); letter-spacing:0.04em;
-  transition:all 0.15s; border-radius:4px;
+  color:var(--ink); font-family:'Syne',sans-serif; font-size:0.82rem;
+  border-radius:6px; cursor:pointer; outline:none;
+  transition:border-color 0.15s;
 }
-.cv-lang-btn:hover { border-color:var(--accent2); color:var(--accent2); }
-.cv-lang-btn.active {
-  background:var(--accent); border-color:var(--accent);
-  color:#fff;
-}
+.cv-lang-select:focus { border-color:var(--accent2); }
 
 
 /* ── PERSONAL SECTION as accordion ──────────────────────── */
@@ -1907,24 +1900,17 @@ function L(key) {
   return (CV_LABELS[cvCurrentLang] || CV_LABELS.pl)[key] || CV_LABELS.pl[key];
 }
 
-function setCVLang(lang, btn) {
+function setCVLang(lang) {
   cvCurrentLang = lang;
   renderCVForm();
-  // Re-apply active after re-render
-  document.querySelectorAll('.cv-lang-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === lang);
-  });
   updateCVPreview();
 }
 
-var _cvAutocorrect = false;
-
-function toggleAutocorrect(on) {
-  _cvAutocorrect = on;
+function applySpellcheck() {
   document.querySelectorAll('.cvf-input').forEach(function(el) {
-    el.setAttribute('spellcheck', on ? 'true' : 'false');
-    el.setAttribute('autocorrect', on ? 'on' : 'off');
-    el.setAttribute('autocapitalize', on ? 'sentences' : 'off');
+    el.setAttribute('spellcheck', 'true');
+    el.setAttribute('autocorrect', 'on');
+    el.setAttribute('autocapitalize', 'sentences');
   });
 }
 
@@ -1935,21 +1921,15 @@ function renderCVForm() {
     <!-- LANGUAGE SELECTOR -->
     <div class="cv-lang-selector" id="cvLangSelector">
       <div class="cv-lang-label">🌐 Język CV</div>
-      <div class="cv-lang-options">
-        <button class="cv-lang-btn active" data-lang="pl" onclick="setCVLang('pl',this)">🇵🇱 PL</button>
-        <button class="cv-lang-btn" data-lang="en" onclick="setCVLang('en',this)">🇬🇧 EN</button>
-        <button class="cv-lang-btn" data-lang="de" onclick="setCVLang('de',this)">🇩🇪 DE</button>
-        <button class="cv-lang-btn" data-lang="uk" onclick="setCVLang('uk',this)">🇺🇦 UK</button>
-        <button class="cv-lang-btn" data-lang="es" onclick="setCVLang('es',this)">🇪🇸 ES</button>
-        <button class="cv-lang-btn" data-lang="cs" onclick="setCVLang('cs',this)">🇨🇿 CS</button>
-        <button class="cv-lang-btn" data-lang="nl" onclick="setCVLang('nl',this)">🇳🇱 NL</button>
-      </div>
-      <div style="margin-top:8px;border-top:1px solid #e8e5e0;padding-top:8px">
-        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:0.82rem;color:#5a5754">
-          <input type="checkbox" ${_cvAutocorrect ? 'checked' : ''} onchange="toggleAutocorrect(this.checked)" style="width:15px;height:15px;cursor:pointer;accent-color:#6c5ce7">
-          ${L('autocorrectLabel')}
-        </label>
-      </div>
+      <select class="cv-lang-select" onchange="setCVLang(this.value)">
+        <option value="pl" ${cvCurrentLang==='pl'?'selected':''}>🇵🇱 Polski</option>
+        <option value="en" ${cvCurrentLang==='en'?'selected':''}>🇬🇧 English</option>
+        <option value="de" ${cvCurrentLang==='de'?'selected':''}>🇩🇪 Deutsch</option>
+        <option value="uk" ${cvCurrentLang==='uk'?'selected':''}>🇺🇦 Українська</option>
+        <option value="es" ${cvCurrentLang==='es'?'selected':''}>🇪🇸 Español</option>
+        <option value="cs" ${cvCurrentLang==='cs'?'selected':''}>🇨🇿 Čeština</option>
+        <option value="nl" ${cvCurrentLang==='nl'?'selected':''}>🇳🇱 Nederlands</option>
+      </select>
     </div>
 
     <!-- DANE OSOBOWE accordion -->
@@ -2004,7 +1984,7 @@ function renderCVForm() {
   if (cvOpenSections.has('umiejetnosci')) updateSkillChips();
   if (cvOpenSections.has('certyfikaty')) updateCertChips();
   if (cvOpenSections.has('zainteresowania')) updateInterestChips();
-  if (_cvAutocorrect) toggleAutocorrect(true);
+  applySpellcheck();
 }
 
 function buildSectionFormHTML(sec) {
