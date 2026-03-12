@@ -449,6 +449,19 @@ var currentDoc = null, currentStep = 0, wizVals = {};
 function openDoc(id) {
   if (!FORMS[id]) return;
   currentDoc = id; currentStep = 0; wizVals = {};
+  // Autofill z profilu
+  var _prof = (function(){ try{return JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){return{};} })();
+  if (_prof && _prof.firma) {
+    // Mapowanie pól z profilu
+    var _pfill = {
+      zlec_firma: (_prof.firma||''), zlec_nip: (_prof.nip||''), zlec_adres: (_prof.adres||''),
+      pracodawca: (_prof.firma||''), adres_p: (_prof.adres||''),
+      firma: (_prof.firma||''), adres: (_prof.adres||''), email: (_prof.email||''),
+      wyn_imie: [_prof.imie,_prof.nazwisko].filter(Boolean).join(' '),
+      skladajacy: [_prof.imie,_prof.nazwisko].filter(Boolean).join(' '),
+    };
+    Object.keys(_pfill).forEach(function(k){ if(_pfill[k]) wizVals[k]=_pfill[k]; });
+  }
   document.getElementById("genTitle").textContent = FORMS[id].title;
   document.getElementById("genLoading").style.display = "none";
   document.getElementById("genResult").style.display = "none";
@@ -523,6 +536,16 @@ function renderStep() {
   }
 
   var isLast = (currentStep === total - 1);
+
+  // Dodaj pole "Dodatkowe informacje" na ostatnim kroku
+  if (currentStep === total - 1) {
+    var extraVal = wizVals['_extra_info'] || '';
+    fieldsHTML += '<div style="margin-bottom:18px;">'
+      + '<label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">📝 Dodatkowe informacje <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span></label>'
+      + '<textarea id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi, wymagania lub informacje, które powinny znaleźć się w dokumencie..." style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;resize:vertical;font-family:\'DM Sans\',sans-serif;">' + extraVal + '</textarea>'
+      + '</div>';
+  }
+
   var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
     + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : "")
     + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
@@ -563,6 +586,8 @@ function collectVals() {
     var el = document.getElementById("gf_" + fields[i].id);
     if (el) wizVals[fields[i].id] = el.value;
   }
+  var extraEl = document.getElementById('gf__extra_info');
+  if (extraEl) wizVals['_extra_info'] = extraEl.value;
 }
 
 function wizNext() {
@@ -595,11 +620,12 @@ async function doGenerate() {
   document.getElementById("genLoading").style.display = "block";
   try {
     var prompt = FORMS[currentDoc].prompt(wizVals);
+    if (wizVals._extra_info) prompt += '\nDodatkowe informacje od klienta: ' + wizVals._extra_info;
     var token = window._fbToken || "";
     var res = await fetch("/api/generate", {
       method: "POST",
       headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
-      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title})
+      body: JSON.stringify({prompt:prompt, typeId:currentDoc, typeName:FORMS[currentDoc].title, docCat:'biznes', docCatLabel:'Biznes'})
     });
     var data = await res.json();
     document.getElementById("genLoading").style.display = "none";
