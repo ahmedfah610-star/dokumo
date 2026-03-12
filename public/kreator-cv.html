@@ -817,7 +817,6 @@ body { overflow:hidden; }
   .cv-btn-label { display:none; }
   .cv-btn-icon { display:inline; }
   .cv-nav-subtitle { display:none; }
-  .btn-import-pdf { padding:7px 10px; min-width:0; }
   .btn-choose-tpl { padding:7px 10px; min-width:0; gap:4px; }
   .tpl-preview-dot { width:10px !important; height:10px !important; }
   .btn-back { font-size:0.7rem; padding:6px 0; }
@@ -826,7 +825,6 @@ body { overflow:hidden; }
 
 @media (max-width: 380px) {
   .cv-nav { padding:0 8px; gap:4px; }
-  .btn-import-pdf { padding:6px 8px; }
   .btn-choose-tpl { padding:6px 8px; }
 }
 
@@ -1231,7 +1229,19 @@ async function loadCVDraft() {
 
 document.addEventListener('DOMContentLoaded', function() {
   updateCVNavProfile();
-  if (new URLSearchParams(location.search).get('mode') === 'import') openImportModal();
+  if (new URLSearchParams(location.search).get('mode') === 'import') {
+    const dataUrl = sessionStorage.getItem('dokumo_import_cv_pdf');
+    if (dataUrl) {
+      sessionStorage.removeItem('dokumo_import_cv_pdf');
+      try {
+        const base64 = dataUrl.split(',')[1];
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        processCvImport(bytes.buffer);
+      } catch(e) { console.error('Błąd odczytu pliku:', e); }
+    }
+  }
 });
 </script>
 
@@ -1330,33 +1340,16 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
-<!-- IMPORT CV MODAL -->
-<div class="import-modal-overlay" id="importModalOverlay">
-  <div class="import-modal">
-    <button class="import-modal-close" onclick="closeImportModal()">✕</button>
-    <h2>Importuj CV z PDF</h2>
-    <p class="import-sub">Wgraj swoje CV w PDF — AI automatycznie wyciągnie dane i wypełni formularz. Następnie możesz edytować i pobrać gotowe CV.</p>
-
-    <div class="import-drop-zone" id="importDropZone"
-      onclick="document.getElementById('importPdfInput').click()"
-      ondragover="handleDragOver(event)"
-      ondragleave="handleDragLeave(event)"
-      ondrop="handleDrop(event)">
-      <div class="drop-icon">📋</div>
-      <p class="drop-hint"><strong>Kliknij lub przeciągnij plik PDF</strong></p>
-      <p class="drop-hint" style="margin-top:4px;font-size:0.72rem">Obsługiwane: PDF · maks. 10 MB</p>
-    </div>
-    <input type="file" id="importPdfInput" accept="application/pdf" style="display:none" onchange="handlePdfFile(this.files[0])">
-
-    <div class="import-progress" id="importProgress">
-      <div class="import-progress-text" id="importProgressText">Wczytuję plik PDF...</div>
-      <div class="import-progress-bar-wrap">
-        <div class="import-progress-bar" id="importProgressBar"></div>
-      </div>
-    </div>
-
-    <div class="import-error" id="importError"></div>
+<!-- CV IMPORT OVERLAY (wyzwalany z kariera.html) -->
+<div id="cvImportOverlay" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(15,14,12,.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:24px;">
+  <style>@keyframes cvSpin{to{transform:rotate(360deg)}}</style>
+  <div style="width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;animation:cvSpin .75s linear infinite;"></div>
+  <div id="cvImportText" style="color:#fff;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:600;">Wczytuję plik PDF…</div>
+  <div style="width:220px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden;">
+    <div id="cvImportBar" style="height:100%;width:0%;background:#fff;border-radius:99px;transition:width .35s ease;"></div>
   </div>
+  <div id="cvImportError" style="display:none;color:#f87171;font-size:.82rem;max-width:300px;line-height:1.5;"></div>
+  <button id="cvImportErrorClose" style="display:none;margin-top:4px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:.8rem;" onclick="document.getElementById('cvImportOverlay').style.display='none'">Zamknij</button>
 </div>
 
 <!-- PAY BAR -->
@@ -1368,59 +1361,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 // ======================================================
-// IMPORT CV Z PDF
+// IMPORT CV Z PDF (wyzwalany z kariera.html via sessionStorage)
 // ======================================================
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; } catch(e) {}
 
-function openImportModal() {
-  document.getElementById('importModalOverlay').classList.add('open');
-  resetImportUI();
-}
-function closeImportModal() {
-  document.getElementById('importModalOverlay').classList.remove('open');
+function _cvImportSetProgress(text, pct) {
+  document.getElementById('cvImportText').textContent = text;
+  document.getElementById('cvImportBar').style.width = pct + '%';
 }
 
-function resetImportUI() {
-  const prog = document.getElementById('importProgress');
-  const err = document.getElementById('importError');
-  const bar = document.getElementById('importProgressBar');
-  prog.classList.remove('show');
-  err.classList.remove('show');
-  bar.style.width = '0%';
-  document.getElementById('importPdfInput').value = '';
+function _cvImportShowError(msg) {
+  document.getElementById('cvImportText').textContent = 'Wystąpił błąd';
+  document.getElementById('cvImportBar').style.width = '0%';
+  const errEl = document.getElementById('cvImportError');
+  errEl.textContent = '⚠ ' + msg;
+  errEl.style.display = 'block';
+  document.getElementById('cvImportErrorClose').style.display = 'inline-block';
 }
 
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('importDropZone').classList.add('dragover');
-}
-function handleDragLeave(e) {
-  document.getElementById('importDropZone').classList.remove('dragover');
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('importDropZone').classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type === 'application/pdf') {
-    handlePdfFile(file);
-  } else {
-    showImportError('Proszę wgrać plik PDF.');
-  }
-}
-
-async function handlePdfFile(file) {
-  if (!file) return;
-  if (file.size > 10 * 1024 * 1024) {
-    showImportError('Plik jest za duży (maks. 10 MB).');
-    return;
-  }
-
-  showImportProgress('Wczytuję plik PDF...', 15);
+async function processCvImport(arrayBuffer) {
+  const overlay = document.getElementById('cvImportOverlay');
+  overlay.style.display = 'flex';
+  _cvImportSetProgress('Wczytuję plik PDF…', 10);
 
   try {
-    // Step 1: extract text with PDF.js
-    const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let fullText = '';
     for (let i = 1; i <= pdf.numPages; i++) {
@@ -1430,14 +1395,13 @@ async function handlePdfFile(file) {
     }
 
     if (!fullText.trim()) {
-      showImportError('Nie udało się wyciągnąć tekstu z PDF. Upewnij się, że plik nie jest skanem obrazkowym.');
+      _cvImportShowError('Nie udało się wyciągnąć tekstu z PDF. Upewnij się, że plik nie jest skanem obrazkowym.');
       return;
     }
 
-    showImportProgress('Wyciągam dane przez AI...', 45);
+    _cvImportSetProgress('Wyciągam dane przez AI…', 40);
 
-    // Step 2: send to Gemini via existing proxy
-    const prompt = `Jesteś profesjonalnym parserem CV. Wyciągnij WSZYSTKIE informacje z poniższego tekstu CV i zwróć je jako pojedynczy poprawny obiekt JSON. Zachowaj oryginalny język danych (nie tłumacz). 
+    const prompt = `Jesteś profesjonalnym parserem CV. Wyciągnij WSZYSTKIE informacje z poniższego tekstu CV i zwróć je jako pojedynczy poprawny obiekt JSON. Zachowaj oryginalny język danych (nie tłumacz).
 
 Zwróć TYLKO surowy obiekt JSON (bez markdown, bez backticks, bez wyjaśnień) w tej dokładnej strukturze:
 {
@@ -1472,32 +1436,24 @@ ${fullText.substring(0, 8000)}`;
       body: JSON.stringify({ prompt })
     });
 
-    if (!response.ok) throw new Error('API error ' + response.status);
+    if (!response.ok) throw new Error('Błąd API: ' + response.status);
 
-    showImportProgress('Przetwarzam odpowiedź AI...', 80);
+    _cvImportSetProgress('Przetwarzam odpowiedź AI…', 78);
 
     const data = await response.json();
     const rawText = data.text || data.result || '';
 
-    // Parse JSON from response
     let parsed;
     try {
-      // Strip possible markdown fences
-      const clean = rawText.replace(/```json|```/g, '').trim();
-      parsed = JSON.parse(clean);
+      parsed = JSON.parse(rawText.replace(/```json|```/g, '').trim());
     } catch(e) {
-      // Try to find JSON object in text
       const match = rawText.match(/\{[\s\S]*\}/);
-      if (match) {
-        parsed = JSON.parse(match[0]);
-      } else {
-        throw new Error('Nie udało się sparsować odpowiedzi AI.');
-      }
+      if (match) parsed = JSON.parse(match[0]);
+      else throw new Error('Nie udało się odczytać odpowiedzi AI.');
     }
 
-    showImportProgress('Wypełniam formularz...', 95);
+    _cvImportSetProgress('Wypełniam formularz…', 94);
 
-    // Step 3: fill cvData
     cvData.imie = parsed.imie || '';
     cvData.nazwisko = parsed.nazwisko || '';
     cvData.stanowisko = parsed.stanowisko || '';
@@ -1512,61 +1468,32 @@ ${fullText.substring(0, 8000)}`;
 
     if (Array.isArray(parsed.doswiadczenie) && parsed.doswiadczenie.length > 0) {
       cvData.doswiadczenie = parsed.doswiadczenie.map(e => ({
-        firma: e.firma || '',
-        stanowisko: e.stanowisko || '',
-        od: e.od || '',
-        do: e.do || '',
-        opis: e.opis || ''
+        firma: e.firma || '', stanowisko: e.stanowisko || '',
+        od: e.od || '', do: e.do || '', opis: e.opis || ''
       }));
     }
-
     if (Array.isArray(parsed.wyksztalcenie) && parsed.wyksztalcenie.length > 0) {
       cvData.wyksztalcenie = parsed.wyksztalcenie.map(e => ({
-        szkola: e.szkola || '',
-        kierunek: e.kierunek || '',
-        od: e.od || '',
-        do: e.do || '',
-        opis: e.opis || ''
+        szkola: e.szkola || '', kierunek: e.kierunek || '',
+        od: e.od || '', do: e.do || '', opis: e.opis || ''
       }));
     }
-
     if (Array.isArray(parsed.jezyki) && parsed.jezyki.length > 0) {
-      cvData.jezyki = parsed.jezyki.map(l => ({
-        jezyk: l.jezyk || '',
-        poziom: l.poziom || 'B2'
-      }));
+      cvData.jezyki = parsed.jezyki.map(l => ({ jezyk: l.jezyk || '', poziom: l.poziom || 'B2' }));
     }
 
-    showImportProgress('Gotowe! ✓', 100);
+    _cvImportSetProgress('Gotowe! ✓', 100);
 
-    // Step 4: render and close
     setTimeout(() => {
       renderCVForm();
       updateCVPreview();
-      closeImportModal();
-    }, 700);
+      overlay.style.display = 'none';
+    }, 600);
 
   } catch(err) {
     console.error('Import error:', err);
-    showImportError('Wystąpił błąd: ' + (err.message || 'Spróbuj ponownie.'));
+    _cvImportShowError(err.message || 'Spróbuj ponownie.');
   }
-}
-
-function showImportProgress(text, percent) {
-  const prog = document.getElementById('importProgress');
-  const err = document.getElementById('importError');
-  prog.classList.add('show');
-  err.classList.remove('show');
-  document.getElementById('importProgressText').textContent = text;
-  document.getElementById('importProgressBar').style.width = percent + '%';
-}
-
-function showImportError(msg) {
-  const prog = document.getElementById('importProgress');
-  const err = document.getElementById('importError');
-  prog.classList.remove('show');
-  err.classList.add('show');
-  err.textContent = '⚠ ' + msg;
 }
 
 // ── MOBILE TABS ───────────────────────────────────────────

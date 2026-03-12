@@ -1002,9 +1002,20 @@ function jmGoBack()       { _jm.back = true;  _jm.step = 'choose';       _jmRend
 
 function jmTriggerUpload() { document.getElementById('jmFileInput').click(); }
 function jmHandleUpload(input) {
-  if (input.files && input.files[0]) {
-    window.location.href = 'kreator-cv.html?mode=import';
-  }
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (file.type !== 'application/pdf') { alert('Proszę wybrać plik PDF.'); return; }
+  if (file.size > 10 * 1024 * 1024) { alert('Plik jest za duży (maks. 10 MB).'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      sessionStorage.setItem('dokumo_import_cv_pdf', e.target.result);
+      window.location.href = 'kreator-cv.html?mode=import';
+    } catch(err) {
+      alert('Plik jest za duży do przekazania. Spróbuj mniejszego pliku.');
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 function _jmRender() {
