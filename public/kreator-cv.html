@@ -1000,6 +1000,7 @@ body { overflow:hidden; }
 .cv-tpl-thumb-inner {
   position:absolute; top:0; left:0;
   width:595px; height:842px;
+  transform:scale(0.447);
   transform-origin:top left;
   pointer-events:none;
 }
@@ -2540,6 +2541,14 @@ function openTplDrawer() {
   const overlay = document.getElementById('cvTplOverlay');
   overlay.classList.add('open');
   renderTplGrid();
+  setTimeout(function() {
+    document.querySelectorAll('.cv-tpl-thumb').forEach(function(thumb) {
+      const w = thumb.getBoundingClientRect().width;
+      if (!w) return;
+      const inner = thumb.querySelector('.cv-tpl-thumb-inner');
+      if (inner) inner.style.transform = 'scale(' + (w / 595) + ')';
+    });
+  }, 350);
 }
 function closeTplDrawer() {
   document.getElementById('cvTplOverlay').classList.remove('open');
