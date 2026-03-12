@@ -29,23 +29,12 @@ tr:hover td{background:#faf8f4;}
 .badge-kariera{background:#dbeafe;color:#1e40af;}
 .badge-biznes{background:#dcfce7;color:#15803d;}
 .badge-promax{background:#1a1714;color:#fff;}
-.page-pill{display:inline-block;background:#f5f3ef;border:1px solid rgba(26,23,20,.08);border-radius:6px;padding:2px 8px;font-size:.72rem;font-family:monospace;color:#555;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .loading{padding:40px;text-align:center;color:#aaa;font-size:.85rem;}
 .error-msg{padding:40px;text-align:center;color:#e05c5c;font-size:.85rem;}
 .login-wall{max-width:420px;margin:80px auto;background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:16px;padding:40px;text-align:center;}
 .login-wall h2{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
 .login-wall p{font-size:.82rem;color:#6b6560;margin-bottom:20px;}
 .btn-go{display:inline-block;padding:10px 24px;background:#1a1714;color:#fff;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:700;}
-.tab-bar{display:flex;gap:0;border-bottom:1px solid rgba(26,23,20,.07);}
-.tab-btn{padding:10px 20px;background:none;border:none;font-size:.8rem;font-weight:600;color:#aaa;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
-.tab-btn.active{color:#1a1714;border-bottom-color:#1a1714;}
-.tab-pane{display:none;}.tab-pane.active{display:block;}
-.page-bar-wrap{padding:16px 20px 8px;}
-.page-bar-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.page-bar-label{font-size:.72rem;color:#555;min-width:180px;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.page-bar-bg{flex:1;background:#f0ede8;border-radius:999px;height:8px;overflow:hidden;}
-.page-bar-fill{height:100%;background:#1a1714;border-radius:999px;transition:width .4s;}
-.page-bar-count{font-size:.7rem;color:#aaa;min-width:28px;text-align:right;}
 </style>
 </head>
 <body>
@@ -59,36 +48,16 @@ tr:hover td{background:#faf8f4;}
 <div id="panelContent" style="display:none">
   <div class="panel-wrap">
     <h1>Panel administracyjny</h1>
-    <div class="panel-sub">Analityka odwiedzin i historia płatności · Dokumo</div>
+    <div class="panel-sub">Historia płatności · Dokumo</div>
 
     <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><div class="stat-label">Wizyty dzisiaj</div><div class="stat-value" id="statToday">—</div></div>
-      <div class="stat-card"><div class="stat-label">Wizyty łącznie</div><div class="stat-value" id="statTotal">—</div></div>
       <div class="stat-card"><div class="stat-label">Płatności łącznie</div><div class="stat-value" id="statPayments">—</div></div>
       <div class="stat-card"><div class="stat-label">Przychód (zł)</div><div class="stat-value" id="statRevenue">—</div><div class="stat-note">suma z Stripe</div></div>
     </div>
 
     <div class="panel-section">
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('visits')">Odwiedziny</button>
-        <button class="tab-btn" onclick="switchTab('pages')">Strony</button>
-        <button class="tab-btn" onclick="switchTab('payments')">Płatności</button>
-      </div>
-
-      <!-- WIZYTY -->
-      <div class="tab-pane active" id="tabVisits">
-        <div id="visitsContent" class="loading">Ładowanie...</div>
-      </div>
-
-      <!-- STRONY -->
-      <div class="tab-pane" id="tabPages">
-        <div class="page-bar-wrap" id="pagesContent"><div class="loading">Ładowanie...</div></div>
-      </div>
-
-      <!-- PŁATNOŚCI -->
-      <div class="tab-pane" id="tabPayments">
-        <div id="paymentsContent" class="loading">Ładowanie...</div>
-      </div>
+      <div class="panel-section-head"><h2>Płatności</h2></div>
+      <div id="paymentsContent" class="loading">Ładowanie...</div>
     </div>
   </div>
 </div>
@@ -126,24 +95,18 @@ async function loadStats(token) {
       return;
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const { events, payments } = await res.json();
+    const { payments } = await res.json();
     document.getElementById('panelContent').style.display = 'block';
-    renderStats(events, payments);
-    renderVisits(events);
-    renderPages(events);
+    renderStats(payments);
     renderPayments(payments);
   } catch(e) {
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('panelContent').style.display = 'block';
-    document.getElementById('visitsContent').innerHTML = '<div class="error-msg">Błąd ładowania: ' + e.message + '</div>';
+    document.getElementById('paymentsContent').innerHTML = '<div class="error-msg">Błąd ładowania: ' + e.message + '</div>';
   }
 }
 
-function renderStats(events, payments) {
-  const today = new Date().toISOString().slice(0,10);
-  const todayCount = events.filter(e => (e.ts||'').startsWith(today)).length;
-  document.getElementById('statToday').textContent = todayCount;
-  document.getElementById('statTotal').textContent = events.length;
+function renderStats(payments) {
   document.getElementById('statPayments').textContent = payments.length;
   const revenue = payments.reduce((s, p) => s + (p.amount || 0), 0);
   document.getElementById('statRevenue').textContent = (revenue / 100).toFixed(2);
@@ -153,40 +116,6 @@ function fmt(iso) {
   if (!iso) return '—';
   const d = new Date(iso);
   return d.toLocaleDateString('pl-PL') + ' ' + d.toLocaleTimeString('pl-PL', {hour:'2-digit',minute:'2-digit'});
-}
-
-function renderVisits(events) {
-  if (!events.length) {
-    document.getElementById('visitsContent').innerHTML = '<div class="loading">Brak danych.</div>';
-    return;
-  }
-  let rows = events.slice(0,200).map(e => `
-    <tr>
-      <td>${fmt(e.ts)}</td>
-      <td><span class="page-pill">${e.page||'—'}</span></td>
-      <td style="color:#aaa;font-size:.72rem">${e.uid||'anonimowy'}</td>
-      <td style="color:#aaa;font-size:.72rem">${e.country||''} ${e.city||''}</td>
-      <td style="color:#aaa;font-size:.68rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(e.referrer||'').replace(/^https?:\/\//,'').slice(0,60)||'—'}</td>
-    </tr>`).join('');
-  document.getElementById('visitsContent').innerHTML = `
-    <table>
-      <thead><tr><th>Czas</th><th>Strona</th><th>Użytkownik</th><th>Kraj/Miasto</th><th>Źródło</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-function renderPages(events) {
-  const counts = {};
-  events.forEach(e => { const p = e.page||'/'; counts[p] = (counts[p]||0)+1; });
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  const max = sorted[0]?.[1] || 1;
-  const bars = sorted.map(([page, count]) => `
-    <div class="page-bar-item">
-      <div class="page-bar-label" title="${page}">${page}</div>
-      <div class="page-bar-bg"><div class="page-bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
-      <div class="page-bar-count">${count}</div>
-    </div>`).join('');
-  document.getElementById('pagesContent').innerHTML = bars || '<div class="loading">Brak danych.</div>';
 }
 
 function renderPayments(payments) {
@@ -212,16 +141,6 @@ function renderPayments(payments) {
       <tbody>${rows}</tbody>
     </table>`;
 }
-
-window.switchTab = function(name) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    const tabs = ['visits','pages','payments'];
-    b.classList.toggle('active', tabs[i]===name);
-  });
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  const map = {visits:'tabVisits',pages:'tabPages',payments:'tabPayments'};
-  document.getElementById(map[name])?.classList.add('active');
-};
 </script>
 </body>
 </html>

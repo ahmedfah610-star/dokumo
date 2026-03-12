@@ -2,6 +2,9 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strefa Biznesu – Dokumo</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
@@ -434,14 +437,7 @@ onAuthStateChanged(getAuth(app), async u=>{
   </a>
 
 </section>
-<script>
-(function(){try{
-  var uid=null;try{uid=JSON.parse(localStorage.getItem('dokumo_user'))?.email||null;}catch(e){}
-  fetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({page:location.pathname,referrer:document.referrer,uid:uid})
-  }).catch(function(){});
-}catch(e){}})();
-</script>
+
 
 </body>
 </html>

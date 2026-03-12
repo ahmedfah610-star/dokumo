@@ -2,6 +2,9 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dokumo – Dokumenty w 60 sekund</title>
 <meta name="description" content="Generuj profesjonalne dokumenty prawne z pomocą AI w 60 sekund. Wypowiedzenia, umowy, CV, regulaminy i więcej — gotowe do wydruku, zgodne z polskim prawem.">
@@ -447,13 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateNavBadge();
 });
 </script>
-<script>
-(function(){try{
-  var uid=null;try{uid=JSON.parse(localStorage.getItem('dokumo_user'))?.email||null;}catch(e){}
-  fetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({page:location.pathname,referrer:document.referrer,uid:uid})
-  }).catch(function(){});
-}catch(e){}})();
-</script>
+
 </body>
 </html>
