@@ -1731,7 +1731,7 @@ const CV_LABELS = {
     contact: 'Dane kontaktowe', present: 'Obecnie',
     consent: 'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.',
     // UI labels
-    personalData: 'Dane osobowe', professionalSummary: 'Podsumowanie zawodowe',
+    personalData: 'Dane osobowe', professionalSummary: 'Profil osobisty',
     workExperience: 'Doświadczenie zawodowe', educationSection: 'Wykształcenie',
     skillsSection: 'Umiejętności', languagesSection: 'Języki', interestsSection: 'Hobby i zainteresowania',
     firstName: 'Imię', lastName: 'Nazwisko', position: 'Stanowisko / tytuł zawodowy',
@@ -1755,7 +1755,7 @@ const CV_LABELS = {
     profile: 'Professional Profile', interests: 'Interests & Hobbies',
     contact: 'Contact', present: 'Present',
     consent: 'I consent to the processing of my personal data for recruitment purposes.',
-    personalData: 'Personal Details', professionalSummary: 'Professional Summary',
+    personalData: 'Personal Details', professionalSummary: 'Personal Profile',
     workExperience: 'Work Experience', educationSection: 'Education',
     skillsSection: 'Skills', languagesSection: 'Languages', interestsSection: 'Interests & Hobbies',
     firstName: 'First Name', lastName: 'Last Name', position: 'Job Title',
@@ -1779,7 +1779,7 @@ const CV_LABELS = {
     profile: 'Profil', interests: 'Interessen & Hobbys',
     contact: 'Kontakt', present: 'Heute',
     consent: 'Ich stimme der Verarbeitung meiner personenbezogenen Daten für Rekrutierungszwecke zu.',
-    personalData: 'Persönliche Daten', professionalSummary: 'Berufliches Profil',
+    personalData: 'Persönliche Daten', professionalSummary: 'Persönliches Profil',
     workExperience: 'Berufserfahrung', educationSection: 'Ausbildung',
     skillsSection: 'Kenntnisse', languagesSection: 'Sprachen', interestsSection: 'Interessen & Hobbys',
     firstName: 'Vorname', lastName: 'Nachname', position: 'Berufsbezeichnung',
@@ -1803,7 +1803,7 @@ const CV_LABELS = {
     profile: 'Профіль', interests: 'Інтереси та хобі',
     contact: 'Контакти', present: 'Зараз',
     consent: 'Я даю згоду на обробку моїх персональних даних для цілей рекрутингу.',
-    personalData: 'Особисті дані', professionalSummary: 'Професійне резюме',
+    personalData: 'Особисті дані', professionalSummary: 'Особистий профіль',
     workExperience: 'Досвід роботи', educationSection: 'Освіта',
     skillsSection: 'Навички', languagesSection: 'Мови', interestsSection: 'Інтереси та хобі',
     firstName: "Ім'я", lastName: 'Прізвище', position: 'Посада / назва',
@@ -1827,7 +1827,7 @@ const CV_LABELS = {
     profile: 'Perfil profesional', interests: 'Intereses y aficiones',
     contact: 'Contacto', present: 'Presente',
     consent: 'Doy mi consentimiento para el tratamiento de mis datos personales con fines de contratación.',
-    personalData: 'Datos personales', professionalSummary: 'Perfil profesional',
+    personalData: 'Datos personales', professionalSummary: 'Perfil personal',
     workExperience: 'Experiencia laboral', educationSection: 'Educación',
     skillsSection: 'Habilidades', languagesSection: 'Idiomas', interestsSection: 'Intereses y aficiones',
     firstName: 'Nombre', lastName: 'Apellido', position: 'Cargo / título profesional',
@@ -1851,7 +1851,7 @@ const CV_LABELS = {
     profile: 'Profesní profil', interests: 'Zájmy a koníčky',
     contact: 'Kontakt', present: 'Současnost',
     consent: 'Souhlasím se zpracováním svých osobních údajů pro účely náboru.',
-    personalData: 'Osobní údaje', professionalSummary: 'Profesní souhrn',
+    personalData: 'Osobní údaje', professionalSummary: 'Osobní profil',
     workExperience: 'Pracovní zkušenosti', educationSection: 'Vzdělání',
     skillsSection: 'Dovednosti', languagesSection: 'Jazyky', interestsSection: 'Zájmy a koníčky',
     firstName: 'Jméno', lastName: 'Příjmení', position: 'Pracovní pozice',
@@ -1875,7 +1875,7 @@ const CV_LABELS = {
     profile: 'Professioneel profiel', interests: "Interesses & hobby's",
     contact: 'Contact', present: 'Heden',
     consent: 'Ik geef toestemming voor de verwerking van mijn persoonsgegevens voor wervingsdoeleinden.',
-    personalData: 'Persoonlijke gegevens', professionalSummary: 'Professioneel profiel',
+    personalData: 'Persoonlijke gegevens', professionalSummary: 'Persoonlijk profiel',
     workExperience: 'Werkervaring', educationSection: 'Opleiding',
     skillsSection: 'Vaardigheden', languagesSection: 'Talen', interestsSection: "Interesses & hobby's",
     firstName: 'Voornaam', lastName: 'Achternaam', position: 'Functietitel',
@@ -1910,6 +1910,13 @@ function setCVLang(lang, btn) {
   updateCVPreview();
 }
 
+var _cvAutocorrect = false;
+
+function toggleAutocorrect(on) {
+  _cvAutocorrect = on;
+  document.querySelectorAll('.cvf-input').forEach(el => { el.spellcheck = on; });
+}
+
 function renderCVForm() {
   const panel = document.getElementById('cvFormPanel');
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ');
@@ -1926,7 +1933,12 @@ function renderCVForm() {
         <button class="cv-lang-btn" data-lang="cs" onclick="setCVLang('cs',this)">🇨🇿 CS</button>
         <button class="cv-lang-btn" data-lang="nl" onclick="setCVLang('nl',this)">🇳🇱 NL</button>
       </div>
-      
+      <div style="margin-top:8px;border-top:1px solid #e8e5e0;padding-top:8px">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:0.82rem;color:#5a5754">
+          <input type="checkbox" ${_cvAutocorrect ? 'checked' : ''} onchange="toggleAutocorrect(this.checked)" style="width:15px;height:15px;cursor:pointer;accent-color:#6c5ce7">
+          Używaj autokorekty
+        </label>
+      </div>
     </div>
 
     <!-- DANE OSOBOWE accordion -->
@@ -2029,7 +2041,18 @@ function monthVal(stored) {
 
 function buildSectionBodyHTML(sec) {
   if (sec === 'podsumowanie') return `
-    <textarea class="cvf-input" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="${L('summaryPlaceholder')}">${cvData.podsumowanie}</textarea>`;
+    <textarea class="cvf-input" id="summaryTextarea" rows="4" oninput="cvData.podsumowanie=this.value;updateCVPreview()" placeholder="${L('summaryPlaceholder')}">${cvData.podsumowanie}</textarea>
+    <div style="margin-top:8px">
+      <button class="acc-add-more" onclick="useAISummary()" id="aiSummaryBtn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border:none">✨ Użyj AI</button>
+    </div>
+    <div id="aiSuggestionBox" style="display:none;margin-top:12px;padding:14px;background:#f8f7ff;border:1px solid #d3cffe;border-radius:10px">
+      <div style="font-size:0.78rem;color:#6c5ce7;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em">Sugestia AI</div>
+      <div id="aiSuggestionText" style="font-size:0.9rem;color:#3d3c3a;line-height:1.6;white-space:pre-wrap"></div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="acc-add-more" onclick="applyAISummary()" style="background:#6c5ce7;color:#fff;border:none">Zastosuj</button>
+        <button class="acc-add-more" onclick="document.getElementById('aiSuggestionBox').style.display='none'" style="background:#e8e5e0;color:#5a5754;border:none">Odrzuć</button>
+      </div>
+    </div>`;
 
   if (sec === 'doswiadczenie') return `
     <div id="cvExpList">
@@ -2085,13 +2108,14 @@ function buildSectionBodyHTML(sec) {
           <select class="cvf-input" style="width:100px;flex-shrink:0" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
             ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
           </select>
-          ${i>0 ? `<button class="acc-remove-x" onclick="removeCVLang(${i})">✕</button>` : '<div style="width:28px"></div>'}
+          <button class="acc-remove-x" onclick="removeCVLang(${i})" ${i===0&&cvData.jezyki.length===1?'style="visibility:hidden"':''}>✕</button>
         </div>`).join('')}
     </div>
-    <button class="acc-add-more" onclick="addCVLang()">${L("addLang")}</button>
-    <p class="acc-hint" style="margin-top:10px">Popularne języki — kliknij aby dodać:</p>
-    <div class="cvf-suggestions" id="langSuggestions">
-      ${TOP_LANGS.map(l => `<span class="cvf-chip" onclick="addLangChip('${l}')">${l}</span>`).join('')}
+    <div style="position:relative;display:inline-block;margin-top:8px">
+      <button class="acc-add-more" id="addLangBtn" onclick="toggleLangDropdown()">${L("addLang")}</button>
+      <div id="langDropdown" style="display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#fff;border:1px solid #e0ddd8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:200;min-width:180px;padding:6px 0;max-height:240px;overflow-y:auto">
+        ${TOP_LANGS.map(l => `<div style="padding:8px 16px;cursor:pointer;font-size:0.9rem;color:#3d3c3a" onmousedown="event.preventDefault();addLangFromDd('${l}')" onmouseenter="this.style.background='#f5f3ef'" onmouseleave="this.style.background=''">${l}</div>`).join('')}
+      </div>
     </div>`;
 
   if (sec === 'certyfikaty') return `
@@ -2341,6 +2365,85 @@ function removeCVEdu(i) {
 function addCVLang() {
   cvData.jezyki.push({ jezyk:'', poziom:'B2' });
   renderCVForm();
+}
+
+function removeCVLang(i) {
+  if (cvData.jezyki.length <= 1) return;
+  cvData.jezyki.splice(i, 1);
+  const item = document.querySelector('.acc-item[data-section="jezyki"]');
+  if (item) { const body = item.querySelector('.acc-body'); if (body) body.innerHTML = buildSectionBodyHTML('jezyki'); }
+  updateCVPreview();
+}
+
+function toggleLangDropdown() {
+  const dd = document.getElementById('langDropdown');
+  if (!dd) return;
+  const isOpen = dd.style.display !== 'none';
+  dd.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    setTimeout(function() { document.addEventListener('click', _closeLangDdOnce); }, 0);
+  }
+}
+function _closeLangDdOnce(e) {
+  document.removeEventListener('click', _closeLangDdOnce);
+  const dd = document.getElementById('langDropdown');
+  const btn = document.getElementById('addLangBtn');
+  if (dd && e.target !== btn && !dd.contains(e.target)) dd.style.display = 'none';
+}
+function addLangFromDd(lang) {
+  const dd = document.getElementById('langDropdown');
+  if (dd) dd.style.display = 'none';
+  const existing = cvData.jezyki.find(function(l){ return l.jezyk.toLowerCase() === lang.toLowerCase(); });
+  if (!existing) {
+    const empty = cvData.jezyki.find(function(l){ return !l.jezyk; });
+    if (empty) { empty.jezyk = lang; }
+    else { cvData.jezyki.push({ jezyk: lang, poziom: 'B2' }); }
+  }
+  const item = document.querySelector('.acc-item[data-section="jezyki"]');
+  if (item) { const body = item.querySelector('.acc-body'); if (body) body.innerHTML = buildSectionBodyHTML('jezyki'); }
+  updateCVPreview();
+}
+
+async function useAISummary() {
+  const text = cvData.podsumowanie;
+  if (!text || text.trim().length < 10) {
+    alert('Najpierw wpisz kilka zdań w polu Profil osobisty.');
+    return;
+  }
+  const btn = document.getElementById('aiSummaryBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generuję...'; }
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    var res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ docType: 'cv_summary_improve', lang: cvCurrentLang || 'pl', values: { text: text } })
+    });
+    var data = await res.json();
+    var suggestion = data.text || data.result || data.content || '';
+    if (suggestion) {
+      document.getElementById('aiSuggestionText').textContent = suggestion;
+      document.getElementById('aiSuggestionBox').style.display = 'block';
+    } else {
+      alert('Brak odpowiedzi od AI. Spróbuj ponownie.');
+    }
+  } catch(e) {
+    alert('Błąd generowania. Spróbuj ponownie.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✨ Użyj AI'; }
+  }
+}
+
+function applyAISummary() {
+  var suggestion = document.getElementById('aiSuggestionText').textContent;
+  if (!suggestion) return;
+  cvData.podsumowanie = suggestion;
+  var ta = document.getElementById('summaryTextarea');
+  if (ta) ta.value = suggestion;
+  document.getElementById('aiSuggestionBox').style.display = 'none';
+  updateCVPreview();
 }
 
 function updateCVPreview() {
@@ -2629,12 +2732,12 @@ async function saveCVToMyDocs(fullName) {
     }
     var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
     if (!token) return;
-    var cvText = [
+    var cvPreviewEl = document.getElementById('cvPreviewInner');
+    var cvText = cvPreviewEl ? '__CV_HTML__:' + cvPreviewEl.outerHTML : [
       fullName,
       cvData.stanowisko,
       cvData.email && 'Email: ' + cvData.email,
       cvData.tel && 'Tel: ' + cvData.tel,
-      cvData.podsumowanie && '\nPodsumowanie:\n' + cvData.podsumowanie,
     ].filter(Boolean).join('\n');
     await fetch('/api/save-doc', {
       method: 'POST',

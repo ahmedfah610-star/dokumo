@@ -440,6 +440,7 @@ onAuthStateChanged(auth, async user => {
 });
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 // ── STATE ──
 window._allDocs = [];
@@ -575,14 +576,33 @@ function downloadDoc(docId, format) {
     triggerDl(URL.createObjectURL(blob), safeName + '.txt');
 
   } else if (format === 'pdf') {
-    var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    var win = window.open('', '_blank');
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>');
-    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
-    win.document.write('</head><body><pre>' + safe + '</pre>');
-    win.document.write('<script>window.onload=function(){window.print()}<\/script>');
-    win.document.write('</body></html>');
-    win.document.close();
+    if (text.indexOf('__CV_HTML__:') === 0) {
+      // CV with template — use html2pdf
+      var cvHtml = text.slice('__CV_HTML__:'.length);
+      var wrapper = document.createElement('div');
+      wrapper.innerHTML = cvHtml;
+      wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff';
+      document.body.appendChild(wrapper);
+      var opt = {
+        margin: 0,
+        filename: safeName + '.pdf',
+        image: { type: 'jpeg', quality: 0.97 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(wrapper).save().then(function() {
+        document.body.removeChild(wrapper);
+      });
+    } else {
+      var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      var win = window.open('', '_blank');
+      win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>');
+      win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
+      win.document.write('</head><body><pre>' + safe + '</pre>');
+      win.document.write('<script>window.onload=function(){window.print()}<\/script>');
+      win.document.write('</body></html>');
+      win.document.close();
+    }
 
   } else if (format === 'docx') {
     var rtf = buildRTF(text, doc.name || 'Dokument');
