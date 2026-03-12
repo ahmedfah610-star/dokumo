@@ -727,6 +727,14 @@ document.addEventListener("click", function(e){
   if (card) openDoc(card.dataset.doc);
 });
 </script>
+<script>
+(function(){try{
+  var uid=null;try{uid=JSON.parse(localStorage.getItem('dokumo_user'))?.email||null;}catch(e){}
+  fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({page:location.pathname,referrer:document.referrer,uid:uid})
+  }).catch(function(){});
+}catch(e){}})();
+</script>
 
 </body>
 </html>

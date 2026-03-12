@@ -74,6 +74,17 @@ export default async function handler(req, res) {
           email,
         });
         
+        // Zapisz płatność do kolekcji payments
+        await db.collection('payments').add({
+          uid: user.uid,
+          email,
+          plan,
+          stripeSessionId: session.id,
+          amount: session.amount_total || 0,
+          currency: session.currency || 'pln',
+          ts: Timestamp.now(),
+        });
+
         console.log(`Plan "${plan}" saved for uid: ${user.uid}`);
       } catch(e) {
         console.error('Firestore save failed:', e.message);
