@@ -1720,7 +1720,7 @@ const CV_LABELS = {
   pl: {
     experience: 'Doświadczenie zawodowe', education: 'Wykształcenie',
     skills: 'Umiejętności', languages: 'Języki', summary: 'Podsumowanie',
-    profile: 'Profil zawodowy', interests: 'Hobby i zainteresowania',
+    profile: 'Profil osobisty', interests: 'Hobby i zainteresowania',
     contact: 'Dane kontaktowe', present: 'Obecnie',
     consent: 'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.',
     // UI labels
@@ -2053,9 +2053,22 @@ function buildSectionBodyHTML(sec) {
           <div class="cvf-grid2">
             <div class="cvf-group cvf-full"><label>${L("company")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="${L('companyPlaceholder')}"></div>
             <div class="cvf-group cvf-full"><label>${L("jobTitle")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="${L('jobPlaceholder')}"></div>
-            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" oninput="cvData.doswiadczenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
-            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" oninput="cvData.doswiadczenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
-            <div class="cvf-group cvf-full"><label>${L("duties")}</label><textarea class="cvf-input" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="${L('duties')}...">${e.opis}</textarea></div>
+            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.doswiadczenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.doswiadczenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group cvf-full"><label>${L("duties")}</label>
+              <textarea class="cvf-input" id="dutiesTA-${i}" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="${L('duties')}...">${e.opis}</textarea>
+              <div style="margin-top:6px">
+                <button class="acc-add-more" onclick="useAIDuties(${i})" id="aiDutiesBtn-${i}" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border:none">✨ Użyj AI</button>
+              </div>
+              <div id="aiDutiesBox-${i}" style="display:none;margin-top:10px;padding:12px;background:#f8f7ff;border:1px solid #d3cffe;border-radius:10px">
+                <div style="font-size:0.78rem;color:#6c5ce7;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em">Sugestia AI</div>
+                <div id="aiDutiesText-${i}" style="font-size:0.9rem;color:#3d3c3a;line-height:1.6;white-space:pre-wrap"></div>
+                <div style="margin-top:10px;display:flex;gap:8px">
+                  <button class="acc-add-more" onclick="applyAIDuties(${i})" style="background:#6c5ce7;color:#fff;border:none">Zastosuj</button>
+                  <button class="acc-add-more" onclick="document.getElementById('aiDutiesBox-${i}').style.display='none'" style="background:#e8e5e0;color:#5a5754;border:none">Odrzuć</button>
+                </div>
+              </div>
+            </div>
           </div>
           ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})>${L("remove")}</button>` : ''}
         </div>`).join('')}
@@ -2079,8 +2092,8 @@ function buildSectionBodyHTML(sec) {
                 <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
               </div>
             </div>
-            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" oninput="cvData.wyksztalcenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
-            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" oninput="cvData.wyksztalcenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.wyksztalcenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.wyksztalcenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
           </div>
           ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})>${L("remove")}</button>` : ''}
         </div>`).join('')}
@@ -2436,6 +2449,45 @@ function applyAISummary() {
   var ta = document.getElementById('summaryTextarea');
   if (ta) ta.value = suggestion;
   document.getElementById('aiSuggestionBox').style.display = 'none';
+  updateCVPreview();
+}
+
+async function useAIDuties(i) {
+  var e = cvData.doswiadczenie[i];
+  var btn = document.getElementById('aiDutiesBtn-' + i);
+  if (!e) return;
+  var context = [
+    e.firma && ('Firma: ' + e.firma),
+    e.stanowisko && ('Stanowisko: ' + e.stanowisko),
+    e.opis && ('Obowiązki (wpisane przez użytkownika): ' + e.opis)
+  ].filter(Boolean).join('\n');
+  if (!context.trim()) { alert('Wpisz najpierw firmę, stanowisko lub obowiązki.'); return; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generuję...'; }
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    var langNames = {pl:'polskim',en:'English',de:'Deutsch',uk:'українською',es:'español',cs:'češtině',nl:'Nederlands'};
+    var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
+    var prompt = 'Na podstawie poniższych danych napisz profesjonalny opis obowiązków do CV. WAŻNE: korzystaj TYLKO z informacji które są podane poniżej — nie wymyślaj nowych obowiązków. Sformułuj je profesjonalnie jako 3-5 punktów lub zdań. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst:\n\n' + context;
+    var res = await fetch('/api/generate', { method:'POST', headers:headers, body:JSON.stringify({ prompt:prompt }) });
+    var data = await res.json();
+    var suggestion = (data.text || '').trim();
+    if (suggestion) {
+      document.getElementById('aiDutiesText-' + i).textContent = suggestion;
+      document.getElementById('aiDutiesBox-' + i).style.display = 'block';
+    } else { alert('Brak odpowiedzi od AI.'); }
+  } catch(err) { alert('Błąd generowania. Spróbuj ponownie.'); }
+  finally { if (btn) { btn.disabled = false; btn.textContent = '✨ Użyj AI'; } }
+}
+
+function applyAIDuties(i) {
+  var suggestion = document.getElementById('aiDutiesText-' + i).textContent;
+  if (!suggestion) return;
+  cvData.doswiadczenie[i].opis = suggestion;
+  var ta = document.getElementById('dutiesTA-' + i);
+  if (ta) ta.value = suggestion;
+  document.getElementById('aiDutiesBox-' + i).style.display = 'none';
   updateCVPreview();
 }
 
