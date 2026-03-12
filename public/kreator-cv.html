@@ -1105,8 +1105,9 @@ function updateChip(){
 }
 updateChip(); // od razu z localStorage
 
-// Po zalogowaniu Firebase — odśwież z API
+// Po zalogowaniu Firebase — odśwież z API + profil + wersja robocza
 window.addEventListener('_fbAuthReady', async ()=>{
+  updateCVNavProfile();
   if(!window._fbToken) return;
   try{
     const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
@@ -1117,8 +1118,115 @@ window.addEventListener('_fbAuthReady', async ()=>{
       updateChip();
     }
   }catch(e){}
-
+  // Załaduj wersję roboczą tylko jeśli nie ma danych z edycji
+  if(!window._cvEditLoaded) loadCVDraft();
 });
+</script>
+
+<script>
+// ── PROFIL W NAW ──────────────────────────────────────────
+function updateCVNavProfile() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) {}
+  var profile = document.getElementById('cvNavProfile');
+  if (!profile) return;
+  if (user) {
+    profile.style.display = 'flex';
+    var avatar = document.getElementById('cvNavAvatar');
+    var emailEl = document.getElementById('cvNavEmail');
+    if (emailEl) emailEl.textContent = user.email || '';
+    if (avatar) {
+      if (user.photo) {
+        avatar.innerHTML = '<img src="' + user.photo + '" alt="" style="width:100%;height:100%;object-fit:cover">';
+      } else {
+        avatar.textContent = (user.email || 'U')[0].toUpperCase();
+      }
+    }
+  } else {
+    profile.style.display = 'none';
+  }
+}
+
+function toggleCVNavDropdown(e) {
+  e.stopPropagation();
+  var dd = document.getElementById('cvNavDropdown');
+  if (dd) dd.classList.toggle('open');
+}
+
+document.addEventListener('click', function() {
+  var dd = document.getElementById('cvNavDropdown');
+  if (dd) dd.classList.remove('open');
+});
+
+function logoutUserCV() {
+  localStorage.removeItem('dokumo_user');
+  localStorage.removeItem('dokumo_sub');
+  window.location.href = 'index.html';
+}
+
+// ── WERSJA ROBOCZA – AUTOSAVE ─────────────────────────────
+var _draftTimer = null;
+
+function triggerDraftSave() {
+  if (!window._fbToken) return;
+  var badge = document.getElementById('cvDraftBadge');
+  if (badge) { badge.textContent = '💾 Zapisuję...'; badge.classList.add('visible'); }
+  clearTimeout(_draftTimer);
+  _draftTimer = setTimeout(saveCVDraft, 2500);
+}
+
+async function saveCVDraft() {
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    if (!token) return;
+    var cvPreviewEl = document.getElementById('cvPreviewInner');
+    var cvText = cvPreviewEl ? '__CV_HTML__:' + cvPreviewEl.outerHTML : '';
+    var resp = await fetch('/api/save-draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        text: cvText,
+        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null }))
+      })
+    });
+    if (resp.ok) {
+      var badge = document.getElementById('cvDraftBadge');
+      if (badge) {
+        badge.textContent = '✓ Zapisano';
+        clearTimeout(badge._hideTimer);
+        badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, 3000);
+      }
+    }
+  } catch(e) {}
+}
+
+async function loadCVDraft() {
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    if (!token) return;
+    var resp = await fetch('/api/load-draft', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!resp.ok) return;
+    var data = await resp.json();
+    if (!data.cvDataJson) return;
+    var loaded = JSON.parse(data.cvDataJson);
+    if (loaded.__template) cvTemplate = loaded.__template;
+    if (loaded.__color) cvCustomColor = loaded.__color;
+    delete loaded.__template; delete loaded.__color;
+    Object.assign(cvData, loaded);
+    if (typeof renderCVForm === 'function') renderCVForm();
+    if (typeof updateCVPreview === 'function') updateCVPreview();
+    if (typeof renderTplGrid === 'function') renderTplGrid();
+    var badge = document.getElementById('cvDraftBadge');
+    if (badge) {
+      badge.textContent = '↩ Wersja robocza przywrócona';
+      badge.classList.add('visible');
+      clearTimeout(badge._hideTimer);
+      badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, 5000);
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', function() { updateCVNavProfile(); });
 </script>
 
 <style>
@@ -1129,6 +1237,21 @@ window.addEventListener('_fbAuthReady', async ()=>{
 .cv-nav-badge.free{background:rgba(255,255,255,.05);color:rgba(240,237,232,.3);border:1px solid rgba(255,255,255,.07);}
 .cv-nav-logo{color:#f0ede8 !important;}
 .cv-nav-logo span{color:#4ade80 !important;}
+/* Profile widget in dark nav */
+.cv-nav-profile{position:relative;display:flex;align-items:center;margin-left:8px;}
+.cv-nav-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(240,237,232,.85);display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;cursor:pointer;border:1.5px solid rgba(255,255,255,.18);transition:all .2s;overflow:hidden;flex-shrink:0;}
+.cv-nav-avatar:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.2);}
+.cv-nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:999;overflow:hidden;border:1px solid rgba(0,0,0,.07);}
+.cv-nav-dropdown.open{display:block !important;}
+.cv-nav-drop-email{font-size:.72rem;color:#888;padding:10px 16px 6px;border-bottom:1px solid #f0f0f0;word-break:break-all;}
+.cv-nav-drop-link{display:block;width:100%;font-size:.83rem;color:#333;padding:9px 16px;text-decoration:none;background:none;border:none;text-align:left;cursor:pointer;transition:background .15s;}
+.cv-nav-drop-link:hover{background:#f5f5f5;color:#2563eb;}
+.cv-nav-drop-sep{height:1px;background:#f0f0f0;margin:4px 0;}
+.cv-nav-drop-logout{color:#e05c5c !important;}
+.cv-nav-drop-logout:hover{background:#fff5f5 !important;}
+/* Draft autosave badge */
+.cv-draft-badge{font-size:.62rem;color:rgba(240,237,232,.4);display:none;align-items:center;gap:4px;white-space:nowrap;margin-right:4px;}
+.cv-draft-badge.visible{display:flex;}
 </style>
 <div class="cv-app">
 
@@ -1150,6 +1273,18 @@ window.addEventListener('_fbAuthReady', async ()=>{
         <span class="cv-btn-icon">▾</span>
       </button>
       <span class="cv-nav-badge free" id="uPlanChip"></span>
+      <span class="cv-draft-badge" id="cvDraftBadge"></span>
+      <div class="cv-nav-profile" id="cvNavProfile" style="display:none">
+        <div class="cv-nav-avatar" id="cvNavAvatar" onclick="toggleCVNavDropdown(event)">?</div>
+        <div class="cv-nav-dropdown" id="cvNavDropdown">
+          <div class="cv-nav-drop-email" id="cvNavEmail"></div>
+          <a href="konto.html" class="cv-nav-drop-link">Moje konto</a>
+          <a href="moje-dokumenty.html" class="cv-nav-drop-link">Moje dokumenty</a>
+          <a href="subskrypcja.html" class="cv-nav-drop-link">Subskrypcja</a>
+          <div class="cv-nav-drop-sep"></div>
+          <button class="cv-nav-drop-link cv-nav-drop-logout" onclick="logoutUserCV()">Wyloguj się</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2503,6 +2638,7 @@ function updateCVPreview() {
     console.error('buildCVHTML error:', e);
     el.innerHTML = '<div style="padding:20px;color:red;font-size:12px">Błąd szablonu: ' + e.message + '</div>';
   }
+  if (typeof triggerDraftSave === 'function') triggerDraftSave();
 }
 
 // buildCVHTML → cv-templates.js
@@ -2572,6 +2708,7 @@ let cvCustomColor = null; // null = use template default
     delete loaded.__template;
     delete loaded.__color;
     Object.assign(cvData, loaded);
+    window._cvEditLoaded = true; // nie nadpisuj wersją roboczą
   } catch(e) {}
 })();
 
