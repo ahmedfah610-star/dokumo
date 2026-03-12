@@ -1748,6 +1748,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Finanse i Rachunkowość', langPlaceholder: 'Angielski',
     fillBelow: 'Uzupełnij dane poniżej',
     fullNamePlaceholder: 'Twoje imię i nazwisko',
+    autocorrectLabel: 'Używaj autokorekty',
   },
   en: {
     experience: 'Work Experience', education: 'Education',
@@ -1772,6 +1773,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Finance and Accounting', langPlaceholder: 'English',
     fillBelow: 'Fill in details below',
     fullNamePlaceholder: 'Your full name',
+    autocorrectLabel: 'Use spell check',
   },
   de: {
     experience: 'Berufserfahrung', education: 'Ausbildung',
@@ -1796,6 +1798,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Betriebswirtschaft', langPlaceholder: 'Englisch',
     fillBelow: 'Daten unten ausfüllen',
     fullNamePlaceholder: 'Vor- und Nachname',
+    autocorrectLabel: 'Rechtschreibprüfung',
   },
   uk: {
     experience: 'Досвід роботи', education: 'Освіта',
@@ -1820,6 +1823,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Фінанси та бухгалтерія', langPlaceholder: 'Англійська',
     fillBelow: 'Заповніть дані нижче',
     fullNamePlaceholder: 'Ваше ім\'я та прізвище',
+    autocorrectLabel: 'Перевірка орфографії',
   },
   es: {
     experience: 'Experiencia laboral', education: 'Educación',
@@ -1844,6 +1848,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Finanzas y Contabilidad', langPlaceholder: 'Inglés',
     fillBelow: 'Completa los datos abajo',
     fullNamePlaceholder: 'Tu nombre completo',
+    autocorrectLabel: 'Corrector ortográfico',
   },
   cs: {
     experience: 'Pracovní zkušenosti', education: 'Vzdělání',
@@ -1868,6 +1873,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Finance a účetnictví', langPlaceholder: 'Angličtina',
     fillBelow: 'Vyplňte údaje níže',
     fullNamePlaceholder: 'Vaše jméno a příjmení',
+    autocorrectLabel: 'Kontrola pravopisu',
   },
   nl: {
     experience: 'Werkervaring', education: 'Opleiding',
@@ -1892,6 +1898,7 @@ const CV_LABELS = {
     fieldPlaceholder: 'Financiën en Administratie', langPlaceholder: 'Engels',
     fillBelow: 'Vul gegevens in hieronder',
     fullNamePlaceholder: 'Uw volledige naam',
+    autocorrectLabel: 'Spellingcontrole',
   },
 };
 
@@ -1936,7 +1943,7 @@ function renderCVForm() {
       <div style="margin-top:8px;border-top:1px solid #e8e5e0;padding-top:8px">
         <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:0.82rem;color:#5a5754">
           <input type="checkbox" ${_cvAutocorrect ? 'checked' : ''} onchange="toggleAutocorrect(this.checked)" style="width:15px;height:15px;cursor:pointer;accent-color:#6c5ce7">
-          Używaj autokorekty
+          ${L('autocorrectLabel')}
         </label>
       </div>
     </div>
@@ -1993,6 +2000,7 @@ function renderCVForm() {
   if (cvOpenSections.has('umiejetnosci')) updateSkillChips();
   if (cvOpenSections.has('certyfikaty')) updateCertChips();
   if (cvOpenSections.has('zainteresowania')) updateInterestChips();
+  if (_cvAutocorrect) toggleAutocorrect(true);
 }
 
 function buildSectionFormHTML(sec) {
@@ -2111,12 +2119,7 @@ function buildSectionBodyHTML(sec) {
           <button class="acc-remove-x" onclick="removeCVLang(${i})" ${i===0&&cvData.jezyki.length===1?'style="visibility:hidden"':''}>✕</button>
         </div>`).join('')}
     </div>
-    <div style="position:relative;display:inline-block;margin-top:8px">
-      <button class="acc-add-more" id="addLangBtn" onclick="toggleLangDropdown()">${L("addLang")}</button>
-      <div id="langDropdown" style="display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#fff;border:1px solid #e0ddd8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:200;min-width:180px;padding:6px 0;max-height:240px;overflow-y:auto">
-        ${TOP_LANGS.map(l => `<div style="padding:8px 16px;cursor:pointer;font-size:0.9rem;color:#3d3c3a" onmousedown="event.preventDefault();addLangFromDd('${l}')" onmouseenter="this.style.background='#f5f3ef'" onmouseleave="this.style.background=''">${l}</div>`).join('')}
-      </div>
-    </div>`;
+    <button class="acc-add-more" id="addLangBtn" onclick="toggleLangDropdown(this)" style="margin-top:8px">${L("addLang")}</button>`;
 
   if (sec === 'certyfikaty') return `
     <input class="cvf-input" id="certInput" oninput="cvData.certyfikaty=this.value;updateCVPreview();updateCertChips()" value="${cvData.certyfikaty}" placeholder="np. Google Analytics, Scrum Master...">
@@ -2375,32 +2378,42 @@ function removeCVLang(i) {
   updateCVPreview();
 }
 
-function toggleLangDropdown() {
-  const dd = document.getElementById('langDropdown');
-  if (!dd) return;
-  const isOpen = dd.style.display !== 'none';
-  dd.style.display = isOpen ? 'none' : 'block';
-  if (!isOpen) {
-    setTimeout(function() { document.addEventListener('click', _closeLangDdOnce); }, 0);
-  }
-}
-function _closeLangDdOnce(e) {
-  document.removeEventListener('click', _closeLangDdOnce);
-  const dd = document.getElementById('langDropdown');
-  const btn = document.getElementById('addLangBtn');
-  if (dd && e.target !== btn && !dd.contains(e.target)) dd.style.display = 'none';
+function toggleLangDropdown(btn) {
+  var existing = document.getElementById('langDropdownPortal');
+  if (existing) { document.body.removeChild(existing); return; }
+  var rect = btn.getBoundingClientRect();
+  var dd = document.createElement('div');
+  dd.id = 'langDropdownPortal';
+  dd.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + (rect.bottom + 4) + 'px;background:#fff;border:1px solid #e0ddd8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:9999;min-width:180px;padding:6px 0;max-height:240px;overflow-y:auto';
+  TOP_LANGS.forEach(function(lang) {
+    var item = document.createElement('div');
+    item.textContent = lang;
+    item.style.cssText = 'padding:8px 16px;cursor:pointer;font-size:0.9rem;color:#3d3c3a;transition:background 0.1s';
+    item.onmouseenter = function() { this.style.background = '#f5f3ef'; };
+    item.onmouseleave = function() { this.style.background = ''; };
+    item.onmousedown = function(e) { e.preventDefault(); addLangFromDd(lang); };
+    dd.appendChild(item);
+  });
+  document.body.appendChild(dd);
+  setTimeout(function() {
+    document.addEventListener('click', function _closeLangPortal(e) {
+      document.removeEventListener('click', _closeLangPortal);
+      var portal = document.getElementById('langDropdownPortal');
+      if (portal) document.body.removeChild(portal);
+    });
+  }, 0);
 }
 function addLangFromDd(lang) {
-  const dd = document.getElementById('langDropdown');
-  if (dd) dd.style.display = 'none';
-  const existing = cvData.jezyki.find(function(l){ return l.jezyk.toLowerCase() === lang.toLowerCase(); });
+  var portal = document.getElementById('langDropdownPortal');
+  if (portal) document.body.removeChild(portal);
+  var existing = cvData.jezyki.find(function(l){ return l.jezyk.toLowerCase() === lang.toLowerCase(); });
   if (!existing) {
-    const empty = cvData.jezyki.find(function(l){ return !l.jezyk; });
+    var empty = cvData.jezyki.find(function(l){ return !l.jezyk; });
     if (empty) { empty.jezyk = lang; }
     else { cvData.jezyki.push({ jezyk: lang, poziom: 'B2' }); }
   }
-  const item = document.querySelector('.acc-item[data-section="jezyki"]');
-  if (item) { const body = item.querySelector('.acc-body'); if (body) body.innerHTML = buildSectionBodyHTML('jezyki'); }
+  var item = document.querySelector('.acc-item[data-section="jezyki"]');
+  if (item) { var body = item.querySelector('.acc-body'); if (body) body.innerHTML = buildSectionBodyHTML('jezyki'); }
   updateCVPreview();
 }
 
@@ -2416,10 +2429,13 @@ async function useAISummary() {
     var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
     var headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = 'Bearer ' + token;
+    var langNames = {pl:'polskim',en:'English',de:'Deutsch',uk:'українською',es:'español',cs:'češtině',nl:'Nederlands'};
+    var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
+    var aiPrompt = 'Popraw i ulepsz poniższy profil osobisty z CV. Odpowiedz TYLKO ulepszoną wersją tekstu w języku ' + promptLang + ', bez żadnych komentarzy ani dodatkowych wyjaśnień:\n\n' + text;
     var res = await fetch('/api/generate', {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify({ docType: 'cv_summary_improve', lang: cvCurrentLang || 'pl', values: { text: text } })
+      body: JSON.stringify({ prompt: aiPrompt })
     });
     var data = await res.json();
     var suggestion = data.text || data.result || data.content || '';

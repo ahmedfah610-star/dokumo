@@ -581,7 +581,7 @@ function downloadDoc(docId, format) {
       var cvHtml = text.slice('__CV_HTML__:'.length);
       var wrapper = document.createElement('div');
       wrapper.innerHTML = cvHtml;
-      wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff';
+      wrapper.style.cssText = 'position:absolute;visibility:hidden;top:0;left:0;width:210mm;background:#fff;z-index:-1';
       document.body.appendChild(wrapper);
       var opt = {
         margin: 0,
