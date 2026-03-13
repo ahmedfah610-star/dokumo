@@ -3812,7 +3812,7 @@ async function downloadCV() {
     setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
 
   } catch (err) {
-    console.error('PDF error:', err);
+    console.error('PDF API error:', err.message);
     // Fallback: html2pdf ze świeżym HTML — cover ukrywa przed userem, temp dostępny dla html2canvas
     try {
       if (btn) { btn.innerHTML = '⏳'; }
@@ -3835,7 +3835,8 @@ async function downloadCV() {
       document.body.removeChild(temp);
       document.body.removeChild(cover);
     } catch(e2) {
-      alert('Błąd generowania PDF. Spróbuj ponownie.');
+      console.error('PDF fallback error:', e2.message);
+      alert('Błąd PDF: ' + (err.message || '?') + ' | fallback: ' + (e2.message || '?'));
     }
   } finally {
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }

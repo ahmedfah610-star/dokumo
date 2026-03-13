@@ -31,9 +31,10 @@ export default async function handler(req, res) {
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=595">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { width: 595px; background: #fff; }
+  body { width: 595px; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 </style>
 </head>
 <body>${html}</body>
@@ -42,29 +43,18 @@ export default async function handler(req, res) {
   let browser;
   try {
     browser = await puppeteer.launch({
-      args: [
-        ...chromium.args,
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--force-color-profiles=srgb',
-      ],
+      args: chromium.args,
       defaultViewport: { width: 595, height: 842 },
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
     });
 
     const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: 'networkidle0', timeout: 15000 });
-    await new Promise(r => setTimeout(r, 300));
+    await page.emulateMediaType('screen');
+    await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 10000 });
 
     const pdf = await page.pdf({
-      width: '595px',
-      height: '842px',
+      format: 'A4',
       printBackground: true,
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     });
