@@ -3333,7 +3333,11 @@ async function downloadCV() {
       body: JSON.stringify({ html: el.innerHTML, filename: safeName }),
     });
 
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    if (!resp.ok) {
+      let errMsg = 'HTTP ' + resp.status;
+      try { const j = await resp.json(); errMsg = j.error || errMsg; } catch(e) {}
+      throw new Error(errMsg);
+    }
 
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);

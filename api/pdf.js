@@ -8,6 +8,13 @@ if (!getApps().length) {
 }
 const auth = getAuth();
 
+export const config = {
+  api: {
+    bodyParser: { sizeLimit: '10mb' },
+    responseLimit: '10mb',
+  },
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -26,7 +33,7 @@ export default async function handler(req, res) {
 <meta charset="utf-8">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { width: 595px; }
+  body { width: 595px; background: #fff; }
 </style>
 </head>
 <body>${html}</body>
@@ -38,11 +45,11 @@ export default async function handler(req, res) {
       args: chromium.args,
       defaultViewport: { width: 595, height: 842 },
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: true,
     });
 
     const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: 'networkidle0', timeout: 8000 });
+    await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 8000 });
 
     const pdf = await page.pdf({
       width: '595px',
@@ -56,8 +63,8 @@ export default async function handler(req, res) {
     res.setHeader('Content-Length', pdf.length);
     return res.status(200).send(Buffer.from(pdf));
   } catch (err) {
-    console.error('PDF error:', err);
-    return res.status(500).json({ error: 'Błąd generowania PDF' });
+    console.error('PDF error:', err.message);
+    return res.status(500).json({ error: err.message || 'Błąd generowania PDF' });
   } finally {
     if (browser) await browser.close();
   }
