@@ -3561,10 +3561,7 @@ function updateCVPreview() {
 // buildCVHTML → cv-templates.js
 
 function downloadCV() {
-  const sub=(()=>{try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}})();
-  const hasSub=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-  const allowed=hasSub&&['kariera','promax','pro'].includes(sub.plan);
-  if(!allowed){sessionStorage.setItem('dokumo_after_sub',window.location.href);window.location.href='subskrypcja.html';return;}
+  if (!window.checkPlanAccess(['kariera','promax','pro'])) return;
   const el = document.getElementById('cvPreviewInner');
   const opt = {
     margin: 0,
@@ -3574,15 +3571,6 @@ function downloadCV() {
     jsPDF: { unit:'px', format:[595,842], orientation:'portrait' }
   };
   html2pdf().set(opt).from(el).save();
-}
-
-function downloadCV() {
-  // Otwórz Stripe w nowej karcie z parametrem success
-  const successUrl = encodeURIComponent(window.location.origin + window.location.pathname + '?cv=paid');
-  window.open(CV_STRIPE, '_blank');
-  // Po 3s pokaż przycisk pobierania (użytkownik wraca po płatności)
-  document.getElementById('cvPayBtn').style.display = 'none';
-  document.getElementById('cvAfterPay').style.display = 'block';
 }
 
 function confirmAndDownload() {
@@ -3931,6 +3919,6 @@ async function saveCVToMyDocs(fullName) {
   });
 })();
 </script>
-
+<script src="plan-guard.js"></script>
 </body>
 </html>

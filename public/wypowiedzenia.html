@@ -571,12 +571,7 @@ function wizBack() {
 }
 
 function checkAccess() {
-  var sub; try { sub = JSON.parse(localStorage.getItem("dokumo_sub")); } catch(e) { sub = null; }
-  var ok = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date() && ["kariera","promax","pro"].indexOf(sub.plan) >= 0;
-  if (!ok) { sessionStorage.setItem("dokumo_after_sub", window.location.href); window.location.href = "subskrypcja.html"; return false; }
-  var user; try { user = JSON.parse(localStorage.getItem("dokumo_user")); } catch(e) { user = null; }
-  if (!user) { window.location.href = "konto.html"; return false; }
-  return true;
+  return window.checkPlanAccess(['kariera','promax','pro']);
 }
 
 async function doGenerate() {
@@ -641,6 +636,6 @@ document.addEventListener("click", function(e){
 });
 </script>
 
-
+<script src="plan-guard.js"></script>
 </body>
 </html>

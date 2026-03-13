@@ -856,11 +856,7 @@ function closeGen() {
 }
 
 async function doGenerate() {
-  var sub; try { sub = JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { sub = null; }
-  var ok = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date() && ['biznes','promax','pro'].indexOf(sub.plan) >= 0;
-  if (!ok) { sessionStorage.setItem('dokumo_after_sub', window.location.href); window.location.href = 'subskrypcja.html'; return; }
-  var user; try { user = JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { user = null; }
-  if (!user) { window.location.href = 'konto.html'; return; }
+  if (!window.checkPlanAccess(['biznes','promax','pro'])) return;
 
   document.getElementById('genForm').style.display = 'none';
   document.getElementById('genLoading').style.display = 'block';
@@ -914,6 +910,6 @@ function downloadResultAs(format) {
 
 document.getElementById('genOverlay').addEventListener('click', function(e){ if(e.target===this) closeGen(); });
 </script>
-
+<script src="plan-guard.js"></script>
 </body>
 </html>
