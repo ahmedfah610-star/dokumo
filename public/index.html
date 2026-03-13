@@ -2,9 +2,20 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
+<!-- Google Analytics — ładowane tylko po akceptacji cookies -->
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+function loadGA(){
+  if(document.getElementById('gaScript')) return;
+  var s=document.createElement('script');
+  s.id='gaScript';s.async=true;
+  s.src='https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7';
+  document.head.appendChild(s);
+  gtag('js',new Date());gtag('config','G-61ETEPHJB7');
+}
+if(localStorage.getItem('dokumo_cookies')===('accepted')) loadGA();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dokumo – Dokumenty w 60 sekund</title>
 <meta name="description" content="Generuj profesjonalne dokumenty prawne z pomocą AI w 60 sekund. Wypowiedzenia, umowy, CV, regulaminy i więcej — gotowe do wydruku, zgodne z polskim prawem.">
@@ -374,9 +385,8 @@ body { background:#f5f3ef; }
     </div>
     <p class="text-[13px] text-gray-400">© 2026 Dokumo. Wszelkie prawa zastrzeżone.</p>
     <div class="flex gap-6">
-      <a href="#" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Regulamin</a>
-      <a href="#" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Prywatność</a>
-      <a href="#" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Kontakt</a>
+      <a href="prywatnosc.html" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Prywatność i Cookies</a>
+      <a href="mailto:AHMEDFAH610@GMAIL.COM" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Kontakt</a>
     </div>
   </div>
 </footer>
@@ -454,27 +464,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- FOOTER -->
-<footer style="background:#1a1714;color:rgba(255,255,255,.45);text-align:center;padding:22px 16px;font-size:0.78rem;margin-top:40px;">
-  © 2025 Dokumo &nbsp;·&nbsp;
-  <a href="prywatnosc.html" style="color:rgba(255,255,255,.6);text-decoration:none;">Prywatność i Cookies</a>
-  &nbsp;·&nbsp;
-  <a href="mailto:AHMEDFAH610@GMAIL.COM" style="color:rgba(255,255,255,.6);text-decoration:none;">Kontakt</a>
-</footer>
-
 <!-- COOKIE BANNER -->
-<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1714;color:#d6d2cc;font-size:0.82rem;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:9999;flex-wrap:wrap;">
-  <span>Ta strona używa niezbędnych plików cookies do prawidłowego działania serwisu. Korzystanie ze strony oznacza zgodę na ich użycie. <a href="prywatnosc.html" style="color:#7ec8a0;text-decoration:underline;">Dowiedz się więcej</a>.</span>
-  <button onclick="acceptCookies()" style="background:#2d6b52;color:#fff;border:none;padding:9px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:6px;">Akceptuję</button>
+<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1714;color:#d6d2cc;font-size:0.82rem;padding:14px 20px;z-index:9999;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
+  <span>Używamy plików cookies do analizy ruchu i poprawy serwisu. <a href="prywatnosc.html" style="color:#7ec8a0;text-decoration:underline;">Dowiedz się więcej</a>.</span>
+  <div style="display:flex;gap:8px;margin-top:8px;flex-shrink:0;">
+    <button onclick="acceptCookies()" style="background:#2d6b52;color:#fff;border:none;padding:9px 20px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:6px;">Akceptuję</button>
+    <button onclick="rejectCookies()" style="background:transparent;color:#d6d2cc;border:1px solid rgba(255,255,255,.25);padding:9px 16px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:6px;">Odrzuć</button>
+  </div>
 </div>
 <script>
 (function(){
-  if (!localStorage.getItem('dokumo_cookies_ok')) {
-    document.getElementById('cookieBanner').style.display = 'flex';
-  }
+  var c = localStorage.getItem('dokumo_cookies');
+  if (!c) document.getElementById('cookieBanner').style.display = 'flex';
 })();
 function acceptCookies() {
-  localStorage.setItem('dokumo_cookies_ok', '1');
+  localStorage.setItem('dokumo_cookies', 'accepted');
+  document.getElementById('cookieBanner').style.display = 'none';
+  loadGA();
+}
+function rejectCookies() {
+  localStorage.setItem('dokumo_cookies', 'rejected');
   document.getElementById('cookieBanner').style.display = 'none';
 }
 </script>
