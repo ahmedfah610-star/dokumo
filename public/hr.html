@@ -726,9 +726,9 @@ function downloadResultAs(format) {
     if (!win) { alert('Zezwól na otwieranie okien dla tej strony.'); return; }
     win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>');
     win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
-    win.document.write('<style>*{box-sizing:border-box}body{margin:0;padding:2.5cm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;width:794px}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>');
+    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
     win.document.write('</head><body><pre>'+safe+'</pre>');
-    win.document.write('<script>window.onload=function(){html2pdf().set({margin:0,filename:"'+safeName+'.pdf",image:{type:"jpeg",quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body).save().then(function(){setTimeout(function(){window.close()},800)});}<\/script>');
+    win.document.write('<script>window.onload=function(){html2pdf().set({margin:25,filename:"'+safeName+'.pdf",image:{type:"jpeg",quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/script>');
     win.document.write('</body></html>'); win.document.close();
   } else if (format === 'rtf') {
     var esc = function(s){ return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';}); };
