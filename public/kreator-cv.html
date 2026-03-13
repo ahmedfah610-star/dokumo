@@ -1736,7 +1736,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .cv-nav-profile{position:relative;display:flex;align-items:center;margin-left:8px;}
 .cv-nav-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(240,237,232,.85);display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;cursor:pointer;border:1.5px solid rgba(255,255,255,.18);transition:all .2s;overflow:hidden;flex-shrink:0;}
 .cv-nav-avatar:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.2);}
-.cv-nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;min-width:220px;max-width:calc(100vw - 24px);box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:999;border:1px solid rgba(0,0,0,.07);}
+.cv-nav-dropdown{display:none;position:fixed;top:62px;right:12px;background:#fff;border-radius:12px;min-width:220px;max-width:calc(100vw - 24px);box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:9999;border:1px solid rgba(0,0,0,.07);}
 .cv-nav-dropdown.open{display:block !important;}
 .cv-nav-drop-email{font-size:.72rem;color:#888;padding:10px 16px 6px;border-bottom:1px solid #f0f0f0;word-break:break-all;}
 .cv-nav-drop-link{display:block;width:100%;font-size:.83rem;color:#333;padding:9px 16px;text-decoration:none;background:none;border:none;text-align:left;cursor:pointer;transition:background .15s;}
@@ -3400,10 +3400,13 @@ async function downloadCV() {
   // Zapisz CV do Moje Dokumenty
   saveCVToMyDocs(fullName);
 
-  // Pokaż spinner
-  const btn = document.querySelector('.btn-pay-subtle, .btn-download-subtle');
+  // Pokaż spinner — na mobile użyj zakładki PDF, na desktop przycisku pay-bar
+  const isMobileView = window.innerWidth < 768;
+  const btn = isMobileView
+    ? document.getElementById('tabPdf')
+    : document.querySelector('.btn-pay-subtle, .btn-download-subtle');
   const origText = btn ? btn.innerHTML : '';
-  if (btn) { btn.innerHTML = '⏳ Generowanie...'; btn.disabled = true; }
+  if (btn) { btn.innerHTML = '⏳'; btn.disabled = true; }
 
   try {
     for (var i = 0; i < 30 && !window._fbReady; i++) {
@@ -3436,7 +3439,7 @@ async function downloadCV() {
     console.error('PDF error:', err);
     // Fallback: generuj PDF po stronie klienta przez html2pdf.js
     try {
-      if (btn) { btn.innerHTML = '⏳ Generowanie (lokalnie)...'; }
+      if (btn) { btn.innerHTML = '⏳'; }
       const opt = {
         margin: 0,
         filename: safeName + '.pdf',
