@@ -3781,8 +3781,10 @@ async function downloadCV() {
 
   saveCVToMyDocs(fullName);
 
-  // html2canvas nie działa z position:fixed — używamy absolute na (0,0)
+  // body { overflow:hidden } przycina element — tymczasowo wyłączamy
   window.scrollTo(0, 0);
+  document.body.style.overflow = 'visible';
+  document.documentElement.style.overflow = 'visible';
   const temp = document.createElement('div');
   temp.style.cssText = 'position:absolute;top:0;left:0;width:595px;z-index:99999;background:#fff;';
   temp.innerHTML = cvHtml;
@@ -3810,6 +3812,8 @@ async function downloadCV() {
     alert('Błąd: ' + e.message);
   } finally {
     document.body.removeChild(temp);
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
   }
 }
