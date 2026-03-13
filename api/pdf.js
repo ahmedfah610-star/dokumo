@@ -42,14 +42,25 @@ export default async function handler(req, res) {
   let browser;
   try {
     browser = await puppeteer.launch({
-      args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      args: [
+        ...chromium.args,
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--force-color-profiles=srgb',
+      ],
       defaultViewport: { width: 595, height: 842 },
       executablePath: await chromium.executablePath(),
-      headless: true,
+      headless: chromium.headless,
     });
 
     const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 8000 });
+    await page.setContent(fullHtml, { waitUntil: 'networkidle0', timeout: 15000 });
+    await new Promise(r => setTimeout(r, 300));
 
     const pdf = await page.pdf({
       width: '595px',

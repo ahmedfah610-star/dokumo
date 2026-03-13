@@ -3813,14 +3813,17 @@ async function downloadCV() {
 
   } catch (err) {
     console.error('PDF error:', err);
-    // Fallback: html2pdf ze świeżym HTML w tymczasowym kontenerze 595px
+    // Fallback: html2pdf ze świeżym HTML — cover ukrywa przed userem, temp dostępny dla html2canvas
     try {
       if (btn) { btn.innerHTML = '⏳'; }
+      const cover = document.createElement('div');
+      cover.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:99999;pointer-events:none;';
+      document.body.appendChild(cover);
       const temp = document.createElement('div');
-      temp.style.cssText = 'position:fixed;top:0;left:0;width:595px;background:#fff;z-index:-9999;pointer-events:none;';
+      temp.style.cssText = 'position:fixed;top:0;left:0;width:595px;background:#fff;z-index:1;';
       temp.innerHTML = cvHtml;
       document.body.appendChild(temp);
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise(r => setTimeout(r, 100));
       const opt = {
         margin: 0,
         filename: safeName + '.pdf',
@@ -3830,6 +3833,7 @@ async function downloadCV() {
       };
       await html2pdf().set(opt).from(temp).save();
       document.body.removeChild(temp);
+      document.body.removeChild(cover);
     } catch(e2) {
       alert('Błąd generowania PDF. Spróbuj ponownie.');
     }
