@@ -1767,6 +1767,9 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
         ↺ <span class="cv-btn-label">Zacznij od nowa</span>
       </button>
+      <button class="btn-choose-tpl cv-nav-dl-btn" id="cvNavDlBtn" onclick="downloadCV()" title="Pobierz PDF">
+        ⬇ <span class="cv-btn-label">Pobierz PDF</span>
+      </button>
       <span class="cv-nav-badge free" id="uPlanChip"></span>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
       <div class="cv-nav-profile" id="cvNavProfile" style="display:none">
@@ -1844,12 +1847,6 @@ document.addEventListener('DOMContentLoaded', function() {
   <button id="cvImportErrorClose" style="display:none;margin-top:4px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 20px;border-radius:10px;cursor:pointer;font-size:.8rem;" onclick="document.getElementById('cvImportOverlay').style.display='none'">Zamknij</button>
 </div>
 
-<!-- PAY BAR -->
-<div class="cv-pay-bar" id="cvPayBar">
-  <div id="cvPayBtnWrap">
-    <button class="btn-pay-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>
-  </div>
-</div>
 
 <script>
 // ======================================================
@@ -1994,7 +1991,6 @@ function switchCVTab(tab) {
   const previewCol = document.getElementById('cvPreviewCol');
   const tabForm = document.getElementById('tabForm');
   const tabPreview = document.getElementById('tabPreview');
-  const payBar = document.getElementById('cvPayBar');
   const isMobile = window.innerWidth < 768;
 
   if (!isMobile) return;
@@ -2004,7 +2000,6 @@ function switchCVTab(tab) {
     previewCol.style.display = 'none';
     tabForm.classList.add('active');
     tabPreview.classList.remove('active');
-    // pay bar stays at bottom:60px (above tabs) via CSS
   } else {
     formCol.style.display = 'none';
     previewCol.style.display = 'flex';
@@ -3365,17 +3360,6 @@ function pickTemplate(id) {
 renderCVForm();
 updateCVPreview();
 
-// Check if paid
-if (new URLSearchParams(window.location.search).get('cv') === 'paid') {
-  document.getElementById('cvPayBtnWrap').innerHTML =
-    '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
-}
-
-function downloadCV() {
-  window.open(CV_STRIPE, '_blank');
-  document.getElementById('cvPayBtnWrap').innerHTML =
-    '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
-}
 
 async function downloadCV() {
   // Sprawdź logowanie
@@ -3400,11 +3384,11 @@ async function downloadCV() {
   // Zapisz CV do Moje Dokumenty
   saveCVToMyDocs(fullName);
 
-  // Pokaż spinner — na mobile użyj zakładki PDF, na desktop przycisku pay-bar
+  // Pokaż spinner — na mobile użyj zakładki PDF, na desktop przycisku nav
   const isMobileView = window.innerWidth < 768;
   const btn = isMobileView
     ? document.getElementById('tabPdf')
-    : document.querySelector('.btn-pay-subtle, .btn-download-subtle');
+    : document.getElementById('cvNavDlBtn');
   const origText = btn ? btn.innerHTML : '';
   if (btn) { btn.innerHTML = '⏳'; btn.disabled = true; }
 
