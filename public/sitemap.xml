@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dokumo.vercel.app/</loc>
+    <loc>https://dokumoflow.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/kariera.html</loc>
+    <loc>https://dokumoflow.com/kariera.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/wypowiedzenia.html</loc>
+    <loc>https://dokumoflow.com/wypowiedzenia.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/dokumenty.html</loc>
+    <loc>https://dokumoflow.com/dokumenty.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/hr.html</loc>
+    <loc>https://dokumoflow.com/hr.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/admin.html</loc>
+    <loc>https://dokumoflow.com/admin.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/ecommerce.html</loc>
+    <loc>https://dokumoflow.com/ecommerce.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/subskrypcja.html</loc>
+    <loc>https://dokumoflow.com/subskrypcja.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/kreator-cv.html</loc>
+    <loc>https://dokumoflow.com/kreator-cv.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/kalkulator-wynagrodzen.html</loc>
+    <loc>https://dokumoflow.com/kalkulator-wynagrodzen.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dokumo.vercel.app/biznes.html</loc>
+    <loc>https://dokumoflow.com/biznes.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

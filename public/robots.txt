@@ -8,4 +8,4 @@ Disallow: /moje-dokumenty.html
 # API
 Disallow: /api/
 
-Sitemap: https://dokumo.vercel.app/sitemap.xml
+Sitemap: https://dokumoflow.com/sitemap.xml
