@@ -3770,9 +3770,6 @@ async function downloadCV() {
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
 
-  let cvHtml;
-  try { cvHtml = buildCVHTML(cvTemplate); } catch(e) { alert('Błąd szablonu CV'); return; }
-
   const btn = window.innerWidth < 768
     ? document.getElementById('tabPdf')
     : document.getElementById('cvNavDlBtn');
@@ -3781,27 +3778,32 @@ async function downloadCV() {
 
   saveCVToMyDocs(fullName);
 
-  const win = window.open('', '_blank');
-  if (!win) {
-    alert('Zezwól na wyskakujące okna w przeglądarce i spróbuj ponownie.');
-    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-    return;
-  }
+  const el = document.getElementById('cvPreviewInner');
+  if (!el) { if (btn) { btn.innerHTML = origText; btn.disabled = false; } return; }
 
-  win.document.write(`<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>${safeName}</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { width:595px; background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  @page { size:595px 842px; margin:0; }
-</style></head>
-<body>${cvHtml}</body></html>`);
-  win.document.close();
-  win.onload = function() {
-    win.focus();
-    win.print();
-  };
-  if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+  // Resetuj zoom/transform żeby html2canvas uchwycił pełne 595px
+  const savedZoom = el.style.zoom;
+  const savedTransform = el.style.transform;
+  el.style.zoom = '1';
+  el.style.transform = 'none';
+
+  try {
+    await new Promise(r => setTimeout(r, 100));
+    const opt = {
+      margin: 0,
+      filename: safeName + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+      jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
+    };
+    await html2pdf().set(opt).from(el).save();
+  } catch(e) {
+    alert('Błąd: ' + e.message);
+  } finally {
+    el.style.zoom = savedZoom;
+    el.style.transform = savedTransform;
+    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+  }
 }
 
 async function saveCVToMyDocs(fullName) {
