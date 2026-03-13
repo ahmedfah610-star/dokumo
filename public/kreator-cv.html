@@ -3781,41 +3781,27 @@ async function downloadCV() {
 
   saveCVToMyDocs(fullName);
 
-  // body { overflow:hidden } przycina element — tymczasowo wyłączamy
-  window.scrollTo(0, 0);
-  document.body.style.overflow = 'visible';
-  document.documentElement.style.overflow = 'visible';
-  const temp = document.createElement('div');
-  temp.style.cssText = 'position:absolute;top:0;left:0;width:595px;z-index:99999;background:#fff;';
-  temp.innerHTML = cvHtml;
-  document.body.appendChild(temp);
-
-  try {
-    await new Promise(r => setTimeout(r, 200));
-    const opt = {
-      margin: 0,
-      filename: safeName + '.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 595,
-      },
-      jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
-    };
-    await html2pdf().set(opt).from(temp).save();
-  } catch(e) {
-    alert('Błąd: ' + e.message);
-  } finally {
-    document.body.removeChild(temp);
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Zezwól na wyskakujące okna w przeglądarce i spróbuj ponownie.');
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    return;
   }
+
+  win.document.write(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${safeName}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:595px; background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  @page { size:595px 842px; margin:0; }
+</style></head>
+<body>${cvHtml}</body></html>`);
+  win.document.close();
+  win.onload = function() {
+    win.focus();
+    win.print();
+  };
+  if (btn) { btn.innerHTML = origText; btn.disabled = false; }
 }
 
 async function saveCVToMyDocs(fullName) {
