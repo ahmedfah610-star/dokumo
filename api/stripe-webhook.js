@@ -64,7 +64,8 @@ export default async function handler(req, res) {
       try {
         const auth = getAuth();
         const user = await auth.getUserByEmail(email);
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        const days = plan === 'kariera' ? 7 : 30;
+        const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
         
         await db.collection('users').doc(user.uid).collection('subscription').doc('current').set({
           plan,
