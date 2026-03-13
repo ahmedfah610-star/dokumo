@@ -1434,9 +1434,10 @@ function downloadAs(docId, format) {
     const win = window.open('', '_blank');
     const safeText = d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + d.name + '</title>');
-    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
+    win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
+    win.document.write('<style>*{box-sizing:border-box}body{margin:0;padding:2.5cm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;width:794px}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>');
     win.document.write('</head><body><pre>' + safeText + '</pre>');
-    win.document.write('<scr' + 'ipt>window.onload=function(){window.print()}<\/scr' + 'ipt>');
+    win.document.write('<scr'+'ipt>window.onload=function(){html2pdf().set({margin:0,filename:"'+safeName+'.pdf",image:{type:"jpeg",quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body).save().then(function(){setTimeout(function(){window.close()},800)});}<\/scr'+'ipt>');
     win.document.write('</body></html>');
     win.document.close();
 
