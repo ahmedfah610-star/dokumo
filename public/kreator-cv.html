@@ -2724,7 +2724,7 @@ function buildSectionBodyHTML(sec) {
               </div>
             </div>
           </div>
-          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})>${L("remove")}</button>` : ''}
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVExp(${i})">${L("remove")}</button>` : ''}
         </div>`).join('')}
     </div>
     <button class="acc-add-more" onclick="addCVExp()">${L("addMore")}</button>`;
@@ -2750,7 +2750,7 @@ function buildSectionBodyHTML(sec) {
             <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.wyksztalcenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
             <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.wyksztalcenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
           </div>
-          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})>${L("remove")}</button>` : ''}
+          ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">${L("remove")}</button>` : ''}
         </div>`).join('')}
     </div>
     <button class="acc-add-more" onclick="addCVEdu()">${L("addMore")}</button>`;
