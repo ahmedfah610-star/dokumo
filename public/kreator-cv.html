@@ -3815,19 +3815,24 @@ async function downloadCV() {
     // Fallback: generuj PDF po stronie klienta przez html2pdf.js
     try {
       if (btn) { btn.innerHTML = '⏳'; }
-      const clone = document.createElement('div');
-      clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;background:#fff;';
-      clone.innerHTML = el.innerHTML;
-      document.body.appendChild(clone);
+      // Tymczasowo resetuj mobilny zoom/transform żeby html2canvas renderował pełną stronę
+      const savedTransform = el.style.transform;
+      const savedZoom = el.style.zoom;
+      const savedWidth = el.style.width;
+      el.style.transform = 'none';
+      el.style.zoom = '1';
+      el.style.width = '595px';
       const opt = {
         margin: 0,
         filename: safeName + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, width: 595 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
         jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
       };
-      await html2pdf().set(opt).from(clone).save();
-      document.body.removeChild(clone);
+      await html2pdf().set(opt).from(el).save();
+      el.style.transform = savedTransform;
+      el.style.zoom = savedZoom;
+      el.style.width = savedWidth;
     } catch(e2) {
       alert('Błąd generowania PDF. Spróbuj ponownie.');
     }
