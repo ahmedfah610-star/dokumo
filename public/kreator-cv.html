@@ -3770,12 +3770,10 @@ async function downloadCV() {
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
 
-  // Generuj świeży HTML CV — niezależny od mobilnego skalowania DOM
   let cvHtml;
   try { cvHtml = buildCVHTML(cvTemplate); } catch(e) { alert('Błąd szablonu CV'); return; }
 
-  const isMobileView = window.innerWidth < 768;
-  const btn = isMobileView
+  const btn = window.innerWidth < 768
     ? document.getElementById('tabPdf')
     : document.getElementById('cvNavDlBtn');
   const origText = btn ? btn.innerHTML : '';
@@ -3783,62 +3781,35 @@ async function downloadCV() {
 
   saveCVToMyDocs(fullName);
 
+  // Renderuj CV w widocznym kontenerze 595px — html2canvas wymaga widocznego elementu
+  const temp = document.createElement('div');
+  temp.style.cssText = 'position:fixed;top:0;left:0;width:595px;height:842px;overflow:hidden;z-index:99999;background:#fff;';
+  temp.innerHTML = cvHtml;
+  document.body.appendChild(temp);
+
   try {
-    for (var i = 0; i < 30 && !window._fbReady; i++) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-    const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
-    if (!token) throw new Error('Brak tokenu');
-
-    const resp = await fetch('/api/pdf', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html: cvHtml, filename: safeName }),
-    });
-
-    if (!resp.ok) {
-      let errMsg = 'HTTP ' + resp.status;
-      try { const j = await resp.json(); errMsg = j.error || errMsg; } catch(e) {}
-      throw new Error(errMsg);
-    }
-
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = safeName + '.pdf';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-
-  } catch (err) {
-    console.error('PDF API error:', err.message);
-    // Fallback: html2pdf ze świeżym HTML — cover ukrywa przed userem, temp dostępny dla html2canvas
-    try {
-      if (btn) { btn.innerHTML = '⏳'; }
-      const cover = document.createElement('div');
-      cover.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:99999;pointer-events:none;';
-      document.body.appendChild(cover);
-      const temp = document.createElement('div');
-      temp.style.cssText = 'position:fixed;top:0;left:0;width:595px;background:#fff;z-index:1;';
-      temp.innerHTML = cvHtml;
-      document.body.appendChild(temp);
-      await new Promise(r => setTimeout(r, 100));
-      const opt = {
-        margin: 0,
-        filename: safeName + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 595 },
-        jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
-      };
-      await html2pdf().set(opt).from(temp).save();
-      document.body.removeChild(temp);
-      document.body.removeChild(cover);
-    } catch(e2) {
-      console.error('PDF fallback error:', e2.message);
-      alert('Błąd PDF: ' + (err.message || '?') + ' | fallback: ' + (e2.message || '?'));
-    }
+    await new Promise(r => setTimeout(r, 150));
+    const opt = {
+      margin: 0,
+      filename: safeName + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 595,
+        windowHeight: 842,
+      },
+      jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
+    };
+    await html2pdf().set(opt).from(temp).save();
+  } catch(e) {
+    alert('Błąd generowania PDF: ' + e.message);
   } finally {
+    document.body.removeChild(temp);
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
   }
 }
