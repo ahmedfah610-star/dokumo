@@ -471,7 +471,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signO
 import { getFirestore, doc, setDoc, getDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const __c=await(await fetch('/api/firebase-config')).json();const app = initializeApp(__c);
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const app = initializeApp(__c);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();

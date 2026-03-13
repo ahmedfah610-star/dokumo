@@ -51,7 +51,7 @@ body { background:#f5f3ef; }
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const __c=await(await fetch('/api/firebase-config')).json();const auth = getAuth(initializeApp(__c));
+  const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const auth = getAuth(initializeApp(__c));
   onAuthStateChanged(auth, user => {
     if (user) {
       localStorage.setItem('dokumo_user', JSON.stringify({
