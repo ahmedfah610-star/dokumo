@@ -5,7 +5,7 @@
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Kreator CV online – stwórz profesjonalne CV w kilka minut | Dokumo</title>
 <meta name="description" content="Stwórz profesjonalne CV online w kilka minut. Wybierz szablon, wypełnij formularz i pobierz gotowe CV w PDF. Kreator CV wspierany przez AI.">
 <meta name="keywords" content="kreator CV online, jak napisać CV, wzór CV, szablon CV, CV po polsku, CV dla studenta, CV bez doświadczenia">
@@ -1614,7 +1614,6 @@ function logoutUserCV() {
 }
 
 function confirmResetCV() {
-  if (!confirm('Czy na pewno chcesz zacząć od nowa? Wszystkie dane CV zostaną usunięte.')) return;
   resetCVData();
 }
 
@@ -1643,13 +1642,6 @@ async function resetCVData() {
   } catch(e) {}
   if (typeof renderCVForm === 'function') renderCVForm();
   if (typeof updateCVPreview === 'function') updateCVPreview();
-  var badge = document.getElementById('cvDraftBadge');
-  if (badge) {
-    badge.textContent = '↺ Wyczyszczono';
-    badge.classList.add('visible');
-    clearTimeout(badge._hideTimer);
-    badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, 3000);
-  }
 }
 
 // ── WERSJA ROBOCZA – AUTOSAVE ─────────────────────────────
@@ -1744,7 +1736,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .cv-nav-profile{position:relative;display:flex;align-items:center;margin-left:8px;}
 .cv-nav-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(240,237,232,.85);display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;cursor:pointer;border:1.5px solid rgba(255,255,255,.18);transition:all .2s;overflow:hidden;flex-shrink:0;}
 .cv-nav-avatar:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.2);}
-.cv-nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:999;overflow:hidden;border:1px solid rgba(0,0,0,.07);}
+.cv-nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;min-width:220px;max-width:calc(100vw - 24px);box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:999;border:1px solid rgba(0,0,0,.07);}
 .cv-nav-dropdown.open{display:block !important;}
 .cv-nav-drop-email{font-size:.72rem;color:#888;padding:10px 16px 6px;border-bottom:1px solid #f0f0f0;word-break:break-all;}
 .cv-nav-drop-link{display:block;width:100%;font-size:.83rem;color:#333;padding:9px 16px;text-decoration:none;background:none;border:none;text-align:left;cursor:pointer;transition:background .15s;}
@@ -1817,6 +1809,9 @@ document.addEventListener('DOMContentLoaded', function() {
   </button>
   <button class="cv-tab-btn" id="tabPreview" onclick="switchCVTab('preview')">
     <span class="tab-icon">👁️</span>Podgląd
+  </button>
+  <button class="cv-tab-btn" id="tabPdf" onclick="downloadCV()">
+    <span class="tab-icon">⬇️</span>PDF
   </button>
 </div>
 
