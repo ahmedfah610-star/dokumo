@@ -83,8 +83,8 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const auth=getAuth(initializeApp(__c));
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const auth=getAuth(initializeApp(__c));window._fbSignOut=()=>signOut(auth);
 onAuthStateChanged(auth, async u=>{
   if(u){
     localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
@@ -206,7 +206,7 @@ onAuthStateChanged(auth, async u=>{
   function uNavLogout(){
     localStorage.removeItem('dokumo_user');
     localStorage.removeItem('dokumo_sub');
-    window.location.href='index.html';
+    (window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(()=>{window.location.href='index.html';});
   }
   window.toggleUNavDrop=toggleUNavDrop;
   window.uNavLogout=uNavLogout;
