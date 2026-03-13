@@ -469,7 +469,7 @@ function kupPakiet(plan){
 async function anulujSub(){
   if(!confirm('Anulować subskrypcję? Zachowasz dostęp do końca okresu.'))return;
   if(window._fbToken){
-    try{await fetch('/api/cancel-sub',{method:'POST',headers:{'Authorization':'Bearer '+window._fbToken}});}catch(e){}
+    try{await fetch('/api/sub',{method:'POST',headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},body:JSON.stringify({action:'cancel'})});}catch(e){}
   }
   const sub=getSub();
   if(sub){sub.cancelled=true;localStorage.setItem('dokumo_sub',JSON.stringify(sub));}

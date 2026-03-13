@@ -3292,7 +3292,7 @@ function downloadCV() {
     '<button class="btn-download-subtle" onclick="downloadCV()">⬇ Pobierz PDF</button>';
 }
 
-function downloadCV() {
+async function downloadCV() {
   // Sprawdź logowanie
   const user = (() => { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } })();
   if (!user) {
@@ -3306,34 +3306,48 @@ function downloadCV() {
     window.location.href = 'subskrypcja.html';
     return;
   }
+
   const el = document.getElementById('cvPreviewInner');
+  if (!el) return;
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
-  const safeName = fullName.replace(/\s+/g, '_');
-  const opt = {
-    margin: 0,
-    filename: 'CV_' + safeName + '.pdf',
-    image: { type:'jpeg', quality:0.98 },
-    html2canvas: { scale:2, useCORS:true },
-    jsPDF: { unit:'px', format:[595,842], orientation:'portrait' }
-  };
+  const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
 
   // Zapisz CV do Moje Dokumenty
   saveCVToMyDocs(fullName);
 
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  if (isMobile) {
-    html2pdf().set(opt).from(el).outputPdf('blob').then(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = opt.filename;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  // Pokaż spinner
+  const btn = document.querySelector('.btn-pay-subtle, .btn-download-subtle');
+  const origText = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ Generowanie...'; btn.disabled = true; }
+
+  try {
+    for (var i = 0; i < 30 && !window._fbReady; i++) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+    const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    if (!token) throw new Error('Brak tokenu');
+
+    const resp = await fetch('/api/pdf', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html: el.innerHTML, filename: safeName }),
     });
-  } else {
-    html2pdf().set(opt).from(el).save();
+
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = safeName + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  } catch (err) {
+    console.error('PDF error:', err);
+    alert('Błąd generowania PDF. Spróbuj ponownie.');
+  } finally {
+    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
   }
 }
 
