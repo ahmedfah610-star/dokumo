@@ -84,7 +84,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth=getAuth(initializeApp({apiKey:"AIzaSyAzeUjHGu7gbgWK3lY_400RXDJGS6bmbBo",authDomain:"dokumo-c1ccb.firebaseapp.com",projectId:"dokumo-c1ccb",storageBucket:"dokumo-c1ccb.firebasestorage.app",messagingSenderId:"1088576029067",appId:"1:1088576029067:web:e99734e4d50b398aa92f8e"}));
+const __c=await(await fetch('/api/firebase-config')).json();const auth=getAuth(initializeApp(__c));
 onAuthStateChanged(auth, async u=>{
   if(u){
     localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
