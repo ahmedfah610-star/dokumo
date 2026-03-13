@@ -1592,6 +1592,8 @@ function updateCVNavProfile() {
   } else {
     profile.style.display = 'none';
   }
+  var resetBtn = document.getElementById('btnResetCV');
+  if (resetBtn) resetBtn.style.display = user ? '' : 'none';
 }
 
 function toggleCVNavDropdown(e) {
@@ -1609,6 +1611,45 @@ function logoutUserCV() {
   localStorage.removeItem('dokumo_user');
   localStorage.removeItem('dokumo_sub');
   window.location.href = 'index.html';
+}
+
+function confirmResetCV() {
+  if (!confirm('Czy na pewno chcesz zacząć od nowa? Wszystkie dane CV zostaną usunięte.')) return;
+  resetCVData();
+}
+
+async function resetCVData() {
+  cvData = {
+    imie:'', nazwisko:'', stanowisko:'', email:'', tel:'', adres:'', linkedin:'', www:'',
+    zdjecie: null,
+    podsumowanie:'',
+    doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
+    wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
+    umiejetnosci:'',
+    certyfikaty:'',
+    jezyki:[{ jezyk:'', poziom:'B2' }],
+    zainteresowania:''
+  };
+  if (typeof cvCustomColor !== 'undefined') cvCustomColor = null;
+  if (typeof cvCustomSections !== 'undefined') cvCustomSections = [];
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    if (token) {
+      await fetch('/api/draft', {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+    }
+  } catch(e) {}
+  if (typeof renderCVForm === 'function') renderCVForm();
+  if (typeof updateCVPreview === 'function') updateCVPreview();
+  var badge = document.getElementById('cvDraftBadge');
+  if (badge) {
+    badge.textContent = '↺ Wyczyszczono';
+    badge.classList.add('visible');
+    clearTimeout(badge._hideTimer);
+    badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, 3000);
+  }
 }
 
 // ── WERSJA ROBOCZA – AUTOSAVE ─────────────────────────────
@@ -1730,6 +1771,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <span class="tpl-preview-dot" id="tplDot" style="background:#22c55e"></span>
         <span class="cv-btn-label">Wybierz szablon ▾</span>
         <span class="cv-btn-icon">▾</span>
+      </button>
+      <button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
+        ↺ <span class="cv-btn-label">Zacznij od nowa</span>
       </button>
       <span class="cv-nav-badge free" id="uPlanChip"></span>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
@@ -3349,7 +3393,20 @@ async function downloadCV() {
     setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
   } catch (err) {
     console.error('PDF error:', err);
-    alert('Błąd generowania PDF. Spróbuj ponownie.');
+    // Fallback: generuj PDF po stronie klienta przez html2pdf.js
+    try {
+      if (btn) { btn.innerHTML = '⏳ Generowanie (lokalnie)...'; }
+      const opt = {
+        margin: 0,
+        filename: safeName + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
+      };
+      await html2pdf().set(opt).from(el).save();
+    } catch(e2) {
+      alert('Błąd generowania PDF. Spróbuj ponownie.');
+    }
   } finally {
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
   }

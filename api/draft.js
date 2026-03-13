@@ -43,5 +43,15 @@ export default async function handler(req, res) {
     }
   }
 
+  // DELETE – usuń wersję roboczą
+  if (req.method === 'DELETE') {
+    try {
+      await db.collection('users').doc(uid).collection('drafts').doc('cv').delete();
+      return res.status(200).json({ ok: true });
+    } catch(e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
   return res.status(405).end();
 }
