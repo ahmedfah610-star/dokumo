@@ -50,11 +50,11 @@ export default async function handler(req, res) {
     });
 
     const page = await browser.newPage();
-    await page.emulateMediaType('screen');
     await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 10000 });
 
     const pdf = await page.pdf({
-      format: 'A4',
+      width: '595px',
+      height: '842px',
       printBackground: true,
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     });
