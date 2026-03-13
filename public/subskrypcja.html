@@ -249,7 +249,7 @@ onAuthStateChanged(auth, async u=>{
     <div class="plan-icon">🎯</div>
     <div class="plan-name">Pakiet Kariera</div>
     <div class="plan-tagline">CV, wypowiedzenia, kalkulator wynagrodzeń</div>
-    <div class="plan-price">5 zł <span>/ miesiąc</span></div>
+    <div class="plan-price">5 zł <span>/ tydzień</span></div>
     <div class="plan-period">Odnawia się automatycznie</div>
     <ul class="plan-features">
       <li><span class="ck">✓</span> Kreator CV z AI</li>
@@ -310,9 +310,9 @@ onAuthStateChanged(auth, async u=>{
 // ── Stripe linki — uzupełnij po stworzeniu produktów w Stripe Dashboard ──
 // W każdym linku ustaw metadata: plan=kariera / plan=biznes / plan=promax
 const STRIPE_LINKS = {
-  kariera: 'https://buy.stripe.com/3cI9AS1XecXkf2a8PzgIo03',
-  biznes:  'https://buy.stripe.com/fZu28q31icXk4nw9TDgIo02',
-  promax:  'https://buy.stripe.com/7sYaEWfO42iGaLU9TDgIo01',
+  kariera: 'https://buy.stripe.com/7sY5kC6du7D09HQ1n7gIo04',
+  biznes:  'https://buy.stripe.com/8x27sKeK0e1og6e5DngIo05',
+  promax:  'https://buy.stripe.com/dRm5kCbxO6yWaLUd5PgIo06',
 };
 
 function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
