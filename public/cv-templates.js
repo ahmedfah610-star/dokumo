@@ -543,6 +543,17 @@ const CV_TEMPLATES = [
   { id:'shield',       name:'Shield',       color1:'#1a2744', color2:'#e8e4dc',  thumb:'linear-gradient(160deg,#1a2744 55%,#e8e4dc 55%)' },
   { id:'arrow',        name:'Arrow',        color1:'#7c2d12', color2:'#fb923c',  thumb:'linear-gradient(160deg,#7c2d12 50%,#fff7f0 50%)' },
   { id:'split',        name:'Split',        color1:'#4a044e', color2:'#d8b4fe',  thumb:'linear-gradient(160deg,#4a044e 50%,#faf5ff 50%)' },
+  { id:'metro',        name:'Metro',        color1:'#22c55e', color2:'#16a34a',  thumb:'linear-gradient(135deg,#1a1a1a,#22c55e)' },
+  { id:'nordic',       name:'Nordic',       color1:'#2563eb', color2:'#3b82f6',  thumb:'linear-gradient(135deg,#2563eb,#93c5fd)' },
+  { id:'cascade',      name:'Cascade',      color1:'#0891b2', color2:'#22d3ee',  thumb:'linear-gradient(135deg,#0891b2,#22d3ee)' },
+  { id:'stripe',       name:'Stripe',       color1:'#7c3aed', color2:'#a78bfa',  thumb:'linear-gradient(135deg,#7c3aed,#a78bfa)' },
+  { id:'nova',         name:'Nova',         color1:'#db2777', color2:'#f9a8d4',  thumb:'linear-gradient(135deg,#db2777,#f9a8d4)' },
+  { id:'clean',        name:'Clean',        color1:'#374151', color2:'#6b7280',  thumb:'linear-gradient(135deg,#374151,#6b7280)' },
+  { id:'executive',    name:'Executive',    color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#1a1a1a 60%,#92400e 100%)' },
+  { id:'athens',       name:'Athens',       color1:'#1e3a5f', color2:'#2563eb',  thumb:'linear-gradient(135deg,#1e3a5f,#2563eb)' },
+  { id:'matrix',       name:'Matrix',       color1:'#00ff88', color2:'#00cc6a',  thumb:'linear-gradient(135deg,#0d1117,#00ff88)' },
+  { id:'prism',        name:'Prism',        color1:'#7c3aed', color2:'#ec4899',  thumb:'linear-gradient(135deg,#7c3aed,#ec4899)' },
+  { id:'linen',        name:'Linen',        color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#fef3c7,#d97706)' },
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
