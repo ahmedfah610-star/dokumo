@@ -3781,14 +3781,15 @@ async function downloadCV() {
 
   saveCVToMyDocs(fullName);
 
-  // Renderuj CV w widocznym kontenerze 595px — html2canvas wymaga widocznego elementu
+  // html2canvas nie działa z position:fixed — używamy absolute na (0,0)
+  window.scrollTo(0, 0);
   const temp = document.createElement('div');
-  temp.style.cssText = 'position:fixed;top:0;left:0;width:595px;height:842px;overflow:hidden;z-index:99999;background:#fff;';
+  temp.style.cssText = 'position:absolute;top:0;left:0;width:595px;z-index:99999;background:#fff;';
   temp.innerHTML = cvHtml;
   document.body.appendChild(temp);
 
   try {
-    await new Promise(r => setTimeout(r, 150));
+    await new Promise(r => setTimeout(r, 200));
     const opt = {
       margin: 0,
       filename: safeName + '.pdf',
@@ -3801,13 +3802,12 @@ async function downloadCV() {
         scrollX: 0,
         scrollY: 0,
         windowWidth: 595,
-        windowHeight: 842,
       },
       jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
     };
     await html2pdf().set(opt).from(temp).save();
   } catch(e) {
-    alert('Błąd generowania PDF: ' + e.message);
+    alert('Błąd: ' + e.message);
   } finally {
     document.body.removeChild(temp);
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
