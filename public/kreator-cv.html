@@ -3767,21 +3767,21 @@ updateCVPreview();
 async function downloadCV() {
   if (!window.checkPlanAccess(['kariera','promax','pro'])) return;
 
-  const el = document.getElementById('cvPreviewInner');
-  if (!el) return;
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
 
-  // Zapisz CV do Moje Dokumenty
-  saveCVToMyDocs(fullName);
+  // Generuj świeży HTML CV — niezależny od mobilnego skalowania DOM
+  let cvHtml;
+  try { cvHtml = buildCVHTML(cvTemplate); } catch(e) { alert('Błąd szablonu CV'); return; }
 
-  // Pokaż spinner — na mobile użyj zakładki PDF, na desktop przycisku nav
   const isMobileView = window.innerWidth < 768;
   const btn = isMobileView
     ? document.getElementById('tabPdf')
     : document.getElementById('cvNavDlBtn');
   const origText = btn ? btn.innerHTML : '';
   if (btn) { btn.innerHTML = '⏳'; btn.disabled = true; }
+
+  saveCVToMyDocs(fullName);
 
   try {
     for (var i = 0; i < 30 && !window._fbReady; i++) {
@@ -3793,7 +3793,7 @@ async function downloadCV() {
     const resp = await fetch('/api/pdf', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html: el.innerHTML, filename: safeName }),
+      body: JSON.stringify({ html: cvHtml, filename: safeName }),
     });
 
     if (!resp.ok) {
@@ -3810,29 +3810,26 @@ async function downloadCV() {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+
   } catch (err) {
     console.error('PDF error:', err);
-    // Fallback: generuj PDF po stronie klienta przez html2pdf.js
+    // Fallback: html2pdf ze świeżym HTML w tymczasowym kontenerze 595px
     try {
       if (btn) { btn.innerHTML = '⏳'; }
-      // Tymczasowo resetuj mobilny zoom/transform żeby html2canvas renderował pełną stronę
-      const savedTransform = el.style.transform;
-      const savedZoom = el.style.zoom;
-      const savedWidth = el.style.width;
-      el.style.transform = 'none';
-      el.style.zoom = '1';
-      el.style.width = '595px';
+      const temp = document.createElement('div');
+      temp.style.cssText = 'position:fixed;top:0;left:0;width:595px;background:#fff;z-index:-9999;pointer-events:none;';
+      temp.innerHTML = cvHtml;
+      document.body.appendChild(temp);
+      await new Promise(r => setTimeout(r, 50));
       const opt = {
         margin: 0,
         filename: safeName + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 595 },
         jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
       };
-      await html2pdf().set(opt).from(el).save();
-      el.style.transform = savedTransform;
-      el.style.zoom = savedZoom;
-      el.style.width = savedWidth;
+      await html2pdf().set(opt).from(temp).save();
+      document.body.removeChild(temp);
     } catch(e2) {
       alert('Błąd generowania PDF. Spróbuj ponownie.');
     }
