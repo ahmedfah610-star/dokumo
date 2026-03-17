@@ -2258,7 +2258,9 @@ async function loadCVDraft() {
     var data = await resp.json();
     if (!data.cvDataJson) return;
     var loaded = JSON.parse(data.cvDataJson);
-    if (loaded.__template) cvTemplate = loaded.__template;
+    // If user picked a template from wybierz-szablon.html (?template=…), keep it — only restore from draft when no template was explicitly chosen
+    var urlTpl = new URLSearchParams(location.search).get('template');
+    if (!urlTpl && loaded.__template) cvTemplate = loaded.__template;
     if (loaded.__color) cvCustomColor = loaded.__color;
     delete loaded.__template; delete loaded.__color;
     Object.assign(cvData, loaded);
