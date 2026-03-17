@@ -6,6 +6,12 @@
     }
   },
   "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "dokumo.vercel.app" }],
+      "destination": "https://dokumoflow.com/$1",
+      "permanent": true
+    },
     { "source": "/kalkulator.html", "destination": "/kalkulator-wynagrodzen.html", "permanent": true }
   ],
   "rewrites": [
