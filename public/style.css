@@ -537,7 +537,7 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 }
 
 /* ── KREATOR CV – LAYOUT ── */
-.cv-app { display:flex; flex-direction:column; height:100dvh; height:100vh; }
+.cv-app { display:flex; flex-direction:column; height:100vh; height:100dvh; }
 .cv-nav { position:relative; z-index:100; height:54px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:rgba(14,15,17,.97); backdrop-filter:blur(12px); flex-shrink:0; gap:8px; }
 .cv-nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
 .btn-choose-tpl { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:7px 12px; font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; color:rgba(240,237,232,.8); transition:all 0.2s; white-space:nowrap; border-radius:8px; }
