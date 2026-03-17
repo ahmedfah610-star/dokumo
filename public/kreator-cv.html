@@ -2700,9 +2700,26 @@ const CV_TEMPLATES = [
 let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','certyfikaty','jezyki','zainteresowania'];
 
 // ── WIZARD ──────────────────────────────────────────────────
-let cvWizardStep = 0;
+// Read ?template= from URL — if present, skip step 0 (template picker)
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  const tpl = p.get('template');
+  const mode = p.get('mode');
+  const from = p.get('from');
+  const known = ['nova','clean','nordic','stripe','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','slate','ocean','diagonal','shield','arrow','executive','athens','matrix','prism','linen'];
+  if (tpl && known.includes(tpl)) {
+    cvTemplate = tpl; // Template chosen on picker page — continue to wizard
+  } else if (mode === 'import' || from === 'translate') {
+    // Special cases: imported CV — don't redirect, use default template
+  } else {
+    // No template — send user to template picker
+    window.location.replace('wybierz-szablon.html');
+  }
+})();
+
+let cvWizardStep = 0; // Step 0 = Dane osobowe (template chosen on separate page)
+
 const CV_WIZARD_STEPS = [
-  { label: 'Szablon' },
   { label: 'Dane osobowe' },
   { label: 'Podsumowanie' },
   { label: 'Doświadczenie' },
@@ -2713,7 +2730,8 @@ const CV_WIZARD_STEPS = [
 function cvWizardNext() {
   if (cvWizardStep < CV_WIZARD_STEPS.length - 1) {
     cvWizardStep++;
-    const autoOpen = [null,null,'podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci',null];
+    // autoOpen indexed from 0: 0=osobowe,1=podsumowanie,2=doswiadczenie,3=wyksztalcenie,4=umiejetnosci,5=finalizacja
+    const autoOpen = [null,'podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci',null];
     if (autoOpen[cvWizardStep]) cvOpenSections.add(autoOpen[cvWizardStep]);
     renderCVForm();
     document.getElementById('cvFormPanel').scrollTop = 0;
@@ -2721,6 +2739,7 @@ function cvWizardNext() {
 }
 function cvWizardPrev() {
   if (cvWizardStep > 0) { cvWizardStep--; renderCVForm(); document.getElementById('cvFormPanel').scrollTop = 0; }
+  else { window.location.href = 'wybierz-szablon.html'; } // Back from step 0 → template picker
 }
 function cvWizardGoTo(i) {
   if (i <= cvWizardStep) { cvWizardStep = i; renderCVForm(); document.getElementById('cvFormPanel').scrollTop = 0; }
@@ -3199,31 +3218,6 @@ function renderCVForm() {
   // Step content
   let stepContent = '';
   if (cvWizardStep === 0) {
-    // Inline template picker
-    const tplGroups = [
-      { label: 'Premium',    ids: ['nova','clean','nordic','stripe','cascade','metro'] },
-      { label: 'Nowe 2026',  ids: ['executive','athens','matrix','prism','linen'] },
-      { label: 'Klasyczne',  ids: ['sidebar','timeline','bold','midnight'] },
-      { label: 'Nowoczesne', ids: ['teal','slate','ocean','diagonal'] },
-      { label: 'Kreatywne',  ids: ['creative','coral','rose'] },
-      { label: 'Wyraziste',  ids: ['shield','arrow'] },
-    ];
-    let tplHTML = '';
-    tplGroups.forEach(g => {
-      const cards = CV_TEMPLATES.filter(t => g.ids.includes(t.id));
-      if (!cards.length) return;
-      tplHTML += `<div style="flex-basis:100%;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9ca3af;padding:10px 0 4px;border-bottom:1px solid #f3f4f6;margin-bottom:2px;">${g.label}</div>`;
-      tplHTML += cards.map(t => `
-        <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" data-tpl="${t.id}" onclick="cvWizardPickTpl('${t.id}')" style="cursor:pointer;">
-          <div class="cv-tpl-thumb">${getTplPreviewHTML(t)}</div>
-          <div class="cv-tpl-name">${t.name}</div>
-        </div>`).join('');
-    });
-    stepContent = `
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding-bottom:8px;">
-        ${tplHTML}
-      </div>`;
-  } else if (cvWizardStep === 1) {
     stepContent = `
       <div class="cv-lang-selector" id="cvLangSelector">
         <div class="cv-lang-label">🌐 Język CV</div>
@@ -3273,15 +3267,15 @@ function renderCVForm() {
           </div>
         </div>
       </div>`;
-  } else if (cvWizardStep === 2) {
+  } else if (cvWizardStep === 1) {
     stepContent = `<div class="acc-list">${buildSectionFormHTML('podsumowanie')}</div>`;
-  } else if (cvWizardStep === 3) {
+  } else if (cvWizardStep === 2) {
     stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('doswiadczenie')}</div>`;
-  } else if (cvWizardStep === 4) {
+  } else if (cvWizardStep === 3) {
     stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('wyksztalcenie')}</div>`;
-  } else if (cvWizardStep === 5) {
+  } else if (cvWizardStep === 4) {
     stepContent = `<div class="acc-list">${buildSectionFormHTML('umiejetnosci')}${buildSectionFormHTML('jezyki')}${buildSectionFormHTML('certyfikaty')}</div>`;
-  } else if (cvWizardStep === 6) {
+  } else if (cvWizardStep === 5) {
     stepContent = `
       <div class="acc-list">
         ${buildSectionFormHTML('zainteresowania')}
@@ -3297,7 +3291,7 @@ function renderCVForm() {
     <div class="cvw-nav">
       ${cvWizardStep > 0
         ? `<button class="cvw-btn cvw-btn-back" onclick="cvWizardPrev()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Wstecz</button>`
-        : `<div></div>`}
+        : `<button class="cvw-btn cvw-btn-back" onclick="window.location.href='wybierz-szablon.html'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Szablon</button>`}
       <button class="cvw-btn cvw-btn-preview" onclick="cvWizardTogglePreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Podgląd</button>
       ${cvWizardStep < totalSteps - 1
         ? `<button class="cvw-btn cvw-btn-next" onclick="cvWizardNext()">Dalej <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>`
@@ -3313,9 +3307,9 @@ function renderCVForm() {
   `;
 
   initDragDrop();
-  if (cvWizardStep === 5 && cvOpenSections.has('umiejetnosci')) updateSkillChips();
-  if (cvWizardStep === 5 && cvOpenSections.has('certyfikaty')) updateCertChips();
-  if (cvWizardStep === 6 && cvOpenSections.has('zainteresowania')) updateInterestChips();
+  if (cvWizardStep === 4 && cvOpenSections.has('umiejetnosci')) updateSkillChips();
+  if (cvWizardStep === 4 && cvOpenSections.has('certyfikaty')) updateCertChips();
+  if (cvWizardStep === 5 && cvOpenSections.has('zainteresowania')) updateInterestChips();
   applySpellcheck();
 }
 

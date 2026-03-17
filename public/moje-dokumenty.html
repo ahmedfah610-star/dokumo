@@ -697,7 +697,10 @@ function editDoc(docId) {
     } else {
       sessionStorage.removeItem('dokumo_editCvData');
     }
-    window.location.href = 'kreator-cv.html';
+    // Pass template so kreator skips template picker
+    var tplParam = 'nova';
+    try { var saved = JSON.parse(doc.cvDataJson || '{}'); if (saved.template) tplParam = saved.template; } catch(e) {}
+    window.location.href = 'kreator-cv.html?template=' + tplParam;
     return;
   }
   // Other docs → inline editor

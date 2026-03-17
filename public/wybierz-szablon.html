@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Wybierz szablon CV – Dokumo</title>
+<meta name="description" content="Wybierz jeden z ponad 20 profesjonalnych szablonów CV. Kreator CV online z eksportem do PDF – Dokumo.">
+<link rel="canonical" href="https://dokumoflow.com/wybierz-szablon.html">
+<meta property="og:title" content="Wybierz szablon CV – Dokumo">
+<meta property="og:description" content="Ponad 20 szablonów CV do wyboru. Stwórz swoje CV online w kilka minut.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dokumoflow.com/wybierz-szablon.html">
+<meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta name="robots" content="index, follow">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── PAGE ── */
+body { background: #f5f3ef; }
+
+/* ── NAV ── */
+.ts-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e2e8f0;
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; gap: 12px;
+}
+.ts-nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; color: #111827;
+}
+.ts-nav-logo span { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; color: #111827; }
+.ts-nav-back {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 600;
+  color: #6b7280; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 8px 0; transition: color 0.15s;
+}
+.ts-nav-back:hover { color: #111827; }
+
+/* ── HERO ── */
+.ts-hero {
+  text-align: center;
+  padding: 52px 24px 32px;
+}
+.ts-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 99px; padding: 4px 14px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #15803d;
+  margin-bottom: 20px;
+}
+.ts-hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 400; line-height: 1.1;
+  letter-spacing: -0.03em; color: #0f0e0c;
+  margin-bottom: 12px;
+}
+.ts-hero p {
+  font-size: 1rem; color: #6b7280; max-width: 480px; margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── FILTER TABS ── */
+.ts-filters {
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap; padding: 0 24px 32px;
+}
+.ts-filter-btn {
+  background: #fff; border: 1.5px solid #e5e7eb; border-radius: 99px;
+  padding: 7px 18px; font-family: 'Syne', sans-serif;
+  font-size: 0.78rem; font-weight: 600; color: #374151;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.ts-filter-btn:hover { border-color: #2d6b52; color: #1a3a2e; }
+.ts-filter-btn.active {
+  background: #1a3a2e; color: #fff; border-color: #1a3a2e;
+  box-shadow: 0 2px 8px rgba(26,58,46,0.25);
+}
+
+/* ── GRID ── */
+.ts-grid-wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px 80px; }
+.ts-group-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #9ca3af;
+  margin: 32px 0 14px;
+}
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+@media(max-width:480px) { .ts-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+
+/* ── CARD ── */
+.ts-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px rgba(226,232,240,0.8);
+  position: relative;
+}
+.ts-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1), 0 0 0 1px #cbd5e1;
+}
+.ts-card.selected {
+  border-color: #1a3a2e;
+  box-shadow: 0 0 0 3px rgba(26,58,46,0.18), 0 8px 28px rgba(26,58,46,0.15);
+}
+.ts-card-thumb {
+  width: 100%; aspect-ratio: 3/4;
+  position: relative; overflow: hidden;
+}
+.ts-card-thumb-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: stretch;
+}
+/* Simulated A4 mini-preview */
+.ts-tpl-preview {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  font-size: 0; /* prevent text flash */
+  overflow: hidden;
+}
+.ts-card-footer {
+  padding: 10px 12px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ts-card-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.8rem; font-weight: 700; color: #111827;
+}
+.ts-card-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.ts-card-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(4px);
+  border-radius: 99px; padding: 2px 8px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: #374151;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.ts-card-check {
+  position: absolute; top: 8px; right: 8px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #1a3a2e; color: #fff;
+  display: none; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800;
+  box-shadow: 0 2px 8px rgba(26,58,46,0.4);
+}
+.ts-card.selected .ts-card-check { display: flex; }
+
+/* ── CTA BAR ── */
+.ts-cta-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);
+  border-top: 1px solid #e2e8f0;
+  padding: 14px 24px; padding-bottom: max(14px, env(safe-area-inset-bottom));
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; z-index: 200;
+  transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.ts-cta-bar.visible { transform: translateY(0); }
+.ts-cta-selected-info { display: flex; align-items: center; gap: 10px; }
+.ts-cta-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+.ts-cta-label { font-size: 0.8rem; color: #6b7280; }
+.ts-cta-label strong { color: #111827; font-weight: 700; }
+.ts-cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #1a3a2e; color: #fff;
+  border: none; border-radius: 10px;
+  padding: 12px 28px; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700;
+  box-shadow: 0 2px 10px rgba(26,58,46,0.28);
+  transition: all 0.18s; white-space: nowrap;
+}
+.ts-cta-btn:hover { background: #2d6b52; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(26,58,46,0.32); }
+
+/* ── HIDDEN GROUP ── */
+.ts-group[data-group].hidden { display: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="ts-nav">
+  <a href="index.html" class="ts-nav-logo">
+    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+    <span>Dokumo</span>
+  </a>
+  <button class="ts-nav-back" onclick="history.back()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Wróć
+  </button>
+</nav>
+
+<!-- HERO -->
+<div class="ts-hero">
+  <div class="ts-hero-badge">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    Ponad 20 szablonów
+  </div>
+  <h1>Wybierz swój<br><em>szablon CV</em></h1>
+  <p>Kliknij szablon, który Ci się podoba. Możesz go zmienić w każdej chwili podczas tworzenia CV.</p>
+</div>
+
+<!-- FILTER TABS -->
+<div class="ts-filters" id="tsFilters">
+  <button class="ts-filter-btn active" onclick="filterGroup('all', this)">Wszystkie</button>
+  <button class="ts-filter-btn" onclick="filterGroup('premium', this)">Premium</button>
+  <button class="ts-filter-btn" onclick="filterGroup('nowe', this)">Nowe 2026</button>
+  <button class="ts-filter-btn" onclick="filterGroup('klasyczne', this)">Klasyczne</button>
+  <button class="ts-filter-btn" onclick="filterGroup('nowoczesne', this)">Nowoczesne</button>
+  <button class="ts-filter-btn" onclick="filterGroup('kreatywne', this)">Kreatywne</button>
+</div>
+
+<!-- GRID -->
+<div class="ts-grid-wrap" id="tsGridWrap"></div>
+
+<!-- CTA BAR -->
+<div class="ts-cta-bar" id="tsCtaBar">
+  <div class="ts-cta-selected-info">
+    <div class="ts-cta-dot" id="tsCtaDot"></div>
+    <div class="ts-cta-label">Wybrany szablon: <strong id="tsCtaName">—</strong></div>
+  </div>
+  <button class="ts-cta-btn" onclick="goToCreator()">
+    Utwórz CV
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </button>
+</div>
+
+<script>
+const GROUPS = [
+  { key: 'premium',    label: 'Premium',    ids: ['nova','clean','nordic','stripe','cascade','metro'] },
+  { key: 'nowe',       label: 'Nowe 2026',  ids: ['executive','athens','matrix','prism','linen'] },
+  { key: 'klasyczne',  label: 'Klasyczne',  ids: ['sidebar','timeline','bold','midnight'] },
+  { key: 'nowoczesne', label: 'Nowoczesne', ids: ['teal','slate','ocean','diagonal'] },
+  { key: 'kreatywne',  label: 'Kreatywne',  ids: ['creative','coral','rose','shield','arrow'] },
+];
+
+const TEMPLATES = [
+  // id, name, color1, color2, preview style (CSS for the mini A4)
+  { id:'nova',      name:'Nova',       color1:'#1a3a2e', color2:'#2d6b52',  preview: novaPrev },
+  { id:'clean',     name:'Clean',      color1:'#1a2744', color2:'#2c4a8a',  preview: cleanPrev },
+  { id:'nordic',    name:'Nordic',     color1:'#1a3a2e', color2:'#2d6b52',  preview: nordicPrev },
+  { id:'stripe',    name:'Stripe',     color1:'#1a2744', color2:'#2c4a8a',  preview: stripePrev },
+  { id:'cascade',   name:'Cascade',    color1:'#0f766e', color2:'#14b8a6',  preview: cascadePrev },
+  { id:'metro',     name:'Metro',      color1:'#1a3a2e', color2:'#2d6b52',  preview: metroPrev },
+  { id:'executive', name:'Executive',  color1:'#92400e', color2:'#d97706',  preview: executivePrev },
+  { id:'athens',    name:'Athens',     color1:'#1e3a5f', color2:'#2563eb',  preview: athensPrev },
+  { id:'matrix',    name:'Matrix',     color1:'#00ff88', color2:'#00cc6a',  preview: matrixPrev },
+  { id:'prism',     name:'Prism',      color1:'#7c3aed', color2:'#ec4899',  preview: prismPrev },
+  { id:'linen',     name:'Linen',      color1:'#92400e', color2:'#d97706',  preview: linenPrev },
+  { id:'sidebar',   name:'Sidebar',    color1:'#1a2744', color2:'#2c4a8a',  preview: sidebarPrev },
+  { id:'timeline',  name:'Timeline',   color1:'#1a3a2e', color2:'#2d6b52',  preview: timelinePrev },
+  { id:'bold',      name:'Bold',       color1:'#c0392b', color2:'#e74c3c',  preview: boldPrev },
+  { id:'midnight',  name:'Midnight',   color1:'#0f172a', color2:'#334155',  preview: midnightPrev },
+  { id:'teal',      name:'Teal',       color1:'#0f766e', color2:'#14b8a6',  preview: tealPrev },
+  { id:'slate',     name:'Slate',      color1:'#334155', color2:'#64748b',  preview: slatePrev },
+  { id:'ocean',     name:'Ocean',      color1:'#1e40af', color2:'#38bdf8',  preview: oceanPrev },
+  { id:'diagonal',  name:'Diagonal',   color1:'#1a3a2e', color2:'#2d6b52',  preview: diagonalPrev },
+  { id:'creative',  name:'Creative',   color1:'#6b21a8', color2:'#a855f7',  preview: creativePrev },
+  { id:'coral',     name:'Coral',      color1:'#c2410c', color2:'#fb923c',  preview: coralPrev },
+  { id:'rose',      name:'Rose',       color1:'#9d174d', color2:'#ec4899',  preview: rosePrev },
+  { id:'shield',    name:'Shield',     color1:'#1a2744', color2:'#e8e4dc',  preview: shieldPrev },
+  { id:'arrow',     name:'Arrow',      color1:'#7c2d12', color2:'#fb923c',  preview: arrowPrev },
+];
+
+// ── Mini CV previews (SVG-like HTML) ──────────────────────────
+function lines(color, widths, y0, gap=7) {
+  return widths.map((w,i) =>
+    `<div style="height:4px;width:${w}%;background:${color};border-radius:2px;margin-top:${i===0?y0:gap}px;opacity:${0.5+0.5*(i===0?1:0.6)}"></div>`
+  ).join('');
+}
+function block(bg, content, pad='12px') {
+  return `<div style="background:${bg};padding:${pad};flex:1;overflow:hidden">${content}</div>`;
+}
+
+function novaPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:${c1};padding:14px 12px 12px">
+      <div style="width:38px;height:38px;border-radius:50%;background:${c2};margin-bottom:8px"></div>
+      <div style="height:6px;width:70%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:50%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,65,50,70],0)}</div>
+    <div style="padding:0 12px">${lines('#94a3b8',[90,55,75,60],0)}</div>
+  </div>`;
+}
+function cleanPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 12px 10px;border-bottom:2px solid ${c1}">
+      <div style="height:7px;width:60%;background:${c1};border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:40%;background:#cbd5e1;border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50],0)}</div>
+    <div style="padding:0 12px">${lines('#94a3b8',[90,65,80],0)}</div>
+  </div>`;
+}
+function nordicPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 12px 10px">
+      <div style="height:6px;width:65%;background:${c1};border-radius:2px;margin-bottom:4px"></div>
+      <div style="height:3px;width:45%;background:#94a3b8;border-radius:2px;margin-bottom:10px"></div>
+      <div style="height:2px;width:100%;background:${c1};opacity:0.3"></div>
+    </div>
+    <div style="padding:8px 12px">${lines('#94a3b8',[75,60,80,55],0)}</div>
+  </div>`;
+}
+function stripePrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;overflow:hidden">
+    <div style="width:4px;background:${c1};flex-shrink:0"></div>
+    <div style="flex:1;padding:12px 10px">
+      <div style="height:6px;width:65%;background:${c1};border-radius:2px;margin-bottom:4px"></div>
+      <div style="height:3px;width:45%;background:#94a3b8;border-radius:2px;margin-bottom:10px"></div>
+      ${lines('#94a3b8',[80,60,75,55,70,50],0)}
+    </div>
+  </div>`;
+}
+function cascadePrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;overflow:hidden">
+    <div style="width:38%;background:${c1};padding:12px 8px">
+      <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.3);margin-bottom:8px"></div>
+      ${lines('rgba(255,255,255,0.7)',[80,60,70],0,6)}
+      ${lines('rgba(255,255,255,0.4)',[90,70,80,65],12,6)}
+    </div>
+    <div style="flex:1;padding:12px 10px">
+      ${lines('#94a3b8',[80,60,75,55,70],0)}
+    </div>
+  </div>`;
+}
+function metroPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:#1a1a1a;padding:14px 12px 12px">
+      <div style="height:6px;width:70%;background:#fff;border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:50%;background:${c2};border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50],0)}</div>
+    <div style="padding:0 12px">${lines('#94a3b8',[90,65,55],0)}</div>
+  </div>`;
+}
+function executivePrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:#111;padding:14px 12px 12px">
+      <div style="height:6px;width:65%;background:#fff;border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:${c2};border-radius:2px"></div>
+    </div>
+    <div style="height:3px;width:100%;background:${c2}"></div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50,70],0)}</div>
+  </div>`;
+}
+function athensPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:${c1};padding:12px">
+      <div style="height:5px;width:60%;background:#fff;border-radius:2px;margin-bottom:4px"></div>
+      <div style="height:3px;width:40%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="display:flex;flex:1">
+      <div style="width:32%;background:#f0f4ff;padding:8px">${lines(c2,[90,70,80],0,5)}</div>
+      <div style="flex:1;padding:8px 10px">${lines('#94a3b8',[80,60,75,55],0)}</div>
+    </div>
+  </div>`;
+}
+function matrixPrev(c1,c2) {
+  return `<div style="background:#0d1117;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 12px 10px">
+      <div style="height:6px;width:65%;background:${c1};border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(0,255,136,0.4);border-radius:2px"></div>
+    </div>
+    <div style="padding:8px 12px">${lines('rgba(0,255,136,0.5)',[80,60,75,50,70],0)}</div>
+  </div>`;
+}
+function prismPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:linear-gradient(135deg,${c1},${c2});padding:14px 12px 12px">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50],0)}</div>
+  </div>`;
+}
+function linenPrev(c1,c2) {
+  return `<div style="background:#fef9f0;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 12px 10px;border-bottom:1px solid #fde8b0">
+      <div style="height:6px;width:60%;background:${c1};border-radius:2px;margin-bottom:4px"></div>
+      <div style="height:3px;width:40%;background:#fbbf24;border-radius:2px"></div>
+    </div>
+    <div style="padding:8px 12px">${lines('#d97706',[80,60,75,50],0,6)}</div>
+    <div style="padding:0 12px">${lines('#94a3b8',[90,65,80],0,6)}</div>
+  </div>`;
+}
+function sidebarPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;overflow:hidden">
+    <div style="width:36%;background:${c1};padding:12px 8px">
+      <div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.25);margin-bottom:8px"></div>
+      ${lines('rgba(255,255,255,0.7)',[80,60,70],0,6)}
+    </div>
+    <div style="flex:1;padding:12px 10px">
+      ${lines('#94a3b8',[80,60,75,55,70,50],0)}
+    </div>
+  </div>`;
+}
+function timelinePrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:linear-gradient(135deg,${c1},${c2});padding:14px 12px 12px">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="padding:8px 12px;flex:1">
+      <div style="border-left:2px solid ${c1};padding-left:10px;margin-top:4px">
+        ${lines('#94a3b8',[75,55,70,50,65],0,6)}
+      </div>
+    </div>
+  </div>`;
+}
+function boldPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:#111;padding:4px 12px;display:flex;align-items:center;gap:6px">
+      <div style="height:5px;width:55%;background:#fff;border-radius:2px"></div>
+      <div style="height:5px;flex:1;background:${c1};border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50],0)}</div>
+    <div style="margin:0 12px;height:2px;background:${c1};border-radius:2px"></div>
+    <div style="padding:8px 12px">${lines('#94a3b8',[90,65,80],0,6)}</div>
+  </div>`;
+}
+function midnightPrev(c1,c2) {
+  return `<div style="background:${c1};width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 12px 10px;border-bottom:1px solid rgba(255,255,255,0.1)">
+      <div style="height:6px;width:65%;background:#fff;border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:${c2};border-radius:2px"></div>
+    </div>
+    <div style="padding:8px 12px">${lines('rgba(255,255,255,0.4)',[80,60,75,50,70],0)}</div>
+  </div>`;
+}
+function tealPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:linear-gradient(135deg,${c1},${c2});padding:14px 12px 12px">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50],0)}</div>
+  </div>`;
+}
+function slatePrev(c1,c2) {
+  return cascadePrev(c1,c2);
+}
+function oceanPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:linear-gradient(90deg,${c1},${c2});padding:14px 12px 12px">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50,70],0)}</div>
+  </div>`;
+}
+function diagonalPrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;overflow:hidden;position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:45%;background:${c1};clip-path:polygon(0 0,100% 0,100% 70%,0 100%)"></div>
+    <div style="position:relative;z-index:1;padding:12px 12px 0">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="position:relative;z-index:1;padding:42px 12px 0">
+      ${lines('#94a3b8',[80,60,75,50],0,6)}
+    </div>
+  </div>`;
+}
+function creativePrev(c1,c2) {
+  return `<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:linear-gradient(135deg,${c1},${c2});padding:14px 12px 12px">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:rgba(255,255,255,0.5);border-radius:2px"></div>
+    </div>
+    <div style="padding:10px 12px">${lines('#94a3b8',[80,60,75,50,70],0)}</div>
+  </div>`;
+}
+function coralPrev(c1,c2) { return creativePrev(c1,c2); }
+function rosePrev(c1,c2) { return creativePrev(c1,c2); }
+function shieldPrev(c1,c2) {
+  return `<div style="background:#e8e4dc;width:100%;height:100%;display:flex;overflow:hidden">
+    <div style="width:55%;background:${c1};padding:12px 8px">
+      <div style="height:6px;width:80%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:4px"></div>
+      <div style="height:3px;width:55%;background:rgba(255,255,255,0.4);border-radius:2px;margin-bottom:10px"></div>
+      ${lines('rgba(255,255,255,0.5)',[85,65,75,55],0,6)}
+    </div>
+    <div style="flex:1;padding:10px 8px">
+      ${lines('#94a3b8',[90,70,80,60],0,6)}
+    </div>
+  </div>`;
+}
+function arrowPrev(c1,c2) {
+  return `<div style="background:#fff7f0;width:100%;height:100%;overflow:hidden;position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:42%;background:${c1};clip-path:polygon(0 0,100% 0,100% 80%,50% 100%,0 80%)"></div>
+    <div style="position:relative;z-index:1;padding:12px 12px 0">
+      <div style="height:6px;width:65%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
+      <div style="height:3px;width:45%;background:${c2};border-radius:2px"></div>
+    </div>
+    <div style="position:relative;z-index:1;padding:46px 12px 0">
+      ${lines('#94a3b8',[80,60,75,50],0,6)}
+    </div>
+  </div>`;
+}
+
+// ── Render ────────────────────────────────────────────────────
+let selectedId = null;
+
+function render() {
+  const wrap = document.getElementById('tsGridWrap');
+  let html = '';
+  GROUPS.forEach(g => {
+    const cards = TEMPLATES.filter(t => g.ids.includes(t.id));
+    if (!cards.length) return;
+    html += `<div class="ts-group" data-group="${g.key}">
+      <div class="ts-group-label">${g.label}</div>
+      <div class="ts-grid">`;
+    cards.forEach(t => {
+      const prevHTML = t.preview(t.color1, t.color2);
+      html += `
+        <div class="ts-card" data-id="${t.id}" onclick="selectTemplate('${t.id}')">
+          <div class="ts-card-thumb">
+            <div class="ts-card-thumb-inner">${prevHTML}</div>
+          </div>
+          <div class="ts-card-check">✓</div>
+          <div class="ts-card-footer">
+            <span class="ts-card-name">${t.name}</span>
+            <span class="ts-card-dot" style="background:${t.color1}"></span>
+          </div>
+        </div>`;
+    });
+    html += `</div></div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function selectTemplate(id) {
+  selectedId = id;
+  // Highlight selected card
+  document.querySelectorAll('.ts-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.id === id);
+  });
+  // Update CTA bar
+  const t = TEMPLATES.find(x => x.id === id);
+  if (t) {
+    document.getElementById('tsCtaDot').style.background = t.color1;
+    document.getElementById('tsCtaName').textContent = t.name;
+  }
+  document.getElementById('tsCtaBar').classList.add('visible');
+}
+
+function goToCreator() {
+  if (!selectedId) return;
+  window.location.href = `kreator-cv.html?template=${selectedId}`;
+}
+
+function filterGroup(key, btn) {
+  document.querySelectorAll('.ts-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.ts-group[data-group]').forEach(g => {
+    if (key === 'all' || g.dataset.group === key) {
+      g.classList.remove('hidden');
+    } else {
+      g.classList.add('hidden');
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
