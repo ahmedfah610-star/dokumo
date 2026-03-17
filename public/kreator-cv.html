@@ -2024,9 +2024,12 @@ body { overflow:hidden; }
 .cvw-steps-row { display:flex; align-items:flex-start; justify-content:space-between; gap:2px; width:100%; margin-top:10px; }
 .cvw-step-dot { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; min-width:0; cursor:default; }
 .cvw-step-dot.done { cursor:pointer; }
-.cvw-dot-circle { width:28px; height:28px; border-radius:50%; background:#d1d5db; color:#6b7280; font-size:0.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; transition:all 0.3s; flex-shrink:0; border:2px solid transparent; }
-.cvw-step-dot.active .cvw-dot-circle { background:#1a3a2e; color:#fff; border-color:#1a3a2e; box-shadow:0 0 0 3px rgba(26,58,46,0.15); }
-.cvw-step-dot.done .cvw-dot-circle { background:#dcfce7; color:#16a34a; border-color:#86efac; }
+.cvw-dot-circle { width:28px; height:28px; border-radius:50%; background:#e5e7eb; color:#374151; font-size:0.68rem; font-weight:800; display:flex; align-items:center; justify-content:center; transition:all 0.3s; flex-shrink:0; border:2px solid #d1d5db; }
+.cvw-step-dot.active .cvw-dot-circle { background:#16a34a; color:#fff; border-color:#16a34a; box-shadow:0 0 0 4px rgba(22,163,74,0.18); }
+.cvw-step-dot.done .cvw-dot-circle { background:#16a34a; color:#fff; border-color:#16a34a; }
+.cvw-dot-label { font-size:0.52rem; font-weight:600; color:#6b7280; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52px; line-height:1.2; margin-top:4px; }
+.cvw-step-dot.active .cvw-dot-label { color:#16a34a; font-weight:700; }
+.cvw-step-dot.done .cvw-dot-label { color:#16a34a; }
 .cvw-dot-label { font-size:0.52rem; font-weight:600; color:#9ca3af; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52px; line-height:1.2; margin-top:4px; }
 .cvw-step-dot.active .cvw-dot-label { color:#1a3a2e; font-weight:700; }
 .cvw-step-dot.done .cvw-dot-label { color:#6b7280; }
@@ -2045,6 +2048,8 @@ body { overflow:hidden; }
 .cvw-btn-next:hover { background:#2d6b52; transform:translateY(-1px); box-shadow:0 4px 16px rgba(26,58,46,0.25); }
 .cvw-btn-done { background:linear-gradient(135deg,#1a3a2e,#2d6b52); color:#fff; box-shadow:0 2px 10px rgba(26,58,46,0.25); }
 .cvw-btn-done:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(26,58,46,0.3); }
+.cvw-btn-tpl { background:#fff; color:#374151; border:1.5px solid #e5e7eb; gap:6px; padding:9px 14px; font-size:0.78rem; }
+.cvw-btn-tpl:hover { background:#f9fafb; border-color:#d1d5db; }
 .cvw-preview-blur .cv-preview-doc { filter:blur(4px) brightness(0.97); transition:filter 0.5s ease; pointer-events:none; user-select:none; }
 .cv-preview-doc { transition:filter 0.5s ease; }
 
@@ -2316,11 +2321,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </a>
     <div style="flex:1;"></div>
     <div class="cv-nav-right">
-      <button class="btn-choose-tpl" onclick="openTplDrawer()" title="Wybierz szablon">
-        <span class="tpl-preview-dot" id="tplDot" style="background:#22c55e"></span>
-        <span class="cv-btn-label">Wybierz szablon ▾</span>
-        <span class="cv-btn-icon">▾</span>
-      </button>
       <button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
         ↺ <span class="cv-btn-label">Zacznij od nowa</span>
       </button>
@@ -3147,12 +3147,9 @@ function renderCVForm() {
   const totalSteps = CV_WIZARD_STEPS.length;
   const pct = Math.round((cvWizardStep / (totalSteps - 1)) * 100);
 
-  // Preview blur
+  // Preview always active
   const previewCol = document.getElementById('cvPreviewCol');
-  if (previewCol) {
-    if (cvWizardStep < totalSteps - 1) previewCol.classList.add('cvw-preview-blur');
-    else previewCol.classList.remove('cvw-preview-blur');
-  }
+  if (previewCol) previewCol.classList.remove('cvw-preview-blur');
 
   // Progress bar + step dots
   const progressHTML = `
@@ -3244,6 +3241,10 @@ function renderCVForm() {
       ${cvWizardStep > 0
         ? `<button class="cvw-btn cvw-btn-back" onclick="cvWizardPrev()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Wstecz</button>`
         : `<div></div>`}
+      <button class="cvw-btn cvw-btn-tpl" onclick="openTplDrawer()">
+        <span class="tpl-preview-dot" id="tplDot" style="background:#16a34a;width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;"></span>
+        Szablon ▾
+      </button>
       ${cvWizardStep < totalSteps - 1
         ? `<button class="cvw-btn cvw-btn-next" onclick="cvWizardNext()">Dalej <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>`
         : `<button class="cvw-btn cvw-btn-done" onclick="downloadCV()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button>`}
