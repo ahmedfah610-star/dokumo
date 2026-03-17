@@ -96,7 +96,7 @@ body{
 
 /* thumb */
 .ws-thumb{width:100%;aspect-ratio:595/842;overflow:hidden;position:relative;}
-.ws-thumb-inner{position:absolute;inset:0;overflow:hidden;}
+.ws-thumb-inner{position:absolute;top:0;left:0;width:595px;height:842px;overflow:hidden;}
 
 /* label */
 .ws-lbl{
@@ -298,13 +298,13 @@ function preview(id, c1, c2) {
   }
 
   const wrap = (inner, bg='#fff') =>
-    `<div style="width:595px;height:842px;overflow:hidden;background:${bg};font-family:Arial,sans-serif;display:flex;flex-direction:column;">${inner}</div>`;
+    `<div style="width:595px;min-height:842px;height:842px;overflow:hidden;background:${bg};font-family:Arial,sans-serif;display:flex;flex-direction:column;box-sizing:border-box;">${inner}</div>`;
   const wrapRow = (inner, bg='#fff') =>
-    `<div style="width:595px;height:842px;overflow:hidden;background:${bg};font-family:Arial,sans-serif;display:flex;">${inner}</div>`;
+    `<div style="width:595px;min-height:842px;height:842px;overflow:hidden;background:${bg};font-family:Arial,sans-serif;display:flex;box-sizing:border-box;">${inner}</div>`;
 
   // ── Header variants ──
   function headerLight(namec, rolec, bgc, pad='32px 32px 24px') {
-    return `<div style="background:${bgc};padding:${pad};flex-shrink:0">
+    return `<div style="width:100%;background:${bgc};padding:${pad};flex-shrink:0;box-sizing:border-box;">
       <div style="font-size:30px;font-weight:800;color:${namec};letter-spacing:-0.03em;line-height:1.1">${S.name}</div>
       <div style="font-size:14px;color:${rolec};margin-top:6px;font-weight:500">${S.role}</div>
       <div style="margin-top:12px;font-size:11px;color:${rolec};opacity:0.8">
@@ -313,7 +313,7 @@ function preview(id, c1, c2) {
     </div>`;
   }
   function headerDark(namec='#fff', rolec='rgba(255,255,255,0.75)', bgc=c1, pad='32px 32px 24px') {
-    return `<div style="background:${bgc};padding:${pad};flex-shrink:0">
+    return `<div style="width:100%;background:${bgc};padding:${pad};flex-shrink:0;box-sizing:border-box;">
       <div style="font-size:30px;font-weight:800;color:${namec};letter-spacing:-0.03em;line-height:1.1">${S.name}</div>
       <div style="font-size:14px;color:${rolec};margin-top:6px;font-weight:500">${S.role}</div>
       <div style="margin-top:12px;font-size:11px;color:${rolec}">
