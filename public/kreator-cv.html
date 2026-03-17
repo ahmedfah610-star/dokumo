@@ -2694,6 +2694,7 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
 // ── WIZARD ──────────────────────────────────────────────────
 let cvWizardStep = 0;
 const CV_WIZARD_STEPS = [
+  { label: 'Szablon' },
   { label: 'Dane osobowe' },
   { label: 'Podsumowanie' },
   { label: 'Doświadczenie' },
@@ -2704,7 +2705,7 @@ const CV_WIZARD_STEPS = [
 function cvWizardNext() {
   if (cvWizardStep < CV_WIZARD_STEPS.length - 1) {
     cvWizardStep++;
-    const autoOpen = [null,'podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci',null];
+    const autoOpen = [null,null,'podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci',null];
     if (autoOpen[cvWizardStep]) cvOpenSections.add(autoOpen[cvWizardStep]);
     renderCVForm();
     document.getElementById('cvFormPanel').scrollTop = 0;
@@ -2715,6 +2716,13 @@ function cvWizardPrev() {
 }
 function cvWizardGoTo(i) {
   if (i <= cvWizardStep) { cvWizardStep = i; renderCVForm(); document.getElementById('cvFormPanel').scrollTop = 0; }
+}
+function cvWizardPickTpl(id) {
+  cvTemplate = id;
+  const t = CV_TEMPLATES.find(x => x.id === id);
+  if (t) { const dot = document.getElementById('tplDot'); if (dot) dot.style.background = t.color1; }
+  updateCVPreview();
+  renderCVForm();
 }
 let cvCustomSections = []; // [{id, title, content}]
 
@@ -3167,6 +3175,31 @@ function renderCVForm() {
   // Step content
   let stepContent = '';
   if (cvWizardStep === 0) {
+    // Inline template picker
+    const tplGroups = [
+      { label: 'Premium',    ids: ['nova','clean','nordic','stripe','cascade','metro'] },
+      { label: 'Nowe 2026',  ids: ['executive','athens','matrix','prism','linen'] },
+      { label: 'Klasyczne',  ids: ['sidebar','timeline','bold','midnight'] },
+      { label: 'Nowoczesne', ids: ['teal','slate','ocean','diagonal'] },
+      { label: 'Kreatywne',  ids: ['creative','coral','rose'] },
+      { label: 'Wyraziste',  ids: ['shield','arrow'] },
+    ];
+    let tplHTML = '';
+    tplGroups.forEach(g => {
+      const cards = CV_TEMPLATES.filter(t => g.ids.includes(t.id));
+      if (!cards.length) return;
+      tplHTML += `<div class="cv-tpl-section-label" style="grid-column:1/-1;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9ca3af;padding:10px 0 4px;border-bottom:1px solid #f3f4f6;margin-bottom:2px;">${g.label}</div>`;
+      tplHTML += cards.map(t => `
+        <div class="cv-tpl-card${cvTemplate===t.id?' active':''}" data-tpl="${t.id}" onclick="cvWizardPickTpl('${t.id}')" style="cursor:pointer;">
+          <div class="cv-tpl-thumb">${getTplPreviewHTML(t)}</div>
+          <div class="cv-tpl-name">${t.name}</div>
+        </div>`).join('');
+    });
+    stepContent = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,105px);justify-content:center;gap:10px;padding-bottom:8px;">
+        ${tplHTML}
+      </div>`;
+  } else if (cvWizardStep === 1) {
     stepContent = `
       <div class="cv-lang-selector" id="cvLangSelector">
         <div class="cv-lang-label">🌐 Język CV</div>
@@ -3216,15 +3249,15 @@ function renderCVForm() {
           </div>
         </div>
       </div>`;
-  } else if (cvWizardStep === 1) {
-    stepContent = `<div class="acc-list">${buildSectionFormHTML('podsumowanie')}</div>`;
   } else if (cvWizardStep === 2) {
-    stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('doswiadczenie')}</div>`;
+    stepContent = `<div class="acc-list">${buildSectionFormHTML('podsumowanie')}</div>`;
   } else if (cvWizardStep === 3) {
-    stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('wyksztalcenie')}</div>`;
+    stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('doswiadczenie')}</div>`;
   } else if (cvWizardStep === 4) {
-    stepContent = `<div class="acc-list">${buildSectionFormHTML('umiejetnosci')}${buildSectionFormHTML('jezyki')}${buildSectionFormHTML('certyfikaty')}</div>`;
+    stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('wyksztalcenie')}</div>`;
   } else if (cvWizardStep === 5) {
+    stepContent = `<div class="acc-list">${buildSectionFormHTML('umiejetnosci')}${buildSectionFormHTML('jezyki')}${buildSectionFormHTML('certyfikaty')}</div>`;
+  } else if (cvWizardStep === 6) {
     stepContent = `
       <div class="acc-list">
         ${buildSectionFormHTML('zainteresowania')}
@@ -3241,10 +3274,7 @@ function renderCVForm() {
       ${cvWizardStep > 0
         ? `<button class="cvw-btn cvw-btn-back" onclick="cvWizardPrev()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Wstecz</button>`
         : `<div></div>`}
-      <button class="cvw-btn cvw-btn-tpl" onclick="openTplDrawer()">
-        <span class="tpl-preview-dot" id="tplDot" style="background:#16a34a;width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;"></span>
-        Szablon ▾
-      </button>
+      <span id="tplDot" style="display:none"></span>
       ${cvWizardStep < totalSteps - 1
         ? `<button class="cvw-btn cvw-btn-next" onclick="cvWizardNext()">Dalej <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>`
         : `<button class="cvw-btn cvw-btn-done" onclick="downloadCV()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button>`}
@@ -3259,9 +3289,9 @@ function renderCVForm() {
   `;
 
   initDragDrop();
-  if (cvWizardStep === 4 && cvOpenSections.has('umiejetnosci')) updateSkillChips();
-  if (cvWizardStep === 4 && cvOpenSections.has('certyfikaty')) updateCertChips();
-  if (cvWizardStep === 5 && cvOpenSections.has('zainteresowania')) updateInterestChips();
+  if (cvWizardStep === 5 && cvOpenSections.has('umiejetnosci')) updateSkillChips();
+  if (cvWizardStep === 5 && cvOpenSections.has('certyfikaty')) updateCertChips();
+  if (cvWizardStep === 6 && cvOpenSections.has('zainteresowania')) updateInterestChips();
   applySpellcheck();
 }
 
