@@ -621,10 +621,17 @@ function preview(id, c1, c2) {
 let idx = 0;
 const total = T.length;
 
-function cardW() {
-  return window.innerWidth <= 600 ? window.innerWidth * 0.72 : Math.min(220, (window.innerWidth - 160) / 3.5);
+function stageH() {
+  // nav=58, footer~58, vertical padding=48
+  return window.innerHeight - 58 - 58 - 48;
 }
-function gap() { return window.innerWidth <= 600 ? 16 : 20; }
+function cardW() {
+  // Size from height so cards fill the vertical space
+  const fromH = stageH() * (595 / 842);
+  if (window.innerWidth <= 600) return Math.min(fromH, window.innerWidth * 0.76);
+  return Math.min(fromH, (window.innerWidth - 160) * 0.38);
+}
+function gap() { return window.innerWidth <= 600 ? 14 : 22; }
 
 function buildCards() {
   const track = document.getElementById('wsTrack');
