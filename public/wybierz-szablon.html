@@ -187,434 +187,394 @@ const S = {
   email: 'anna@email.pl',
   phone: '+48 123 456 789',
   city: 'Warszawa',
-  sum: 'Doświadczona specjalistka ds. marketingu z 5-letnim stażem w e-commerce i kampaniach cyfrowych.',
-  exp1f: 'Sklep Online ABC',
-  exp1r: 'Marketing Specialist',
-  exp1d: '2021 – Teraz',
-  exp2f: 'Agencja XYZ',
-  exp2r: 'Junior Marketer',
-  exp2d: '2018 – 2021',
-  edu: 'Uniwersytet Warszawski',
-  edud: 'Zarządzanie i Marketing, 2018',
-  sk: 'Google Analytics · Facebook Ads · SEO',
-  lang: 'Angielski C1 · Niemiecki B1',
+  linkedin: 'linkedin.com/in/anna',
+  sum: 'Doświadczona specjalistka ds. marketingu z 5-letnim stażem w e-commerce i kampaniach cyfrowych. Zarządzam kampaniami Google Ads i Meta, analityką oraz strategią contentową. Osiągam wzrosty konwersji o 30–40%.',
+  exp1f: 'Sklep Online ABC',  exp1r: 'Marketing Specialist',  exp1d: 'sty 2021 – obecnie',
+  exp1desc: 'Zarządzanie kampaniami Google Ads i Meta Ads z budżetem 50k PLN/mies. Wzrost konwersji o 35%. Tworzenie strategii contentowej i analiz rynku.',
+  exp2f: 'Agencja XYZ',       exp2r: 'Junior Marketer',       exp2d: 'cze 2018 – gru 2020',
+  exp2desc: 'Obsługa social media dla 12 klientów. Tworzenie treści, raportowanie kampanii i wsparcie działu sprzedaży.',
+  exp3f: 'StartUp Sp. z o.o.',exp3r: 'Marketing Intern',      exp3d: 'mar 2017 – maj 2018',
+  exp3desc: 'Tworzenie materiałów marketingowych, wsparcie przy organizacji eventów branżowych.',
+  edu1: 'Uniwersytet Warszawski', edu1d: 'Zarządzanie i Marketing', edu1y: '2014 – 2018',
+  edu2: 'Szkoła Wyższa SGH',     edu2d: 'Podyplomowe: Digital Marketing', edu2y: '2019 – 2020',
+  sk1: 'Google Analytics', sk2: 'Facebook Ads', sk3: 'SEO / SEM', sk4: 'Copywriting', sk5: 'Excel', sk6: 'Figma',
+  lang1: 'Angielski', lang1l: 'C1 – biegły',
+  lang2: 'Niemiecki', lang2l: 'B1 – średniozaawansowany',
+  cert1: 'Google Ads Certified – 2023',
+  cert2: 'Meta Blueprint – 2022',
+  int: 'Fotografia, podróże, psychologia, literatura faktu',
 };
 
-// ── Preview HTML builders ─────────────────────────────────────
-function txt(val, style) {
-  return `<div style="${style};overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${val}</div>`;
+// ── Preview HTML builders — full A4 scale (595×842) ──────────
+// Fonts are real CV size; scale transform makes them readable in thumbnail
+function t(val, style) {
+  return `<div style="${style}">${val}</div>`;
 }
-function sep(c, mt=6) {
-  return `<div style="height:1px;background:${c};margin-top:${mt}px;opacity:0.25"></div>`;
+function sl(label, c, mt=18) {
+  return `<div style="font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:${c};margin-top:${mt}px;margin-bottom:6px;border-bottom:1.5px solid ${c};padding-bottom:3px;opacity:0.85">${label}</div>`;
 }
-function secLabel(label, c, mt=8) {
-  return `<div style="font-size:5.5px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${c};margin-top:${mt}px;margin-bottom:3px;">${label}</div>`;
+function expEntry(firm, role, dates, desc, c) {
+  return `<div style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div style="font-size:13px;font-weight:700;color:#1e293b">${firm}</div>
+      <div style="font-size:10px;color:#94a3b8;flex-shrink:0;margin-left:8px">${dates}</div>
+    </div>
+    <div style="font-size:11px;color:${c};font-weight:600;margin-top:2px">${role}</div>
+    <div style="font-size:10.5px;color:#475569;margin-top:5px;line-height:1.5">${desc}</div>
+  </div>`;
 }
-function line(c, w, mt=4) {
-  return `<div style="height:3px;width:${w}%;background:${c};border-radius:1px;margin-top:${mt}px;opacity:0.7"></div>`;
+function eduEntry(school, degree, years) {
+  return `<div style="margin-bottom:12px">
+    <div style="font-size:13px;font-weight:700;color:#1e293b">${school}</div>
+    <div style="font-size:11px;color:#64748b;margin-top:2px">${degree} · ${years}</div>
+  </div>`;
+}
+function skillChip(label, bg, color) {
+  return `<span style="display:inline-block;background:${bg};color:${color};font-size:10px;font-weight:600;padding:4px 10px;border-radius:99px;margin:3px 3px 0 0">${label}</span>`;
+}
+function contactRow(icon, val, c) {
+  return `<span style="font-size:11px;color:${c};margin-right:16px">${icon} ${val}</span>`;
 }
 
 // full-width A4 preview at 595px → scaled to fit card
 function preview(id, c1, c2) {
-  const bg1 = c1, bg2 = c2;
-  const white = '#fff', gray = '#e2e8f0', dark = '#1e293b', light = '#f8fafc';
-  const muted = '#94a3b8';
+  const dk = '#1e293b', mu = '#64748b', lt = '#f8fafc';
 
-  const bodySection = `
-    ${secLabel('Doświadczenie', bg1)}
-    ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-    ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-    ${line(gray, 88, 3)}
-    ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-    ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-    ${secLabel('Wykształcenie', bg1)}
-    ${txt(S.edu, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-    ${txt(S.edud, `font-size:5.5px;color:${muted};margin-top:1px`)}
-    ${secLabel('Umiejętności', bg1)}
-    ${txt(S.sk, `font-size:5.5px;color:${dark};margin-top:2px`)}
-    ${secLabel('Języki', bg1)}
-    ${txt(S.lang, `font-size:5.5px;color:${dark};margin-top:2px`)}
-  `;
-
-  const templates = {
-    nova: ()=>`
-      <div style="background:${bg1};padding:18px 18px 14px;">
-        <div style="display:flex;align-items:flex-end;gap:12px">
-          <div style="width:38px;height:38px;border-radius:50%;background:${bg2};flex-shrink:0;overflow:hidden">
-            <div style="width:100%;height:100%;background:rgba(255,255,255,0.2)"></div>
-          </div>
-          <div>
-            ${txt(S.name, `font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-            ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.75);margin-top:2px`)}
-          </div>
-        </div>
-        <div style="margin-top:10px;display:flex;gap:12px">
-          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.65)`)}
-          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.65)`)}
-          ${txt(S.city, `font-size:5.5px;color:rgba(255,255,255,0.65)`)}
-        </div>
-      </div>
-      <div style="padding:14px 18px;">
-        ${secLabel('Podsumowanie', bg1, 0)}
-        ${txt(S.sum, `font-size:6px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
-        ${bodySection}
-      </div>`,
-
-    clean: ()=>`
-      <div style="padding:20px 18px 12px;border-bottom:3px solid ${bg1}">
-        ${txt(S.name, `font-size:15px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7.5px;color:${muted};margin-top:3px`)}
-        <div style="display:flex;gap:10px;margin-top:6px">
-          ${txt(S.email, `font-size:5.5px;color:${muted}`)}
-          ${txt(S.phone, `font-size:5.5px;color:${muted}`)}
-          ${txt(S.city, `font-size:5.5px;color:${muted}`)}
-        </div>
-      </div>
-      <div style="padding:12px 18px">
-        ${secLabel('Podsumowanie', bg1, 0)}
-        ${txt(S.sum, `font-size:6px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
-        ${bodySection}
-      </div>`,
-
-    nordic: ()=>`
-      <div style="padding:20px 18px 14px">
-        ${txt(S.name, `font-size:15px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7.5px;color:${muted};margin-top:3px`)}
-        <div style="height:2px;background:${bg1};margin-top:10px;opacity:0.25;width:100%"></div>
-        <div style="display:flex;gap:10px;margin-top:6px">
-          ${txt(S.email, `font-size:5.5px;color:${muted}`)}${txt(S.phone, `font-size:5.5px;color:${muted}`)}
-        </div>
-      </div>
-      <div style="padding:0 18px">
-        ${secLabel('Podsumowanie', bg1, 0)}
-        ${txt(S.sum, `font-size:6px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
-        ${bodySection}
-      </div>`,
-
-    stripe: ()=>`
-      <div style="display:flex;height:100%">
-        <div style="width:6px;background:${bg1};flex-shrink:0"></div>
-        <div style="flex:1;padding:18px 14px">
-          ${txt(S.name, `font-size:14px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
-          ${txt(S.role, `font-size:7px;color:${muted};margin-top:2px`)}
-          <div style="height:1.5px;background:${bg1};margin-top:8px;opacity:0.2"></div>
-          ${secLabel('Podsumowanie', bg1, 6)}
-          ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
-          ${bodySection}
-        </div>
-      </div>`,
-
-    cascade: ()=>`
-      <div style="display:flex;height:100%">
-        <div style="width:38%;background:${bg1};padding:18px 12px;flex-shrink:0">
-          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:10px"></div>
-          ${txt(S.name, `font-size:9px;font-weight:800;color:#fff;letter-spacing:-0.02em;white-space:normal`)}
-          ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.7);margin-top:3px;white-space:normal`)}
-          ${secLabel('Kontakt', 'rgba(255,255,255,0.6)', 12)}
-          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
-          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
-          ${secLabel('Języki', 'rgba(255,255,255,0.6)', 10)}
-          ${txt(S.lang, `font-size:5.5px;color:rgba(255,255,255,0.75);margin-top:2px;white-space:normal`)}
-        </div>
-        <div style="flex:1;padding:18px 12px">
-          ${secLabel('Podsumowanie', bg1, 0)}
-          ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
-          ${secLabel('Doświadczenie', bg1)}
-          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${secLabel('Wykształcenie', bg1)}
-          ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
-        </div>
-      </div>`,
-
-    sidebar: ()=>`
-      <div style="display:flex;height:100%">
-        <div style="width:36%;background:${bg1};padding:20px 12px;flex-shrink:0">
-          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:10px"></div>
-          ${txt(S.name, `font-size:9px;font-weight:800;color:#fff;white-space:normal`)}
-          ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.7);margin-top:3px;white-space:normal`)}
-          ${secLabel('Kontakt', 'rgba(255,255,255,0.55)', 12)}
-          ${txt(S.email, `font-size:5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
-          ${txt(S.phone, `font-size:5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
-          ${secLabel('Umiejętności', 'rgba(255,255,255,0.55)', 10)}
-          ${txt(S.sk, `font-size:5px;color:rgba(255,255,255,0.75);margin-top:2px;white-space:normal`)}
-        </div>
-        <div style="flex:1;padding:18px 12px">
-          ${secLabel('Doświadczenie', bg1, 0)}
-          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${secLabel('Wykształcenie', bg1)}
-          ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
-          ${secLabel('Języki', bg1)}
-          ${txt(S.lang, `font-size:5px;color:${dark};margin-top:2px;white-space:normal`)}
-        </div>
-      </div>`,
-
-    slate: ()=>`
-      <div style="display:flex;height:100%">
-        <div style="width:38%;background:${bg1};padding:20px 12px;flex-shrink:0">
-          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.18);margin-bottom:10px"></div>
-          ${txt(S.name, `font-size:9px;font-weight:800;color:#fff;white-space:normal`)}
-          ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.65);margin-top:3px;white-space:normal`)}
-          ${secLabel('Kontakt', 'rgba(255,255,255,0.5)', 12)}
-          ${txt(S.email, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
-          ${txt(S.phone, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
-        </div>
-        <div style="flex:1;padding:18px 12px">
-          ${secLabel('Doświadczenie', bg1, 0)}
-          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-          ${txt(S.exp1r, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-          ${txt(S.exp2r, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${secLabel('Wykształcenie', bg1)}
-          ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
-        </div>
-      </div>`,
-
-    metro: ()=>`
-      <div style="background:#1a1a1a;padding:16px 18px 14px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
-        <div style="display:flex;gap:10px;margin-top:6px">
-          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.55)`)}
-          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.55)`)}
-        </div>
-      </div>
-      <div style="padding:12px 18px">
-        ${secLabel('Podsumowanie', '#1a1a1a', 0)}
-        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', '#1a1a1a')}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-      </div>`,
-
-    midnight: ()=>`
-      <div style="background:${bg1};height:100%;padding:18px 18px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
-        <div style="height:1px;background:rgba(255,255,255,0.1);margin:10px 0"></div>
-        <div style="display:flex;gap:10px;margin-bottom:8px">
-          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.5)`)}
-          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.5)`)}
-        </div>
-        ${secLabel('Podsumowanie', 'rgba(255,255,255,0.4)', 0)}
-        ${txt(S.sum, `font-size:5.5px;color:rgba(255,255,255,0.7);line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', 'rgba(255,255,255,0.4)')}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:#fff;margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:rgba(255,255,255,0.5);margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:#fff;margin-top:5px`)}
-      </div>`,
-
-    matrix: ()=>`
-      <div style="background:#0d1117;height:100%;padding:18px 18px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:rgba(0,255,136,0.6);margin-top:3px`)}
-        <div style="height:1px;background:rgba(0,255,136,0.15);margin:10px 0"></div>
-        ${secLabel('Podsumowanie', 'rgba(0,255,136,0.5)', 0)}
-        ${txt(S.sum, `font-size:5.5px;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', 'rgba(0,255,136,0.5)')}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:rgba(0,255,136,0.5);margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:5px`)}
-      </div>`,
-
-    executive: ()=>`
-      <div style="background:#111;padding:16px 18px 14px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
-      </div>
-      <div style="height:3px;background:${bg2}"></div>
-      <div style="padding:12px 18px">
-        ${secLabel('Podsumowanie', '#111', 0)}
-        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', '#111')}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-      </div>`,
-
-    athens: ()=>`
-      <div style="background:${bg1};padding:14px 18px 12px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
-      </div>
-      <div style="display:flex;flex:1">
-        <div style="width:34%;background:#eff4ff;padding:12px 10px">
-          ${secLabel('Kontakt', bg1, 0)}
-          ${txt(S.email, `font-size:5px;color:${dark};margin-top:2px`)}
-          ${txt(S.phone, `font-size:5px;color:${dark};margin-top:2px`)}
-          ${secLabel('Umiejętności', bg1, 8)}
-          ${txt(S.sk, `font-size:5px;color:${dark};margin-top:2px;white-space:normal`)}
-          ${secLabel('Języki', bg1, 8)}
-          ${txt(S.lang, `font-size:5px;color:${dark};margin-top:2px;white-space:normal`)}
-        </div>
-        <div style="flex:1;padding:12px 10px">
-          ${secLabel('Doświadczenie', bg1, 0)}
-          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${secLabel('Wykształcenie', bg1)}
-          ${txt(S.edu, `font-size:6px;font-weight:700;color:${dark};margin-top:2px`)}
-        </div>
-      </div>`,
-  };
-
-  // Default for templates without custom layout
-  function defaultTpl(bg, textCol) {
-    const hTextCol = bg === '#0d1117' || bg === '#0f172a' ? '#fff' : textCol;
+  // Shared full-body content for single-column templates
+  function body(ac) {
     return `
-      <div style="background:${bg};padding:16px 18px 14px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:${hTextCol || '#fff'};letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
-        <div style="display:flex;gap:10px;margin-top:6px">
-          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.6)`)}
-          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.6)`)}
-        </div>
+      ${sl('Podsumowanie', ac, 0)}
+      <div style="font-size:11.5px;color:#475569;line-height:1.6;margin-bottom:4px">${S.sum}</div>
+      ${sl('Doświadczenie', ac)}
+      ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, ac)}
+      ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, ac)}
+      ${expEntry(S.exp3f, S.exp3r, S.exp3d, S.exp3desc, ac)}
+      ${sl('Wykształcenie', ac)}
+      ${eduEntry(S.edu1, S.edu1d, S.edu1y)}
+      ${eduEntry(S.edu2, S.edu2d, S.edu2y)}
+      ${sl('Umiejętności', ac)}
+      <div style="margin-bottom:4px">
+        ${skillChip(S.sk1,'rgba(0,0,0,0.06)',dk)}${skillChip(S.sk2,'rgba(0,0,0,0.06)',dk)}${skillChip(S.sk3,'rgba(0,0,0,0.06)',dk)}${skillChip(S.sk4,'rgba(0,0,0,0.06)',dk)}${skillChip(S.sk5,'rgba(0,0,0,0.06)',dk)}${skillChip(S.sk6,'rgba(0,0,0,0.06)',dk)}
       </div>
-      <div style="padding:12px 18px">
-        ${secLabel('Podsumowanie', bg, 0)}
-        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', bg)}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-        ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${secLabel('Wykształcenie', bg)}
-        ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${secLabel('Umiejętności', bg)}
-        ${txt(S.sk, `font-size:5.5px;color:${dark};margin-top:2px`)}
-      </div>`;
+      ${sl('Języki', ac)}
+      <div style="display:flex;gap:20px;font-size:11px;color:${dk}">
+        <span><b>${S.lang1}</b> — ${S.lang1l}</span><span><b>${S.lang2}</b> — ${S.lang2l}</span>
+      </div>
+      ${sl('Certyfikaty', ac)}
+      <div style="font-size:11px;color:${dk};margin-bottom:3px">${S.cert1}</div>
+      <div style="font-size:11px;color:${dk}">${S.cert2}</div>
+      ${sl('Zainteresowania', ac)}
+      <div style="font-size:11px;color:${mu}">${S.int}</div>
+    `;
   }
 
-  const diagonalPrev = `
-    <div style="position:relative;overflow:hidden;height:100%">
-      <div style="position:absolute;top:0;left:0;right:0;height:42%;background:${bg1};clip-path:polygon(0 0,100% 0,100% 65%,0 100%)"></div>
-      <div style="position:relative;z-index:1;padding:14px 18px 0">
-        ${txt(S.name, `font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
-      </div>
-      <div style="position:relative;z-index:1;padding:52px 18px 0">
-        ${secLabel('Doświadczenie', bg1, 0)}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-        ${secLabel('Wykształcenie', bg1)}
-        ${txt(S.edu, `font-size:6px;font-weight:700;color:${dark};margin-top:2px`)}
+  // Sidebar body (for 2-col layouts — sidebar has contact/skills, main has exp/edu)
+  function sidebarCol(ac, textC, subC) {
+    return `
+      ${sl('Kontakt', subC, 0)}
+      <div style="font-size:10.5px;color:${textC};margin-bottom:4px;line-height:1.7">${S.email}<br>${S.phone}<br>${S.city}<br>${S.linkedin}</div>
+      ${sl('Umiejętności', subC)}
+      <div>${skillChip(S.sk1,'rgba(255,255,255,0.15)',textC)}${skillChip(S.sk2,'rgba(255,255,255,0.15)',textC)}${skillChip(S.sk3,'rgba(255,255,255,0.15)',textC)}${skillChip(S.sk4,'rgba(255,255,255,0.15)',textC)}${skillChip(S.sk5,'rgba(255,255,255,0.15)',textC)}${skillChip(S.sk6,'rgba(255,255,255,0.15)',textC)}</div>
+      ${sl('Języki', subC)}
+      <div style="font-size:10.5px;color:${textC};line-height:1.7">${S.lang1} — ${S.lang1l}<br>${S.lang2} — ${S.lang2l}</div>
+      ${sl('Certyfikaty', subC)}
+      <div style="font-size:10.5px;color:${textC};line-height:1.7">${S.cert1}<br>${S.cert2}</div>
+      ${sl('Zainteresowania', subC)}
+      <div style="font-size:10.5px;color:${textC};line-height:1.6">${S.int}</div>
+    `;
+  }
+  function mainCol(ac) {
+    return `
+      ${sl('Podsumowanie', ac, 0)}
+      <div style="font-size:11px;color:#475569;line-height:1.6;margin-bottom:4px">${S.sum}</div>
+      ${sl('Doświadczenie', ac)}
+      ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, ac)}
+      ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, ac)}
+      ${expEntry(S.exp3f, S.exp3r, S.exp3d, S.exp3desc, ac)}
+      ${sl('Wykształcenie', ac)}
+      ${eduEntry(S.edu1, S.edu1d, S.edu1y)}
+      ${eduEntry(S.edu2, S.edu2d, S.edu2y)}
+    `;
+  }
+
+  const wrap = (inner, bg='#fff') =>
+    `<div style="width:595px;height:842px;overflow:hidden;background:${bg};font-family:Arial,sans-serif;display:flex;flex-direction:column;">${inner}</div>`;
+  const wrapRow = (inner, bg='#fff') =>
+    `<div style="width:595px;height:842px;overflow:hidden;background:${bg};font-family:Arial,sans-serif;display:flex;">${inner}</div>`;
+
+  // ── Header variants ──
+  function headerLight(namec, rolec, bgc, pad='32px 32px 24px') {
+    return `<div style="background:${bgc};padding:${pad};flex-shrink:0">
+      <div style="font-size:30px;font-weight:800;color:${namec};letter-spacing:-0.03em;line-height:1.1">${S.name}</div>
+      <div style="font-size:14px;color:${rolec};margin-top:6px;font-weight:500">${S.role}</div>
+      <div style="margin-top:12px;font-size:11px;color:${rolec};opacity:0.8">
+        ${contactRow('✉', S.email, rolec)}${contactRow('☎', S.phone, rolec)}${contactRow('📍', S.city, rolec)}
       </div>
     </div>`;
-
-  const arrowPrev = `
-    <div style="position:relative;overflow:hidden;height:100%;background:#fff7f0">
-      <div style="position:absolute;top:0;left:0;right:0;height:38%;background:${bg1};clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)"></div>
-      <div style="position:relative;z-index:1;padding:14px 18px 0">
-        ${txt(S.name, `font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
-      </div>
-      <div style="position:relative;z-index:1;padding:50px 18px 0">
-        ${secLabel('Doświadczenie', bg1, 0)}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+  }
+  function headerDark(namec='#fff', rolec='rgba(255,255,255,0.75)', bgc=c1, pad='32px 32px 24px') {
+    return `<div style="background:${bgc};padding:${pad};flex-shrink:0">
+      <div style="font-size:30px;font-weight:800;color:${namec};letter-spacing:-0.03em;line-height:1.1">${S.name}</div>
+      <div style="font-size:14px;color:${rolec};margin-top:6px;font-weight:500">${S.role}</div>
+      <div style="margin-top:12px;font-size:11px;color:${rolec}">
+        ${contactRow('✉', S.email, rolec)}${contactRow('☎', S.phone, rolec)}${contactRow('📍', S.city, rolec)}
       </div>
     </div>`;
+  }
 
-  const shieldPrev = `
-    <div style="display:flex;height:100%;background:#e8e4dc">
-      <div style="width:54%;background:${bg1};padding:18px 12px">
-        ${txt(S.name, `font-size:10px;font-weight:800;color:#fff;white-space:normal;line-height:1.2`)}
-        ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.65);margin-top:4px;white-space:normal`)}
-        ${secLabel('Kontakt', 'rgba(255,255,255,0.5)', 12)}
-        ${txt(S.email, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
-        ${txt(S.phone, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
-        ${secLabel('Umiejętności', 'rgba(255,255,255,0.5)', 10)}
-        ${txt(S.sk, `font-size:5px;color:rgba(255,255,255,0.65);margin-top:2px;white-space:normal`)}
-      </div>
-      <div style="flex:1;padding:18px 10px">
-        ${secLabel('Doświadczenie', '#555', 0)}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
-        ${txt(S.exp2r, `font-size:5.5px;color:${muted};margin-top:1px`)}
-        ${secLabel('Wykształcenie', '#555')}
-        ${txt(S.edu, `font-size:6px;font-weight:700;color:${dark};margin-top:2px`)}
-      </div>
-    </div>`;
+  const R = {
+    nova: wrap(`
+      ${headerDark('#fff','rgba(255,255,255,0.75)',c1,'28px 32px 22px')}
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
 
-  const boldPrev = `
-    <div style="height:100%;display:flex;flex-direction:column">
-      <div style="background:#111;display:flex;align-items:center;gap:10px;padding:10px 18px">
-        <div style="height:5px;flex:1;background:#fff;border-radius:1px"></div>
-        <div style="height:5px;width:30%;background:${bg1};border-radius:1px"></div>
-      </div>
-      <div style="padding:14px 18px 0">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:#111;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:${bg1};margin-top:3px`)}
-      </div>
-      <div style="height:2px;background:${bg1};margin:8px 18px"></div>
-      <div style="padding:0 18px">
-        ${secLabel('Podsumowanie', '#111', 0)}
-        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', '#111')}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-      </div>
-    </div>`;
-
-  const linenPrev = `
-    <div style="background:#fef9f0;height:100%">
-      <div style="padding:18px 18px 12px;border-bottom:1.5px solid #fde8b0">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:#d97706;margin-top:3px`)}
-        <div style="display:flex;gap:10px;margin-top:6px">
-          ${txt(S.email, `font-size:5.5px;color:#92400e`)}
-          ${txt(S.phone, `font-size:5.5px;color:#92400e`)}
+    clean: wrap(`
+      <div style="padding:28px 32px 16px;border-bottom:3px solid ${c1}">
+        <div style="font-size:30px;font-weight:800;color:${c1};letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${mu};margin-top:5px">${S.role}</div>
+        <div style="margin-top:10px;font-size:11px;color:${mu}">
+          ${contactRow('', S.email, mu)}${contactRow('', S.phone, mu)}${contactRow('', S.city, mu)}
         </div>
       </div>
-      <div style="padding:12px 18px">
-        ${secLabel('Podsumowanie', '#92400e', 0)}
-        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
-        ${secLabel('Doświadczenie', '#92400e')}
-        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
-        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:#92400e;margin-top:1px`)}
-      </div>
-    </div>`;
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
 
-  const timelinePrev = `
-    <div style="height:100%;display:flex;flex-direction:column">
-      <div style="background:linear-gradient(135deg,${bg1},${bg2});padding:16px 18px 14px">
-        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
-        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
-      </div>
-      <div style="flex:1;padding:12px 18px">
-        ${secLabel('Doświadczenie', bg1, 0)}
-        <div style="border-left:2px solid ${bg1};padding-left:10px;margin-top:5px">
-          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark}`)}
-          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
-          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:6px`)}
-          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+    nordic: wrap(`
+      <div style="padding:28px 32px 16px">
+        <div style="font-size:30px;font-weight:800;color:${c1};letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${mu};margin-top:5px">${S.role}</div>
+        <div style="height:2px;background:${c1};margin:14px 0 10px;opacity:0.2"></div>
+        <div style="font-size:11px;color:${mu}">
+          ${contactRow('', S.email, mu)}${contactRow('', S.phone, mu)}${contactRow('', S.city, mu)}
         </div>
-        ${secLabel('Wykształcenie', bg1)}
-        ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
       </div>
-    </div>`;
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
 
-  const map = {
-    nova: templates.nova, clean: templates.clean, nordic: templates.nordic,
-    stripe: templates.stripe, cascade: templates.cascade, sidebar: templates.sidebar,
-    slate: templates.slate, metro: templates.metro, midnight: templates.midnight,
-    matrix: templates.matrix, executive: templates.executive, athens: templates.athens,
-    diagonal: ()=>diagonalPrev, arrow: ()=>arrowPrev, shield: ()=>shieldPrev,
-    bold: ()=>boldPrev, linen: ()=>linenPrev, timeline: ()=>timelinePrev,
+    stripe: wrap(`
+      <div style="display:flex;flex:1;overflow:hidden">
+        <div style="width:7px;background:${c1};flex-shrink:0"></div>
+        <div style="flex:1;padding:28px 28px 24px;overflow:hidden">
+          <div style="font-size:30px;font-weight:800;color:${c1};letter-spacing:-0.03em">${S.name}</div>
+          <div style="font-size:14px;color:${mu};margin-top:5px">${S.role}</div>
+          <div style="height:1.5px;background:${c1};margin:12px 0 10px;opacity:0.2"></div>
+          <div style="font-size:11px;color:${mu};margin-bottom:4px">
+            ${contactRow('', S.email, mu)}${contactRow('', S.phone, mu)}${contactRow('', S.city, mu)}
+          </div>
+          ${body(c1)}
+        </div>
+      </div>`),
+
+    cascade: wrapRow(`
+      <div style="width:38%;background:${c1};padding:28px 20px 24px;flex-shrink:0;overflow:hidden">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:16px"></div>
+        <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2">${S.name}</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,0.75);margin-top:5px">${S.role}</div>
+        ${sidebarCol(c1,'rgba(255,255,255,0.9)','rgba(255,255,255,0.55)')}
+      </div>
+      <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
+
+    sidebar: wrapRow(`
+      <div style="width:36%;background:${c1};padding:28px 20px 24px;flex-shrink:0;overflow:hidden">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:16px"></div>
+        <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2">${S.name}</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,0.7);margin-top:5px">${S.role}</div>
+        ${sidebarCol(c1,'rgba(255,255,255,0.88)','rgba(255,255,255,0.5)')}
+      </div>
+      <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
+
+    slate: wrapRow(`
+      <div style="width:38%;background:${c1};padding:28px 20px 24px;flex-shrink:0;overflow:hidden">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.18);margin-bottom:16px"></div>
+        <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2">${S.name}</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,0.65);margin-top:5px">${S.role}</div>
+        ${sidebarCol(c1,'rgba(255,255,255,0.82)','rgba(255,255,255,0.45)')}
+      </div>
+      <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
+
+    metro: wrap(`
+      <div style="background:#1a1a1a;padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${c2};margin-top:6px">${S.role}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:10px">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.5)')}${contactRow('', S.phone, 'rgba(255,255,255,0.5)')}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body('#1a1a1a')}</div>`),
+
+    midnight: wrap(`
+      <div style="background:${c1};padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${c2};margin-top:6px">${S.role}</div>
+        <div style="height:1px;background:rgba(255,255,255,0.1);margin:14px 0 10px"></div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45)">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.45)')}${contactRow('', S.phone, 'rgba(255,255,255,0.45)')}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden;background:${c1}">
+        ${sl('Podsumowanie', c2, 0)}
+        <div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.6;margin-bottom:4px">${S.sum}</div>
+        ${sl('Doświadczenie', c2)}
+        ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, c2).replace(/color:#1e293b/g,'color:#e2e8f0').replace(/color:#475569/g,'color:rgba(255,255,255,0.55)')}
+        ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, c2).replace(/color:#1e293b/g,'color:#e2e8f0').replace(/color:#475569/g,'color:rgba(255,255,255,0.55)')}
+        ${sl('Wykształcenie', c2)}
+        ${eduEntry(S.edu1, S.edu1d, S.edu1y).replace(/color:#1e293b/g,'color:#e2e8f0').replace(/color:#64748b/g,'color:rgba(255,255,255,0.5)')}
+        ${sl('Umiejętności', c2)}
+        <div>${skillChip(S.sk1,'rgba(255,255,255,0.1)','rgba(255,255,255,0.85)')}${skillChip(S.sk2,'rgba(255,255,255,0.1)','rgba(255,255,255,0.85)')}${skillChip(S.sk3,'rgba(255,255,255,0.1)','rgba(255,255,255,0.85)')}</div>
+      </div>`),
+
+    matrix: wrap(`
+      <div style="background:#0d1117;padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:${c1};letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:rgba(0,255,136,0.65);margin-top:6px">${S.role}</div>
+        <div style="height:1px;background:rgba(0,255,136,0.15);margin:14px 0 10px"></div>
+        <div style="font-size:11px;color:rgba(0,255,136,0.45)">
+          ${contactRow('', S.email, 'rgba(0,255,136,0.45)')}${contactRow('', S.phone, 'rgba(0,255,136,0.45)')}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden;background:#0d1117">
+        ${sl('Podsumowanie', c1, 0)}
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:4px">${S.sum}</div>
+        ${sl('Doświadczenie', c1)}
+        ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, c1).replace(/color:#1e293b/g,'color:rgba(255,255,255,0.9)').replace(/color:#475569/g,'color:rgba(255,255,255,0.45)')}
+        ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, c1).replace(/color:#1e293b/g,'color:rgba(255,255,255,0.9)').replace(/color:#475569/g,'color:rgba(255,255,255,0.45)')}
+        ${sl('Wykształcenie', c1)}
+        ${eduEntry(S.edu1, S.edu1d, S.edu1y).replace(/color:#1e293b/g,'color:rgba(255,255,255,0.85)').replace(/color:#64748b/g,'color:rgba(255,255,255,0.45)')}
+      </div>`, '#0d1117'),
+
+    executive: wrap(`
+      <div style="background:#111;padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${c2};margin-top:6px">${S.role}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:10px">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.45)')}${contactRow('', S.phone, 'rgba(255,255,255,0.45)')}
+        </div>
+      </div>
+      <div style="height:4px;background:${c2}"></div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c2)}</div>`),
+
+    athens: wrap(`
+      <div style="background:${c1};padding:26px 32px 20px;flex-shrink:0">
+        <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:13.5px;color:rgba(255,255,255,0.7);margin-top:5px">${S.role}</div>
+      </div>
+      <div style="display:flex;flex:1;overflow:hidden">
+        <div style="width:34%;background:#eff6ff;padding:20px 18px;overflow:hidden;flex-shrink:0">
+          ${sidebarCol(c2,dk,'#64748b').replace(/rgba\(255,255,255,0\.15\)/g,'rgba(0,0,0,0.07)').replace(/rgba\(255,255,255,0\.[0-9.]+\)/g,'rgba(0,0,0,0.4)')}
+        </div>
+        <div style="flex:1;padding:20px 22px;overflow:hidden">${mainCol(c1)}</div>
+      </div>`),
+
+    prism: wrap(`
+      <div style="background:linear-gradient(135deg,${c1},${c2});padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.75);margin-top:6px">${S.role}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:10px">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.6)')}${contactRow('', S.phone, 'rgba(255,255,255,0.6)')}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    teal: wrap(`
+      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    ocean: wrap(`
+      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(90deg,${c1},${c2})`)}
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    creative: wrap(`
+      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    coral: wrap(`
+      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    rose: wrap(`
+      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    bold: wrap(`
+      <div style="background:#111;display:flex;align-items:center;padding:10px 28px;flex-shrink:0;gap:12px">
+        <div style="font-size:22px;font-weight:800;color:#fff;flex:1;letter-spacing:-0.02em">${S.name}</div>
+        <div style="height:6px;width:100px;background:${c1};border-radius:2px"></div>
+      </div>
+      <div style="padding:14px 32px 8px">
+        <div style="font-size:14px;font-weight:600;color:${c1}">${S.role}</div>
+        <div style="height:2px;background:${c1};margin:10px 0;border-radius:1px"></div>
+        <div style="font-size:11px;color:${mu}">
+          ${contactRow('', S.email, mu)}${contactRow('', S.phone, mu)}${contactRow('', S.city, mu)}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+
+    linen: wrap(`
+      <div style="background:#fef9f0;padding:28px 32px 18px;border-bottom:2px solid #fde8b0;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:${c1};letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:#d97706;margin-top:5px">${S.role}</div>
+        <div style="font-size:11px;color:#92400e;margin-top:10px;opacity:0.7">
+          ${contactRow('', S.email, '#92400e')}${contactRow('', S.phone, '#92400e')}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden;background:#fef9f0">${body('#92400e')}</div>`, '#fef9f0'),
+
+    timeline: wrap(`
+      <div style="background:linear-gradient(135deg,${c1},${c2});padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.75);margin-top:6px">${S.role}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:10px">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.55)')}${contactRow('', S.phone, 'rgba(255,255,255,0.55)')}
+        </div>
+      </div>
+      <div style="flex:1;padding:16px 32px 24px;overflow:hidden">
+        ${sl('Podsumowanie', c1, 0)}
+        <div style="font-size:11px;color:#475569;line-height:1.6;margin-bottom:4px">${S.sum}</div>
+        ${sl('Doświadczenie', c1)}
+        <div style="border-left:3px solid ${c1};padding-left:16px">
+          ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, c1)}
+          ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, c1)}
+          ${expEntry(S.exp3f, S.exp3r, S.exp3d, S.exp3desc, c1)}
+        </div>
+        ${sl('Wykształcenie', c1)}
+        ${eduEntry(S.edu1, S.edu1d, S.edu1y)}
+      </div>`),
+
+    diagonal: `<div style="width:595px;height:842px;overflow:hidden;font-family:Arial,sans-serif;position:relative;background:#fff">
+      <div style="position:absolute;top:0;left:0;right:0;height:38%;background:${c1};clip-path:polygon(0 0,100% 0,100% 68%,0 100%);z-index:0"></div>
+      <div style="position:relative;z-index:1;padding:28px 32px 0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.75);margin-top:5px">${S.role}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:8px">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.55)')}${contactRow('', S.phone, 'rgba(255,255,255,0.55)')}
+        </div>
+      </div>
+      <div style="position:relative;z-index:1;padding:110px 32px 24px;overflow:hidden">
+        ${body(c1)}
+      </div>
+    </div>`,
+
+    shield: `<div style="width:595px;height:842px;overflow:hidden;font-family:Arial,sans-serif;display:flex;background:#e8e4dc">
+      <div style="width:54%;background:${c1};padding:28px 20px 24px;flex-shrink:0;overflow:hidden">
+        <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.2">${S.name}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:5px">${S.role}</div>
+        ${sidebarCol(c1,'rgba(255,255,255,0.88)','rgba(255,255,255,0.5)')}
+      </div>
+      <div style="flex:1;padding:28px 22px 24px;overflow:hidden">${mainCol('#555')}</div>
+    </div>`,
+
+    arrow: `<div style="width:595px;height:842px;overflow:hidden;font-family:Arial,sans-serif;background:#fff7f0;position:relative">
+      <div style="position:absolute;top:0;left:0;right:0;height:36%;background:${c1};clip-path:polygon(0 0,100% 0,100% 75%,50% 100%,0 75%)"></div>
+      <div style="position:relative;z-index:1;padding:28px 32px 0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${c2};margin-top:5px">${S.role}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:8px">
+          ${contactRow('', S.email, 'rgba(255,255,255,0.6)')}${contactRow('', S.phone, 'rgba(255,255,255,0.6)')}
+        </div>
+      </div>
+      <div style="position:relative;z-index:1;padding:120px 32px 24px;overflow:hidden">${body(c1)}</div>
+    </div>`,
   };
 
-  if (map[id]) return `<div style="width:595px;height:842px;overflow:hidden;display:flex;flex-direction:column;">${map[id]()}</div>`;
-  return `<div style="width:595px;height:842px;overflow:hidden;display:flex;flex-direction:column;">${defaultTpl(bg1)}</div>`;
+  return R[id] || wrap(`${headerDark()}
+    <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`);
 }
 
 // ── Carousel state ─────────────────────────────────────────
