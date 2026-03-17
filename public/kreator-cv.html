@@ -2951,7 +2951,7 @@ function toggleAccPersonal() {
 }
 
 // ── CV LANGUAGE – STATIC LABELS (no AI needed) ───────────────
-let cvCurrentLang = 'pl';
+let cvCurrentLang = (function(){var l=new URLSearchParams(location.search).get('lang');return(l&&['pl','en','de','uk','es','cs','nl'].includes(l))?l:'pl';})();
 
 // All section header translations
 const CV_LABELS = {
@@ -3221,18 +3221,6 @@ function renderCVForm() {
   let stepContent = '';
   if (cvWizardStep === 0) {
     stepContent = `
-      <div class="cv-lang-selector" id="cvLangSelector">
-        <div class="cv-lang-label">🌐 Język CV</div>
-        <select class="cv-lang-select" onchange="setCVLang(this.value)">
-          <option value="pl" ${cvCurrentLang==='pl'?'selected':''}>🇵🇱 Polski</option>
-          <option value="en" ${cvCurrentLang==='en'?'selected':''}>🇬🇧 English</option>
-          <option value="de" ${cvCurrentLang==='de'?'selected':''}>🇩🇪 Deutsch</option>
-          <option value="uk" ${cvCurrentLang==='uk'?'selected':''}>🇺🇦 Українська</option>
-          <option value="es" ${cvCurrentLang==='es'?'selected':''}>🇪🇸 Español</option>
-          <option value="cs" ${cvCurrentLang==='cs'?'selected':''}>🇨🇿 Čeština</option>
-          <option value="nl" ${cvCurrentLang==='nl'?'selected':''}>🇳🇱 Nederlands</option>
-        </select>
-      </div>
       <div class="acc-item open" id="accPersonalItem">
         <div class="acc-row" onclick="toggleAccPersonal()">
           <span class="acc-drag-spacer"></span>

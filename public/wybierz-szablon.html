@@ -120,6 +120,21 @@ body{
 }
 .ws-pip.active{background:#0f0e0c;width:18px;border-radius:3px;}
 .ws-hint{font-size:0.72rem;color:#9ca3af;font-weight:600;letter-spacing:0.03em;}
+
+/* ── LANG SELECTOR ── */
+.ws-lang-wrap{display:flex;align-items:center;gap:7px;}
+.ws-lang-label{font-size:0.7rem;font-weight:600;color:#9ca3af;letter-spacing:0.03em;white-space:nowrap;}
+.ws-lang-select{
+  font-size:0.72rem;font-family:'Syne',sans-serif;font-weight:600;
+  color:#0f0e0c;background:#fff;
+  border:1.5px solid rgba(15,14,12,0.12);border-radius:8px;
+  padding:5px 24px 5px 8px;cursor:pointer;outline:none;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 7px center;
+  transition:border-color 0.15s;
+}
+.ws-lang-select:hover{border-color:rgba(15,14,12,0.25);}
 </style>
 </head>
 <body>
@@ -129,6 +144,18 @@ body{
     <img src="logo2.png" style="height:26px;width:auto;display:block;">
     <span>Dokumo</span>
   </a>
+  <div class="ws-lang-wrap">
+    <span class="ws-lang-label">🌐 Język CV</span>
+    <select class="ws-lang-select" id="wsLangSelect" onchange="wsLang=this.value">
+      <option value="pl">🇵🇱 Polski</option>
+      <option value="en">🇬🇧 English</option>
+      <option value="de">🇩🇪 Deutsch</option>
+      <option value="uk">🇺🇦 Українська</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="cs">🇨🇿 Čeština</option>
+      <option value="nl">🇳🇱 Nederlands</option>
+    </select>
+  </div>
   <span class="ws-step">Wybierz szablon</span>
 </nav>
 
@@ -578,6 +605,7 @@ function preview(id, c1, c2) {
 }
 
 // ── Carousel state ─────────────────────────────────────────
+let wsLang = 'pl';
 let idx = 0;
 const total = T.length;
 
@@ -665,7 +693,7 @@ function onCardClick(i) {
     // Already active → go to creator
     const card = document.querySelectorAll('.ws-card')[i];
     if (card) card.classList.add('clicking');
-    setTimeout(() => { window.location.href = `kreator-cv.html?template=${T[i].id}`; }, 110);
+    setTimeout(() => { window.location.href = `kreator-cv.html?template=${T[i].id}&lang=${wsLang}`; }, 110);
   } else {
     // Navigate to that card
     idx = i;
@@ -687,7 +715,7 @@ document.addEventListener('touchend', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') move(-1);
   if (e.key === 'ArrowRight') move(1);
-  if (e.key === 'Enter') { window.location.href = `kreator-cv.html?template=${T[idx].id}`; }
+  if (e.key === 'Enter') { window.location.href = `kreator-cv.html?template=${T[idx].id}&lang=${wsLang}`; }
 });
 
 // ── Resize ────────────────────────────────────────────────
