@@ -1904,6 +1904,116 @@ body { overflow:hidden; }
 #accPersonalItem { border-bottom:1px solid var(--border); background:var(--white); }
 #accPersonalItem .acc-body { padding:4px 16px 20px 16px; }
 
+/* ═══════════════════════════════════════════════════
+   MODERN LIGHT PREMIUM — UI REDESIGN
+   ═══════════════════════════════════════════════════ */
+
+/* 1. LIGHT NAV */
+.cv-nav {
+  background: rgba(255,255,255,0.97) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+}
+.cv-nav-logo { color: #0f172a !important; }
+.cv-nav-logo span { color: #2d6b52 !important; }
+.cv-nav-back-lnk { color: #64748b !important; border-color: #e2e8f0 !important; }
+.cv-nav-back-lnk:hover { color: #1e293b !important; border-color: #cbd5e1 !important; }
+.cv-draft-badge { color: #94a3b8 !important; }
+.cv-nav-badge.free { background: #f1f5f9 !important; color: #94a3b8 !important; border-color: #e2e8f0 !important; }
+.cv-nav-badge.pro { background: #f0fdf4 !important; color: #16a34a !important; border-color: #bbf7d0 !important; }
+.cv-nav-avatar { background: #f1f5f9 !important; border-color: #e2e8f0 !important; color: #374151 !important; }
+.cv-nav-avatar:hover { border-color: #94a3b8 !important; background: #e2e8f0 !important; }
+
+/* Nav buttons */
+.btn-choose-tpl { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #374151 !important; }
+.btn-choose-tpl:hover { background: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #1e293b !important; }
+.btn-import-pdf { background: #f0fdf4 !important; color: #15803d !important; border-color: #bbf7d0 !important; }
+.btn-import-pdf:hover { background: #dcfce7 !important; border-color: #86efac !important; }
+@media(min-width:768px) {
+  .cv-nav-dl-btn { background: #1a3a2e !important; border-color: #1a3a2e !important; color: #fff !important; }
+  .cv-nav-dl-btn:hover { background: #2d6b52 !important; border-color: #2d6b52 !important; }
+}
+
+/* 2. FORM COLUMN — slate-100 bg */
+.cv-form-col { background: #f1f5f9 !important; }
+
+/* 3. PREVIEW COLUMN */
+.cv-preview-col { background: #dde3eb !important; }
+.cv-preview-label { background: rgba(221,227,235,0.95) !important; color: rgba(30,41,59,0.45) !important; }
+#cvZoomLevel { color: rgba(30,41,59,0.4) !important; }
+.cv-zoom-btn { background: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.12) !important; color: rgba(30,41,59,0.5) !important; }
+
+/* 4. ACCORDION → FLOATING CARDS */
+.acc-list {
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.acc-item {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(226,232,240,0.9) !important;
+  border-bottom: none !important;
+  overflow: hidden !important;
+  transition: box-shadow 0.2s ease, transform 0.15s ease !important;
+}
+.acc-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px #cbd5e1 !important;
+  transform: translateY(-1px) !important;
+}
+.acc-item.open {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1), 0 0 0 1px #94a3b8 !important;
+  transform: translateY(-1px) !important;
+}
+#accPersonalItem {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(226,232,240,0.9) !important;
+  border-bottom: none !important;
+  overflow: hidden !important;
+  margin-bottom: 0 !important;
+  transition: box-shadow 0.2s ease, transform 0.15s ease !important;
+}
+#accPersonalItem:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px #cbd5e1 !important;
+  transform: translateY(-1px) !important;
+}
+.cv-lang-selector {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(226,232,240,0.9) !important;
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+}
+
+/* 5. ACCORDION ROW */
+.acc-row:hover { background: rgba(15,23,42,0.02) !important; }
+.acc-item.open .acc-btn { background: #2d6b52 !important; border-color: #2d6b52 !important; }
+.acc-row:hover .acc-btn { border-color: #2d6b52 !important; color: #2d6b52 !important; }
+
+/* 6. ADD MORE BUTTON */
+.acc-add-more { border-radius: 8px !important; border-color: #e2e8f0 !important; background: #f8fafc !important; }
+.acc-add-more:hover { border-color: #2d6b52 !important; background: #f0fdf4 !important; }
+
+/* 7. INPUTS */
+.cvf-input, .cvf-textarea { border-radius: 8px !important; border: 1.5px solid #e2e8f0 !important; background: #f8fafc !important; }
+.cvf-input:focus, .cvf-textarea:focus { border-color: #2d6b52 !important; background: #fff !important; box-shadow: 0 0 0 3px rgba(45,107,82,0.1) !important; }
+.cv-lang-select { border-radius: 8px !important; border: 1.5px solid #e2e8f0 !important; background: #f8fafc !important; }
+.cv-lang-select:focus { border-color: #2d6b52 !important; }
+
+/* 8. AI SUGGESTION BOXES */
+#aiSuggestionBox, [id^="aiDutiesBox-"] { background: #f0f9ff !important; border-color: #bae6fd !important; border-radius: 10px !important; }
+
+/* 9. MOBILE TABS */
+.cv-mobile-tabs { background: rgba(255,255,255,0.97) !important; border-top-color: #e2e8f0 !important; backdrop-filter: blur(12px) !important; }
+.cv-tab-btn.active { color: #2d6b52 !important; }
+.cv-tab-btn.active::after { background: #2d6b52 !important; }
+
+/* 10. RESIZER */
+.cv-resizer:hover, .cv-resizer.dragging { background: rgba(45,107,82,0.4) !important; }
+.cv-resizer:hover::after, .cv-resizer.dragging::after { background: #2d6b52 !important; }
+
 </style>
 
 <script type="module">
@@ -2164,7 +2274,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <!-- NAV — ciemny pasek -->
   <div class="cv-nav">
-    <a href="index.html" class="logo cv-nav-logo">Doku<span>mo</span></a>
+    <a href="index.html" class="logo cv-nav-logo" style="display:flex;align-items:center;gap:8px;">
+      <img src="logo2.png" style="height:28px;width:auto;display:block;">
+      Doku<span>mo</span>
+    </a>
     <a href="kariera.html" class="cv-nav-back-lnk" title="Strefa Kariery">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       <span class="cv-btn-label">Strefa Kariery</span>
