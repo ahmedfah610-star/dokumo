@@ -2014,6 +2014,40 @@ body { overflow:hidden; }
 .cv-resizer:hover, .cv-resizer.dragging { background: rgba(45,107,82,0.4) !important; }
 .cv-resizer:hover::after, .cv-resizer.dragging::after { background: #2d6b52 !important; }
 
+/* ═══════════════════════════════════════════════════
+   WIZARD STEP-BY-STEP UI
+   ═══════════════════════════════════════════════════ */
+.cv-form-col { display:flex !important; flex-direction:column !important; overflow:hidden !important; padding:0 !important; }
+.cvw-header { background:#fff; padding:14px 20px 12px; border-bottom:1px solid #e2e8f0; flex-shrink:0; }
+.cvw-progress-wrap { height:4px; background:#e2e8f0; border-radius:99px; margin-bottom:14px; overflow:hidden; }
+.cvw-progress-bar { height:100%; background:linear-gradient(90deg,#1a3a2e,#2d6b52); border-radius:99px; transition:width 0.45s cubic-bezier(0.4,0,0.2,1); }
+.cvw-steps-row { display:flex; align-items:flex-start; justify-content:space-between; gap:2px; }
+.cvw-step-dot { display:flex; flex-direction:column; align-items:center; gap:5px; flex:1; min-width:0; cursor:default; }
+.cvw-step-dot.done { cursor:pointer; }
+.cvw-dot-circle { width:26px; height:26px; border-radius:50%; background:#e2e8f0; color:#94a3b8; font-size:0.65rem; font-weight:700; display:flex; align-items:center; justify-content:center; transition:all 0.3s; flex-shrink:0; border:2px solid transparent; }
+.cvw-step-dot.active .cvw-dot-circle { background:#1a3a2e; color:#fff; border-color:#1a3a2e; box-shadow:0 0 0 3px rgba(26,58,46,0.15); }
+.cvw-step-dot.done .cvw-dot-circle { background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; }
+.cvw-dot-label { font-size:0.53rem; font-weight:600; color:#94a3b8; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; line-height:1.2; }
+.cvw-step-dot.active .cvw-dot-label { color:#1a3a2e; font-weight:700; }
+.cvw-step-dot.done .cvw-dot-label { color:#64748b; }
+.cvw-content { flex:1; overflow-y:auto; padding:20px 16px; -webkit-overflow-scrolling:touch; }
+@media(min-width:768px) { .cvw-content { padding:24px 20px; } }
+@keyframes cvw-slide-in { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+.cvw-slide-in { animation:cvw-slide-in 0.28s cubic-bezier(0.4,0,0.2,1); }
+.cvw-step-header { margin-bottom:20px; }
+.cvw-step-num { display:block; font-size:0.63rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#2d6b52; margin-bottom:5px; }
+.cvw-step-title { font-size:1.3rem; font-weight:700; color:#0f172a; letter-spacing:-0.025em; font-family:'Instrument Serif',serif; }
+.cvw-nav { flex-shrink:0; background:rgba(241,245,249,0.97); backdrop-filter:blur(8px); border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.cvw-btn { display:inline-flex; align-items:center; gap:7px; padding:10px 22px; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; border:none; outline:none; }
+.cvw-btn-back { background:#fff; color:#374151; border:1.5px solid #e2e8f0; }
+.cvw-btn-back:hover { background:#f1f5f9; border-color:#cbd5e1; }
+.cvw-btn-next { background:#1a3a2e; color:#fff; box-shadow:0 2px 8px rgba(26,58,46,0.2); }
+.cvw-btn-next:hover { background:#2d6b52; transform:translateY(-1px); box-shadow:0 4px 16px rgba(26,58,46,0.25); }
+.cvw-btn-done { background:linear-gradient(135deg,#1a3a2e,#2d6b52); color:#fff; box-shadow:0 2px 10px rgba(26,58,46,0.25); }
+.cvw-btn-done:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(26,58,46,0.3); }
+.cvw-preview-blur .cv-preview-doc { filter:blur(4px) brightness(0.97); transition:filter 0.5s ease; pointer-events:none; user-select:none; }
+.cv-preview-doc { transition:filter 0.5s ease; }
+
 </style>
 
 <script type="module">
@@ -2661,6 +2695,32 @@ const CV_TEMPLATES = [
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
 let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci','certyfikaty','jezyki','zainteresowania'];
+
+// ── WIZARD ──────────────────────────────────────────────────
+let cvWizardStep = 0;
+const CV_WIZARD_STEPS = [
+  { label: 'Dane osobowe' },
+  { label: 'Podsumowanie' },
+  { label: 'Doświadczenie' },
+  { label: 'Wykształcenie' },
+  { label: 'Umiejętności' },
+  { label: 'Finalizacja' },
+];
+function cvWizardNext() {
+  if (cvWizardStep < CV_WIZARD_STEPS.length - 1) {
+    cvWizardStep++;
+    const autoOpen = [null,'podsumowanie','doswiadczenie','wyksztalcenie','umiejetnosci',null];
+    if (autoOpen[cvWizardStep]) cvOpenSections.add(autoOpen[cvWizardStep]);
+    renderCVForm();
+    document.getElementById('cvFormPanel').scrollTop = 0;
+  }
+}
+function cvWizardPrev() {
+  if (cvWizardStep > 0) { cvWizardStep--; renderCVForm(); document.getElementById('cvFormPanel').scrollTop = 0; }
+}
+function cvWizardGoTo(i) {
+  if (i <= cvWizardStep) { cvWizardStep = i; renderCVForm(); document.getElementById('cvFormPanel').scrollTop = 0; }
+}
 let cvCustomSections = []; // [{id, title, content}]
 
 const POLISH_UNIVERSITIES = [
@@ -3089,73 +3149,127 @@ function applySpellcheck() {
 function renderCVForm() {
   const panel = document.getElementById('cvFormPanel');
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ');
+  const totalSteps = CV_WIZARD_STEPS.length;
+  const pct = Math.round((cvWizardStep / (totalSteps - 1)) * 100);
+
+  // Preview blur
+  const previewCol = document.getElementById('cvPreviewCol');
+  if (previewCol) {
+    if (cvWizardStep < totalSteps - 1) previewCol.classList.add('cvw-preview-blur');
+    else previewCol.classList.remove('cvw-preview-blur');
+  }
+
+  // Progress bar + step dots
+  const progressHTML = `
+    <div class="cvw-header">
+      <div class="cvw-progress-wrap"><div class="cvw-progress-bar" style="width:${pct}%"></div></div>
+      <div class="cvw-steps-row">
+        ${CV_WIZARD_STEPS.map((s,i) => `
+          <div class="cvw-step-dot ${i<cvWizardStep?'done':i===cvWizardStep?'active':''}" onclick="${i<=cvWizardStep?'cvWizardGoTo('+i+')':''}">
+            <div class="cvw-dot-circle">${i<cvWizardStep?'✓':i+1}</div>
+            <span class="cvw-dot-label">${s.label}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  // Step content
+  let stepContent = '';
+  if (cvWizardStep === 0) {
+    stepContent = `
+      <div class="cv-lang-selector" id="cvLangSelector">
+        <div class="cv-lang-label">🌐 Język CV</div>
+        <select class="cv-lang-select" onchange="setCVLang(this.value)">
+          <option value="pl" ${cvCurrentLang==='pl'?'selected':''}>🇵🇱 Polski</option>
+          <option value="en" ${cvCurrentLang==='en'?'selected':''}>🇬🇧 English</option>
+          <option value="de" ${cvCurrentLang==='de'?'selected':''}>🇩🇪 Deutsch</option>
+          <option value="uk" ${cvCurrentLang==='uk'?'selected':''}>🇺🇦 Українська</option>
+          <option value="es" ${cvCurrentLang==='es'?'selected':''}>🇪🇸 Español</option>
+          <option value="cs" ${cvCurrentLang==='cs'?'selected':''}>🇨🇿 Čeština</option>
+          <option value="nl" ${cvCurrentLang==='nl'?'selected':''}>🇳🇱 Nederlands</option>
+        </select>
+      </div>
+      <div class="acc-item open" id="accPersonalItem">
+        <div class="acc-row" onclick="toggleAccPersonal()">
+          <span class="acc-drag-spacer"></span>
+          <div class="acc-info">
+            <span class="acc-label">${L("personalData")}</span>
+            <span class="acc-summary" id="accPersonalSummary">${fullName||''}</span>
+          </div>
+          <button class="acc-btn" onclick="event.stopPropagation();toggleAccPersonal()">
+            <svg width="14" height="14" viewBox="0 0 14 14"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="acc-plus-v"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="acc-body" id="accPersonalBody">
+          <div class="acc-personal-inner">
+            <div class="acc-personal-top" style="margin-bottom:16px">
+              <div class="acc-photo" onclick="document.getElementById('cvPhotoInput').click()" title="Dodaj zdjęcie">
+                ${cvData.zdjecie?`<img src="${cvData.zdjecie}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:1.5rem;display:block">📷</span><span style="font-size:0.58rem;color:#9a9690;margin-top:3px;display:block">Zdjęcie</span>`}
+              </div>
+              <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
+              <div class="acc-personal-meta">
+                <div class="acc-personal-name" id="accPersonalName">${fullName||L('fullNamePlaceholder')}</div>
+                <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko||L('fillBelow')}</div>
+                ${cvData.zdjecie?`<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">${L("removePhoto")}</button>`:''}
+              </div>
+            </div>
+            <div class="cvf-grid2">
+              <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
+              <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
+              <div class="cvf-group cvf-full"><label>${L("position")}</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||L('fillBelow')" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
+              <div class="cvf-group"><label>${L("email")}</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
+              <div class="cvf-group"><label>${L("phone")}</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
+              <div class="cvf-group"><label>${L("city")}</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
+              <div class="cvf-group"><label>${L("linkedin")}</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } else if (cvWizardStep === 1) {
+    stepContent = `<div class="acc-list">${buildSectionFormHTML('podsumowanie')}</div>`;
+  } else if (cvWizardStep === 2) {
+    stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('doswiadczenie')}</div>`;
+  } else if (cvWizardStep === 3) {
+    stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('wyksztalcenie')}</div>`;
+  } else if (cvWizardStep === 4) {
+    stepContent = `<div class="acc-list">${buildSectionFormHTML('umiejetnosci')}${buildSectionFormHTML('jezyki')}${buildSectionFormHTML('certyfikaty')}</div>`;
+  } else if (cvWizardStep === 5) {
+    stepContent = `
+      <div class="acc-list">
+        ${buildSectionFormHTML('zainteresowania')}
+        ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
+      </div>
+      <div style="padding:12px 16px 8px">
+        <button class="cvf-add-custom-btn" onclick="addCustomSection()">${L("addSection")}</button>
+      </div>`;
+  }
+
+  // Nav buttons
+  const navHTML = `
+    <div class="cvw-nav">
+      ${cvWizardStep > 0
+        ? `<button class="cvw-btn cvw-btn-back" onclick="cvWizardPrev()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Wstecz</button>`
+        : `<div></div>`}
+      ${cvWizardStep < totalSteps - 1
+        ? `<button class="cvw-btn cvw-btn-next" onclick="cvWizardNext()">Dalej <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>`
+        : `<button class="cvw-btn cvw-btn-done" onclick="downloadCV()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button>`}
+    </div>`;
+
   panel.innerHTML = `
-    <!-- LANGUAGE SELECTOR -->
-    <div class="cv-lang-selector" id="cvLangSelector">
-      <div class="cv-lang-label">🌐 Język CV</div>
-      <select class="cv-lang-select" onchange="setCVLang(this.value)">
-        <option value="pl" ${cvCurrentLang==='pl'?'selected':''}>🇵🇱 Polski</option>
-        <option value="en" ${cvCurrentLang==='en'?'selected':''}>🇬🇧 English</option>
-        <option value="de" ${cvCurrentLang==='de'?'selected':''}>🇩🇪 Deutsch</option>
-        <option value="uk" ${cvCurrentLang==='uk'?'selected':''}>🇺🇦 Українська</option>
-        <option value="es" ${cvCurrentLang==='es'?'selected':''}>🇪🇸 Español</option>
-        <option value="cs" ${cvCurrentLang==='cs'?'selected':''}>🇨🇿 Čeština</option>
-        <option value="nl" ${cvCurrentLang==='nl'?'selected':''}>🇳🇱 Nederlands</option>
-      </select>
-    </div>
-
-    <!-- DANE OSOBOWE accordion -->
-    <div class="acc-item${personalOpen ? ' open' : ''}" id="accPersonalItem">
-      <div class="acc-row" onclick="toggleAccPersonal()">
-        <span class="acc-drag-spacer"></span>
-        <div class="acc-info">
-          <span class="acc-label">${L("personalData")}</span>
-          <span class="acc-summary" id="accPersonalSummary">${fullName || ''}</span>
-        </div>
-        <button class="acc-btn" onclick="event.stopPropagation();toggleAccPersonal()">
-          <svg width="14" height="14" viewBox="0 0 14 14"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="acc-plus-v"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
+    ${progressHTML}
+    <div class="cvw-content cvw-slide-in" id="cvwContent">
+      <div class="cvw-step-header">
+        <span class="cvw-step-num">Krok ${cvWizardStep+1} z ${totalSteps}</span>
+        <h2 class="cvw-step-title">${CV_WIZARD_STEPS[cvWizardStep].label}</h2>
       </div>
-      <div class="acc-body" id="accPersonalBody">
-        <div class="acc-personal-inner">
-          <div class="acc-personal-top" style="margin-bottom:16px">
-            <div class="acc-photo" onclick="document.getElementById('cvPhotoInput').click()" title="Dodaj zdjęcie">
-              ${cvData.zdjecie
-                ? `<img src="${cvData.zdjecie}" style="width:100%;height:100%;object-fit:cover">`
-                : `<span style="font-size:1.5rem;display:block">📷</span><span style="font-size:0.58rem;color:#9a9690;margin-top:3px;display:block">Zdjęcie</span>`}
-            </div>
-            <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
-            <div class="acc-personal-meta">
-              <div class="acc-personal-name" id="accPersonalName">${fullName || L('fullNamePlaceholder')}</div>
-              <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko || L('fillBelow')}</div>
-              ${cvData.zdjecie ? `<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">${L("removePhoto")}</button>` : ''}
-            </div>
-          </div>
-          <div class="cvf-grid2">
-            <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
-            <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
-            <div class="cvf-group cvf-full"><label>${L("position")}</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||L('fillBelow')" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
-            <div class="cvf-group"><label>${L("email")}</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
-            <div class="cvf-group"><label>${L("phone")}</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
-            <div class="cvf-group"><label>${L("city")}</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
-            <div class="cvf-group"><label>${L("linkedin")}</label><input class="cvf-input" oninput="cvData.linkedin=this.value;updateCVPreview()" value="${cvData.linkedin}" placeholder="linkedin.com/in/..."></div>
-          </div>
-        </div>
-      </div>
+      ${stepContent}
     </div>
-
-    <div class="acc-list" id="cvSectionsContainer">
-      ${cvSectionOrder.map(sec => buildSectionFormHTML(sec)).join('')}
-      ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
-    </div>
-    <div style="padding:12px 16px 8px">
-      <button class="cvf-add-custom-btn" onclick="addCustomSection()">${L("addSection")}</button>
-    </div>
+    ${navHTML}
   `;
+
   initDragDrop();
-  if (cvOpenSections.has('umiejetnosci')) updateSkillChips();
-  if (cvOpenSections.has('certyfikaty')) updateCertChips();
-  if (cvOpenSections.has('zainteresowania')) updateInterestChips();
+  if (cvWizardStep === 4 && cvOpenSections.has('umiejetnosci')) updateSkillChips();
+  if (cvWizardStep === 4 && cvOpenSections.has('certyfikaty')) updateCertChips();
+  if (cvWizardStep === 5 && cvOpenSections.has('zainteresowania')) updateInterestChips();
   applySpellcheck();
 }
 
