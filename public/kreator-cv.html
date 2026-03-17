@@ -2018,24 +2018,22 @@ body { overflow:hidden; }
    WIZARD STEP-BY-STEP UI
    ═══════════════════════════════════════════════════ */
 .cv-form-col { display:flex !important; flex-direction:column !important; overflow:hidden !important; padding:0 !important; }
-.cvw-header { background:#fff; padding:14px 20px 12px; border-bottom:1px solid rgba(15,14,12,0.08); flex-shrink:0; }
-.cvw-progress-wrap { height:4px; background:rgba(15,14,12,0.08); border-radius:99px; margin-bottom:14px; overflow:hidden; }
+.cvw-header { background:#fff; padding:10px 20px; border-bottom:1px solid rgba(15,14,12,0.08); flex-shrink:0; display:flex; align-items:center; gap:16px; }
+.cvw-progress-wrap { flex:1; height:4px; background:rgba(15,14,12,0.08); border-radius:99px; overflow:hidden; }
 .cvw-progress-bar { height:100%; background:linear-gradient(90deg,#1a3a2e,#2d6b52); border-radius:99px; transition:width 0.45s cubic-bezier(0.4,0,0.2,1); }
-.cvw-steps-row { display:flex; align-items:flex-start; justify-content:space-between; gap:2px; }
-.cvw-step-dot { display:flex; flex-direction:column; align-items:center; gap:5px; flex:1; min-width:0; cursor:default; }
+.cvw-steps-row { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.cvw-step-dot { display:flex; align-items:center; cursor:default; }
 .cvw-step-dot.done { cursor:pointer; }
-.cvw-dot-circle { width:26px; height:26px; border-radius:50%; background:#e2e8f0; color:#94a3b8; font-size:0.65rem; font-weight:700; display:flex; align-items:center; justify-content:center; transition:all 0.3s; flex-shrink:0; border:2px solid transparent; }
-.cvw-step-dot.active .cvw-dot-circle { background:#1a3a2e; color:#fff; border-color:#1a3a2e; box-shadow:0 0 0 3px rgba(26,58,46,0.15); }
+.cvw-dot-circle { width:28px; height:28px; border-radius:50%; background:#e5e7eb; color:#9ca3af; font-size:0.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; transition:all 0.3s; flex-shrink:0; border:2px solid transparent; }
+.cvw-step-dot.active .cvw-dot-circle { background:#1a3a2e; color:#fff; border-color:#1a3a2e; box-shadow:0 0 0 3px rgba(26,58,46,0.12); }
 .cvw-step-dot.done .cvw-dot-circle { background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; }
-.cvw-dot-label { font-size:0.53rem; font-weight:600; color:#94a3b8; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; line-height:1.2; }
-.cvw-step-dot.active .cvw-dot-label { color:#1a3a2e; font-weight:700; }
-.cvw-step-dot.done .cvw-dot-label { color:#64748b; }
+.cvw-dot-label { display:none; }
 .cvw-content { flex:1; overflow-y:auto; padding:20px 16px; -webkit-overflow-scrolling:touch; }
 @media(min-width:768px) { .cvw-content { padding:24px 20px; } }
 @keyframes cvw-slide-in { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
 .cvw-slide-in { animation:cvw-slide-in 0.28s cubic-bezier(0.4,0,0.2,1); }
 .cvw-step-header { margin-bottom:20px; }
-.cvw-step-num { display:block; font-size:0.63rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#2d6b52; margin-bottom:5px; }
+.cvw-step-num { display:none; }
 .cvw-step-title { font-size:1.3rem; font-weight:700; color:#0f172a; letter-spacing:-0.025em; font-family:'Instrument Serif',serif; }
 .cvw-nav { flex-shrink:0; background:rgba(245,243,239,0.97); backdrop-filter:blur(8px); border-top:1px solid rgba(15,14,12,0.08); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .cvw-btn { display:inline-flex; align-items:center; gap:7px; padding:10px 22px; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; border:none; outline:none; }
@@ -2281,18 +2279,18 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-.cv-nav-back-lnk{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:500;color:rgba(240,237,232,.5);text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);margin-left:10px;transition:all .2s;white-space:nowrap;flex-shrink:0;}
-.cv-nav-back-lnk:hover{color:#f0ede8;border-color:rgba(255,255,255,.2);}
+/* NAV — styl index.html */
+.cv-nav-back-lnk{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:#6b7280;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid #e5e7eb;margin-left:10px;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.cv-nav-back-lnk:hover{color:#111827;border-color:#d1d5db;background:#f9fafb;}
 .cv-nav-badge{font-size:.62rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;}
-.cv-nav-badge.pro{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.25);}
-.cv-nav-badge.free{background:rgba(255,255,255,.05);color:rgba(240,237,232,.3);border:1px solid rgba(255,255,255,.07);}
-.cv-nav-logo{color:#f0ede8 !important;}
-.cv-nav-logo span{color:#4ade80 !important;}
-/* Profile widget in dark nav */
+.cv-nav-badge.pro{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+.cv-nav-badge.free{background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;}
+.cv-nav-logo{color:#111827 !important;}
+.cv-nav-logo span{color:#2d6b52 !important;}
 .cv-nav-profile{position:relative;display:flex;align-items:center;margin-left:8px;}
-.cv-nav-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(240,237,232,.85);display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;cursor:pointer;border:1.5px solid rgba(255,255,255,.18);transition:all .2s;overflow:hidden;flex-shrink:0;}
-.cv-nav-avatar:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.2);}
-.cv-nav-dropdown{display:none;position:fixed;top:62px;right:12px;background:#fff;border-radius:12px;min-width:220px;max-width:calc(100vw - 24px);box-shadow:0 8px 32px rgba(0,0,0,.25);z-index:2147483647;border:1px solid rgba(0,0,0,.07);}
+.cv-nav-avatar{width:30px;height:30px;border-radius:50%;background:#f3f4f6;color:#374151;display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;cursor:pointer;border:1.5px solid #e5e7eb;transition:all .2s;overflow:hidden;flex-shrink:0;}
+.cv-nav-avatar:hover{border-color:#9ca3af;background:#e5e7eb;}
+.cv-nav-dropdown{display:none;position:fixed;top:62px;right:12px;background:#fff;border-radius:12px;min-width:220px;max-width:calc(100vw - 24px);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:2147483647;border:1px solid rgba(0,0,0,.07);}
 .cv-nav-dropdown.open{display:block !important;}
 .cv-nav-drop-email{font-size:.72rem;color:#888;padding:10px 16px 6px;border-bottom:1px solid #f0f0f0;word-break:break-all;}
 .cv-nav-drop-link{display:block;width:100%;font-size:.83rem;color:#333;padding:9px 16px;text-decoration:none;background:none;border:none;text-align:left;cursor:pointer;transition:background .15s;}
@@ -2300,8 +2298,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .cv-nav-drop-sep{height:1px;background:#f0f0f0;margin:4px 0;}
 .cv-nav-drop-logout{color:#e05c5c !important;}
 .cv-nav-drop-logout:hover{background:#fff5f5 !important;}
-/* Draft autosave badge */
-.cv-draft-badge{font-size:.62rem;color:rgba(240,237,232,.4);display:none;align-items:center;gap:4px;white-space:nowrap;margin-right:4px;}
+.cv-draft-badge{font-size:.62rem;color:#94a3b8;display:none;align-items:center;gap:4px;white-space:nowrap;margin-right:4px;}
 .cv-draft-badge.visible{display:flex;}
 </style>
 <div class="cv-app">
@@ -2325,9 +2322,6 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
       <button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
         ↺ <span class="cv-btn-label">Zacznij od nowa</span>
-      </button>
-      <button class="btn-choose-tpl cv-nav-dl-btn" id="cvNavDlBtn" onclick="downloadCV()" title="Pobierz PDF">
-        ⬇ <span class="cv-btn-label">Pobierz PDF</span>
       </button>
       <span class="cv-nav-badge free" id="uPlanChip"></span>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
@@ -3162,14 +3156,13 @@ function renderCVForm() {
   // Progress bar + step dots
   const progressHTML = `
     <div class="cvw-header">
-      <div class="cvw-progress-wrap"><div class="cvw-progress-bar" style="width:${pct}%"></div></div>
       <div class="cvw-steps-row">
         ${CV_WIZARD_STEPS.map((s,i) => `
-          <div class="cvw-step-dot ${i<cvWizardStep?'done':i===cvWizardStep?'active':''}" onclick="${i<=cvWizardStep?'cvWizardGoTo('+i+')':''}">
+          <div class="cvw-step-dot ${i<cvWizardStep?'done':i===cvWizardStep?'active':''}" onclick="${i<=cvWizardStep?'cvWizardGoTo('+i+')':''}" title="${s.label}">
             <div class="cvw-dot-circle">${i<cvWizardStep?'✓':i+1}</div>
-            <span class="cvw-dot-label">${s.label}</span>
           </div>`).join('')}
       </div>
+      <div class="cvw-progress-wrap"><div class="cvw-progress-bar" style="width:${pct}%"></div></div>
     </div>`;
 
   // Step content
