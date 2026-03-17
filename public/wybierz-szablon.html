@@ -15,516 +15,719 @@
 <meta property="og:url" content="https://dokumoflow.com/wybierz-szablon.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
 <meta name="robots" content="index, follow">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
-:root {
-  --bg: #f5f3ef;
-  --ink: #0f0e0c;
-  --muted: #9ca3af;
-  --card-bg: #ffffff;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'Syne', sans-serif;
-  min-height: 100dvh;
-  overflow-x: hidden;
-}
-
-/* ── CURSOR GLOW ── */
-#cursorGlow {
-  pointer-events: none;
-  position: fixed;
-  width: 480px; height: 480px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(26,58,46,0.07) 0%, transparent 70%);
-  transform: translate(-50%, -50%);
-  transition: opacity 0.4s;
-  z-index: 0;
-  opacity: 0;
+html,body{height:100%;overflow:hidden}
+body{
+  background:#f5f3ef;
+  font-family:'Syne',sans-serif;
+  display:flex; flex-direction:column;
+  overflow:hidden;
 }
 
 /* ── NAV ── */
-.ws-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 32px;
-  background: rgba(245,243,239,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(15,14,12,0.06);
+.ws-nav{
+  height:58px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px;
+  background:rgba(245,243,239,0.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(15,14,12,0.07);
+  z-index:50;
 }
-.ws-logo {
-  display: flex; align-items: center; gap: 8px;
-  text-decoration: none; color: var(--ink);
-}
-.ws-logo span {
-  font-size: 1.05rem; font-weight: 800;
-  letter-spacing: -0.03em; color: var(--ink);
-}
-.ws-count {
-  font-size: 0.72rem; font-weight: 600;
-  color: var(--muted); letter-spacing: 0.04em;
-}
+.ws-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#0f0e0c;}
+.ws-logo span{font-size:1.05rem;font-weight:800;letter-spacing:-0.03em;}
+.ws-step{font-size:0.72rem;font-weight:600;color:#9ca3af;letter-spacing:0.03em;}
 
-/* ── MAIN ── */
-.ws-main {
-  padding: 100px 28px 80px;
-  max-width: 1280px;
-  margin: 0 auto;
-  position: relative; z-index: 1;
+/* ── STAGE ── */
+.ws-stage{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  padding:24px 80px;
 }
+@media(max-width:600px){.ws-stage{padding:20px 56px;}}
 
-/* ── GRID ── */
-.ws-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+/* ── ARROW BTNS ── */
+.ws-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  z-index:20; width:44px; height:44px; border-radius:50%;
+  background:#fff; border:1.5px solid rgba(15,14,12,0.1);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.18s;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08);
+  -webkit-tap-highlight-color:transparent;
 }
-@media(max-width:1100px){ .ws-grid { grid-template-columns: repeat(3,1fr); } }
-@media(max-width:720px){ .ws-grid { grid-template-columns: repeat(2,1fr); gap:12px; } }
+.ws-arrow:hover{background:#0f0e0c;border-color:#0f0e0c;}
+.ws-arrow:hover svg{stroke:#fff;}
+.ws-arrow:active{transform:translateY(-50%) scale(0.93);}
+.ws-arrow.prev{left:12px;}
+.ws-arrow.next{right:12px;}
+@media(max-width:600px){.ws-arrow{width:38px;height:38px;}.ws-arrow.prev{left:6px;}.ws-arrow.next{right:6px;}}
+
+/* ── TRACK ── */
+.ws-track-wrap{width:100%;height:100%;overflow:hidden;position:relative;}
+.ws-track{
+  display:flex; align-items:center; height:100%;
+  transition:transform 0.42s cubic-bezier(0.4,0,0.2,1);
+  will-change:transform;
+}
 
 /* ── CARD ── */
-.ws-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--card-bg);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 0 0 1px rgba(15,14,12,0.06);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
-  transform-style: preserve-3d;
-  will-change: transform;
-  /* stagger animation */
-  opacity: 0;
-  animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+.ws-card{
+  flex-shrink:0;
+  border-radius:14px; overflow:hidden;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(15,14,12,0.07);
+  cursor:pointer;
+  transition:transform 0.42s cubic-bezier(0.4,0,0.2,1),
+             box-shadow 0.42s cubic-bezier(0.4,0,0.2,1),
+             opacity 0.42s;
+  position:relative;
+  -webkit-tap-highlight-color:transparent;
 }
-.ws-card:hover {
-  box-shadow: 0 20px 60px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(15,14,12,0.08);
+.ws-card.active{
+  box-shadow:0 16px 48px rgba(0,0,0,0.15), 0 0 0 1.5px rgba(15,14,12,0.1);
 }
-/* dimming siblings on hover */
-.ws-grid:has(.ws-card:hover) .ws-card:not(:hover) {
-  opacity: 0.55;
-  transform: scale(0.98);
-  transition: opacity 0.3s, transform 0.3s, box-shadow 0.25s;
+.ws-card:not(.active){
+  opacity:0.55; transform:scale(0.88);
 }
-.ws-grid:has(.ws-card:hover) .ws-card:hover {
-  opacity: 1;
-  transform: scale(1.025);
-}
+.ws-card.clicking{transform:scale(0.96) !important; transition:transform 0.1s !important;}
 
-/* card thumb */
-.ws-thumb {
-  aspect-ratio: 3/4;
-  overflow: hidden;
-  position: relative;
-}
-.ws-thumb-inner {
-  position: absolute; inset: 0;
-}
+/* thumb */
+.ws-thumb{width:100%;aspect-ratio:595/842;overflow:hidden;position:relative;}
+.ws-thumb-inner{position:absolute;inset:0;overflow:hidden;}
 
-/* card label */
-.ws-label {
-  padding: 10px 14px 12px;
-  display: flex; align-items: center; justify-content: space-between;
+/* label */
+.ws-lbl{
+  padding:9px 12px 10px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-top:1px solid rgba(15,14,12,0.06);
 }
-.ws-name {
-  font-size: 0.82rem; font-weight: 700;
-  color: var(--ink); letter-spacing: -0.01em;
-}
-.ws-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  flex-shrink: 0;
-}
+.ws-name{font-size:0.78rem;font-weight:700;color:#0f0e0c;letter-spacing:-0.01em;}
+.ws-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-/* hover overlay */
-.ws-overlay {
-  position: absolute; inset: 0;
-  background: rgba(15,14,12,0.0);
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.25s;
-  pointer-events: none;
+/* counter + hint */
+.ws-footer{
+  flex-shrink:0; padding:14px 28px 20px;
+  display:flex; align-items:center; justify-content:center; gap:16px;
 }
-.ws-card:hover .ws-overlay {
-  background: rgba(15,14,12,0.04);
+.ws-dots{display:flex;gap:5px;}
+.ws-pip{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(15,14,12,0.18);
+  transition:all 0.2s;
 }
-.ws-overlay-label {
-  background: var(--ink);
-  color: #fff;
-  font-size: 0.72rem; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 8px 20px; border-radius: 99px;
-  opacity: 0;
-  transform: translateY(6px) scale(0.96);
-  transition: opacity 0.2s, transform 0.2s;
-}
-.ws-card:hover .ws-overlay-label {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* click ripple */
-.ws-card.clicking {
-  transform: scale(0.97) !important;
-  transition: transform 0.12s ease !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
-}
-
-/* stagger in */
-@keyframes cardIn {
-  from { opacity:0; transform: translateY(22px) scale(0.97); }
-  to   { opacity:1; transform: translateY(0) scale(1); }
-}
+.ws-pip.active{background:#0f0e0c;width:18px;border-radius:3px;}
+.ws-hint{font-size:0.72rem;color:#9ca3af;font-weight:600;letter-spacing:0.03em;}
 </style>
 </head>
 <body>
-
-<div id="cursorGlow"></div>
 
 <nav class="ws-nav">
   <a href="index.html" class="ws-logo">
     <img src="logo2.png" style="height:26px;width:auto;display:block;">
     <span>Dokumo</span>
   </a>
-  <span class="ws-count">Wybierz szablon</span>
+  <span class="ws-step">Wybierz szablon</span>
 </nav>
 
-<main class="ws-main">
-  <div class="ws-grid" id="wsGrid"></div>
-</main>
+<div class="ws-stage">
+  <button class="ws-arrow prev" id="wsPrev" onclick="move(-1)" aria-label="Poprzedni">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f0e0c" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+
+  <div class="ws-track-wrap">
+    <div class="ws-track" id="wsTrack"></div>
+  </div>
+
+  <button class="ws-arrow next" id="wsNext" onclick="move(1)" aria-label="Następny">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f0e0c" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+
+<div class="ws-footer">
+  <div class="ws-dots" id="wsDots"></div>
+  <span class="ws-hint" id="wsHint">Kliknij, aby wybrać</span>
+</div>
 
 <script>
-// ── Template data ────────────────────────────────────────────
-const TEMPLATES = [
-  { id:'nova',      name:'Nova',       color1:'#1a3a2e', color2:'#2d6b52' },
-  { id:'clean',     name:'Clean',      color1:'#1a2744', color2:'#2c4a8a' },
-  { id:'nordic',    name:'Nordic',     color1:'#1a3a2e', color2:'#2d6b52' },
-  { id:'stripe',    name:'Stripe',     color1:'#1a2744', color2:'#2c4a8a' },
-  { id:'cascade',   name:'Cascade',    color1:'#0f766e', color2:'#14b8a6' },
-  { id:'metro',     name:'Metro',      color1:'#1a3a2e', color2:'#2d6b52' },
-  { id:'executive', name:'Executive',  color1:'#92400e', color2:'#d97706' },
-  { id:'athens',    name:'Athens',     color1:'#1e3a5f', color2:'#2563eb' },
-  { id:'matrix',    name:'Matrix',     color1:'#00ff88', color2:'#00cc6a' },
-  { id:'prism',     name:'Prism',      color1:'#7c3aed', color2:'#ec4899' },
-  { id:'linen',     name:'Linen',      color1:'#92400e', color2:'#d97706' },
-  { id:'sidebar',   name:'Sidebar',    color1:'#1a2744', color2:'#2c4a8a' },
-  { id:'timeline',  name:'Timeline',   color1:'#1a3a2e', color2:'#2d6b52' },
-  { id:'bold',      name:'Bold',       color1:'#c0392b', color2:'#e74c3c' },
-  { id:'midnight',  name:'Midnight',   color1:'#0f172a', color2:'#334155' },
-  { id:'teal',      name:'Teal',       color1:'#0f766e', color2:'#14b8a6' },
-  { id:'slate',     name:'Slate',      color1:'#334155', color2:'#64748b' },
-  { id:'ocean',     name:'Ocean',      color1:'#1e40af', color2:'#38bdf8' },
-  { id:'diagonal',  name:'Diagonal',   color1:'#1a3a2e', color2:'#2d6b52' },
-  { id:'creative',  name:'Creative',   color1:'#6b21a8', color2:'#a855f7' },
-  { id:'coral',     name:'Coral',      color1:'#c2410c', color2:'#fb923c' },
-  { id:'rose',      name:'Rose',       color1:'#9d174d', color2:'#ec4899' },
-  { id:'shield',    name:'Shield',     color1:'#1a2744', color2:'#e8e4dc' },
-  { id:'arrow',     name:'Arrow',      color1:'#7c2d12', color2:'#fb923c' },
+// ── Templates ────────────────────────────────────────────────
+const T = [
+  { id:'nova',      name:'Nova',       c1:'#1a3a2e', c2:'#2d6b52' },
+  { id:'clean',     name:'Clean',      c1:'#1a2744', c2:'#2c4a8a' },
+  { id:'nordic',    name:'Nordic',     c1:'#1a3a2e', c2:'#2d6b52' },
+  { id:'stripe',    name:'Stripe',     c1:'#1a2744', c2:'#2c4a8a' },
+  { id:'cascade',   name:'Cascade',    c1:'#0f766e', c2:'#14b8a6' },
+  { id:'metro',     name:'Metro',      c1:'#1a3a2e', c2:'#2d6b52' },
+  { id:'executive', name:'Executive',  c1:'#92400e', c2:'#d97706' },
+  { id:'athens',    name:'Athens',     c1:'#1e3a5f', c2:'#2563eb' },
+  { id:'matrix',    name:'Matrix',     c1:'#00ff88', c2:'#00cc6a' },
+  { id:'prism',     name:'Prism',      c1:'#7c3aed', c2:'#ec4899' },
+  { id:'linen',     name:'Linen',      c1:'#92400e', c2:'#d97706' },
+  { id:'sidebar',   name:'Sidebar',    c1:'#1a2744', c2:'#2c4a8a' },
+  { id:'timeline',  name:'Timeline',   c1:'#1a3a2e', c2:'#2d6b52' },
+  { id:'bold',      name:'Bold',       c1:'#c0392b', c2:'#e74c3c' },
+  { id:'midnight',  name:'Midnight',   c1:'#0f172a', c2:'#334155' },
+  { id:'teal',      name:'Teal',       c1:'#0f766e', c2:'#14b8a6' },
+  { id:'slate',     name:'Slate',      c1:'#334155', c2:'#64748b' },
+  { id:'ocean',     name:'Ocean',      c1:'#1e40af', c2:'#38bdf8' },
+  { id:'diagonal',  name:'Diagonal',   c1:'#1a3a2e', c2:'#2d6b52' },
+  { id:'creative',  name:'Creative',   c1:'#6b21a8', c2:'#a855f7' },
+  { id:'coral',     name:'Coral',      c1:'#c2410c', c2:'#fb923c' },
+  { id:'rose',      name:'Rose',       c1:'#9d174d', c2:'#ec4899' },
+  { id:'shield',    name:'Shield',     c1:'#1a2744', c2:'#e8e4dc' },
+  { id:'arrow',     name:'Arrow',      c1:'#7c2d12', c2:'#fb923c' },
 ];
 
-// ── Mini preview renderers ───────────────────────────────────
-function lines(color, widths, gap=6) {
-  return widths.map((w,i)=>
-    `<div style="height:3.5px;width:${w}%;background:${color};border-radius:2px;${i>0?`margin-top:${gap}px`:''}"></div>`
-  ).join('');
-}
-
-const PREVIEWS = {
-  nova: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:${c1};padding:16px 14px 14px">
-      <div style="width:36px;height:36px;border-radius:50%;background:${c2};margin-bottom:10px"></div>
-      <div style="height:6px;width:68%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:5px"></div>
-      <div style="height:3px;width:48%;background:rgba(255,255,255,0.4);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,60,72])}</div>
-    <div style="padding:0 14px 10px">${lines('#d1d5db',[88,52,70])}</div>
-  </div>`,
-
-  clean: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="padding:16px 14px 12px;border-bottom:2.5px solid ${c1}">
-      <div style="height:7px;width:58%;background:${c1};border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:38%;background:#cbd5e1;border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,58,70])}</div>
-    <div style="padding:0 14px">${lines('#d1d5db',[88,62,76])}</div>
-  </div>`,
-
-  nordic: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="padding:16px 14px 12px">
-      <div style="height:6px;width:62%;background:${c1};border-radius:2px;margin-bottom:5px"></div>
-      <div style="height:3px;width:42%;background:#94a3b8;border-radius:2px;margin-bottom:12px"></div>
-      <div style="height:1.5px;width:100%;background:${c1};opacity:0.25"></div>
-    </div>
-    <div style="padding:10px 14px">${lines('#d1d5db',[74,56,78,50])}</div>
-  </div>`,
-
-  stripe: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex">
-    <div style="width:5px;background:${c1};flex-shrink:0"></div>
-    <div style="flex:1;padding:14px 12px">
-      <div style="height:6px;width:64%;background:${c1};border-radius:2px;margin-bottom:5px"></div>
-      <div style="height:3px;width:44%;background:#94a3b8;border-radius:2px;margin-bottom:12px"></div>
-      ${lines('#d1d5db',[78,58,70,54,66])}
-    </div>
-  </div>`,
-
-  cascade: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex">
-    <div style="width:38%;background:${c1};padding:12px 9px">
-      <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.25);margin-bottom:8px"></div>
-      ${lines('rgba(255,255,255,0.65)',[82,62,72])}
-      <div style="margin-top:14px">${lines('rgba(255,255,255,0.35)',[88,68,78,60])}</div>
-    </div>
-    <div style="flex:1;padding:12px 10px">${lines('#d1d5db',[78,58,70,52,64])}</div>
-  </div>`,
-
-  metro: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:#1a1a1a;padding:16px 14px 13px">
-      <div style="height:6px;width:68%;background:#fff;border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:48%;background:${c2};border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,58,70])}</div>
-    <div style="padding:0 14px">${lines('#d1d5db',[88,62,52])}</div>
-  </div>`,
-
-  executive: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:#111;padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:#fff;border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:${c2};border-radius:2px"></div>
-    </div>
-    <div style="height:3px;background:${c2}"></div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,58,70,52,66])}</div>
-  </div>`,
-
-  athens: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:${c1};padding:14px">
-      <div style="height:5px;width:60%;background:#fff;border-radius:2px;margin-bottom:5px"></div>
-      <div style="height:3px;width:40%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="display:flex;flex:1">
-      <div style="width:32%;background:#eff4ff;padding:8px 9px">${lines(c2,[88,68,78,60])}</div>
-      <div style="flex:1;padding:10px 11px">${lines('#d1d5db',[78,56,72,52])}</div>
-    </div>
-  </div>`,
-
-  matrix: (c1,c2)=>`<div style="background:#0d1117;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="padding:16px 14px 12px">
-      <div style="height:6px;width:64%;background:${c1};border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(0,255,136,0.35);border-radius:2px"></div>
-    </div>
-    <div style="padding:10px 14px">${lines('rgba(0,255,136,0.45)',[78,58,70,52,64])}</div>
-  </div>`,
-
-  prism: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,58,70,52])}</div>
-  </div>`,
-
-  linen: (c1,c2)=>`<div style="background:#fef9f0;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="padding:16px 14px 12px;border-bottom:1px solid #fde8b0">
-      <div style="height:6px;width:58%;background:${c1};border-radius:2px;margin-bottom:5px"></div>
-      <div style="height:3px;width:38%;background:#fbbf24;border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d97706',[72,54,68,48],7)}</div>
-    <div style="padding:0 14px">${lines('#d1d5db',[88,62,76],7)}</div>
-  </div>`,
-
-  sidebar: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex">
-    <div style="width:36%;background:${c1};padding:12px 9px">
-      <div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.22);margin-bottom:10px"></div>
-      ${lines('rgba(255,255,255,0.65)',[82,62,72,55])}
-    </div>
-    <div style="flex:1;padding:12px 10px">${lines('#d1d5db',[78,56,70,52,64])}</div>
-  </div>`,
-
-  timeline: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:10px 14px;flex:1">
-      <div style="border-left:2px solid ${c1};padding-left:10px;margin-top:4px">${lines('#d1d5db',[72,52,66,48,62],7)}</div>
-    </div>
-  </div>`,
-
-  bold: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:#111;padding:6px 14px;display:flex;align-items:center;gap:7px">
-      <div style="height:5px;width:52%;background:#fff;border-radius:2px"></div>
-      <div style="height:5px;flex:1;background:${c1};border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,56,70,50])}</div>
-    <div style="margin:0 14px;height:2px;background:${c1};border-radius:2px"></div>
-    <div style="padding:10px 14px">${lines('#d1d5db',[88,62,76],7)}</div>
-  </div>`,
-
-  midnight: (c1,c2)=>`<div style="background:${c1};width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.08)">
-      <div style="height:6px;width:64%;background:#fff;border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:${c2};border-radius:2px"></div>
-    </div>
-    <div style="padding:10px 14px">${lines('rgba(255,255,255,0.35)',[78,56,70,50,64])}</div>
-  </div>`,
-
-  teal: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,56,70,50])}</div>
-  </div>`,
-
-  slate: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex">
-    <div style="width:38%;background:${c1};padding:12px 9px">
-      <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.18);margin-bottom:8px"></div>
-      ${lines('rgba(255,255,255,0.55)',[82,62,72,55])}
-    </div>
-    <div style="flex:1;padding:12px 10px">${lines('#d1d5db',[78,56,70,52,64])}</div>
-  </div>`,
-
-  ocean: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(90deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,56,70,52,64])}</div>
-  </div>`,
-
-  diagonal: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;overflow:hidden;position:relative">
-    <div style="position:absolute;top:0;left:0;right:0;height:44%;background:${c1};clip-path:polygon(0 0,100% 0,100% 68%,0 100%)"></div>
-    <div style="position:relative;z-index:1;padding:14px 14px 0">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="position:relative;z-index:1;padding:44px 14px 0">${lines('#d1d5db',[78,56,70,50],7)}</div>
-  </div>`,
-
-  creative: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,56,70,52,64])}</div>
-  </div>`,
-
-  coral: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,56,70,52])}</div>
-  </div>`,
-
-  rose: (c1,c2)=>`<div style="background:#fff;width:100%;height:100%;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,${c1},${c2});padding:16px 14px 13px">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:rgba(255,255,255,0.45);border-radius:2px"></div>
-    </div>
-    <div style="padding:12px 14px">${lines('#d1d5db',[78,56,70,52])}</div>
-  </div>`,
-
-  shield: (c1,c2)=>`<div style="background:#e8e4dc;width:100%;height:100%;display:flex">
-    <div style="width:54%;background:${c1};padding:12px 9px">
-      <div style="height:6px;width:78%;background:rgba(255,255,255,0.9);border-radius:2px;margin-bottom:5px"></div>
-      <div style="height:3px;width:54%;background:rgba(255,255,255,0.4);border-radius:2px;margin-bottom:12px"></div>
-      ${lines('rgba(255,255,255,0.5)',[84,62,74,54],7)}
-    </div>
-    <div style="flex:1;padding:12px 9px">${lines('#94a3b8',[88,66,78,58],7)}</div>
-  </div>`,
-
-  arrow: (c1,c2)=>`<div style="background:#fff7f0;width:100%;height:100%;overflow:hidden;position:relative">
-    <div style="position:absolute;top:0;left:0;right:0;height:40%;background:${c1};clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)"></div>
-    <div style="position:relative;z-index:1;padding:14px 14px 0">
-      <div style="height:6px;width:64%;background:rgba(255,255,255,0.92);border-radius:2px;margin-bottom:6px"></div>
-      <div style="height:3px;width:44%;background:${c2};border-radius:2px"></div>
-    </div>
-    <div style="position:relative;z-index:1;padding:46px 14px 0">${lines('#d1d5db',[78,56,70,50],7)}</div>
-  </div>`,
+// ── Sample data ───────────────────────────────────────────────
+const S = {
+  name: 'Anna Kowalska',
+  role: 'Marketing Manager',
+  email: 'anna@email.pl',
+  phone: '+48 123 456 789',
+  city: 'Warszawa',
+  sum: 'Doświadczona specjalistka ds. marketingu z 5-letnim stażem w e-commerce i kampaniach cyfrowych.',
+  exp1f: 'Sklep Online ABC',
+  exp1r: 'Marketing Specialist',
+  exp1d: '2021 – Teraz',
+  exp2f: 'Agencja XYZ',
+  exp2r: 'Junior Marketer',
+  exp2d: '2018 – 2021',
+  edu: 'Uniwersytet Warszawski',
+  edud: 'Zarządzanie i Marketing, 2018',
+  sk: 'Google Analytics · Facebook Ads · SEO',
+  lang: 'Angielski C1 · Niemiecki B1',
 };
 
-// ── Render ───────────────────────────────────────────────────
-function render() {
-  const grid = document.getElementById('wsGrid');
-  let html = '';
-  TEMPLATES.forEach((t, i) => {
-    const prevFn = PREVIEWS[t.id];
-    const prevHTML = prevFn ? prevFn(t.color1, t.color2) : `<div style="background:${t.color1};width:100%;height:100%"></div>`;
-    html += `<div class="ws-card" data-id="${t.id}" style="animation-delay:${i * 28}ms" onclick="pick('${t.id}')">
-      <div class="ws-thumb"><div class="ws-thumb-inner">${prevHTML}</div></div>
-      <div class="ws-overlay"><span class="ws-overlay-label">Wybierz</span></div>
-      <div class="ws-label">
-        <span class="ws-name">${t.name}</span>
-        <span class="ws-dot" style="background:${t.color1}"></span>
+// ── Preview HTML builders ─────────────────────────────────────
+function txt(val, style) {
+  return `<div style="${style};overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${val}</div>`;
+}
+function sep(c, mt=6) {
+  return `<div style="height:1px;background:${c};margin-top:${mt}px;opacity:0.25"></div>`;
+}
+function secLabel(label, c, mt=8) {
+  return `<div style="font-size:5.5px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${c};margin-top:${mt}px;margin-bottom:3px;">${label}</div>`;
+}
+function line(c, w, mt=4) {
+  return `<div style="height:3px;width:${w}%;background:${c};border-radius:1px;margin-top:${mt}px;opacity:0.7"></div>`;
+}
+
+// full-width A4 preview at 595px → scaled to fit card
+function preview(id, c1, c2) {
+  const bg1 = c1, bg2 = c2;
+  const white = '#fff', gray = '#e2e8f0', dark = '#1e293b', light = '#f8fafc';
+  const muted = '#94a3b8';
+
+  const bodySection = `
+    ${secLabel('Doświadczenie', bg1)}
+    ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+    ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+    ${line(gray, 88, 3)}
+    ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+    ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+    ${secLabel('Wykształcenie', bg1)}
+    ${txt(S.edu, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+    ${txt(S.edud, `font-size:5.5px;color:${muted};margin-top:1px`)}
+    ${secLabel('Umiejętności', bg1)}
+    ${txt(S.sk, `font-size:5.5px;color:${dark};margin-top:2px`)}
+    ${secLabel('Języki', bg1)}
+    ${txt(S.lang, `font-size:5.5px;color:${dark};margin-top:2px`)}
+  `;
+
+  const templates = {
+    nova: ()=>`
+      <div style="background:${bg1};padding:18px 18px 14px;">
+        <div style="display:flex;align-items:flex-end;gap:12px">
+          <div style="width:38px;height:38px;border-radius:50%;background:${bg2};flex-shrink:0;overflow:hidden">
+            <div style="width:100%;height:100%;background:rgba(255,255,255,0.2)"></div>
+          </div>
+          <div>
+            ${txt(S.name, `font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+            ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.75);margin-top:2px`)}
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:12px">
+          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.65)`)}
+          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.65)`)}
+          ${txt(S.city, `font-size:5.5px;color:rgba(255,255,255,0.65)`)}
+        </div>
+      </div>
+      <div style="padding:14px 18px;">
+        ${secLabel('Podsumowanie', bg1, 0)}
+        ${txt(S.sum, `font-size:6px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
+        ${bodySection}
+      </div>`,
+
+    clean: ()=>`
+      <div style="padding:20px 18px 12px;border-bottom:3px solid ${bg1}">
+        ${txt(S.name, `font-size:15px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7.5px;color:${muted};margin-top:3px`)}
+        <div style="display:flex;gap:10px;margin-top:6px">
+          ${txt(S.email, `font-size:5.5px;color:${muted}`)}
+          ${txt(S.phone, `font-size:5.5px;color:${muted}`)}
+          ${txt(S.city, `font-size:5.5px;color:${muted}`)}
+        </div>
+      </div>
+      <div style="padding:12px 18px">
+        ${secLabel('Podsumowanie', bg1, 0)}
+        ${txt(S.sum, `font-size:6px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
+        ${bodySection}
+      </div>`,
+
+    nordic: ()=>`
+      <div style="padding:20px 18px 14px">
+        ${txt(S.name, `font-size:15px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7.5px;color:${muted};margin-top:3px`)}
+        <div style="height:2px;background:${bg1};margin-top:10px;opacity:0.25;width:100%"></div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          ${txt(S.email, `font-size:5.5px;color:${muted}`)}${txt(S.phone, `font-size:5.5px;color:${muted}`)}
+        </div>
+      </div>
+      <div style="padding:0 18px">
+        ${secLabel('Podsumowanie', bg1, 0)}
+        ${txt(S.sum, `font-size:6px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
+        ${bodySection}
+      </div>`,
+
+    stripe: ()=>`
+      <div style="display:flex;height:100%">
+        <div style="width:6px;background:${bg1};flex-shrink:0"></div>
+        <div style="flex:1;padding:18px 14px">
+          ${txt(S.name, `font-size:14px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
+          ${txt(S.role, `font-size:7px;color:${muted};margin-top:2px`)}
+          <div style="height:1.5px;background:${bg1};margin-top:8px;opacity:0.2"></div>
+          ${secLabel('Podsumowanie', bg1, 6)}
+          ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal;`)}
+          ${bodySection}
+        </div>
+      </div>`,
+
+    cascade: ()=>`
+      <div style="display:flex;height:100%">
+        <div style="width:38%;background:${bg1};padding:18px 12px;flex-shrink:0">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:10px"></div>
+          ${txt(S.name, `font-size:9px;font-weight:800;color:#fff;letter-spacing:-0.02em;white-space:normal`)}
+          ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.7);margin-top:3px;white-space:normal`)}
+          ${secLabel('Kontakt', 'rgba(255,255,255,0.6)', 12)}
+          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
+          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
+          ${secLabel('Języki', 'rgba(255,255,255,0.6)', 10)}
+          ${txt(S.lang, `font-size:5.5px;color:rgba(255,255,255,0.75);margin-top:2px;white-space:normal`)}
+        </div>
+        <div style="flex:1;padding:18px 12px">
+          ${secLabel('Podsumowanie', bg1, 0)}
+          ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
+          ${secLabel('Doświadczenie', bg1)}
+          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${secLabel('Wykształcenie', bg1)}
+          ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
+        </div>
+      </div>`,
+
+    sidebar: ()=>`
+      <div style="display:flex;height:100%">
+        <div style="width:36%;background:${bg1};padding:20px 12px;flex-shrink:0">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:10px"></div>
+          ${txt(S.name, `font-size:9px;font-weight:800;color:#fff;white-space:normal`)}
+          ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.7);margin-top:3px;white-space:normal`)}
+          ${secLabel('Kontakt', 'rgba(255,255,255,0.55)', 12)}
+          ${txt(S.email, `font-size:5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
+          ${txt(S.phone, `font-size:5px;color:rgba(255,255,255,0.75);margin-top:2px`)}
+          ${secLabel('Umiejętności', 'rgba(255,255,255,0.55)', 10)}
+          ${txt(S.sk, `font-size:5px;color:rgba(255,255,255,0.75);margin-top:2px;white-space:normal`)}
+        </div>
+        <div style="flex:1;padding:18px 12px">
+          ${secLabel('Doświadczenie', bg1, 0)}
+          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${secLabel('Wykształcenie', bg1)}
+          ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
+          ${secLabel('Języki', bg1)}
+          ${txt(S.lang, `font-size:5px;color:${dark};margin-top:2px;white-space:normal`)}
+        </div>
+      </div>`,
+
+    slate: ()=>`
+      <div style="display:flex;height:100%">
+        <div style="width:38%;background:${bg1};padding:20px 12px;flex-shrink:0">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.18);margin-bottom:10px"></div>
+          ${txt(S.name, `font-size:9px;font-weight:800;color:#fff;white-space:normal`)}
+          ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.65);margin-top:3px;white-space:normal`)}
+          ${secLabel('Kontakt', 'rgba(255,255,255,0.5)', 12)}
+          ${txt(S.email, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
+          ${txt(S.phone, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
+        </div>
+        <div style="flex:1;padding:18px 12px">
+          ${secLabel('Doświadczenie', bg1, 0)}
+          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+          ${txt(S.exp1r, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+          ${txt(S.exp2r, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${secLabel('Wykształcenie', bg1)}
+          ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
+        </div>
+      </div>`,
+
+    metro: ()=>`
+      <div style="background:#1a1a1a;padding:16px 18px 14px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
+        <div style="display:flex;gap:10px;margin-top:6px">
+          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.55)`)}
+          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.55)`)}
+        </div>
+      </div>
+      <div style="padding:12px 18px">
+        ${secLabel('Podsumowanie', '#1a1a1a', 0)}
+        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', '#1a1a1a')}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+      </div>`,
+
+    midnight: ()=>`
+      <div style="background:${bg1};height:100%;padding:18px 18px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
+        <div style="height:1px;background:rgba(255,255,255,0.1);margin:10px 0"></div>
+        <div style="display:flex;gap:10px;margin-bottom:8px">
+          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.5)`)}
+          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.5)`)}
+        </div>
+        ${secLabel('Podsumowanie', 'rgba(255,255,255,0.4)', 0)}
+        ${txt(S.sum, `font-size:5.5px;color:rgba(255,255,255,0.7);line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', 'rgba(255,255,255,0.4)')}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:#fff;margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:rgba(255,255,255,0.5);margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:#fff;margin-top:5px`)}
+      </div>`,
+
+    matrix: ()=>`
+      <div style="background:#0d1117;height:100%;padding:18px 18px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:rgba(0,255,136,0.6);margin-top:3px`)}
+        <div style="height:1px;background:rgba(0,255,136,0.15);margin:10px 0"></div>
+        ${secLabel('Podsumowanie', 'rgba(0,255,136,0.5)', 0)}
+        ${txt(S.sum, `font-size:5.5px;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', 'rgba(0,255,136,0.5)')}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:rgba(0,255,136,0.5);margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:5px`)}
+      </div>`,
+
+    executive: ()=>`
+      <div style="background:#111;padding:16px 18px 14px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
+      </div>
+      <div style="height:3px;background:${bg2}"></div>
+      <div style="padding:12px 18px">
+        ${secLabel('Podsumowanie', '#111', 0)}
+        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', '#111')}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+      </div>`,
+
+    athens: ()=>`
+      <div style="background:${bg1};padding:14px 18px 12px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
+      </div>
+      <div style="display:flex;flex:1">
+        <div style="width:34%;background:#eff4ff;padding:12px 10px">
+          ${secLabel('Kontakt', bg1, 0)}
+          ${txt(S.email, `font-size:5px;color:${dark};margin-top:2px`)}
+          ${txt(S.phone, `font-size:5px;color:${dark};margin-top:2px`)}
+          ${secLabel('Umiejętności', bg1, 8)}
+          ${txt(S.sk, `font-size:5px;color:${dark};margin-top:2px;white-space:normal`)}
+          ${secLabel('Języki', bg1, 8)}
+          ${txt(S.lang, `font-size:5px;color:${dark};margin-top:2px;white-space:normal`)}
+        </div>
+        <div style="flex:1;padding:12px 10px">
+          ${secLabel('Doświadczenie', bg1, 0)}
+          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${secLabel('Wykształcenie', bg1)}
+          ${txt(S.edu, `font-size:6px;font-weight:700;color:${dark};margin-top:2px`)}
+        </div>
+      </div>`,
+  };
+
+  // Default for templates without custom layout
+  function defaultTpl(bg, textCol) {
+    const hTextCol = bg === '#0d1117' || bg === '#0f172a' ? '#fff' : textCol;
+    return `
+      <div style="background:${bg};padding:16px 18px 14px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:${hTextCol || '#fff'};letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
+        <div style="display:flex;gap:10px;margin-top:6px">
+          ${txt(S.email, `font-size:5.5px;color:rgba(255,255,255,0.6)`)}
+          ${txt(S.phone, `font-size:5.5px;color:rgba(255,255,255,0.6)`)}
+        </div>
+      </div>
+      <div style="padding:12px 18px">
+        ${secLabel('Podsumowanie', bg, 0)}
+        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', bg)}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+        ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${secLabel('Wykształcenie', bg)}
+        ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${secLabel('Umiejętności', bg)}
+        ${txt(S.sk, `font-size:5.5px;color:${dark};margin-top:2px`)}
+      </div>`;
+  }
+
+  const diagonalPrev = `
+    <div style="position:relative;overflow:hidden;height:100%">
+      <div style="position:absolute;top:0;left:0;right:0;height:42%;background:${bg1};clip-path:polygon(0 0,100% 0,100% 65%,0 100%)"></div>
+      <div style="position:relative;z-index:1;padding:14px 18px 0">
+        ${txt(S.name, `font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
+      </div>
+      <div style="position:relative;z-index:1;padding:52px 18px 0">
+        ${secLabel('Doświadczenie', bg1, 0)}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+        ${secLabel('Wykształcenie', bg1)}
+        ${txt(S.edu, `font-size:6px;font-weight:700;color:${dark};margin-top:2px`)}
       </div>
     </div>`;
-  });
-  grid.innerHTML = html;
+
+  const arrowPrev = `
+    <div style="position:relative;overflow:hidden;height:100%;background:#fff7f0">
+      <div style="position:absolute;top:0;left:0;right:0;height:38%;background:${bg1};clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)"></div>
+      <div style="position:relative;z-index:1;padding:14px 18px 0">
+        ${txt(S.name, `font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:${bg2};margin-top:3px`)}
+      </div>
+      <div style="position:relative;z-index:1;padding:50px 18px 0">
+        ${secLabel('Doświadczenie', bg1, 0)}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+      </div>
+    </div>`;
+
+  const shieldPrev = `
+    <div style="display:flex;height:100%;background:#e8e4dc">
+      <div style="width:54%;background:${bg1};padding:18px 12px">
+        ${txt(S.name, `font-size:10px;font-weight:800;color:#fff;white-space:normal;line-height:1.2`)}
+        ${txt(S.role, `font-size:6px;color:rgba(255,255,255,0.65);margin-top:4px;white-space:normal`)}
+        ${secLabel('Kontakt', 'rgba(255,255,255,0.5)', 12)}
+        ${txt(S.email, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
+        ${txt(S.phone, `font-size:5px;color:rgba(255,255,255,0.7);margin-top:2px`)}
+        ${secLabel('Umiejętności', 'rgba(255,255,255,0.5)', 10)}
+        ${txt(S.sk, `font-size:5px;color:rgba(255,255,255,0.65);margin-top:2px;white-space:normal`)}
+      </div>
+      <div style="flex:1;padding:18px 10px">
+        ${secLabel('Doświadczenie', '#555', 0)}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:5px`)}
+        ${txt(S.exp2r, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        ${secLabel('Wykształcenie', '#555')}
+        ${txt(S.edu, `font-size:6px;font-weight:700;color:${dark};margin-top:2px`)}
+      </div>
+    </div>`;
+
+  const boldPrev = `
+    <div style="height:100%;display:flex;flex-direction:column">
+      <div style="background:#111;display:flex;align-items:center;gap:10px;padding:10px 18px">
+        <div style="height:5px;flex:1;background:#fff;border-radius:1px"></div>
+        <div style="height:5px;width:30%;background:${bg1};border-radius:1px"></div>
+      </div>
+      <div style="padding:14px 18px 0">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:#111;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:${bg1};margin-top:3px`)}
+      </div>
+      <div style="height:2px;background:${bg1};margin:8px 18px"></div>
+      <div style="padding:0 18px">
+        ${secLabel('Podsumowanie', '#111', 0)}
+        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', '#111')}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+      </div>
+    </div>`;
+
+  const linenPrev = `
+    <div style="background:#fef9f0;height:100%">
+      <div style="padding:18px 18px 12px;border-bottom:1.5px solid #fde8b0">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:${bg1};letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:#d97706;margin-top:3px`)}
+        <div style="display:flex;gap:10px;margin-top:6px">
+          ${txt(S.email, `font-size:5.5px;color:#92400e`)}
+          ${txt(S.phone, `font-size:5.5px;color:#92400e`)}
+        </div>
+      </div>
+      <div style="padding:12px 18px">
+        ${secLabel('Podsumowanie', '#92400e', 0)}
+        ${txt(S.sum, `font-size:5.5px;color:${dark};line-height:1.5;margin-top:2px;white-space:normal`)}
+        ${secLabel('Doświadczenie', '#92400e')}
+        ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark};margin-top:2px`)}
+        ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:#92400e;margin-top:1px`)}
+      </div>
+    </div>`;
+
+  const timelinePrev = `
+    <div style="height:100%;display:flex;flex-direction:column">
+      <div style="background:linear-gradient(135deg,${bg1},${bg2});padding:16px 18px 14px">
+        ${txt(S.name, `font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em`)}
+        ${txt(S.role, `font-size:7px;color:rgba(255,255,255,0.7);margin-top:3px`)}
+      </div>
+      <div style="flex:1;padding:12px 18px">
+        ${secLabel('Doświadczenie', bg1, 0)}
+        <div style="border-left:2px solid ${bg1};padding-left:10px;margin-top:5px">
+          ${txt(S.exp1f, `font-size:7px;font-weight:700;color:${dark}`)}
+          ${txt(S.exp1r + ' · ' + S.exp1d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+          ${txt(S.exp2f, `font-size:7px;font-weight:700;color:${dark};margin-top:6px`)}
+          ${txt(S.exp2r + ' · ' + S.exp2d, `font-size:5.5px;color:${muted};margin-top:1px`)}
+        </div>
+        ${secLabel('Wykształcenie', bg1)}
+        ${txt(S.edu, `font-size:6.5px;font-weight:700;color:${dark};margin-top:2px`)}
+      </div>
+    </div>`;
+
+  const map = {
+    nova: templates.nova, clean: templates.clean, nordic: templates.nordic,
+    stripe: templates.stripe, cascade: templates.cascade, sidebar: templates.sidebar,
+    slate: templates.slate, metro: templates.metro, midnight: templates.midnight,
+    matrix: templates.matrix, executive: templates.executive, athens: templates.athens,
+    diagonal: ()=>diagonalPrev, arrow: ()=>arrowPrev, shield: ()=>shieldPrev,
+    bold: ()=>boldPrev, linen: ()=>linenPrev, timeline: ()=>timelinePrev,
+  };
+
+  if (map[id]) return `<div style="width:595px;height:842px;overflow:hidden;display:flex;flex-direction:column;">${map[id]()}</div>`;
+  return `<div style="width:595px;height:842px;overflow:hidden;display:flex;flex-direction:column;">${defaultTpl(bg1)}</div>`;
 }
 
-// ── Pick → navigate ──────────────────────────────────────────
-function pick(id) {
-  const card = document.querySelector(`.ws-card[data-id="${id}"]`);
-  if (card) {
-    card.classList.add('clicking');
-    setTimeout(() => {
-      window.location.href = `kreator-cv.html?template=${id}`;
-    }, 110);
+// ── Carousel state ─────────────────────────────────────────
+let idx = 0;
+const total = T.length;
+
+function cardW() {
+  return window.innerWidth <= 600 ? window.innerWidth * 0.72 : Math.min(220, (window.innerWidth - 160) / 3.5);
+}
+function gap() { return window.innerWidth <= 600 ? 16 : 20; }
+
+function buildCards() {
+  const track = document.getElementById('wsTrack');
+  const scale = cardW() / 595;
+  const cardH = 842 * scale;
+
+  track.innerHTML = T.map((t, i) => `
+    <div class="ws-card ${i===0?'active':''}"
+         data-idx="${i}"
+         style="width:${cardW()}px;margin:0 ${gap()/2}px;"
+         onclick="onCardClick(${i})">
+      <div class="ws-thumb" style="height:${cardH}px;">
+        <div class="ws-thumb-inner" style="transform-origin:top left;transform:scale(${scale.toFixed(4)});">
+          ${preview(t.id, t.c1, t.c2)}
+        </div>
+      </div>
+      <div class="ws-lbl">
+        <span class="ws-name">${t.name}</span>
+        <span class="ws-dot" style="background:${t.c1}"></span>
+      </div>
+    </div>`).join('');
+
+  buildDots();
+  updateTrack(false);
+}
+
+function buildDots() {
+  const dotsEl = document.getElementById('wsDots');
+  // Show max 7 dots (condensed for many templates)
+  const maxDots = 7;
+  if (total <= maxDots) {
+    dotsEl.innerHTML = T.map((_,i) => `<div class="ws-pip ${i===0?'active':''}" data-i="${i}"></div>`).join('');
   } else {
-    window.location.href = `kreator-cv.html?template=${id}`;
+    dotsEl.innerHTML = `<span id="wsCounter" style="font-size:0.72rem;font-weight:600;color:#9ca3af;letter-spacing:0.04em">1 / ${total}</span>`;
   }
 }
 
-// ── Cursor glow ──────────────────────────────────────────────
-const glow = document.getElementById('cursorGlow');
-let glowVisible = false;
-
-document.addEventListener('mousemove', (e) => {
-  glow.style.left = e.clientX + 'px';
-  glow.style.top  = e.clientY + 'px';
-  if (!glowVisible) { glow.style.opacity = '1'; glowVisible = true; }
-});
-document.addEventListener('mouseleave', () => {
-  glow.style.opacity = '0'; glowVisible = false;
-});
-
-// ── 3D tilt on cards ────────────────────────────────────────
-document.addEventListener('mousemove', (e) => {
-  const card = e.target.closest('.ws-card');
-  if (card) {
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
-    const rx = ((y - cy) / cy) * -6;  // max 6deg tilt
-    const ry = ((x - cx) / cx) * 6;
-    card.style.transform = `scale(1.025) perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+function updateDots() {
+  const pips = document.querySelectorAll('.ws-pip');
+  if (pips.length) {
+    pips.forEach((p,i) => p.classList.toggle('active', i === idx));
+  } else {
+    const counter = document.getElementById('wsCounter');
+    if (counter) counter.textContent = `${idx+1} / ${total}`;
   }
-});
+}
 
-document.addEventListener('mouseover', (e) => {
-  const card = e.target.closest('.ws-card');
-  if (!card) {
-    // reset all cards
-    document.querySelectorAll('.ws-card').forEach(c => {
-      c.style.transform = '';
-    });
+function updateTrack(animate=true) {
+  const track = document.getElementById('wsTrack');
+  const cw = cardW(), g = gap();
+  const stageW = document.querySelector('.ws-track-wrap').offsetWidth;
+  const offset = stageW / 2 - (idx * (cw + g)) - cw / 2;
+  track.style.transition = animate ? 'transform 0.42s cubic-bezier(0.4,0,0.2,1)' : 'none';
+  track.style.transform = `translateX(${offset}px)`;
+
+  // Update card states
+  document.querySelectorAll('.ws-card').forEach((c, i) => {
+    c.classList.toggle('active', i === idx);
+  });
+  updateDots();
+  document.getElementById('wsHint').textContent = T[idx].name;
+}
+
+function move(dir) {
+  idx = (idx + dir + total) % total;
+  updateTrack(true);
+}
+
+function onCardClick(i) {
+  if (i === idx) {
+    // Already active → go to creator
+    const card = document.querySelectorAll('.ws-card')[i];
+    if (card) card.classList.add('clicking');
+    setTimeout(() => { window.location.href = `kreator-cv.html?template=${T[i].id}`; }, 110);
+  } else {
+    // Navigate to that card
+    idx = i;
+    updateTrack(true);
   }
+}
+
+// ── Touch / swipe ─────────────────────────────────────────
+let touchX = null;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 40) move(dx < 0 ? 1 : -1);
+  touchX = null;
+}, {passive:true});
+
+// ── Keyboard ──────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') move(-1);
+  if (e.key === 'ArrowRight') move(1);
+  if (e.key === 'Enter') { window.location.href = `kreator-cv.html?template=${T[idx].id}`; }
 });
 
-document.querySelectorAll && document.addEventListener('mouseout', (e) => {
-  const card = e.target.closest('.ws-card');
-  if (card && !card.contains(e.relatedTarget)) {
-    card.style.transform = '';
-  }
-});
+// ── Resize ────────────────────────────────────────────────
+window.addEventListener('resize', () => buildCards());
 
-render();
+// ── Init ─────────────────────────────────────────────────
+buildCards();
 </script>
 </body>
 </html>

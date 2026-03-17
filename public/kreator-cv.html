@@ -2756,7 +2756,7 @@ function cvWizardTogglePreview() {
     backBtn.className = 'cvw-mobile-preview-back';
     backBtn.textContent = '← Wróć do edycji';
     backBtn.onclick = () => { app.classList.remove('cvw-mobile-preview-active'); };
-    document.body.appendChild(backBtn);
+    app.appendChild(backBtn); // must be inside .cv-app for CSS selector to work
   }
   if (isActive) scaleMobilePreview();
 }
