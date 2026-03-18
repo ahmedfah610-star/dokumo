@@ -3,640 +3,734 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/jpeg" href="logo2.png">
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zarządzanie pracą – Wypowiedzenie, Urlop, Świadectwo pracy | Dokumo</title>
+<title>Dokumenty pracownicze — Wypowiedzenie, Urlop, Świadectwo | Dokumo</title>
 <meta name="description" content="Generuj wypowiedzenie umowy o pracę, wnioski o urlop i świadectwo pracy w kilka sekund. Dokumenty zgodne z Kodeksem Pracy, gotowe do druku.">
-<meta name="keywords" content="wypowiedzenie umowy o pracę, wniosek o urlop, świadectwo pracy, wypowiedzenie za porozumieniem stron, generator dokumentów HR">
+<meta name="keywords" content="wypowiedzenie umowy o pracę, wniosek o urlop, świadectwo pracy, generator dokumentów HR">
 <link rel="canonical" href="https://dokumoflow.com/wypowiedzenia.html">
-<meta property="og:title" content="Zarządzanie pracą – Dokumo">
+<meta property="og:title" content="Dokumenty pracownicze — Dokumo">
 <meta property="og:description" content="Wypowiedzenie, wnioski o urlop i świadectwo pracy — generowane przez AI w sekundy.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/wypowiedzenia.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zarządzanie pracą – Dokumo">
-<meta name="twitter:description" content="Wypowiedzenie, wnioski o urlop i świadectwo pracy — generowane przez AI w sekundy.">
 <meta name="robots" content="index, follow">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Service","name":"Generator dokumentów HR – Dokumo","description":"Generuj wypowiedzenie umowy o pracę, wnioski o urlop i świadectwo pracy w kilka sekund.","provider":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"},"serviceType":"Document Generation","url":"https://dokumoflow.com/wypowiedzenia.html","areaServed":"PL","inLanguage":"pl"}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f3ef; --surface: #141518; --surface2: #1a1c20;
-  --border: rgba(255,255,255,.07); --ink: #f0ede8;
-  --ink2: rgba(240,237,232,.45); --ink3: rgba(240,237,232,.25);
-  --green: #22c55e; --green-dim: rgba(34,197,94,.15);
+  --bg: #ffffff;
+  --ink: #111111;
+  --ink2: #555555;
+  --ink3: #999999;
+  --border: #e5e5e5;
+  --surface: #f5f5f7;
+  --accent: #111111;
+  --pill: 50px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: "DM Sans", sans-serif; color: var(--ink); min-height: 100vh; }
-.u-nav { background: rgba(14,15,17,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; height: 56px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; }
-.u-nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 1rem; color: var(--ink); letter-spacing: -.02em; flex-shrink: 0; }
-.u-nav-dot { width: 26px; height: 26px; background: var(--ink); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
-.u-nav-back { display: flex; align-items: center; gap: 5px; font-size: .73rem; font-weight: 500; color: var(--ink2); text-decoration: none; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border); margin-left: 12px; transition: all .2s; white-space: nowrap; flex-shrink: 0; }
-.u-nav-back:hover { color: var(--ink); border-color: rgba(255,255,255,.15); }
-.u-nav-spacer { flex: 1; }
-.u-nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.u-nav-login { font-size: .73rem; font-weight: 500; color: var(--ink2); text-decoration: none; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border); transition: all .2s; }
-.u-nav-badge { font-size: .62rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
-.u-nav-badge.pro { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.25); }
-.u-nav-badge.free { background: rgba(255,255,255,.05); color: var(--ink3); border: 1px solid var(--border); }
-.u-nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface2); color: var(--ink); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
-.u-nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.u-nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
-.u-nav-profile.show { display: flex; }
-.u-nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #1a1c20; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.5); padding: 8px; min-width: 200px; z-index: 200; display: none; }
-.u-nav-dropdown.show { display: block; }
-.u-nav-dd-email { font-size: .72rem; color: var(--ink2); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-.u-nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 1px; }
-.u-nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
-.u-nav-dd-link:hover { background: rgba(255,255,255,.05); color: var(--ink); }
-.u-nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
-.u-nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #f87171; transition: background .15s; }
-.u-nav-dd-logout:hover { background: rgba(248,113,113,.08); }
-@media(max-width:480px){ .u-nav { padding: 0 1rem; } .u-nav-back span { display: none; } }
-.doc-stack { max-width: 860px; margin: 52px auto 80px; padding: 0 2rem; display: flex; flex-direction: column; gap: 12px; }
-.doc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; display: flex; align-items: center; cursor: pointer; position: relative; overflow: hidden; transition: transform .25s cubic-bezier(.34,1.3,.64,1), box-shadow .25s ease, border-color .25s; text-decoration: none; color: inherit; opacity: 0; animation: slideIn .4s ease both; }
-.doc-card:nth-child(1) { animation-delay: .05s; }
-.doc-card:nth-child(2) { animation-delay: .11s; }
-.doc-card:nth-child(3) { animation-delay: .17s; }
-.doc-card:nth-child(4) { animation-delay: .23s; }
-.doc-card:nth-child(5) { animation-delay: .29s; }
-@keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-.doc-card:hover { transform: translateX(6px) scale(1.008); box-shadow: -6px 0 0 0 var(--green), 0 12px 40px rgba(0,0,0,.35); border-color: rgba(255,255,255,.12); }
-.doc-edge { width: 4px; align-self: stretch; border-radius: 16px 0 0 16px; flex-shrink: 0; background: var(--green); }
-.doc-body { flex: 1; padding: 22px 24px; display: flex; align-items: center; gap: 20px; }
-.doc-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--green-dim); }
-.doc-info { flex: 1; min-width: 0; }
-.doc-name { font-family: "Bricolage Grotesque", sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; margin-bottom: 5px; }
-.doc-desc { font-size: .8rem; color: var(--ink2); line-height: 1.5; font-weight: 300; }
-.doc-action { flex-shrink: 0; padding: 0 24px; }
-.doc-btn { display: inline-flex; align-items: center; gap: 7px; font-family: "Bricolage Grotesque", sans-serif; font-size: .78rem; font-weight: 700; padding: 9px 18px; border-radius: 10px; border: none; cursor: pointer; transition: all .2s; white-space: nowrap; background: rgba(34,197,94,.15); color: #39ff8a; border: 1px solid rgba(57,255,138,.3); }
-.doc-card:hover .doc-btn { background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.4); }
-.doc-status { position: absolute; top: 14px; right: 14px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
-.doc-card::after { content: ""; position: absolute; inset: 0; border-radius: 16px; opacity: 0; transition: opacity .3s; pointer-events: none; background: radial-gradient(ellipse at left center, rgba(34,197,94,.04), transparent 60%); }
-.doc-card:hover::after { opacity: 1; }
-@media(max-width:640px){ .doc-body { padding: 18px 16px; gap: 14px; } .doc-icon { width: 38px; height: 38px; } .doc-name { font-size: .9rem; } .doc-card { flex-direction: column; align-items: stretch; } .doc-action { padding: 0 16px 18px; } .doc-btn { width: 100%; justify-content: center; } }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; min-height: 100vh; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
 
-.gen-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); z-index: 300; align-items: flex-end; justify-content: center; }
-.gen-sheet { background: #0e0f11; border-radius: 24px 24px 0 0; border: 1px solid rgba(255,255,255,.08); width: 100%; max-width: 960px; max-height: 90vh; overflow-y: auto; padding: 28px 28px 40px; transform: translateY(100%); transition: transform .35s cubic-bezier(.34,1.2,.64,1); }
+/* ── NAV ── */
+.wiz-nav { position: sticky; top: 0; z-index: 200; height: 60px; background: rgba(255,255,255,.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 1rem; }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-weight: 800; font-size: .95rem; letter-spacing: -.02em; flex-shrink: 0; }
+.nav-steps { flex: 1; display: flex; justify-content: center; align-items: center; }
+.step-item { display: flex; align-items: center; }
+.step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; transition: all .3s; background: var(--surface); color: var(--ink3); border: 1.5px solid var(--border); flex-shrink: 0; }
+.step-dot.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.step-dot.done { background: var(--surface); color: var(--ink); border-color: #ccc; }
+.step-lbl { font-size: .72rem; font-weight: 500; color: var(--ink3); margin-left: 6px; transition: color .3s; white-space: nowrap; }
+.step-lbl.active { color: var(--ink); font-weight: 700; }
+.step-line { width: 36px; height: 1.5px; background: var(--border); margin: 0 8px; transition: background .3s; flex-shrink: 0; }
+.step-line.done { background: var(--ink); }
+.nav-right { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+.nav-login { font-size: .75rem; font-weight: 600; color: var(--ink2); text-decoration: none; padding: 7px 14px; border-radius: var(--pill); border: 1.5px solid var(--border); transition: all .2s; }
+.nav-login:hover { border-color: #999; color: var(--ink); }
+.nav-badge { font-size: .6rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
+.nav-badge.pro { background: rgba(52,199,89,.12); color: #1a8a3e; border: 1px solid rgba(52,199,89,.25); }
+.nav-badge.free { background: var(--surface); color: var(--ink3); border: 1px solid var(--border); }
+.nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface); color: var(--ink); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1.5px solid var(--border); flex-shrink: 0; overflow: hidden; }
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
+.nav-profile.show { display: flex; }
+.nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.12); padding: 8px; min-width: 200px; z-index: 300; display: none; }
+.nav-dropdown.show { display: block; }
+.nav-dd-email { font-size: .72rem; color: var(--ink3); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
+.nav-dd-link:hover { background: var(--surface); color: var(--ink); }
+.nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+.nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #c00; transition: background .15s; font-family: 'Figtree', sans-serif; }
+.nav-dd-logout:hover { background: rgba(200,0,0,.06); }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: calc(100vh - 60px - 72px); }
+.screen.active { display: block; animation: fadeUp .38s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes popIn { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes shimmer { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+/* ── SCREEN 0 — CHOOSE ── */
+.choose-hero { max-width: 640px; margin: 72px auto 0; padding: 0 2rem; text-align: center; }
+.choose-h1 { font-size: clamp(2rem,5vw,3rem); font-weight: 900; letter-spacing: -.05em; line-height: 1.1; }
+.choose-sub { margin-top: 14px; font-size: 1.05rem; color: var(--ink2); font-weight: 400; line-height: 1.6; }
+.doc-grid { max-width: 900px; margin: 44px auto 60px; padding: 0 2rem; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.doc-card { background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 28px 24px; cursor: pointer; transition: border-color .2s, transform .25s cubic-bezier(.34,1.2,.64,1); text-align: left; }
+.doc-card:hover { border-color: var(--ink); transform: translateY(-4px); }
+.doc-card-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
+.doc-card-title { font-size: 1rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
+.doc-card-desc { font-size: .82rem; color: var(--ink2); line-height: 1.55; font-weight: 400; }
+.doc-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.doc-card-tag { font-size: .67rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface); color: var(--ink3); }
+.doc-card-btn { display: inline-block; margin-top: 18px; padding: 9px 18px; border-radius: var(--pill); border: 1.5px solid var(--border); background: #fff; font-family: 'Figtree', sans-serif; font-size: .78rem; font-weight: 700; cursor: pointer; transition: all .2s; color: var(--ink); }
+.doc-card:hover .doc-card-btn { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ── SCREEN 1 — FORM ── */
+.form-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: start; }
+.sub-bar { display: flex; gap: 6px; margin-bottom: 24px; }
+.sub-seg { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .3s; }
+.sub-seg.on { background: var(--ink); }
+.form-step-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
+.form-step-sub { font-size: .88rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.5; }
+.field { margin-bottom: 20px; }
+.field-lbl { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px; }
+.field-lbl span { font-weight: 400; opacity: .7; text-transform: none; letter-spacing: 0; font-size: .7rem; }
+.field-in { width: 100%; padding: 12px 16px; font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 500; color: var(--ink); background: var(--surface); border: 1.5px solid transparent; border-radius: 12px; outline: none; transition: all .2s; -webkit-appearance: none; appearance: none; }
+.field-in:focus { background: #fff; border-color: var(--ink); }
+.field-in::placeholder { color: var(--ink3); font-weight: 400; }
+.field-in[type="date"] { color-scheme: light; }
+.pills-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 9px 16px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #fff; color: var(--ink2); }
+.pill:hover { border-color: #999; color: var(--ink); }
+.pill.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Live preview card */
+.prev-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 28px 24px; position: sticky; top: 80px; }
+.prev-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.prev-card-ico { font-size: 1.4rem; }
+.prev-card-title { font-size: .95rem; font-weight: 800; letter-spacing: -.02em; }
+.prev-row { margin-bottom: 14px; }
+.prev-row-lbl { font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
+.prev-row-val { font-size: .88rem; font-weight: 500; color: var(--ink); }
+.prev-row-val.empty { color: var(--ink3); font-style: italic; font-weight: 400; }
+.shimmer-line { height: 10px; border-radius: 4px; background: var(--border); margin-bottom: 8px; animation: shimmer 1.5s ease infinite; }
+
+/* ── SCREEN 2 — PREVIEW ── */
+.result-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1.3fr 1fr; gap: 52px; align-items: start; }
+.doc-paper { background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 52px 56px; font-family: 'Georgia', 'Times New Roman', serif; font-size: .875rem; line-height: 1.9; color: #111; white-space: pre-wrap; word-break: break-word; min-height: 480px; }
+.doc-paper.loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+.res-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
+.res-sub { font-size: .85rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.55; }
+.checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+.check-row { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; font-weight: 500; }
+.check-ico { width: 22px; height: 22px; border-radius: 50%; background: rgba(52,199,89,.1); border: 1.5px solid rgba(52,199,89,.3); color: #1a8a3e; display: flex; align-items: center; justify-content: center; font-size: .62rem; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
+.act-btns { display: flex; flex-direction: column; gap: 10px; }
+.act-btn { width: 100%; padding: 14px 20px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: all .2s; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.act-btn.primary { background: var(--ink); color: #fff; }
+.act-btn.primary:hover { background: #333; }
+.act-btn.secondary { background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); }
+.act-btn.secondary:hover { border-color: #999; }
+
+/* ── SCREEN 3 — SUCCESS ── */
+.success-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 72px 2rem; min-height: calc(100vh - 60px - 72px); }
+.success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(52,199,89,.1); border: 2px solid rgba(52,199,89,.25); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 28px; animation: float 3s ease-in-out infinite, popIn .5s ease both; }
+.success-h1 { font-size: clamp(2rem,4vw,2.8rem); font-weight: 900; letter-spacing: -.05em; margin-bottom: 12px; }
+.success-sub { font-size: 1rem; color: var(--ink2); max-width: 420px; line-height: 1.6; margin-bottom: 36px; }
+.success-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 52px; }
+.suc-btn { padding: 14px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+.suc-btn.primary { background: var(--ink); color: #fff; border: none; }
+.suc-btn.primary:hover { background: #333; }
+.suc-btn.outline { background: #fff; color: var(--ink); border: 1.5px solid var(--border); }
+.suc-btn.outline:hover { border-color: #999; }
+.metrics { display: flex; border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; }
+.metric { flex: 1; padding: 20px 28px; text-align: center; border-right: 1.5px solid var(--border); }
+.metric:last-child { border-right: none; }
+.metric-val { font-size: 1.6rem; font-weight: 900; letter-spacing: -.04em; margin-bottom: 4px; }
+.metric-lbl { font-size: .72rem; color: var(--ink3); font-weight: 500; line-height: 1.4; }
+
+/* ── BOTTOM BAR ── */
+.bot-bar { position: sticky; bottom: 0; z-index: 200; height: 72px; background: rgba(255,255,255,.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 16px; }
+.btn-back { padding: 12px 22px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .85rem; font-weight: 600; cursor: pointer; background: var(--surface); border: 1.5px solid var(--border); color: var(--ink2); transition: all .2s; }
+.btn-back:hover { border-color: #999; color: var(--ink); }
+.btn-back.hide { visibility: hidden; pointer-events: none; }
+.bar-info { flex: 1; text-align: center; font-size: .78rem; color: var(--ink3); font-weight: 500; }
+.btn-next { padding: 12px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; background: var(--ink); color: #fff; border: none; transition: all .2s; margin-left: auto; }
+.btn-next:hover { background: #333; }
+.btn-next.hide { visibility: hidden; pointer-events: none; }
+
+/* ── MOBILE ── */
+@media (max-width: 760px) {
+  .nav-steps { display: none; }
+  .doc-grid { grid-template-columns: 1fr; max-width: 460px; }
+  .form-wrap { grid-template-columns: 1fr; gap: 0; }
+  .form-right-col { display: none; }
+  .result-wrap { grid-template-columns: 1fr; }
+  .metrics { flex-direction: column; }
+  .metric { border-right: none; border-bottom: 1.5px solid var(--border); }
+  .metric:last-child { border-bottom: none; }
+  .doc-paper { padding: 28px 24px; }
+}
+@media (max-width: 480px) {
+  .wiz-nav { padding: 0 1rem; }
+  .bot-bar { padding: 0 1rem; gap: 8px; }
+  .btn-next { padding: 12px 18px; font-size: .82rem; }
+  .choose-hero { margin-top: 48px; }
+}
 </style>
 
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const app=getApps().length?getApps()[0]:initializeApp(__c);window._fbSignOut=()=>signOut(getAuth(app));
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
+const app=getApps().length?getApps()[0]:initializeApp(__c);
+window._fbSignOut=()=>signOut(getAuth(app));
 onAuthStateChanged(getAuth(app),async u=>{
   if(u){
     localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));
     window._fbToken=await u.getIdToken();
-    try{
-      const res=await fetch("/api/check-sub",{headers:{"Authorization":"Bearer "+window._fbToken}});
-      const data=await res.json();
-      if(data.expiresAt)localStorage.setItem("dokumo_sub",JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));
-    }catch(e){}
+    try{const res=await fetch("/api/check-sub",{headers:{"Authorization":"Bearer "+window._fbToken}});const data=await res.json();if(data.expiresAt)localStorage.setItem("dokumo_sub",JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));}catch(e){}
   }else{window._fbToken=null;}
-  if(window._renderUNav)window._renderUNav();
+  if(window._renderNav)window._renderNav();
 });
 </script>
 </head>
 <body>
 
-<nav class="u-nav">
-  <a href="index.html" class="u-nav-logo">
-    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+<!-- NAV -->
+<nav class="wiz-nav">
+  <a href="index.html" class="nav-logo">
+    <img src="logo2.png" style="height:26px;width:auto;display:block;">
     Dokumo
   </a>
-  <a href="kariera.html" class="u-nav-back">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    <span>Strefa Kariery</span>
-  </a>
-  <div class="u-nav-spacer"></div>
-  <div class="u-nav-right">
-    <a href="konto.html" class="u-nav-login" id="uNavLogin">Zaloguj się</a>
-    <div class="u-nav-profile" id="uNavProfile">
-      <span class="u-nav-badge free" id="uNavBadge">Free</span>
-      <div class="u-nav-avatar" id="uNavAvatar" onclick="toggleUNavDrop(event)">?</div>
-      <div class="u-nav-dropdown" id="uNavDrop">
-        <div class="u-nav-dd-email"><div class="u-nav-dd-name" id="uNavName"></div><div id="uNavEmail"></div></div>
-        <a href="konto.html" class="u-nav-dd-link">👤 Moje konto</a>
-        <a href="moje-dokumenty.html" class="u-nav-dd-link">📁 Moje dokumenty</a>
-        <a href="subskrypcja.html" class="u-nav-dd-link">⭐ Subskrypcja</a>
-        <div class="u-nav-dd-sep"></div>
-        <button class="u-nav-dd-logout" onclick="uNavLogout()">← Wyloguj się</button>
+  <div class="nav-steps" id="navSteps"></div>
+  <div class="nav-right">
+    <a href="konto.html" class="nav-login" id="navLogin">Zaloguj się</a>
+    <div class="nav-profile" id="navProfile">
+      <span class="nav-badge free" id="navBadge">Free</span>
+      <div class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)">?</div>
+      <div class="nav-dropdown" id="navDrop">
+        <div class="nav-dd-email">
+          <div class="nav-dd-name" id="navName"></div>
+          <div id="navEmail" style="font-size:.72rem;color:var(--ink3);"></div>
+        </div>
+        <a href="konto.html" class="nav-dd-link">👤 Moje konto</a>
+        <a href="moje-dokumenty.html" class="nav-dd-link">📁 Moje dokumenty</a>
+        <a href="subskrypcja.html" class="nav-dd-link">⭐ Subskrypcja</a>
+        <div class="nav-dd-sep"></div>
+        <button class="nav-dd-logout" onclick="navLogout()">← Wyloguj się</button>
       </div>
     </div>
   </div>
 </nav>
 
+<!-- SCREEN 0: WYBIERZ DOKUMENT -->
+<section class="screen active" id="screen0">
+  <div class="choose-hero">
+    <h1 class="choose-h1">Który dokument<br>chcesz wygenerować?</h1>
+    <p class="choose-sub">Wypełnij formularz w kilka chwil — AI wygeneruje gotowy dokument zgodny z Kodeksem Pracy.</p>
+  </div>
+  <div class="doc-grid">
+    <div class="doc-card" onclick="selectDoc('wypowiedzenie')">
+      <span class="doc-card-icon">📄</span>
+      <div class="doc-card-title">Wypowiedzenie umowy o pracę</div>
+      <div class="doc-card-desc">Za porozumieniem stron lub z zachowaniem okresu — system automatycznie dostosuje treść do wybranego trybu.</div>
+      <div class="doc-card-tags">
+        <span class="doc-card-tag">Art. 30 KP</span>
+        <span class="doc-card-tag">Pracownik / Pracodawca</span>
+      </div>
+      <button class="doc-card-btn">Wybierz →</button>
+    </div>
+    <div class="doc-card" onclick="selectDoc('urlop')">
+      <span class="doc-card-icon">🏖️</span>
+      <div class="doc-card-title">Wniosek o urlop</div>
+      <div class="doc-card-desc">Wypoczynkowy, na żądanie, okolicznościowy, bezpłatny — wybierz rodzaj i podaj daty.</div>
+      <div class="doc-card-tags">
+        <span class="doc-card-tag">Urlop wypoczynkowy</span>
+        <span class="doc-card-tag">Na żądanie</span>
+        <span class="doc-card-tag">Okolicznościowy</span>
+      </div>
+      <button class="doc-card-btn">Wybierz →</button>
+    </div>
+    <div class="doc-card" onclick="selectDoc('swiadectwo')">
+      <span class="doc-card-icon">📋</span>
+      <div class="doc-card-title">Świadectwo pracy</div>
+      <div class="doc-card-desc">Dokument potwierdzający przebieg zatrudnienia zgodny z art. 97 Kodeksu Pracy.</div>
+      <div class="doc-card-tags">
+        <span class="doc-card-tag">Art. 97 KP</span>
+        <span class="doc-card-tag">Obowiązkowy</span>
+      </div>
+      <button class="doc-card-btn">Wybierz →</button>
+    </div>
+  </div>
+</section>
+
+<!-- SCREEN 1: FORMULARZ -->
+<section class="screen" id="screen1">
+  <div class="form-wrap">
+    <div id="formLeft"></div>
+    <div class="form-right-col" id="formRight"></div>
+  </div>
+</section>
+
+<!-- SCREEN 2: PODGLĄD -->
+<section class="screen" id="screen2">
+  <div class="result-wrap">
+    <div>
+      <div class="doc-paper loading" id="docPaper">
+        <div style="width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <p style="color:var(--ink3);font-size:.85rem;font-weight:500;margin-top:4px;">Generowanie dokumentu przez AI…</p>
+      </div>
+    </div>
+    <div>
+      <div class="res-title">Podgląd dokumentu</div>
+      <div class="res-sub">Sprawdź wygenerowany dokument przed pobraniem lub wysłaniem.</div>
+      <div class="checklist">
+        <div class="check-row"><div class="check-ico">✓</div><span>Wygenerowany przez AI Claude</span></div>
+        <div class="check-row"><div class="check-ico">✓</div><span>Zgodny z Kodeksem Pracy</span></div>
+        <div class="check-row"><div class="check-ico">✓</div><span>Gotowy do podpisania i wysłania</span></div>
+        <div class="check-row" id="checkSaved" style="display:none;"><div class="check-ico">✓</div><span>Zapisano w Twoich dokumentach</span></div>
+      </div>
+      <div class="act-btns">
+        <button class="act-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
+        <button class="act-btn secondary" onclick="copyDoc()">📋 Kopiuj tekst</button>
+        <button class="act-btn secondary" onclick="downloadAs('rtf')">⬇ Pobierz Word (.rtf)</button>
+        <button class="act-btn secondary" onclick="downloadAs('txt')">⬇ Pobierz TXT</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREEN 3: SUKCES -->
+<section class="screen" id="screen3">
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <h1 class="success-h1">Dokument gotowy!</h1>
+    <p class="success-sub" id="successSub">Twój dokument został wygenerowany i jest gotowy do pobrania.</p>
+    <div class="success-btns">
+      <button class="suc-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
+      <button class="suc-btn outline" onclick="copyDoc()">📋 Kopiuj</button>
+      <button class="suc-btn outline" onclick="goTo(0)">+ Nowy dokument</button>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-val">~8s</div>
+        <div class="metric-lbl">czas<br>generowania</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">100%</div>
+        <div class="metric-lbl">zgodność<br>z KP</div>
+      </div>
+      <div class="metric" id="metricPages">
+        <div class="metric-val">1–2</div>
+        <div class="metric-lbl">strony<br>dokumentu</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM BAR -->
+<div class="bot-bar">
+  <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
+  <span class="bar-info" id="barInfo">Wybierz dokument, aby kontynuować</span>
+  <button class="btn-next hide" id="btnNext" onclick="goNext()">Dalej →</button>
+</div>
+
 <script>
+/* ── AUTH NAV ── */
 (function(){
   function getUser(){try{return JSON.parse(localStorage.getItem("dokumo_user"));}catch(e){return null;}}
   function getSub(){try{return JSON.parse(localStorage.getItem("dokumo_sub"));}catch(e){return null;}}
-  function renderUNav(){
+  function renderNav(){
     var user=getUser(),sub=getSub();
-    var login=document.getElementById("uNavLogin"),profile=document.getElementById("uNavProfile");
-    var badge=document.getElementById("uNavBadge"),avatar=document.getElementById("uNavAvatar");
+    var login=document.getElementById("navLogin"),profile=document.getElementById("navProfile");
+    var badge=document.getElementById("navBadge"),avatar=document.getElementById("navAvatar");
     if(!login)return;
     if(user){
       login.style.display="none";profile.classList.add("show");
-      document.getElementById("uNavName").textContent=user.name||user.email||"";
-      document.getElementById("uNavEmail").textContent=user.email||"";
+      document.getElementById("navName").textContent=user.name||user.email||"";
+      document.getElementById("navEmail").textContent=user.email||"";
       if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="">';
       else avatar.textContent=(user.name||user.email||"?")[0].toUpperCase();
       var isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
       var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
       badge.textContent=isActive?(names[sub.plan]||"PRO"):"Free";
-      badge.className="u-nav-badge "+(isActive?"pro":"free");
+      badge.className="nav-badge "+(isActive?"pro":"free");
     }else{login.style.display="";profile.classList.remove("show");}
   }
-  function toggleUNavDrop(e){e.stopPropagation();document.getElementById("uNavDrop").classList.toggle("show");}
-  function uNavLogout(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(()=>{window.location.href="index.html";});}
-  window.toggleUNavDrop=toggleUNavDrop;window.uNavLogout=uNavLogout;
-  document.addEventListener("click",function(){var d=document.getElementById("uNavDrop");if(d)d.classList.remove("show");});
-  renderUNav();window._renderUNav=renderUNav;
+  window.toggleDrop=function(e){e.stopPropagation();document.getElementById("navDrop").classList.toggle("show");};
+  window.navLogout=function(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href="index.html";});};
+  document.addEventListener("click",function(){var d=document.getElementById("navDrop");if(d)d.classList.remove("show");});
+  renderNav();window._renderNav=renderNav;
 })();
-</script>
 
-<div style="max-width:860px;margin:40px auto 0;padding:0 2rem;">
-  <h1 style="font-family:Bricolage Grotesque,sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:#1a1714;letter-spacing:-.03em;line-height:1.15;">Dokumenty dla każdego<br><span style="background:linear-gradient(90deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">pracownika.</span></h1>
-</div>
-
-<main class="doc-stack" aria-label="Dokumenty pracownicze">
-
-  <article class="doc-card" data-doc="wypowiedzenie" itemscope itemtype="https://schema.org/Service">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📄</span></div>
-      <div class="doc-info">
-        <h2 class="doc-name" itemprop="name">Wypowiedzenie umowy o pracę</h2>
-        <p class="doc-desc" itemprop="description">Za porozumieniem stron lub z zachowaniem okresu — system automatycznie wylicza ostatni dzień pracy na podstawie stażu.</p>
-      </div>
-    </div>
-    <div class="doc-action"><button class="doc-btn" aria-label="Generuj wypowiedzenie umowy o pracę">Generuj →</button></div>
-    <div class="doc-status" aria-hidden="true"></div>
-  </article>
-
-  <article class="doc-card" data-doc="urlop" itemscope itemtype="https://schema.org/Service">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">🏖️</span></div>
-      <div class="doc-info">
-        <h2 class="doc-name" itemprop="name">Wnioski o urlop</h2>
-        <p class="doc-desc" itemprop="description">Wypoczynkowy, na żądanie, okolicznościowy, bezpłatny — wybierz rodzaj urlopu i podaj daty.</p>
-      </div>
-    </div>
-    <div class="doc-action"><button class="doc-btn" aria-label="Generuj wniosek o urlop">Generuj →</button></div>
-    <div class="doc-status" aria-hidden="true"></div>
-  </article>
-
-  <article class="doc-card" data-doc="swiadectwo" itemscope itemtype="https://schema.org/Service">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon" aria-hidden="true"><span style="font-size:1.4rem;">📋</span></div>
-      <div class="doc-info">
-        <h2 class="doc-name" itemprop="name">Świadectwo pracy</h2>
-        <p class="doc-desc" itemprop="description">Dokument potwierdzający przebieg zatrudnienia — zgodny z art. 97 Kodeksu Pracy, gotowy do wydruku.</p>
-      </div>
-    </div>
-    <div class="doc-action"><button class="doc-btn" aria-label="Generuj świadectwo pracy">Generuj →</button></div>
-    <div class="doc-status" aria-hidden="true"></div>
-  </article>
-
-
-</main>
-
-<!-- MODAL — bottom sheet jak hr.html -->
-<div class="gen-overlay" id="genOverlay">
-  <div class="gen-sheet" id="genSheet">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <h2 id="genTitle" style="font-family:Bricolage Grotesque,sans-serif;font-size:1.1rem;font-weight:800;color:#f0ede8;letter-spacing:-.02em;"></h2>
-      <button onclick="closeGen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(240,237,232,.6);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.72rem;flex-shrink:0;">✕</button>
-    </div>
-    <div id="genForm"></div>
-    <div id="genLoading" style="display:none;text-align:center;padding:40px 0;">
-      <div style="width:36px;height:36px;border:3px solid rgba(57,255,138,.2);border-top-color:#39ff8a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
-      <p style="color:rgba(240,237,232,.5);font-size:.85rem;">Generowanie dokumentu…</p>
-    </div>
-    <div id="genResult" style="display:none;flex-direction:column;">
-      <textarea id="genText" style="width:100%;height:260px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#f0ede8;font-size:.8rem;padding:16px;resize:vertical;font-family:DM Sans,sans-serif;line-height:1.6;outline:none;" readonly></textarea>
-      <div style="display:flex;flex-direction:row;gap:8px;margin-top:16px;flex-wrap:nowrap;">
-        <button onclick="copyResult()" style="flex:1;min-width:0;padding:11px 8px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#39ff8a;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📋 Kopiuj</button>
-        <button onclick="downloadResultAs('pdf')" style="flex:1;min-width:0;padding:11px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⬇ PDF</button>
-        <button onclick="downloadResultAs('rtf')" style="flex:1;min-width:0;padding:11px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⬇ Word</button>
-        <button onclick="downloadResultAs('txt')" style="flex:1;min-width:0;padding:11px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⬇ TXT</button>
-      </div>
-    </div>
-  </div>
-</div></div>
-
-<script>
+/* ── FORMS DATA ── */
 var FORMS = {
   wypowiedzenie: {
-    title: "Wypowiedzenie umowy o pracę",
-    steps: [
-      { label: "Strony umowy", fields: [
-        {id:"w_imie",       label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",             icon:"👤"},
-        {id:"w_adres",      label:"Adres pracownika",             ph:"np. ul. Różana 2, Kraków",     icon:"🏠", opt:true},
-        {id:"w_firma",      label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
-        {id:"w_adres_firma",label:"Adres pracodawcy",             ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
-        {id:"w_st",         label:"Stanowisko",                   ph:"np. Specjalista ds. sprzedaży",icon:"💼"},
-        {id:"w_od",         label:"Zatrudniony od",               type:"date",                       icon:"📅"}
+    title:"Wypowiedzenie umowy o pracę", icon:"📄",
+    steps:[
+      {label:"Strony umowy",fields:[
+        {id:"w_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",             icon:"👤"},
+        {id:"w_adres", label:"Adres pracownika",             ph:"np. ul. Różana 2, Kraków",     icon:"🏠", opt:true},
+        {id:"w_firma", label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
+        {id:"w_adres_firma",label:"Adres pracodawcy",        ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
+        {id:"w_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. sprzedaży",icon:"💼"},
+        {id:"w_od",    label:"Zatrudniony od",               type:"date",                       icon:"📅"}
       ]},
-      { label: "Tryb wypowiedzenia", fields: [
-        {id:"w_tryb", label:"Sposób zakończenia", type:"pills", icon:"📋",
+      {label:"Tryb wypowiedzenia",fields:[
+        {id:"w_tryb",  label:"Sposób zakończenia",           type:"pills", icon:"📋",
          opts:["Za porozumieniem stron","Z zachowaniem okresu wypowiedzenia","Bez zachowania okresu (dyscyplinarne)"]},
-        {id:"w_kon",   label:"Data zakończenia współpracy", type:"date", icon:"🏁"},
-        {id:"w_powod", label:"Powód / uzasadnienie", ph:"np. przyczyny osobiste, rezygnacja z powodów zawodowych...", icon:"📝", opt:true}
+        {id:"w_kon",   label:"Data zakończenia współpracy",  type:"date",  icon:"🏁"},
+        {id:"w_powod", label:"Powód / uzasadnienie",         ph:"np. przyczyny osobiste, rezygnacja z powodów zawodowych...", icon:"📝", opt:true}
       ]}
     ],
-    prompt: function(v) {
-      var tryb = (v.w_tryb || "za porozumieniem stron").toLowerCase();
-      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      return "Napisz wypowiedzenie umowy o prace " + tryb + ". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracownik: " + (v.w_imie||"[imie]") + (v.w_adres?", adres: "+v.w_adres:"") + "\n- Pracodawca: " + (v.w_firma||"[firma]") + (v.w_adres_firma?", adres: "+v.w_adres_firma:"") + "\n- Stanowisko: " + (v.w_st||"[stanowisko]") + "\n- Zatrudniony od: " + (v.w_od||"[data]") + "\n- Data zakonczenia: " + (v.w_kon||"[data]") + "\n- Tryb: " + tryb + (v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"") + "\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
+    prompt:function(v){
+      var tryb=(v.w_tryb||"za porozumieniem stron").toLowerCase();
+      var dz=new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      return "Napisz wypowiedzenie umowy o prace "+tryb+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.w_imie||"[imie]")+(v.w_adres?", adres: "+v.w_adres:"")+"\n- Pracodawca: "+(v.w_firma||"[firma]")+(v.w_adres_firma?", adres: "+v.w_adres_firma:"")+"\n- Stanowisko: "+(v.w_st||"[stanowisko]")+"\n- Zatrudniony od: "+(v.w_od||"[data]")+"\n- Data zakonczenia: "+(v.w_kon||"[data]")+"\n- Tryb: "+tryb+(v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"")+"\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
     }
   },
   urlop: {
-    title: "Wniosek o urlop",
-    steps: [
-      { label: "Dane pracownika", fields: [
-        {id:"u_imie", label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",       icon:"👤"},
-        {id:"u_prz",  label:"Imię i nazwisko przełożonego", ph:"np. Anna Nowak",        icon:"👔"},
-        {id:"u_firma",label:"Nazwa firmy",                   ph:"np. ABC Sp. z o.o.",   icon:"🏢"}
+    title:"Wniosek o urlop", icon:"🏖️",
+    steps:[
+      {label:"Dane pracownika",fields:[
+        {id:"u_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",     icon:"👤"},
+        {id:"u_prz",   label:"Imię i nazwisko przełożonego", ph:"np. Anna Nowak",       icon:"👔"},
+        {id:"u_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",   icon:"🏢"}
       ]},
-      { label: "Rodzaj urlopu", fields: [
-        {id:"u_typ", label:"Rodzaj urlopu", type:"pills", icon:"☀️",
+      {label:"Rodzaj urlopu",fields:[
+        {id:"u_typ",   label:"Rodzaj urlopu",                type:"pills", icon:"☀️",
          opts:["Wypoczynkowy","Na żądanie","Okolicznościowy","Bezpłatny"]},
-        {id:"u_okol", label:"Powód urlopu okolicznościowego", type:"pills", icon:"🎉", opt:true,
-         opts:["Własny ślub (2 dni)","Œlub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica (2 dni)","Pogrzeb rodzeństwa (1 dzień)"]}
+        {id:"u_okol",  label:"Powód urlopu okolicznościowego",type:"pills",icon:"🎉", opt:true,
+         opts:["Własny ślub (2 dni)","Ślub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica (2 dni)","Pogrzeb rodzeństwa (1 dzień)"]}
       ]},
-      { label: "Daty urlopu", fields: [
-        {id:"u_od", label:"Data od", type:"date", icon:"📅"},
-        {id:"u_do", label:"Data do", type:"date", icon:"📅"}
+      {label:"Daty urlopu",fields:[
+        {id:"u_od",    label:"Data od",                      type:"date",  icon:"📅"},
+        {id:"u_do",    label:"Data do",                      type:"date",  icon:"📅"}
       ]}
     ],
-    prompt: function(v) {
-      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      var odFmt = v.u_od ? new Date(v.u_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data od]";
-      var doFmt = v.u_do ? new Date(v.u_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data do]";
-      var typ = (v.u_typ || "wypoczynkowy").toLowerCase();
-      var okol = (v.u_okol && v.u_typ === "Okolicznościowy") ? " z powodu: " + v.u_okol.toLowerCase() : "";
-      return "Napisz formalny wniosek o urlop " + typ + okol + ". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: " + dz + "\n- Pracownik: " + (v.u_imie||"[imie]") + "\n- Przelozony: " + (v.u_prz||"[przelozony]") + "\n- Firma: " + (v.u_firma||"[firma]") + "\n- Okres urlopu: od " + odFmt + " do " + doFmt + "\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
+    prompt:function(v){
+      var dz=new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      var odFmt=v.u_od?new Date(v.u_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data od]";
+      var doFmt=v.u_do?new Date(v.u_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data do]";
+      var typ=(v.u_typ||"wypoczynkowy").toLowerCase();
+      var okol=(v.u_okol&&v.u_typ==="Okolicznościowy")?" z powodu: "+v.u_okol.toLowerCase():"";
+      return "Napisz formalny wniosek o urlop "+typ+okol+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+"\n- Przelozony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+"\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
     }
   },
   swiadectwo: {
-    title: "Świadectwo pracy",
-    steps: [
-      { label: "Pracownik", fields: [
-        {id:"s_imie", label:"Imię i nazwisko pracownika", ph:"np. Jan Kowalski", icon:"👤"},
-        {id:"s_ur",   label:"Data urodzenia", type:"date", icon:"🎂", opt:true}
+    title:"Świadectwo pracy", icon:"📋",
+    steps:[
+      {label:"Pracownik",fields:[
+        {id:"s_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",              icon:"👤"},
+        {id:"s_ur",    label:"Data urodzenia",               type:"date",                        icon:"🎂", opt:true}
       ]},
-      { label: "Pracodawca", fields: [
-        {id:"s_firma", label:"Nazwa firmy",     ph:"np. ABC Sp. z o.o.",              icon:"🏢"},
-        {id:"s_siedz", label:"Siedziba firmy",  ph:"np. ul. Kwiatowa 1, Warszawa",    icon:"📍", opt:true}
+      {label:"Pracodawca",fields:[
+        {id:"s_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",             icon:"🏢"},
+        {id:"s_siedz", label:"Siedziba firmy",               ph:"np. ul. Kwiatowa 1, Warszawa",   icon:"📍", opt:true}
       ]},
-      { label: "Zatrudnienie", fields: [
-        {id:"s_st",    label:"Stanowisko",       ph:"np. Specjalista ds. marketingu", icon:"💼"},
-        {id:"s_od",    label:"Zatrudniony od",   type:"date",                        icon:"📅"},
-        {id:"s_do",    label:"Zatrudniony do",   type:"date",                        icon:"📅"},
-        {id:"s_wym",   label:"Wymiar czasu pracy", type:"pills",                     icon:"⏱️",
+      {label:"Zatrudnienie",fields:[
+        {id:"s_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. marketingu", icon:"💼"},
+        {id:"s_od",    label:"Zatrudniony od",               type:"date",                         icon:"📅"},
+        {id:"s_do",    label:"Zatrudniony do",               type:"date",                         icon:"📅"},
+        {id:"s_wym",   label:"Wymiar czasu pracy",           type:"pills",                        icon:"⏱️",
          opts:["Pełny etat","3/4 etatu","1/2 etatu","1/4 etatu"]}
       ]},
-      { label: "Rozwiązanie umowy", fields: [
-        {id:"s_tryb",  label:"Sposób rozwiązania", type:"pills", icon:"📋",
+      {label:"Rozwiązanie umowy",fields:[
+        {id:"s_tryb",  label:"Sposób rozwiązania",           type:"pills", icon:"📋",
          opts:["Za porozumieniem stron","Wypowiedzenie przez pracownika","Wypowiedzenie przez pracodawcę","Wygaśnięcie umowy"]},
-        {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)", ph:"np. 14", icon:"🏖️", opt:true},
-        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",      ph:"np. 6",  icon:"💵", opt:true},
-        {id:"s_pesel", label:"PESEL pracownika",                ph:"np. 90010112345", icon:"🆔", opt:true}
+        {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)",ph:"np. 14",  icon:"🏖️", opt:true},
+        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",    ph:"np. 6",   icon:"💵", opt:true},
+        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345", icon:"🆔", opt:true}
       ]}
     ],
-    prompt: function(v) {
-      var dz = new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      var odF = v.s_od ? new Date(v.s_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data]";
-      var doF = v.s_do ? new Date(v.s_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "[data]";
-      var urF = v.s_ur ? new Date(v.s_ur).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}) : "";
-      var tm = {"Za porozumieniem stron":"na mocy porozumienia stron (art. 30 par. 1 pkt 1 KP)","Wypowiedzenie przez pracownika":"przez pracownika za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wypowiedzenie przez pracodawcę":"przez pracodawce za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wygaśnięcie umowy":"wskutek uplywy czasu (art. 30 par. 1 pkt 4 KP)"};
-      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: " + dz + "\n- Pracownik: " + (v.s_imie||"[imie]") + (urF?" ur. "+urF:"") + (v.s_pesel?", PESEL: "+v.s_pesel:"") + "\n- Pracodawca: " + (v.s_firma||"[firma]") + ", " + (v.s_siedz||"[siedziba]") + "\n- Okres: od " + odF + " do " + doF + "\n- Stanowisko: " + (v.s_st||"[stanowisko]") + "\n- Wymiar: " + (v.s_wym||"pelny etat") + "\n- Rozwiazanie: " + (tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron") + "\n- Urlop: " + (v.s_urlop||"0") + " dni\n- Ekwiwalent: " + (v.s_ekwi||"0") + " dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
+    prompt:function(v){
+      var dz=new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
+      var odF=v.s_od?new Date(v.s_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data]";
+      var doF=v.s_do?new Date(v.s_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data]";
+      var urF=v.s_ur?new Date(v.s_ur).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"";
+      var tm={"Za porozumieniem stron":"na mocy porozumienia stron (art. 30 par. 1 pkt 1 KP)","Wypowiedzenie przez pracownika":"przez pracownika za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wypowiedzenie przez pracodawcę":"przez pracodawce za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wygaśnięcie umowy":"wskutek uplywy czasu (art. 30 par. 1 pkt 4 KP)"};
+      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: "+dz+"\n- Pracownik: "+(v.s_imie||"[imie]")+(urF?" ur. "+urF:"")+(v.s_pesel?", PESEL: "+v.s_pesel:"")+"\n- Pracodawca: "+(v.s_firma||"[firma]")+", "+(v.s_siedz||"[siedziba]")+"\n- Okres: od "+odF+" do "+doF+"\n- Stanowisko: "+(v.s_st||"[stanowisko]")+"\n- Wymiar: "+(v.s_wym||"pelny etat")+"\n- Rozwiazanie: "+(tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron")+"\n- Urlop: "+(v.s_urlop||"0")+" dni\n- Ekwiwalent: "+(v.s_ekwi||"0")+" dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
     }
-  },
-
+  }
 };
 
-var currentDoc = null, currentStep = 0, wizVals = {};
+/* ── STATE ── */
+var mainStep = 0;
+var subStep  = 0;
+var selDoc   = null;
+var wizVals  = {};
+var genText  = '';
 
-// ── NIP Lookup (Biała Lista MF) ───────────────────────────────────────────
-var NIP_FIELD_MAP = {};
+var STEP_LABELS = ["Wybierz","Dane","Podgląd","Gotowe"];
 
-async function lookupNIP(fieldId) {
-  var el = document.getElementById('gf_' + fieldId);
-  if (!el) return;
-  var nip = el.value.replace(/[\s\-\.]/g, '');
-  if (!/^\d{10}$/.test(nip)) return;
-
-  var origPh = el.placeholder;
-  el.placeholder = '⏳ Pobieranie danych...';
-  el.disabled = true;
-  el.style.borderColor = 'rgba(57,255,138,.5)';
-
-  try {
-    var r = await fetch('/api/nip-lookup?nip=' + nip);
-    el.disabled = false;
-    if (!r.ok) { el.placeholder = origPh; el.style.borderColor = ''; return; }
-    var data = await r.json();
-
-    var map = NIP_FIELD_MAP[fieldId];
-    if (!map) {
-      if (document.getElementById('gf_pracodawca')) map = { name: 'pracodawca', adres: 'adres_p' };
-      else if (document.getElementById('gf_zlec')) map = { name: 'zlec' };
-    }
-    if (!map) { el.placeholder = origPh; el.style.borderColor = ''; return; }
-
-    function flashFill(id, val) {
-      if (!id || !val) return;
-      var t = document.getElementById('gf_' + id);
-      if (t && !t.value) {
-        t.value = val; wizVals[id] = val;
-        t.style.transition = 'background .4s';
-        t.style.background = 'rgba(57,255,138,.12)';
-        setTimeout(function(){ t.style.background = ''; }, 1800);
-      }
-    }
-    flashFill(map.name, data.name);
-    flashFill(map.adres, data.adres);
-
-    el.placeholder = '✓ ' + (data.name ? data.name.split(' ').slice(0,3).join(' ') : 'Pobrano');
-    el.style.borderColor = 'rgba(57,255,138,.5)';
-    setTimeout(function(){ el.placeholder = origPh; el.style.borderColor = ''; }, 3500);
-  } catch(e) {
-    el.disabled = false;
-    el.placeholder = origPh;
-    el.style.borderColor = '';
+/* ── NAV STEPS ── */
+function renderNavSteps(){
+  var el=document.getElementById('navSteps'), html='';
+  for(var i=0;i<4;i++){
+    if(i>0) html+='<div class="step-line'+(i<=mainStep?' done':'')+'"></div>';
+    var cls=i<mainStep?'done':i===mainStep?'active':'';
+    html+='<div class="step-item">'
+      +'<div class="step-dot '+cls+'">'+(i<mainStep?'✓':i+1)+'</div>'
+      +'<span class="step-lbl'+(i===mainStep?' active':'')+'">'+STEP_LABELS[i]+'</span>'
+      +'</div>';
   }
+  el.innerHTML=html;
 }
 
-function attachNIPListeners() {
-  var ids = Object.keys(NIP_FIELD_MAP).concat(['nip']);
-  ids.forEach(function(id) {
-    var el = document.getElementById('gf_' + id);
-    if (!el || el._nipListened) return;
-    el._nipListened = true;
-    el.addEventListener('blur', function(){ lookupNIP(id); });
-    el.addEventListener('input', function(){
-      if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupNIP(id);
-    });
-  });
-}
-
-// Mapowanie pól formularza → klucze z profilu użytkownika
-var PROFILE_AUTOFILL = {
-  // Wypowiedzenie
-  w_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  w_adres:       function(p){ return p.adres || ''; },
-  w_firma:       function(p){ return p.firma || ''; },
-  // Urlop
-  u_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  u_firma:       function(p){ return p.firma || ''; },
-  // Świadectwo
-  s_imie:        function(p){ return [p.imie, p.nazwisko].filter(Boolean).join(' '); },
-  s_firma:       function(p){ return p.firma || ''; },
-  s_siedz:       function(p){ return p.adres || ''; },
-};
-
-function getProfile() {
-  try { return JSON.parse(localStorage.getItem('dokumo_profile') || '{}'); } catch(e) { return {}; }
-}
-
-function saveWizSession() {
-  try {
-    sessionStorage.setItem('dokumo_wiz_' + currentDoc, JSON.stringify({ step: currentStep, vals: wizVals }));
-  } catch(e) {}
-}
-
-function loadWizSession(id) {
-  try {
-    var s = JSON.parse(sessionStorage.getItem('dokumo_wiz_' + id) || 'null');
-    if (s) { currentStep = s.step || 0; wizVals = s.vals || {}; return true; }
-  } catch(e) {}
-  return false;
-}
-
-function openDoc(id) {
-  if (!FORMS[id]) return;
-  currentDoc = id;
-
-  // Spróbuj przywrócić sesję, jeśli nie ma — zacznij od nowa
-  var restored = loadWizSession(id);
-  if (!restored) {
-    currentStep = 0; wizVals = {};
-    // Autofill z profilu
-    var p = getProfile();
-    if (p && Object.keys(p).length > 0) {
-      Object.keys(PROFILE_AUTOFILL).forEach(function(fieldId) {
-        var val = PROFILE_AUTOFILL[fieldId](p);
-        if (val) wizVals[fieldId] = val;
-      });
-    }
-  }
-
-  document.getElementById("genTitle").textContent = FORMS[id].title;
-  document.getElementById("genLoading").style.display = "none";
-  document.getElementById("genResult").style.display = "none";
-  document.getElementById("genForm").style.display = "block";
-  renderStep();
-  var ov = document.getElementById("genOverlay");
-  var sh = document.getElementById("genSheet");
-  ov.style.display = "flex";
-  requestAnimationFrame(function(){ sh.style.transform = "translateY(0)"; });
-}
-
-function closeGen() {
-  var sh = document.getElementById("genSheet");
-  sh.style.transform = "translateY(100%)";
-  setTimeout(function(){ document.getElementById("genOverlay").style.display = "none"; }, 350);
-}
-
-function renderStep() {
-  var form = FORMS[currentDoc];
-  var steps = form.steps;
-  var step = steps[currentStep];
-  var total = steps.length;
-  var pct = Math.round((currentStep / total) * 100);
-  var el = document.getElementById("genForm");
-
-  var segs = "";
-  for (var i = 0; i < total; i++) {
-    segs += '<div style="flex:1;height:3px;border-radius:99px;background:' + (i <= currentStep ? "#39ff8a" : "rgba(255,255,255,.1)") + ';transition:background .3s;"></div>';
-  }
-
-  var progressHTML = '<div style="margin-bottom:20px;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-    + '<span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ' + (currentStep+1) + ' z ' + total + ': ' + step.label + '</span>'
-    + '<span style="font-size:.7rem;color:rgba(240,237,232,.3);">' + pct + '% ukończono</span>'
-    + '</div>'
-    + '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">'
-    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>'
-    + '</div>'
-    + '<div style="display:flex;gap:6px;margin-top:10px;">' + segs + '</div>'
-    + '</div>';
-
-  var fieldsHTML = "";
-  var fields = step.fields;
-  for (var j = 0; j < fields.length; j++) {
-    var f = fields[j];
-    var val = wizVals[f.id] || "";
-    var lbl = '<label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">' + f.icon + " " + f.label + (f.opt ? ' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>' : "") + '</label>';
-
-    if (f.type === "pills") {
-      var pills = "";
-      for (var k = 0; k < f.opts.length; k++) {
-        var o = f.opts[k];
-        var active = val === o;
-        pills += '<button type="button" data-field="' + f.id + '" data-val="' + o + '" onclick="pickPill(this)" style="padding:8px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid ' + (active?"rgba(57,255,138,.4)":"rgba(255,255,255,.12)") + ';background:' + (active?"rgba(57,255,138,.15)":"rgba(255,255,255,.05)") + ';color:' + (active?"#39ff8a":"rgba(240,237,232,.7)") + ';">' + o + '</button>';
-      }
-      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<div style="display:flex;flex-wrap:wrap;gap:8px;" id="pills_' + f.id + '">' + pills + '</div><input type="hidden" id="gf_' + f.id + '" value="' + val + '"></div>';
-    } else if (f.type === "date") {
-      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="date" value="' + val + '" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;color-scheme:dark;"></div>';
-    } else {
-      var inputStyle = "width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;";
-      var nipHint = (f.id === 'nip' || f.id.indexOf('_nip') !== -1)
-        ? '<p style="font-size:.7rem;color:rgba(57,255,138,.55);margin:5px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>'
-        : '';
-      fieldsHTML += '<div style="margin-bottom:18px;">' + lbl + '<input id="gf_' + f.id + '" type="text" placeholder="' + f.ph + '" value="' + val + '" style="' + inputStyle + '">' + nipHint + '</div>';
-    }
-  }
-
-  var isLast = (currentStep === total - 1);
-
-  // Dodaj pole "Dodatkowe informacje" na ostatnim kroku
-  if (currentStep === total - 1) {
-    var extraVal = wizVals['_extra_info'] || '';
-    fieldsHTML += '<div style="margin-bottom:18px;">'
-      + '<label style="display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">📝 Dodatkowe informacje <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span></label>'
-      + '<textarea id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi, wymagania lub informacje, które powinny znaleźć się w dokumencie..." style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;resize:vertical;font-family:\'DM Sans\',sans-serif;">' + extraVal + '</textarea>'
-      + '</div>';
-  }
-
-  var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
-    + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : "")
-    + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
-    + (isLast ? "Generuj dokument ⚡" : "Dalej: " + steps[currentStep+1].label + " →")
-    + '</button></div>';
-
-  el.innerHTML = progressHTML + fieldsHTML + navHTML;
-  attachNIPListeners();
-}
-
-function pickPill(btn) {
-  var fid = btn.dataset.field;
-  var val = btn.dataset.val;
-  document.getElementById("gf_" + fid).value = val;
-  var container = document.getElementById("pills_" + fid);
-  var btns = container.querySelectorAll("button");
-  for (var i = 0; i < btns.length; i++) {
-    var active = btns[i].dataset.val === val;
-    btns[i].style.background = active ? "rgba(57,255,138,.15)" : "rgba(255,255,255,.05)";
-    btns[i].style.color = active ? "#39ff8a" : "rgba(240,237,232,.7)";
-    btns[i].style.borderColor = active ? "rgba(57,255,138,.4)" : "rgba(255,255,255,.12)";
-  }
-}
-
-function collectVals() {
-  var fields = FORMS[currentDoc].steps[currentStep].fields;
-  for (var i = 0; i < fields.length; i++) {
-    var el = document.getElementById("gf_" + fields[i].id);
-    if (el) wizVals[fields[i].id] = el.value;
-  }
-  var extraEl = document.getElementById('gf__extra_info');
-  if (extraEl) wizVals['_extra_info'] = extraEl.value;
-  saveWizSession();
-}
-
-function wizNext() {
-  collectVals();
-  if (currentStep < FORMS[currentDoc].steps.length - 1) {
-    currentStep++;
-    renderStep();
+/* ── BOTTOM BAR ── */
+function renderBar(){
+  var back=document.getElementById('btnBack'),next=document.getElementById('btnNext'),info=document.getElementById('barInfo');
+  if(mainStep===0){
+    back.className='btn-back hide'; next.className='btn-next hide';
+    info.textContent='Wybierz dokument, aby kontynuować';
+  } else if(mainStep===1){
+    var form=FORMS[selDoc], total=form.steps.length, isLast=subStep===total-1;
+    back.className='btn-back'; back.textContent='← Wróć';
+    info.textContent='Krok '+(subStep+1)+' z '+total+' · '+form.steps[subStep].label;
+    next.className='btn-next'; next.textContent=isLast?'Generuj dokument ⚡':'Dalej →';
+  } else if(mainStep===2){
+    back.className='btn-back'; back.textContent='← Wróć do formularza';
+    info.textContent='';
+    next.className='btn-next'; next.textContent='Zakończ →';
   } else {
-    doGenerate();
+    back.className='btn-back hide'; next.className='btn-next hide';
+    info.textContent='';
   }
 }
 
-function wizBack() {
-  collectVals();
-  if (currentStep > 0) { currentStep--; renderStep(); }
+/* ── SCREEN SWITCH ── */
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('screen'+n).classList.add('active');
+  mainStep=n; renderNavSteps(); renderBar();
+  window.scrollTo(0,0);
 }
 
-function checkAccess() {
-  return window.checkPlanAccess(['kariera','promax','pro']);
+function goNext(){
+  if(mainStep===1){
+    collectVals();
+    var total=FORMS[selDoc].steps.length;
+    if(subStep<total-1){ subStep++; renderForm(); renderBar(); }
+    else doGenerate();
+  } else if(mainStep===2){
+    goTo(3);
+  }
 }
 
-async function doGenerate() {
-  if (!checkAccess()) return;
-  document.getElementById("genForm").style.display = "none";
-  document.getElementById("genLoading").style.display = "block";
+function goBack(){
+  if(mainStep===1){
+    collectVals();
+    if(subStep>0){ subStep--; renderForm(); renderBar(); }
+    else goTo(0);
+  } else if(mainStep===2){
+    goTo(1); renderForm();
+  } else if(mainStep===3){
+    goTo(2);
+  }
+}
+
+/* ── SELECT DOC ── */
+function selectDoc(id){
+  selDoc=id; subStep=0; wizVals={};
+  var p={}; try{p=JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){}
+  var af={
+    w_imie:function(p){return [p.imie,p.nazwisko].filter(Boolean).join(' ');},
+    w_adres:function(p){return p.adres||'';},
+    w_firma:function(p){return p.firma||'';},
+    u_imie:function(p){return [p.imie,p.nazwisko].filter(Boolean).join(' ');},
+    u_firma:function(p){return p.firma||'';},
+    s_imie:function(p){return [p.imie,p.nazwisko].filter(Boolean).join(' ');},
+    s_firma:function(p){return p.firma||'';},
+    s_siedz:function(p){return p.adres||'';}
+  };
+  if(Object.keys(p).length>0) Object.keys(af).forEach(function(k){var v=af[k](p);if(v)wizVals[k]=v;});
+  goTo(1); renderForm();
+}
+
+/* ── RENDER FORM ── */
+function renderForm(){
+  var form=FORMS[selDoc], step=form.steps[subStep], total=form.steps.length;
+  var segs='';
+  for(var i=0;i<total;i++) segs+='<div class="sub-seg'+(i<=subStep?' on':'')+'"></div>';
+
+  var html='';
+  step.fields.forEach(function(f){
+    var val=wizVals[f.id]||'';
+    var lbl='<label class="field-lbl">'+f.label+(f.opt?' <span>(opcjonalnie)</span>':'')+'</label>';
+    if(f.type==='pills'){
+      var pills=f.opts.map(function(o){
+        return '<button type="button" class="pill'+(val===o?' on':'')+'" data-field="'+f.id+'" data-val="'+o+'" onclick="pickPill(this)">'+o+'</button>';
+      }).join('');
+      html+='<div class="field">'+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
+           +'<input type="hidden" id="gf_'+f.id+'" value="'+val+'"></div>';
+    } else if(f.type==='date'){
+      html+='<div class="field">'+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
+    } else {
+      html+='<div class="field">'+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()"></div>';
+    }
+  });
+
+  if(subStep===total-1){
+    var ex=wizVals['_extra_info']||'';
+    html+='<div class="field"><label class="field-lbl">Dodatkowe informacje <span>(opcjonalnie)</span></label>'
+         +'<textarea class="field-in" id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi..." style="resize:vertical;min-height:80px;" oninput="liveUpdate()">'+ex+'</textarea></div>';
+  }
+
+  document.getElementById('formLeft').innerHTML=
+    '<div class="sub-bar">'+segs+'</div>'
+    +'<div class="form-step-title">'+step.label+'</div>'
+    +'<div class="form-step-sub">Uzupełnij poniższe dane.</div>'
+    +html;
+
+  renderPreview();
+}
+
+function pickPill(btn){
+  var fid=btn.dataset.field, val=btn.dataset.val;
+  document.getElementById('gf_'+fid).value=val;
+  document.getElementById('pills_'+fid).querySelectorAll('.pill').forEach(function(b){
+    b.classList.toggle('on',b.dataset.val===val);
+  });
+  liveUpdate();
+}
+
+function collectVals(){
+  var fields=FORMS[selDoc].steps[subStep].fields;
+  fields.forEach(function(f){ var el=document.getElementById('gf_'+f.id); if(el) wizVals[f.id]=el.value; });
+  var ex=document.getElementById('gf__extra_info'); if(ex) wizVals['_extra_info']=ex.value;
+}
+
+function liveUpdate(){ collectVals(); renderPreview(); }
+
+/* ── LIVE PREVIEW ── */
+function renderPreview(){
+  var el=document.getElementById('formRight'); if(!el||!selDoc) return;
+  var form=FORMS[selDoc];
+  var rows=[];
+  if(selDoc==='wypowiedzenie'){
+    rows=[
+      {l:'Pracownik',v:wizVals.w_imie},
+      {l:'Pracodawca',v:wizVals.w_firma},
+      {l:'Stanowisko',v:wizVals.w_st},
+      {l:'Zatrudniony od',v:wizVals.w_od?new Date(wizVals.w_od).toLocaleDateString('pl-PL'):''},
+      {l:'Tryb',v:wizVals.w_tryb},
+      {l:'Data zakończenia',v:wizVals.w_kon?new Date(wizVals.w_kon).toLocaleDateString('pl-PL'):''}
+    ];
+  } else if(selDoc==='urlop'){
+    rows=[
+      {l:'Pracownik',v:wizVals.u_imie},
+      {l:'Firma',v:wizVals.u_firma},
+      {l:'Przełożony',v:wizVals.u_prz},
+      {l:'Rodzaj urlopu',v:wizVals.u_typ},
+      {l:'Od',v:wizVals.u_od?new Date(wizVals.u_od).toLocaleDateString('pl-PL'):''},
+      {l:'Do',v:wizVals.u_do?new Date(wizVals.u_do).toLocaleDateString('pl-PL'):''}
+    ];
+  } else {
+    rows=[
+      {l:'Pracownik',v:wizVals.s_imie},
+      {l:'Firma',v:wizVals.s_firma},
+      {l:'Stanowisko',v:wizVals.s_st},
+      {l:'Wymiar',v:wizVals.s_wym},
+      {l:'Rozwiązanie',v:wizVals.s_tryb}
+    ];
+  }
+
+  var filled=rows.filter(function(r){return r.v;}).map(function(r){
+    return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';
+  }).join('');
+
+  if(!filled){
+    filled='<div class="prev-row"><div class="prev-row-val empty">Uzupełnij formularz…</div></div>'
+      +'<div class="shimmer-line" style="width:75%"></div>'
+      +'<div class="shimmer-line" style="width:55%"></div>'
+      +'<div class="shimmer-line" style="width:65%"></div>';
+  }
+
+  el.innerHTML='<div class="prev-card">'
+    +'<div class="prev-card-head"><span class="prev-card-ico">'+form.icon+'</span>'
+    +'<div class="prev-card-title">'+form.title+'</div></div>'
+    +filled+'</div>';
+}
+
+/* ── GENERATE ── */
+async function doGenerate(){
+  if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','promax','pro'])) return;
+  goTo(2);
+  var paper=document.getElementById('docPaper');
+  paper.className='doc-paper loading';
+  paper.innerHTML='<div style="width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .8s linear infinite;"></div>'
+    +'<p style="color:var(--ink3);font-size:.85rem;font-weight:500;margin-top:4px;">Generowanie przez AI…</p>';
   try {
-    var prompt = FORMS[currentDoc].prompt(wizVals);
-    if (wizVals._extra_info) prompt += '\nDodatkowe informacje: ' + wizVals._extra_info;
-    var token = window._fbToken || "";
-    var res = await fetch("/api/generate", {
-      method: "POST",
-      headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
-      body: JSON.stringify({prompt:prompt, docId:currentDoc, docName:FORMS[currentDoc].title, docCat:'kariera', docCatLabel:'Kariera', docIcon:'📄'})
+    var form=FORMS[selDoc];
+    var prompt=form.prompt(wizVals);
+    if(wizVals._extra_info) prompt+='\nDodatkowe informacje: '+wizVals._extra_info;
+    var token=window._fbToken||'';
+    var res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({prompt:prompt,docId:selDoc,docName:form.title,docCat:'kariera',docCatLabel:'Kariera',docIcon:form.icon})
     });
-    var data = await res.json();
-    document.getElementById("genLoading").style.display = "none";
-    document.getElementById("genText").value = data.text || data.result || "Błąd generowania";
-    document.getElementById("genResult").style.display = "block";
-    // Wyczyść sesję po wygenerowaniu
-    try { sessionStorage.removeItem('dokumo_wiz_' + currentDoc); } catch(e) {}
-  } catch(e) {
-    document.getElementById("genLoading").style.display = "none";
-    document.getElementById("genForm").style.display = "block";
-    renderStep();
-    alert("Błąd połączenia. Spróbuj ponownie.");
+    var data=await res.json();
+    genText=data.text||data.result||'Błąd generowania';
+    paper.className='doc-paper';
+    paper.textContent=genText;
+    if(token) document.getElementById('checkSaved').style.display='flex';
+    var pages=Math.max(1,Math.round(genText.split('\n').length/38));
+    document.getElementById('metricPages').querySelector('.metric-val').textContent=pages===1?'1–2':pages+'';
+    document.getElementById('successSub').textContent='Twój dokument "'+form.title+'" jest gotowy do pobrania lub wysłania.';
+  } catch(e){
+    paper.className='doc-paper';
+    paper.textContent='Błąd połączenia. Spróbuj ponownie.';
   }
 }
 
-function copyResult() { navigator.clipboard.writeText(document.getElementById("genText").value); }
-function downloadResultAs(format) {
-  var text = document.getElementById("genText").value;
-  var title = FORMS[currentDoc].title;
-  var safeName = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,"_");
-  if (format === 'txt') {
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([text], {type:"text/plain;charset=utf-8"}));
-    a.download = safeName + ".txt"; a.click();
-  } else if (format === 'pdf') {
-    var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    var win = window.open('','_blank');
-    if (!win) { alert('Zezwól na otwieranie okien dla tej strony.'); return; }
+/* ── DOWNLOAD / COPY ── */
+function copyDoc(){ if(genText) navigator.clipboard.writeText(genText); }
+
+function downloadAs(fmt){
+  if(!genText) return;
+  var form=FORMS[selDoc]||{};
+  var title=form.title||'dokument';
+  var safe=title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
+  if(fmt==='txt'){
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([genText],{type:'text/plain;charset=utf-8'}));
+    a.download=safe+'.txt'; a.click();
+  } else if(fmt==='pdf'){
+    var esc=genText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var win=window.open('','_blank');
+    if(!win){alert('Zezwól na otwieranie okien dla tej strony.');return;}
     win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>');
     win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
-    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
-    win.document.write('</head><body><pre>'+safe+'</pre>');
-    win.document.write('<script>window.onload=function(){html2pdf().set({margin:25,filename:"'+safeName+'.pdf",image:{type:"jpeg",quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/script>');
+    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>');
+    win.document.write('</head><body><pre>'+esc+'</pre>');
+    win.document.write('<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"'+safe+'.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/scr'+'ipt>');
     win.document.write('</body></html>'); win.document.close();
-  } else if (format === 'rtf') {
-    var esc = function(s){ return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';}); };
-    var lines = text.split('\n').map(function(l){var e=esc(l);return e.trim()?e+'\\par':'\\par';}).join('\n');
-    var rtf = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 {\\b\\fs28 '+esc(title)+'}\\par\\par '+lines+'}';
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([rtf],{type:'application/rtf'}));
-    a.download = safeName + ".rtf"; a.click();
+  } else if(fmt==='rtf'){
+    var esc2=function(s){return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';});};
+    var lines=genText.split('\n').map(function(l){var e=esc2(l);return e.trim()?e+'\\par':'\\par';}).join('\n');
+    var rtf='{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 {\\b\\fs28 '+esc2(title)+'}\\par\\par '+lines+'}';
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([rtf],{type:'application/rtf'}));
+    a.download=safe+'.rtf'; a.click();
   }
 }
 
-document.getElementById("genOverlay").addEventListener("click", function(e){ if(e.target===this) closeGen(); });
-document.addEventListener("click", function(e){
-  var card = e.target.closest("[data-doc]");
-  if (card) openDoc(card.dataset.doc);
-});
+/* ── INIT ── */
+renderNavSteps();
+renderBar();
 </script>
 
 <script src="plan-guard.js"></script>
