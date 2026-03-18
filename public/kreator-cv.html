@@ -2013,9 +2013,9 @@ body { overflow:hidden; }
 .cvw-btn-preview:hover { background:#f0fdf4; border-color:#2d6b52; color:#1a3a2e; }
 @media(min-width:768px) { .cvw-btn-preview { display:none !important; } }
 /* Mobile full-screen preview */
-.cvw-mobile-preview-active #cvPreviewCol { display:flex !important; position:fixed; inset:0; z-index:500; background:#e8e5df; overflow-y:auto; padding:16px 12px 80px; }
+.cvw-mobile-preview-active #cvPreviewCol { display:flex !important; position:fixed; inset:0; z-index:500; background:#e8e5df; overflow-y:auto; padding:16px 12px max(80px, calc(60px + env(safe-area-inset-bottom))); }
 .cvw-mobile-preview-active #cvFormPanel { display:none !important; }
-.cvw-mobile-preview-back { display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:600; background:#1a3a2e; color:#fff; border:none; border-radius:99px; padding:12px 28px; font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(26,58,46,0.35); }
+.cvw-mobile-preview-back { display:none; position:fixed; bottom:max(20px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:600; background:#1a3a2e; color:#fff; border:none; border-radius:99px; padding:12px 28px; font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(26,58,46,0.35); }
 .cvw-mobile-preview-active .cvw-mobile-preview-back { display:block; }
 
 /* 10. RESIZER */
@@ -2048,7 +2048,7 @@ body { overflow:hidden; }
 .cvw-step-header { margin-bottom:20px; }
 .cvw-step-num { display:none; }
 .cvw-step-title { font-size:1.3rem; font-weight:700; color:#0f172a; letter-spacing:-0.025em; font-family:'Instrument Serif',serif; }
-.cvw-nav { flex-shrink:0; background:rgba(245,243,239,0.97); backdrop-filter:blur(8px); border-top:1px solid rgba(15,14,12,0.08); padding:12px 20px; padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px)); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.cvw-nav { flex-shrink:0; background:rgba(245,243,239,0.97); backdrop-filter:blur(8px); border-top:1px solid rgba(15,14,12,0.08); padding:12px 20px; padding-bottom:max(16px, env(safe-area-inset-bottom)); display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .cvw-btn { display:inline-flex; align-items:center; gap:7px; padding:10px 22px; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; border:none; outline:none; }
 .cvw-btn-back { background:#fff; color:#3a3832; border:1.5px solid rgba(15,14,12,0.12); }
 .cvw-btn-back:hover { background:#f5f3ef; border-color:rgba(15,14,12,0.2); }
