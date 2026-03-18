@@ -1305,7 +1305,7 @@ async function generateDoc(docId) {
     let data;
     try { data = JSON.parse(rawText); }
     catch(e) {
-      if (!res.ok) throw new Error('Błąd serwera (' + res.status + '). Sprawdź czy klucz GEMINI_API_KEY jest ustawiony w Vercel → Settings → Environment Variables.');
+      if (!res.ok) throw new Error('Błąd serwera (' + res.status + '). Sprawdź czy klucz ANTHROPIC_API_KEY jest ustawiony w Vercel → Settings → Environment Variables.');
       throw new Error('Nieoczekiwana odpowiedź serwera.');
     }
     if (!res.ok) throw new Error(data.error || 'Błąd serwera ' + res.status);
@@ -1647,7 +1647,7 @@ ${text.substring(0, 8000)}`;
     tcvSetProgress('Przetwarzam odpowiedź...', 80);
     const rawText2 = await res.text();
     let data;
-    try { data = JSON.parse(rawText2); } catch(e) { throw new Error('Błąd połączenia z API Gemini. Sprawdź klucz GEMINI_API_KEY w Vercel.'); }
+    try { data = JSON.parse(rawText2); } catch(e) { throw new Error('Błąd połączenia z API Claude. Sprawdź klucz ANTHROPIC_API_KEY w Vercel.'); }
     const raw = (data.text || data.result || '').replace(/```json|```/g,'').trim();
     let parsed;
     try { parsed = JSON.parse(raw); }

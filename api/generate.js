@@ -38,19 +38,19 @@ export default async function handler(req, res) {
 
   if (!prompt) return res.status(400).json({ error: 'Brak zapytania' });
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Brak klucza GEMINI_API_KEY' });
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' });
 
-  // Generuj przez Gemini
+  // Generuj przez Claude
   try {
     const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{maxOutputTokens:8000} }) }
+      'https://api.anthropic.com/v1/messages',
+      { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+        body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:8000, messages:[{role:'user',content:prompt}] }) }
     );
     const data = await r.json();
     if (data.error) return res.status(500).json({ error: data.error.message });
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const text = data.content?.[0]?.text || '';
     if (!text) return res.status(500).json({ error: 'Pusta odpowiedź AI' });
 
     // Zapisz do Firestore jeśli user zalogowany
