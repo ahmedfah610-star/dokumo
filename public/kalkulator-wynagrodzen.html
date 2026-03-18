@@ -70,6 +70,13 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .mode-btn{padding:9px 20px;border-radius:var(--pill);border:none;background:none;font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--ink3);transition:all .2s;white-space:nowrap;}
 .mode-btn.active{background:#fff;color:var(--ink);border:1.5px solid var(--border);}
 
+/* CONTRACT TOGGLE */
+.contract-toggle{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;}
+.contract-btn{padding:9px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--ink2);transition:all .2s;white-space:nowrap;}
+.contract-btn:hover{border-color:#999;color:var(--ink);}
+.contract-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.contract-note{font-size:.75rem;color:var(--ink3);margin-bottom:24px;line-height:1.5;padding:10px 14px;background:var(--surface);border-radius:10px;}
+
 /* INPUT */
 .input-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;display:block;}
 .input-group{display:flex;align-items:center;margin-bottom:16px;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s;background:var(--surface);}
@@ -192,7 +199,6 @@ onAuthStateChanged(getAuth(app),async u=>{
 <header class="hero">
   <span class="hero-badge">Aktualne stawki 2026</span>
   <h1>Kalkulator<br>Brutto‑Netto 2026</h1>
-  <p class="hero-sub">Oblicz wynagrodzenie netto lub brutto w kilka sekund.<br>Składki ZUS, podatek PIT, składka zdrowotna — wszystko automatycznie.</p>
 </header>
 
 <main class="calc-section">
@@ -201,6 +207,14 @@ onAuthStateChanged(getAuth(app),async u=>{
     <button class="mode-btn active" id="modeBrutto" onclick="setMode('brutto')">Wpisuję brutto</button>
     <button class="mode-btn" id="modeNetto" onclick="setMode('netto')">Wpisuję netto</button>
   </div>
+
+  <div class="contract-toggle">
+    <button class="contract-btn active" onclick="setContract('uop')">Umowa o pracę</button>
+    <button class="contract-btn" onclick="setContract('uz')">Umowa zlecenie</button>
+    <button class="contract-btn" onclick="setContract('uod')">Umowa o dzieło</button>
+    <button class="contract-btn" onclick="setContract('b2b')">B2B (liniowy)</button>
+  </div>
+  <div class="contract-note" id="contractNote"></div>
 
   <label class="input-label" id="inputLabel">Wynagrodzenie brutto miesięcznie</label>
   <div class="input-group">
@@ -229,45 +243,8 @@ onAuthStateChanged(getAuth(app),async u=>{
     </div>
   </div>
 
-  <!-- BREAKDOWN -->
-  <div class="breakdown">
-    <div class="br-row">
-      <div class="br-dot" style="background:#e5e5e5"></div>
-      <div class="br-label" id="brLabel">Wynagrodzenie brutto</div>
-      <div class="br-pct"></div>
-      <div class="br-amount" id="brBrutto">5 000 zł</div>
-    </div>
-    <div class="br-row">
-      <div class="br-dot" style="background:#999"></div>
-      <div class="br-label">Emerytalna (9,76%)</div>
-      <div class="br-pct">9,76%</div>
-      <div class="br-amount minus" id="brEm">—</div>
-    </div>
-    <div class="br-row">
-      <div class="br-dot" style="background:#aaa"></div>
-      <div class="br-label">Rentowa (1,5%)</div>
-      <div class="br-pct">1,50%</div>
-      <div class="br-amount minus" id="brRe">—</div>
-    </div>
-    <div class="br-row">
-      <div class="br-dot" style="background:#b5b5b5"></div>
-      <div class="br-label">Chorobowa (2,45%)</div>
-      <div class="br-pct">2,45%</div>
-      <div class="br-amount minus" id="brCh">—</div>
-    </div>
-    <div class="br-row">
-      <div class="br-dot" style="background:#bbb"></div>
-      <div class="br-label">Składka zdrowotna (9%)</div>
-      <div class="br-pct" id="pctZdrow">—</div>
-      <div class="br-amount minus" id="brZdrow">—</div>
-    </div>
-    <div class="br-row">
-      <div class="br-dot" style="background:#d4d4d4"></div>
-      <div class="br-label">Zaliczka na podatek PIT</div>
-      <div class="br-pct" id="pctPIT">—</div>
-      <div class="br-amount minus" id="brPIT">—</div>
-    </div>
-  </div>
+  <!-- BREAKDOWN (dynamic) -->
+  <div class="breakdown" id="breakdown"></div>
 
   <!-- NETTO RESULT -->
   <div class="netto-card">
@@ -281,17 +258,8 @@ onAuthStateChanged(getAuth(app),async u=>{
     </div>
   </div>
 
-  <!-- EMPLOYER -->
-  <div class="employer-card">
-    <div>
-      <div class="emp-left">Całkowity koszt pracodawcy</div>
-      <div class="emp-sub">Brutto + składki ZUS pracodawcy (≈20,48%)</div>
-    </div>
-    <div style="text-align:right;">
-      <div class="emp-value" id="empValue">— zł</div>
-      <div style="font-size:.72rem;color:var(--ink3);">/ mies.</div>
-    </div>
-  </div>
+  <!-- EMPLOYER (dynamic) -->
+  <div id="empCard"></div>
 
 </main>
 
@@ -398,49 +366,107 @@ onAuthStateChanged(getAuth(app),async u=>{
 })();
 
 /* ── KALKULATOR ── */
-var mode = 'brutto';
+var mode     = 'brutto';
+var contract = 'uop';
 
-function fmt(n){ return Math.round(n).toLocaleString('pl-PL') + ' zł'; }
+var CONTRACT_NOTES = {
+  uop: 'Umowa o pracę — pełne ubezpieczenia ZUS, koszty uzyskania przychodu 250 zł/mies, kwota wolna 30 000 zł.',
+  uz:  'Umowa zlecenie — ZUS obowiązkowy gdy to jedyne zatrudnienie. KUP = 20% od podstawy po ZUS. Chorobowa dobrowolna.',
+  uod: 'Umowa o dzieło — brak składek ZUS i zdrowotnej. KUP = 20% (lub 50% dla praw autorskich). Brak prawa do zasiłku.',
+  b2b: 'B2B (podatek liniowy 19%) — ZUS przedsiębiorcy ok. 1 600 zł/mies (stały), zdrowotna 4,9% dochodu. Wartości przybliżone.'
+};
+
+function fmt(n) { return Math.round(n).toLocaleString('pl-PL') + ' zł'; }
 function fmtM(n){ return '−' + Math.round(n).toLocaleString('pl-PL') + ' zł'; }
+function pct(a, b){ return (a / b * 100).toFixed(1) + '%'; }
 
-function calcB2N(brutto) {
-  var zusEm  = brutto * 0.0976;
-  var zusRe  = brutto * 0.015;
-  var zusCh  = brutto * 0.0245;
+function pitProgressive(annual) {
+  if (annual <= 30000)  return 0;
+  if (annual <= 120000) return Math.max(0, annual * 0.12 - 3600);
+  return 10800 + (annual - 120000) * 0.32;
+}
+
+/* ── UoP ── */
+function calcUoP(brutto) {
+  var zusEm = brutto * 0.0976, zusRe = brutto * 0.015, zusCh = brutto * 0.0245;
   var zusSum = zusEm + zusRe + zusCh;
   var zdrow  = (brutto - zusSum) * 0.09;
-  var kup    = 250;
-  var pit12  = Math.max(0, (brutto - zusSum - kup)) * 12;
-  var tax12;
-  if      (pit12 <= 30000)  tax12 = 0;
-  else if (pit12 <= 120000) tax12 = Math.max(0, pit12 * 0.12 - 3600);
-  else                       tax12 = 10800 + (pit12 - 120000) * 0.32;
-  var taxM   = Math.max(0, Math.round(tax12 / 12));
+  var taxM   = Math.max(0, Math.round(pitProgressive((brutto - zusSum - 250) * 12) / 12));
   var netto  = brutto - zusSum - zdrow - taxM;
-  var empZUS = brutto * (0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
-  return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, tax: taxM, netto, emp: brutto + empZUS };
+  var emp    = brutto * (1 + 0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
+  return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, tax: taxM, netto, emp };
 }
 
-function calcN2B(netto) {
-  var lo = netto * 0.8, hi = netto * 1.8;
-  for (var i = 0; i < 80; i++) {
+/* ── UZ ── */
+function calcUZ(brutto) {
+  var zusEm = brutto * 0.0976, zusRe = brutto * 0.015, zusCh = brutto * 0.0245;
+  var zusSum = zusEm + zusRe + zusCh;
+  var zdrow  = (brutto - zusSum) * 0.09;
+  var kup    = (brutto - zusSum) * 0.20;
+  var taxM   = Math.max(0, Math.round(pitProgressive((brutto - zusSum - kup) * 12) / 12));
+  var netto  = brutto - zusSum - zdrow - taxM;
+  var emp    = brutto * (1 + 0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
+  return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, kup, tax: taxM, netto, emp };
+}
+
+/* ── UoD ── */
+function calcUoD(brutto) {
+  var kup  = brutto * 0.20;
+  var taxM = Math.max(0, Math.round(pitProgressive((brutto - kup) * 12) / 12));
+  var netto = brutto - taxM;
+  return { brutto, zusEm:0, zusRe:0, zusCh:0, zusSum:0, zdrow:0, kup, tax: taxM, netto, emp: brutto };
+}
+
+/* ── B2B liniowy ── */
+function calcB2B(przychod) {
+  var zusStaly = 1600; // przybliżony ZUS społeczne przedsiębiorcy 2026
+  var dochod   = Math.max(0, przychod - zusStaly);
+  var zdrow    = Math.max(420, dochod * 0.049); // min zdrowotna ~420 zł
+  var zdrowOdlicz = Math.min(zdrow, 967);        // max odlicz jako koszt (11 600/rok)
+  var taxM     = Math.max(0, Math.round((dochod - zdrowOdlicz) * 0.19));
+  var netto    = przychod - zusStaly - zdrow - taxM;
+  return { brutto: przychod, zusStaly, zdrow, tax: taxM, netto, emp: przychod };
+}
+
+/* ── dispatcher ── */
+function calcFor(val, ct) {
+  var fn = { uop: calcUoP, uz: calcUZ, uod: calcUoD, b2b: calcB2B }[ct];
+  return fn(val);
+}
+
+function calcReverse(targetNetto, ct) {
+  var lo = targetNetto * 0.7, hi = targetNetto * 2;
+  for (var i = 0; i < 90; i++) {
     var mid = (lo + hi) / 2;
-    var c = calcB2N(mid);
-    if (Math.abs(c.netto - netto) < 0.1) break;
-    if (c.netto < netto) lo = mid; else hi = mid;
+    var c = calcFor(mid, ct);
+    if (Math.abs(c.netto - targetNetto) < 0.1) break;
+    if (c.netto < targetNetto) lo = mid; else hi = mid;
   }
-  return calcB2N((lo + hi) / 2);
+  return calcFor((lo + hi) / 2, ct);
 }
 
+/* ── UI ── */
 function setMode(m) {
   mode = m;
   document.getElementById('modeBrutto').classList.toggle('active', m === 'brutto');
-  document.getElementById('modeNetto').classList.toggle('active', m === 'netto');
+  document.getElementById('modeNetto').classList.toggle('active',  m === 'netto');
   document.getElementById('inputLabel').textContent = m === 'brutto'
-    ? 'Wynagrodzenie brutto miesięcznie'
+    ? (contract === 'b2b' ? 'Przychód miesięczny (faktura)' : 'Wynagrodzenie brutto miesięcznie')
     : 'Wynagrodzenie netto miesięcznie';
-  document.getElementById('brLabel').textContent = m === 'brutto'
-    ? 'Wynagrodzenie brutto' : 'Wyliczone brutto';
+  calculate();
+}
+
+function setContract(ct) {
+  contract = ct;
+  document.querySelectorAll('.contract-btn').forEach(function(b){
+    b.classList.toggle('active', b.textContent.toLowerCase().indexOf(
+      ct === 'uop' ? 'pracę' : ct === 'uz' ? 'zlecenie' : ct === 'uod' ? 'dzieło' : 'b2b') !== -1);
+  });
+  document.getElementById('contractNote').textContent = CONTRACT_NOTES[ct];
+  // B2B: disable netto→brutto (less meaningful)
+  document.getElementById('modeNetto').style.display = ct === 'b2b' ? 'none' : '';
+  if (ct === 'b2b' && mode === 'netto') setMode('brutto');
+  else { setMode(mode); }
   calculate();
 }
 
@@ -457,37 +483,88 @@ function onSliderChange() {
   calculate();
 }
 
+function brRow(dot, label, pctTxt, amountHtml, minus) {
+  return '<div class="br-row">'
+    + '<div class="br-dot" style="background:' + dot + '"></div>'
+    + '<div class="br-label">' + label + '</div>'
+    + '<div class="br-pct">' + (pctTxt||'') + '</div>'
+    + '<div class="br-amount' + (minus?' minus':'') + '">' + amountHtml + '</div>'
+    + '</div>';
+}
+
 function calculate() {
   var raw = parseFloat(document.getElementById('mainInput').value) || 0;
   if (raw <= 0) return;
-  var c = mode === 'brutto' ? calcB2N(raw) : calcN2B(raw);
+  var c = mode === 'brutto' ? calcFor(raw, contract) : calcReverse(raw, contract);
   var b = c.brutto;
 
-  document.getElementById('barNetto').style.width  = (c.netto / b * 100).toFixed(1) + '%';
-  document.getElementById('barZUS').style.width    = (c.zusSum / b * 100).toFixed(1) + '%';
-  document.getElementById('barZdrow').style.width  = (c.zdrow / b * 100).toFixed(1) + '%';
-  document.getElementById('barPIT').style.width    = (c.tax / b * 100).toFixed(1) + '%';
+  // Bar
+  document.getElementById('barNetto').style.width = pct(Math.max(0,c.netto), b);
+  document.getElementById('barZUS').style.width   = pct(c.zusSum || (c.zusStaly||0), b);
+  document.getElementById('barZdrow').style.width = pct(c.zdrow, b);
+  document.getElementById('barPIT').style.width   = pct(c.tax, b);
 
-  document.getElementById('brBrutto').textContent = fmt(c.brutto);
-  document.getElementById('brEm').textContent     = fmtM(c.zusEm);
-  document.getElementById('brRe').textContent     = fmtM(c.zusRe);
-  document.getElementById('brCh').textContent     = fmtM(c.zusCh);
-  document.getElementById('brZdrow').textContent  = fmtM(c.zdrow);
-  document.getElementById('brPIT').textContent    = c.tax > 0 ? fmtM(c.tax) : '0 zł';
-  document.getElementById('pctZdrow').textContent = (c.zdrow / b * 100).toFixed(1) + '%';
-  document.getElementById('pctPIT').textContent   = c.tax > 0 ? (c.tax / b * 100).toFixed(1) + '%' : '—';
+  // Breakdown rows
+  var rows = '';
+  var brLabel = contract === 'b2b'
+    ? 'Przychód (faktura)'
+    : (mode === 'brutto' ? 'Wynagrodzenie brutto' : 'Wyliczone brutto');
+  rows += brRow('#e5e5e5', brLabel, '', fmt(b), false);
 
+  if (contract === 'uop' || contract === 'uz') {
+    rows += brRow('#999', 'Emerytalna (9,76%)',   '9,76%', fmtM(c.zusEm), true);
+    rows += brRow('#aaa', 'Rentowa (1,5%)',        '1,50%', fmtM(c.zusRe), true);
+    rows += brRow('#b5b5b5', 'Chorobowa (2,45%)' + (contract==='uz'?' <span style="font-size:.7em;opacity:.6;">dobrowolna</span>':''), '2,45%', fmtM(c.zusCh), true);
+  }
+  if (contract === 'b2b') {
+    rows += brRow('#999', 'ZUS przedsiębiorcy (stały)', '~' + pct(c.zusStaly, b), fmtM(c.zusStaly), true);
+  }
+  if (contract !== 'uod') {
+    var zdLabel = contract === 'b2b' ? 'Składka zdrowotna (4,9% doch.)' : 'Składka zdrowotna (9%)';
+    rows += brRow('#bbb', zdLabel, pct(c.zdrow, b), fmtM(c.zdrow), true);
+  }
+  if (contract === 'uz') {
+    rows += brRow('#ccc', 'KUP (20% od podstawy)', pct(c.kup, b), '−' + Math.round(c.kup).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(odliczenie)</span>', true);
+  }
+  if (contract === 'uod') {
+    rows += brRow('#ccc', 'KUP (20% od brutto)', pct(c.kup, b), '−' + Math.round(c.kup).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(odliczenie)</span>', true);
+  }
+  var pitLabel = contract === 'b2b' ? 'Podatek liniowy (19%)' : 'Zaliczka na podatek PIT';
+  rows += brRow('#d4d4d4', pitLabel, c.tax > 0 ? pct(c.tax, b) : '—', c.tax > 0 ? fmtM(c.tax) : '0 zł', c.tax > 0);
+  document.getElementById('breakdown').innerHTML = rows;
+
+  // Netto
   document.getElementById('nettoValue').innerHTML =
     Math.round(c.netto).toLocaleString('pl-PL') +
     ' <span style="font-size:1.2rem;opacity:.6;font-weight:700;">zł</span>';
-  document.getElementById('nettoPct').textContent = (c.netto / b * 100).toFixed(1) + '%';
-  document.getElementById('empValue').textContent = fmt(c.emp);
+  document.getElementById('nettoPct').textContent = pct(c.netto, b);
+
+  // Employer card
+  var empHtml = '';
+  if (contract === 'uop' || contract === 'uz') {
+    empHtml = '<div class="employer-card">'
+      + '<div><div class="emp-left">Całkowity koszt pracodawcy</div>'
+      + '<div class="emp-sub">Brutto + ZUS pracodawcy (≈20,48%)</div></div>'
+      + '<div style="text-align:right;"><div class="emp-value">' + fmt(c.emp) + '</div>'
+      + '<div style="font-size:.72rem;color:var(--ink3);">/ mies.</div></div>'
+      + '</div>';
+  } else if (contract === 'b2b') {
+    empHtml = '<div class="employer-card">'
+      + '<div><div class="emp-left">Koszt dla klienta / zleceniodawcy</div>'
+      + '<div class="emp-sub">Kwota faktury — brak dodatkowych składek po Twojej stronie</div></div>'
+      + '<div style="text-align:right;"><div class="emp-value">' + fmt(c.emp) + '</div>'
+      + '<div style="font-size:.72rem;color:var(--ink3);">/ mies.</div></div>'
+      + '</div>';
+  }
+  document.getElementById('empCard').innerHTML = empHtml;
 }
 
 function toggleFaq(btn) {
   btn.closest('.faq-item').classList.toggle('open');
 }
 
+// Init
+setContract('uop');
 calculate();
 </script>
 
