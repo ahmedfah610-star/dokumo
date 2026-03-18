@@ -130,7 +130,7 @@ function buildCVHTML(tpl) {
   // ── SIDEBAR ───────────────────────────────────────────────
   if (tpl === 'sidebar') return `
     <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;display:flex;min-height:842px;background:#fff">
-      <div style="width:215px;background:${c1};flex-shrink:0;display:flex;flex-direction:column">
+      <div style="width:215px;background:${c1};flex-shrink:0;display:flex;flex-direction:column;min-height:842px">
         <div style="padding:28px 20px 22px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.1)">
           ${d.zdjecie?`<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;margin:0 auto 14px;border:3px solid rgba(255,255,255,0.28)">${photo}</div>`:''}
           <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-0.2px">${name}</div>
@@ -429,7 +429,7 @@ function buildCVHTML(tpl) {
   if (tpl === 'coral') return `
     <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px">
       <div style="display:grid;grid-template-columns:210px 1fr;min-height:842px">
-        <div style="background:linear-gradient(180deg,${c1},${c2});padding:28px 20px;display:flex;flex-direction:column;gap:0">
+        <div style="background:linear-gradient(180deg,${c1},${c2});padding:28px 20px;display:flex;flex-direction:column;gap:0;min-height:842px">
           ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid rgba(255,255,255,0.4)">${photo}</div>`:''}
           <div style="text-align:center;margin-bottom:20px">
             <div style="font-size:15px;font-weight:700;color:#fff;line-height:1.2">${name}</div>
@@ -939,7 +939,7 @@ function buildCVHTML(tpl) {
   // ── CASCADE (jasna sidebar z kolorem, styl Resume.io) ──────
   if (tpl === 'cascade') return `
     <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;display:flex;min-height:842px;background:#fff">
-      <div style="width:210px;flex-shrink:0;display:flex;flex-direction:column">
+      <div style="width:210px;flex-shrink:0;display:flex;flex-direction:column;min-height:842px">
         <div style="background:${c1};padding:26px 20px 22px;text-align:center">
           ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 12px;border:3px solid rgba(255,255,255,0.3)">${photo}</div>`:''}
           <div style="font-size:15px;font-weight:700;color:#fff;line-height:1.25;letter-spacing:-0.2px;word-break:break-word">${name}</div>
@@ -1008,7 +1008,7 @@ function buildCVHTML(tpl) {
   // ── STRIPE (lewa pionowa kreska akcentu, elegancki) ────────
   if (tpl === 'stripe') return `
     <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#fff;min-height:842px;display:flex">
-      <div style="width:6px;background:${c1};flex-shrink:0"></div>
+      <div style="width:6px;background:${c1};flex-shrink:0;min-height:842px"></div>
       <div style="flex:1;padding:36px 44px 32px 38px;min-width:0">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px">
           <div style="min-width:0">
@@ -3346,6 +3346,40 @@ function monthVal(stored) {
   if (y) return y[1] + '-01';
   return stored;
 }
+function monthPartM(stored) {
+  if (!stored) return '';
+  const m = stored.match(/^(\d{2})\.(\d{4})$/);
+  return m ? m[1] : '';
+}
+function monthPartY(stored) {
+  if (!stored) return '';
+  const m = stored.match(/^(\d{2})\.(\d{4})$/);
+  if (m) return m[2];
+  const y = stored.match(/^(\d{4})$/);
+  return y ? y[1] : '';
+}
+function cvPickMonth(wrap) {
+  const sels = wrap.querySelectorAll('select');
+  const m = sels[0].value, y = sels[1].value;
+  if (!y) return '';
+  return m ? m + '.' + y : y;
+}
+function buildMonthPickerHTML(dataPath, stored) {
+  const MONTHS = [['','Miesiąc'],['01','Sty'],['02','Lut'],['03','Mar'],['04','Kwi'],['05','Maj'],['06','Cze'],['07','Lip'],['08','Sie'],['09','Wrz'],['10','Paź'],['11','Lis'],['12','Gru']];
+  const curM = monthPartM(stored), curY = monthPartY(stored);
+  const curYear = new Date().getFullYear();
+  const years = [];
+  for (let y = curYear + 1; y >= 1970; y--) years.push(y);
+  const onch = dataPath + '=cvPickMonth(this.closest(\'.cvf-monthpick\'));updateCVPreview()';
+  return '<div class="cvf-monthpick" style="display:flex;gap:6px">'
+    + '<select class="cvf-input" style="flex:0 0 88px;min-width:0;padding-right:2px;font-size:0.82rem" onchange="' + onch + '">'
+    + MONTHS.map(([v,l]) => '<option value="' + v + '"' + (curM === v ? ' selected' : '') + '>' + l + '</option>').join('')
+    + '</select>'
+    + '<select class="cvf-input" style="flex:1;min-width:0;font-size:0.82rem" onchange="' + onch + '">'
+    + '<option value="">Rok</option>'
+    + years.map(y => '<option value="' + y + '"' + (curY === String(y) ? ' selected' : '') + '>' + y + '</option>').join('')
+    + '</select></div>';
+}
 
 function buildSectionBodyHTML(sec) {
   if (sec === 'podsumowanie') return `
@@ -3371,8 +3405,8 @@ function buildSectionBodyHTML(sec) {
           <div class="cvf-grid2">
             <div class="cvf-group cvf-full"><label>${L("company")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].firma=this.value;updateCVPreview()" value="${e.firma}" placeholder="${L('companyPlaceholder')}"></div>
             <div class="cvf-group cvf-full"><label>${L("jobTitle")}</label><input class="cvf-input" oninput="cvData.doswiadczenie[${i}].stanowisko=this.value;updateCVPreview()" value="${e.stanowisko}" placeholder="${L('jobPlaceholder')}"></div>
-            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.doswiadczenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
-            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.doswiadczenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("from")}</label>${buildMonthPickerHTML('cvData.doswiadczenie['+i+'].od',e.od)}</div>
+            <div class="cvf-group"><label>${L("to")}</label>${buildMonthPickerHTML('cvData.doswiadczenie['+i+'].do',e.do)}</div>
             <div class="cvf-group cvf-full"><label>${L("duties")}</label>
               <textarea class="cvf-input" id="dutiesTA-${i}" rows="2" oninput="cvData.doswiadczenie[${i}].opis=this.value;updateCVPreview()" placeholder="${L('duties')}...">${e.opis}</textarea>
               <div style="margin-top:6px">
@@ -3411,8 +3445,8 @@ function buildSectionBodyHTML(sec) {
                 <div class="cvf-autocomplete-list" id="kierunek-list-${i}"></div>
               </div>
             </div>
-            <div class="cvf-group"><label>${L("from")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.wyksztalcenie[${i}].od=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.od)}" placeholder="MM.RRRR"></div>
-            <div class="cvf-group"><label>${L("to")}</label><input class="cvf-input" type="month" onclick="this.showPicker?.()" oninput="cvData.wyksztalcenie[${i}].do=fmtMonth(this.value);updateCVPreview()" value="${monthVal(e.do)}" placeholder="MM.RRRR"></div>
+            <div class="cvf-group"><label>${L("from")}</label>${buildMonthPickerHTML('cvData.wyksztalcenie['+i+'].od',e.od)}</div>
+            <div class="cvf-group"><label>${L("to")}</label>${buildMonthPickerHTML('cvData.wyksztalcenie['+i+'].do',e.do)}</div>
           </div>
           ${i>0 ? `<button class="cvf-remove-btn" onclick="removeCVEdu(${i})">${L("remove")}</button>` : ''}
         </div>`).join('')}
