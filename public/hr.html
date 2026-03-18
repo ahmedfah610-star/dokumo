@@ -708,15 +708,17 @@ async function doGenerate() {
       headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
       body: JSON.stringify({prompt:prompt, docId:currentDoc, docName:FORMS[currentDoc].title, docCat:'biznes', docCatLabel:'Biznes', docIcon:'📄'})
     });
-    var data = await res.json();
+    var rawText = await res.text();
+    var data; try { data = JSON.parse(rawText); } catch(e) { throw new Error('Błąd serwera (HTTP ' + res.status + '). Sprawdź klucz ANTHROPIC_API_KEY w Vercel.'); }
+    if (data.error) throw new Error(data.error);
     document.getElementById("genLoading").style.display = "none";
     document.getElementById("genText").value = data.text || data.result || "Błąd generowania";
-    document.getElementById("genResult").style.display = "block";
+    document.getElementById("genResult").style.display = "flex";
   } catch(e) {
     document.getElementById("genLoading").style.display = "none";
     document.getElementById("genForm").style.display = "block";
     renderStep();
-    alert("Błąd połączenia. Spróbuj ponownie.");
+    alert(e.message || "Błąd połączenia. Spróbuj ponownie.");
   }
 }
 
