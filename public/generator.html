@@ -73,6 +73,9 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .btn-preview{display:none;padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink);align-items:center;gap:6px;transition:all .2s;}
 .btn-preview:hover{border-color:#999;background:var(--surface);}
 
+/* SAVE STATUS */
+.save-status{font-size:.72rem;color:var(--ink3);margin-left:4px;white-space:nowrap;}
+
 /* PREVIEW MODAL */
 .preview-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);overflow-y:auto;padding:20px 12px 40px;}
 .preview-modal.open{display:flex;flex-direction:column;align-items:center;}
@@ -92,8 +95,8 @@ import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.
 const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
 const app=getApps().length?getApps()[0]:initializeApp(__c);
 onAuthStateChanged(getAuth(app),async u=>{
-  if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));window._fbToken=await u.getIdToken();}
-  else{window._fbToken=null;}
+  if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));window._fbToken=await u.getIdToken();window._firebaseUser=u;}
+  else{window._fbToken=null;window._firebaseUser=null;}
   if(window._onAuthReady) window._onAuthReady();
 });
 </script>
@@ -188,6 +191,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 <div class="lm-bar" id="lmBar" style="display:none;">
   <button class="btn-dl" onclick="downloadPdf()">⬇ Pobierz PDF</button>
   <button class="btn-preview" onclick="openPreview()">👁 Podgląd</button>
+  <span class="save-status" id="saveStatus"></span>
   <a href="kariera.html" class="btn-new">Nowy list</a>
 </div>
 
@@ -206,6 +210,71 @@ function val(id){ return (document.getElementById(id)||{}).value || ''; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
 
+// ── Auto-save ──
+var _saveDocId = null;
+var _autoSaveTimer = null;
+
+function scheduleAutoSave() {
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(autoSave, 1500);
+}
+
+async function getAuthToken() {
+  if (window._firebaseUser) {
+    try { return await window._firebaseUser.getIdToken(); } catch(e) {}
+  }
+  return window._fbToken || null;
+}
+
+function buildPaperHTML() {
+  var inner = document.getElementById('lmPaper').innerHTML;
+  return '<div style="background:#fff;width:595px;padding:52px 56px;font-family:Georgia,\'Times New Roman\',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;box-sizing:border-box;">' + inner + '</div>';
+}
+
+function collectCovData() {
+  return {
+    position: val('fPos'), company: val('fCompany'),
+    firstName: val('fFirstName'), lastName: val('fLastName'),
+    email: val('fEmail'), phone: val('fPhone'),
+    street: val('fStreet'), zip: val('fZip'), city: val('fCity'),
+    rCompany: val('rCompany'), rContact: val('rContact'),
+    rStreet: val('rStreet'), rZip: val('rZip'), rCity: val('rCity'),
+    body: val('fBody')
+  };
+}
+
+async function autoSave() {
+  var token = await getAuthToken();
+  if (!token) return;
+  var d = collectCovData();
+  var text = '__LM_HTML__:' + buildPaperHTML();
+  var covDataJson = JSON.stringify(d);
+  var pos = d.position || 'List motywacyjny';
+  var docName = 'List motywacyjny' + (d.position ? ' – ' + d.position : '') + (d.company ? ' · ' + d.company : '');
+  var statusEl = document.getElementById('saveStatus');
+  if (statusEl) statusEl.textContent = 'Zapisywanie…';
+  try {
+    if (!_saveDocId) {
+      var res = await fetch('/api/save-doc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ docId: 'cover-letter', docName: docName, docCat: 'kariera', docCatLabel: 'Kariera', docIcon: '✉️', text: text, covDataJson: covDataJson })
+      });
+      var data = await res.json();
+      if (data.id) _saveDocId = data.id;
+    } else {
+      await fetch('/api/update-doc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ docId: _saveDocId, text: text, name: docName, covDataJson: covDataJson })
+      });
+    }
+    if (statusEl) { statusEl.textContent = 'Zapisano ✓'; setTimeout(function(){ statusEl.textContent=''; }, 3000); }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '';
+  }
+}
+
 // ── Pre-fill on load ──
 var _autoGenDone = false;
 
@@ -222,6 +291,33 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     if (u.email) document.getElementById('fEmail').value = u.email;
   } catch(e) {}
+
+  // ── Tryb edycji (z moje-dokumenty) ──
+  var editData = null;
+  try { editData = JSON.parse(sessionStorage.getItem('dokumo_editLmData') || 'null'); } catch(e) {}
+  var editDocId = sessionStorage.getItem('dokumo_editLmDocId') || '';
+  if (editData) {
+    sessionStorage.removeItem('dokumo_editLmData');
+    sessionStorage.removeItem('dokumo_editLmDocId');
+    var setVal = function(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
+    setVal('fPos', editData.position); setVal('fCompany', editData.company);
+    setVal('fFirstName', editData.firstName); setVal('fLastName', editData.lastName);
+    setVal('fEmail', editData.email); setVal('fPhone', editData.phone);
+    setVal('fStreet', editData.street); setVal('fZip', editData.zip); setVal('fCity', editData.city);
+    setVal('rCompany', editData.rCompany); setVal('rContact', editData.rContact);
+    setVal('rStreet', editData.rStreet); setVal('rZip', editData.rZip); setVal('rCity', editData.rCity);
+    setVal('fBody', editData.body);
+    if (editData.rCompany || editData.rContact) {
+      _recOpen = true;
+      document.getElementById('recFields').classList.add('open');
+      document.getElementById('recToggle').classList.add('open');
+    }
+    if (editDocId) _saveDocId = editDocId;
+    _autoGenDone = true;
+    renderPreview();
+    showEditor();
+    return;
+  }
 
   renderPreview();
 
@@ -353,6 +449,7 @@ function renderPreview() {
   document.getElementById('lmPaper').innerHTML = html;
   var modal = document.getElementById('lmPaperModal');
   if (modal) modal.innerHTML = html;
+  scheduleAutoSave();
 }
 
 // ── Export ──

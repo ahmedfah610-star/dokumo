@@ -14,13 +14,16 @@ export default async function handler(req, res) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
 
-  const { docId, text } = req.body;
+  const { docId, text, name, covDataJson } = req.body;
   if (!docId) return res.status(400).json({ error: 'Brak docId' });
 
   try {
     const { uid } = await auth.verifyIdToken(token);
     const ref = db.collection('users').doc(uid).collection('documents').doc(docId);
-    await ref.update({ text: text || '', updatedAt: new Date() });
+    const update = { text: text || '', updatedAt: new Date() };
+    if (name !== undefined) update.name = name;
+    if (covDataJson !== undefined) update.covDataJson = covDataJson;
+    await ref.update(update);
     return res.status(200).json({ ok: true });
   } catch (e) {
     return res.status(500).json({ error: e.message });

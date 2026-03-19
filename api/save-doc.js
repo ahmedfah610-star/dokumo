@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
 
-  const { docId, docName, docCat, docIcon, docCatLabel, text, cvDataJson } = req.body;
+  const { docId, docName, docCat, docIcon, docCatLabel, text, cvDataJson, covDataJson } = req.body;
   if (!docName) return res.status(400).json({ error: 'Brak nazwy dokumentu' });
 
   try {
@@ -33,6 +33,7 @@ export default async function handler(req, res) {
       updatedAt: new Date(),
     };
     if (cvDataJson) payload.cvDataJson = cvDataJson;
+    if (covDataJson) payload.covDataJson = covDataJson;
     await ref.set(payload);
     return res.status(200).json({ ok: true, id: ref.id });
   } catch (e) {
