@@ -301,7 +301,7 @@ window.addEventListener('DOMContentLoaded', function() {
   sessionStorage.removeItem('dokumo_editLmDocId');
   sessionStorage.removeItem('dokumo_editLmText');
 
-  if (editDocId) {
+  if (editDocId && !gp('position')) {
     var setVal = function(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
     if (editData) {
       setVal('fPos', editData.position); setVal('fCompany', editData.company);
