@@ -16,961 +16,828 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/ecommerce.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Service","name":"Generator dokumentów E-commerce – Dokumo","description":"Generuj regulaminy sklepu, politykę RODO i dokumenty zwrotów dla e-commerce przez AI w kilka sekund.","provider":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"},"serviceType":"Document Generation","url":"https://dokumoflow.com/ecommerce.html","areaServed":"PL","inLanguage":"pl"}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f3ef;
-  --surface: #141518;
-  --surface2: #1a1c20;
-  --border: rgba(255,255,255,.07);
-  --ink: #f0ede8;
-  --ink2: rgba(240,237,232,.45);
-  --ink3: rgba(240,237,232,.25);
-  --green: #22c55e;
-  --green-dim: rgba(34,197,94,.15);
-  --orange: #f97316;
-  --orange-dim: rgba(249,115,22,.12);
-  --gold: #c9903a;
-  --cream: #faf8f4;
+  --bg: #ffffff;
+  --ink: #111111;
+  --ink2: #555555;
+  --ink3: #999999;
+  --border: #e5e5e5;
+  --surface: #f5f5f7;
+  --accent: #111111;
+  --pill: 50px;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
-  color: var(--ink);
-  min-height: 100vh;
-}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; min-height: 100vh; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
 
 /* ── NAV ── */
-.u-nav {
-  background: rgba(14,15,17,.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100;
-  height: 56px;
-  display: flex; align-items: center;
-  padding: 0 1.5rem; gap: 0;
+.wiz-nav { position: sticky; top: 0; z-index: 200; height: 60px; background: rgba(255,255,255,.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 1rem; }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-weight: 800; font-size: .95rem; letter-spacing: -.02em; flex-shrink: 0; }
+.nav-back { display: flex; align-items: center; gap: 5px; font-size: .73rem; font-weight: 600; color: var(--ink2); text-decoration: none; padding: 5px 12px; border-radius: 8px; border: 1.5px solid var(--border); transition: all .2s; white-space: nowrap; flex-shrink: 0; }
+.nav-back:hover { color: var(--ink); border-color: #999; }
+.nav-steps { flex: 1; display: flex; justify-content: center; align-items: center; }
+.step-item { display: flex; align-items: center; }
+.step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; transition: all .3s; background: var(--surface); color: var(--ink3); border: 1.5px solid var(--border); flex-shrink: 0; }
+.step-dot.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.step-dot.done { background: var(--surface); color: var(--ink); border-color: #ccc; }
+.step-lbl { font-size: .72rem; font-weight: 500; color: var(--ink3); margin-left: 6px; transition: color .3s; white-space: nowrap; }
+.step-lbl.active { color: var(--ink); font-weight: 700; }
+.step-line { width: 36px; height: 1.5px; background: var(--border); margin: 0 8px; transition: background .3s; flex-shrink: 0; }
+.step-line.done { background: var(--ink); }
+.nav-right { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+.nav-login { font-size: .75rem; font-weight: 600; color: var(--ink2); text-decoration: none; padding: 7px 14px; border-radius: var(--pill); border: 1.5px solid var(--border); transition: all .2s; }
+.nav-login:hover { border-color: #999; color: var(--ink); }
+.nav-badge { font-size: .6rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
+.nav-badge.pro { background: rgba(52,199,89,.12); color: #1a8a3e; border: 1px solid rgba(52,199,89,.25); }
+.nav-badge.free { background: var(--surface); color: var(--ink3); border: 1px solid var(--border); }
+.nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface); color: var(--ink); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1.5px solid var(--border); flex-shrink: 0; overflow: hidden; }
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
+.nav-profile.show { display: flex; }
+.nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.12); padding: 8px; min-width: 200px; z-index: 300; display: none; }
+.nav-dropdown.show { display: block; }
+.nav-dd-email { font-size: .72rem; color: var(--ink3); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
+.nav-dd-link:hover { background: var(--surface); color: var(--ink); }
+.nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+.nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #c00; transition: background .15s; font-family: 'Figtree', sans-serif; }
+.nav-dd-logout:hover { background: rgba(200,0,0,.06); }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: calc(100vh - 60px - 72px); }
+.screen.active { display: block; animation: fadeUp .38s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes popIn { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes shimmer { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+/* ── SCREEN 0 — CHOOSE ── */
+.choose-hero { max-width: 640px; margin: 72px auto 0; padding: 0 2rem; text-align: center; }
+.choose-h1 { font-size: clamp(2.6rem,6vw,4.2rem); font-weight: 900; letter-spacing: -.05em; line-height: 1.08; }
+.choose-sub { margin-top: 14px; font-size: 1.05rem; color: var(--ink2); font-weight: 400; line-height: 1.6; }
+.doc-grid { max-width: 980px; margin: 52px auto 80px; padding: 0 2rem; display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.doc-card { background: #fff; border: 1.5px solid var(--border); border-radius: 24px; padding: 36px 30px; cursor: pointer; transition: border-color .2s, transform .25s cubic-bezier(.34,1.2,.64,1); text-align: left; display: flex; flex-direction: column; }
+.doc-card:hover { border-color: var(--ink); transform: translateY(-4px); }
+.doc-card-icon { font-size: 2.8rem; margin-bottom: 20px; display: block; }
+.doc-card-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 10px; }
+.doc-card-desc { font-size: .88rem; color: var(--ink2); line-height: 1.6; font-weight: 400; flex: 1; }
+.doc-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.doc-card-tag { font-size: .7rem; font-weight: 600; padding: 5px 12px; border-radius: 999px; background: var(--surface); color: var(--ink3); }
+.doc-card-btn { display: inline-block; margin-top: 22px; padding: 11px 22px; border-radius: var(--pill); border: 1.5px solid var(--border); background: #fff; font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s; color: var(--ink); align-self: flex-start; }
+.doc-card:hover .doc-card-btn { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ── SCREEN 1 — FORM ── */
+.form-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: start; }
+.sub-bar { display: flex; gap: 6px; margin-bottom: 24px; }
+.sub-seg { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .3s; }
+.sub-seg.on { background: var(--ink); }
+.form-step-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
+.form-step-sub { font-size: .88rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.5; }
+.field { margin-bottom: 20px; }
+.field-lbl { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px; }
+.field-lbl span { font-weight: 400; opacity: .7; text-transform: none; letter-spacing: 0; font-size: .7rem; }
+.field-in { width: 100%; padding: 12px 16px; font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 500; color: var(--ink); background: var(--surface); border: 1.5px solid transparent; border-radius: 12px; outline: none; transition: all .2s; -webkit-appearance: none; appearance: none; }
+.field-in:focus { background: #fff; border-color: var(--ink); }
+.field-in::placeholder { color: var(--ink3); font-weight: 400; }
+.field-in[type="date"] { color-scheme: light; }
+.pills-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 9px 16px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #fff; color: var(--ink2); }
+.pill:hover { border-color: #999; color: var(--ink); }
+.pill.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.nip-hint { font-size: .7rem; color: var(--ink3); margin: 4px 0 0; }
+
+/* Chips (multi-select) */
+.chips-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.chip { padding: 7px 14px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #fff; color: var(--ink2); }
+.chip:hover { border-color: #999; color: var(--ink); }
+.chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Live preview card */
+.prev-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 28px 24px; position: sticky; top: 80px; }
+.prev-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.prev-card-ico { font-size: 1.4rem; }
+.prev-card-title { font-size: .95rem; font-weight: 800; letter-spacing: -.02em; }
+.prev-row { margin-bottom: 14px; }
+.prev-row-lbl { font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
+.prev-row-val { font-size: .88rem; font-weight: 500; color: var(--ink); }
+.prev-row-val.empty { color: var(--ink3); font-style: italic; font-weight: 400; }
+.shimmer-line { height: 10px; border-radius: 4px; background: var(--border); margin-bottom: 8px; animation: shimmer 1.5s ease infinite; }
+
+/* ── SCREEN 2 — GENERATING ── */
+.gen-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 2rem; min-height: calc(100vh - 60px - 72px); }
+.gen-spinner { width: 52px; height: 52px; border: 3.5px solid var(--border); border-top-color: var(--ink); border-radius: 50%; animation: spin .9s linear infinite; margin-bottom: 28px; }
+.gen-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 10px; }
+.gen-sub { font-size: .9rem; color: var(--ink2); line-height: 1.6; max-width: 360px; }
+
+/* ── SCREEN 3 — RESULT ── */
+.result-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1.3fr 1fr; gap: 52px; align-items: start; }
+.doc-paper { background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 52px 56px; font-family: 'Georgia', 'Times New Roman', serif; font-size: .875rem; line-height: 1.9; color: #111; white-space: pre-wrap; word-break: break-word; min-height: 480px; }
+.res-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
+.res-sub { font-size: .85rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.55; }
+.checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+.check-row { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; font-weight: 500; }
+.check-ico { width: 22px; height: 22px; border-radius: 50%; background: rgba(52,199,89,.1); border: 1.5px solid rgba(52,199,89,.3); color: #1a8a3e; display: flex; align-items: center; justify-content: center; font-size: .62rem; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
+.act-btns { display: flex; flex-direction: column; gap: 10px; }
+.act-btn { width: 100%; padding: 14px 20px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: all .2s; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.act-btn.primary { background: var(--ink); color: #fff; }
+.act-btn.primary:hover { background: #333; }
+.act-btn.secondary { background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); }
+.act-btn.secondary:hover { border-color: #999; }
+
+/* ── BOTTOM BAR ── */
+.bot-bar { position: sticky; bottom: 0; z-index: 200; height: 72px; background: rgba(255,255,255,.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 16px; }
+.btn-back { padding: 12px 22px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .85rem; font-weight: 600; cursor: pointer; background: var(--surface); border: 1.5px solid var(--border); color: var(--ink2); transition: all .2s; }
+.btn-back:hover { border-color: #999; color: var(--ink); }
+.btn-back.hide { visibility: hidden; pointer-events: none; }
+.bar-info { flex: 1; text-align: center; font-size: .78rem; color: var(--ink3); font-weight: 500; }
+.btn-next { padding: 12px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; background: var(--ink); color: #fff; border: none; transition: all .2s; margin-left: auto; }
+.btn-next:hover { background: #333; }
+.btn-next.hide { visibility: hidden; pointer-events: none; }
+
+/* ── MOBILE ── */
+@media (max-width: 760px) {
+  .nav-steps { display: none; }
+  .doc-grid { grid-template-columns: 1fr; max-width: 460px; }
+  .form-wrap { grid-template-columns: 1fr; gap: 0; }
+  .form-right-col { display: none; }
+  .result-wrap { grid-template-columns: 1fr; }
+  .doc-paper { padding: 28px 24px; }
 }
-.u-nav-logo {
-  display: flex; align-items: center; gap: 8px;
-  text-decoration: none;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 800; font-size: 1rem;
-  color: var(--ink); letter-spacing: -.02em; flex-shrink: 0;
-}
-.u-nav-dot {
-  width: 26px; height: 26px;
-  background: var(--ink);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-}
-.u-nav-back {
-  display: flex; align-items: center; gap: 5px;
-  font-size: .73rem; font-weight: 500;
-  color: var(--ink2); text-decoration: none;
-  padding: 5px 10px; border-radius: 8px;
-  border: 1px solid var(--border);
-  margin-left: 12px; transition: all .2s; white-space: nowrap; flex-shrink: 0;
-}
-.u-nav-back:hover { color: var(--ink); border-color: rgba(255,255,255,.15); }
-.u-nav-spacer { flex: 1; }
-.u-nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.u-nav-login {
-  font-size: .73rem; font-weight: 500;
-  color: var(--ink2); text-decoration: none;
-  padding: 5px 12px; border-radius: 8px;
-  border: 1px solid var(--border); transition: all .2s;
-}
-.u-nav-login:hover { color: var(--ink); border-color: rgba(255,255,255,.2); }
-.u-nav-badge {
-  font-size: .62rem; font-weight: 800; letter-spacing: .08em;
-  padding: 4px 9px; border-radius: 999px; text-transform: uppercase;
-}
-.u-nav-badge.pro { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.25); }
-.u-nav-badge.free { background: rgba(255,255,255,.05); color: var(--ink3); border: 1px solid var(--border); }
-.u-nav-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--surface2); color: var(--ink);
-  font-size: .72rem; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; overflow: hidden; flex-shrink: 0;
-  border: 1px solid var(--border);
-}
-.u-nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.u-nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
-.u-nav-profile.show { display: flex; }
-.u-nav-dropdown {
-  position: absolute; top: calc(100% + 10px); right: 0;
-  background: #1a1c20; border: 1px solid rgba(255,255,255,.1);
-  border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.5);
-  padding: 8px; min-width: 200px; z-index: 200; display: none;
-}
-.u-nav-dropdown.show { display: block; }
-.u-nav-dd-email { font-size: .72rem; color: var(--ink2); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-.u-nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 1px; }
-.u-nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
-.u-nav-dd-link:hover { background: rgba(255,255,255,.05); color: var(--ink); }
-.u-nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
-.u-nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #f87171; transition: background .15s; }
-.u-nav-dd-logout:hover { background: rgba(248,113,113,.08); }
-@media(max-width:480px){
-  .u-nav { padding: 0 1rem; }
-  .u-nav-back span { display: none; }
+@media (max-width: 480px) {
+  .wiz-nav { padding: 0 1rem; }
+  .nav-back span { display: none; }
+  .bot-bar { padding: 0 1rem; gap: 8px; }
+  .btn-next { padding: 12px 18px; font-size: .82rem; }
+  .choose-hero { margin-top: 48px; }
 }
 
-/* ── HEADER ── */
-.page-header {
-  padding: 48px 2rem 0;
-  max-width: 860px;
-  margin: 0 auto;
-}
-.page-label {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-size: .65rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--green); margin-bottom: 16px;
-}
-.page-label-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 8px var(--green);
-  animation: glow 2s ease-in-out infinite;
-}
-@keyframes glow {
-  0%,100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
-  50% { opacity: .5; box-shadow: 0 0 3px var(--green); }
-}
-.page-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: clamp(1.7rem, 4vw, 2.4rem);
-  font-weight: 800; letter-spacing: -.03em;
-  color: #1a1714; line-height: 1.1; margin-bottom: 10px;
-}
-.page-sub {
-  font-size: .88rem; color: var(--ink2); line-height: 1.6;
-  font-weight: 300;
-}
-
-/* ── DOCUMENT STACK ── */
-.doc-stack {
-  max-width: 860px;
-  margin: 52px auto 80px;
-  padding: 0 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.doc-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform .25s cubic-bezier(.34,1.3,.64,1), box-shadow .25s ease, border-color .25s;
-  text-decoration: none;
-  color: inherit;
-  opacity: 0;
-  animation: slideIn .4s ease both;
-}
-.doc-card:nth-child(1) { animation-delay: .05s; }
-.doc-card:nth-child(2) { animation-delay: .12s; }
-.doc-card:nth-child(3) { animation-delay: .19s; }
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.doc-card:hover {
-  transform: translateX(6px) scale(1.008);
-  box-shadow: -6px 0 0 0 currentColor, 0 12px 40px rgba(0,0,0,.35);
-  border-color: rgba(255,255,255,.12);
-}
-.doc-card.ready:hover { box-shadow: -6px 0 0 0 var(--green), 0 12px 40px rgba(0,0,0,.35); }
-.doc-card.needs-input:hover { box-shadow: -6px 0 0 0 var(--orange), 0 12px 40px rgba(0,0,0,.35); }
-
-/* Lewa krawędź kolorowa */
-.doc-edge {
-  width: 4px;
-  align-self: stretch;
-  border-radius: 16px 0 0 16px;
-  flex-shrink: 0;
-}
-.doc-card.ready .doc-edge { background: var(--green); }
-.doc-card.needs-input .doc-edge { background: var(--orange); }
-
-.doc-body {
-  flex: 1;
-  padding: 22px 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.doc-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.doc-card.ready .doc-icon { background: var(--green-dim); }
-.doc-card.needs-input .doc-icon { background: var(--orange-dim); }
-
-.doc-info { flex: 1; min-width: 0; }
-
-.doc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; flex-wrap: wrap; }
-
-.doc-name {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 1rem; font-weight: 700;
-  color: var(--ink); letter-spacing: -.01em;
-}
-
-.doc-desc {
-  font-size: .8rem; color: var(--ink2);
-  line-height: 1.5; font-weight: 300;
-}
-
-.doc-action {
-  flex-shrink: 0;
-  padding: 0 24px;
-}
-
-.doc-btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: .78rem; font-weight: 700;
-  padding: 9px 18px; border-radius: 10px;
-  border: none; cursor: pointer;
-  transition: all .2s; white-space: nowrap;
-}
-.doc-card.ready .doc-btn {
-  background: rgba(34,197,94,.15);
-  color: #39ff8a;
-  border: 1px solid rgba(57,255,138,.3);
-}
-.doc-card.ready:hover .doc-btn {
-  background: rgba(57,255,138,.2);
-  border-color: rgba(57,255,138,.5);
-}
-.doc-card.needs-input .doc-btn {
-  background: rgba(249,115,22,.12);
-  color: #fb923c;
-  border: 1px solid rgba(249,115,22,.2);
-}
-.doc-card.needs-input:hover .doc-btn {
-  background: rgba(249,115,22,.2);
-  border-color: rgba(249,115,22,.35);
-}
-
-/* Status dot */
-.doc-status {
-  position: absolute; top: 14px; right: 14px;
-  width: 7px; height: 7px; border-radius: 50%;
-}
-.doc-card.ready .doc-status { background: var(--green); box-shadow: 0 0 8px var(--green); }
-.doc-card.needs-input .doc-status { background: var(--orange); box-shadow: 0 0 8px var(--orange); }
-
-/* Subtle background glow on hover */
-.doc-card::after {
-  content: '';
-  position: absolute; inset: 0; border-radius: 16px;
-  opacity: 0; transition: opacity .3s;
-  pointer-events: none;
-}
-.doc-card.ready::after   { background: radial-gradient(ellipse at left center, rgba(34,197,94,.04), transparent 60%); }
-.doc-card.needs-input::after { background: radial-gradient(ellipse at left center, rgba(249,115,22,.05), transparent 60%); }
-.doc-card:hover::after   { opacity: 1; }
-
-/* Separator */
-.stack-sep {
-  display: flex; align-items: center; gap: 12px;
-  color: var(--ink3); font-size: .68rem; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase;
-  margin: 8px 0 0;
-}
-.stack-sep::before, .stack-sep::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-
-/* Legenda */
-.stack-legend {
-  display: flex; align-items: center; gap: 20px;
-  max-width: 860px; margin: -24px auto 0; padding: 0 2rem 60px;
-}
-.legend-item {
-  display: flex; align-items: center; gap: 6px;
-  font-size: .72rem; color: var(--ink3);
-}
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-/* Mobile */
-@media(max-width:640px){
-  .doc-body { padding: 18px 16px; gap: 14px; }
-  .doc-icon { width: 38px; height: 38px; }
-  .doc-name { font-size: .9rem; }
-  .doc-action { padding: 0 16px 16px; }
-  .doc-card { flex-direction: column; align-items: stretch; }
-  .doc-body { border-bottom: none; }
-  .doc-action { padding: 0 16px 18px; }
-  .doc-btn { width: 100%; justify-content: center; }
-}
-.faq-section{max-width:760px;margin:0 auto 80px;padding:0 2rem;}
-.faq-section-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
-.faq-section-sub{font-size:.9rem;color:var(--ink2);margin-bottom:24px;}
-.faq-item{border-bottom:1px solid var(--border);}
-.faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
-.faq-chevron{font-size:.75rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
-.faq-a{display:none;padding:0 0 20px;font-size:.9rem;color:var(--ink2);line-height:1.7;}
-.faq-item.open .faq-chevron{transform:rotate(180deg);}
-.faq-item.open .faq-a{display:block;}
+/* FAQ */
+.faq-section { max-width: 760px; margin: 0 auto 80px; padding: 0 2rem; }
+.faq-section-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
+.faq-section-sub { font-size: .9rem; color: var(--ink2); margin-bottom: 24px; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q { width: 100%; text-align: left; background: none; border: none; padding: 20px 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: 'Figtree', sans-serif; font-size: .95rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.faq-chevron { font-size: .75rem; flex-shrink: 0; transition: transform .2s; display: inline-block; }
+.faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-item.open .faq-a { display: block; }
 </style>
 
 <!-- Firebase Auth -->
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const app=getApps().length?getApps()[0]:initializeApp(__c);window._fbSignOut=()=>signOut(getAuth(app));
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
+const app=getApps().length?getApps()[0]:initializeApp(__c);
+window._fbSignOut=()=>signOut(getAuth(app));
 onAuthStateChanged(getAuth(app),async u=>{
   if(u){
-    localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
+    localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));
     window._fbToken=await u.getIdToken();
-    window._fbReady=true;
-    try{
-      const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
-      const data=await res.json();
-      if(data.expiresAt) localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));
-    }catch(e){}
-  }else{window._fbToken=null;window._fbReady=true;}
-  if(window._renderUNav)window._renderUNav();
+    try{const res=await fetch("/api/check-sub",{headers:{"Authorization":"Bearer "+window._fbToken}});const data=await res.json();if(data.expiresAt)localStorage.setItem("dokumo_sub",JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));}catch(e){}
+  }else{window._fbToken=null;}
+  if(window._renderNav)window._renderNav();
 });
 </script>
 </head>
 <body>
 
 <!-- NAV -->
-<nav class="u-nav">
-  <a href="index.html" class="u-nav-logo">
-    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+<nav class="wiz-nav">
+  <a href="index.html" class="nav-logo">
+    <img src="logo2.png" style="height:26px;width:auto;display:block;">
     Dokumo
   </a>
-  <a href="biznes.html" class="u-nav-back">
+  <a href="biznes.html" class="nav-back">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     <span>Strefa Biznesu</span>
   </a>
-  <div class="u-nav-spacer"></div>
-  <div class="u-nav-right">
-    <a href="konto.html" class="u-nav-login" id="uNavLogin">Zaloguj się</a>
-    <div class="u-nav-profile" id="uNavProfile">
-      <span class="u-nav-badge free" id="uNavBadge">Free</span>
-      <div class="u-nav-avatar" id="uNavAvatar" onclick="toggleUNavDrop(event)">?</div>
-      <div class="u-nav-dropdown" id="uNavDrop">
-        <div class="u-nav-dd-email">
-          <div class="u-nav-dd-name" id="uNavName"></div>
-          <div id="uNavEmail"></div>
+  <div class="nav-steps" id="navSteps"></div>
+  <div class="nav-right">
+    <a href="konto.html" class="nav-login" id="navLogin">Zaloguj się</a>
+    <div class="nav-profile" id="navProfile">
+      <span class="nav-badge free" id="navBadge">Free</span>
+      <div class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)">?</div>
+      <div class="nav-dropdown" id="navDrop">
+        <div class="nav-dd-email">
+          <div class="nav-dd-name" id="navName"></div>
+          <div id="navEmail" style="font-size:.72rem;color:var(--ink3);"></div>
         </div>
-        <a href="konto.html" class="u-nav-dd-link">👤 Moje konto</a>
-        <a href="moje-dokumenty.html" class="u-nav-dd-link">📁 Moje dokumenty</a>
-        <a href="subskrypcja.html" class="u-nav-dd-link">⭐ Subskrypcja</a>
-        <div class="u-nav-dd-sep"></div>
-        <button class="u-nav-dd-logout" onclick="uNavLogout()">← Wyloguj się</button>
+        <a href="konto.html" class="nav-dd-link">👤 Moje konto</a>
+        <a href="moje-dokumenty.html" class="nav-dd-link">📁 Moje dokumenty</a>
+        <a href="subskrypcja.html" class="nav-dd-link">⭐ Subskrypcja</a>
+        <div class="nav-dd-sep"></div>
+        <button class="nav-dd-logout" onclick="navLogout()">← Wyloguj się</button>
       </div>
     </div>
   </div>
 </nav>
 
+<!-- SCREEN 0: WYBIERZ DOKUMENT -->
+<section class="screen active" id="screen0">
+  <div class="choose-hero" style="margin-top:52px;">
+    <h1 class="choose-h1">E-commerce<br>i Sklep Online</h1>
+    <p class="choose-sub">Regulaminy sklepu, polityka RODO i dokumenty zwrotów — generowane przez AI w kilka sekund. Zgodne z polskim prawem i dyrektywą Omnibus.</p>
+  </div>
+  <div class="doc-grid">
+    <div class="doc-card" onclick="selectDoc('regulamin')">
+      <span class="doc-card-icon">🛒</span>
+      <div class="doc-card-title">Regulamin Sklepu</div>
+      <div class="doc-card-desc">Dostosowany do Twoich produktów — fizyczne, cyfrowe lub SaaS. Uwzględnia obowiązkowe zapisy dyrektywy Omnibus o cenach.</div>
+      <div class="doc-card-tags">
+        <span class="doc-card-tag">Omnibus</span>
+        <span class="doc-card-tag">E-commerce</span>
+        <span class="doc-card-tag">Konsumenci</span>
+      </div>
+      <button class="doc-card-btn">Wybierz →</button>
+    </div>
+    <div class="doc-card" onclick="selectDoc('rodo')">
+      <span class="doc-card-icon">🔒</span>
+      <div class="doc-card-title">Polityka Prywatności & Cookies</div>
+      <div class="doc-card-desc">Generuje też gotowe treści checkboxów pod formularz kontaktowy i zapis do newslettera. Osobna sekcja dla plików cookies.</div>
+      <div class="doc-card-tags">
+        <span class="doc-card-tag">RODO</span>
+        <span class="doc-card-tag">Cookies</span>
+        <span class="doc-card-tag">Newsletter</span>
+      </div>
+      <button class="doc-card-btn">Wybierz →</button>
+    </div>
+    <div class="doc-card" onclick="selectDoc('zwroty')">
+      <span class="doc-card-icon">↩️</span>
+      <div class="doc-card-title">Zwroty & Reklamacje</div>
+      <div class="doc-card-desc">Pouczenie o prawie do odstąpienia i formularz zwrotu — gotowy do dołączenia do maila potwierdzającego zamówienie.</div>
+      <div class="doc-card-tags">
+        <span class="doc-card-tag">14 dni</span>
+        <span class="doc-card-tag">Rękojmia</span>
+        <span class="doc-card-tag">ODR</span>
+      </div>
+      <button class="doc-card-btn">Wybierz →</button>
+    </div>
+  </div>
+</section>
+
+<!-- SCREEN 1: FORMULARZ -->
+<section class="screen" id="screen1">
+  <div class="form-wrap">
+    <div id="formLeft"></div>
+    <div class="form-right-col" id="formRight"></div>
+  </div>
+</section>
+
+<!-- SCREEN 2: GENEROWANIE -->
+<section class="screen" id="screen2">
+  <div class="gen-wrap">
+    <div class="gen-spinner"></div>
+    <div class="gen-title">Generowanie przez AI…</div>
+    <div class="gen-sub">Tworzymy Twój dokument zgodnie z polskim prawem. To zwykle zajmuje kilka sekund.</div>
+  </div>
+</section>
+
+<!-- SCREEN 3: WYNIK -->
+<section class="screen" id="screen3">
+  <div class="result-wrap">
+    <div>
+      <div class="doc-paper" id="docPaper"></div>
+    </div>
+    <div>
+      <div class="res-title">Dokument gotowy!</div>
+      <div class="res-sub" id="resSub">Sprawdź wygenerowany dokument i pobierz w wybranym formacie.</div>
+      <div class="checklist">
+        <div class="check-row"><div class="check-ico">✓</div><span>Wygenerowany automatycznie przez AI</span></div>
+        <div class="check-row"><div class="check-ico">✓</div><span>Zgodny z polskim prawem</span></div>
+        <div class="check-row"><div class="check-ico">✓</div><span>Gotowy do opublikowania</span></div>
+        <div class="check-row" id="checkSaved" style="display:none;"><div class="check-ico">✓</div><span>Zapisano w Twoich dokumentach</span></div>
+      </div>
+      <div class="act-btns">
+        <button class="act-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
+        <button class="act-btn secondary" onclick="copyDoc()">📋 Kopiuj tekst</button>
+        <button class="act-btn secondary" onclick="downloadAs('rtf')">⬇ Pobierz Word (.rtf)</button>
+        <button class="act-btn secondary" onclick="downloadAs('txt')">⬇ Pobierz TXT</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM BAR -->
+<div class="bot-bar">
+  <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
+  <span class="bar-info" id="barInfo">Wybierz dokument, aby kontynuować</span>
+  <button class="btn-next hide" id="btnNext" onclick="goNext()">Dalej →</button>
+</div>
+
 <script>
+/* ── AUTH NAV ── */
 (function(){
-  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
-  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
-  function renderUNav(){
-    const user=getUser(),sub=getSub();
-    const login=document.getElementById('uNavLogin');
-    const profile=document.getElementById('uNavProfile');
-    const badge=document.getElementById('uNavBadge');
-    const avatar=document.getElementById('uNavAvatar');
+  function getUser(){try{return JSON.parse(localStorage.getItem("dokumo_user"));}catch(e){return null;}}
+  function getSub(){try{return JSON.parse(localStorage.getItem("dokumo_sub"));}catch(e){return null;}}
+  function renderNav(){
+    var user=getUser(),sub=getSub();
+    var login=document.getElementById("navLogin"),profile=document.getElementById("navProfile");
+    var badge=document.getElementById("navBadge"),avatar=document.getElementById("navAvatar");
     if(!login)return;
     if(user){
-      login.style.display='none';
-      profile.classList.add('show');
-      document.getElementById('uNavName').textContent=user.name||user.email||'';
-      document.getElementById('uNavEmail').textContent=user.email||'';
+      login.style.display="none";profile.classList.add("show");
+      document.getElementById("navName").textContent=user.name||user.email||"";
+      document.getElementById("navEmail").textContent=user.email||"";
       if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="">';
-      else avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();
-      const isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-      const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
-      badge.textContent=isActive?(names[sub.plan]||'PRO'):'Free';
-      badge.className='u-nav-badge '+(isActive?'pro':'free');
-    }else{login.style.display='';profile.classList.remove('show');}
+      else avatar.textContent=(user.name||user.email||"?")[0].toUpperCase();
+      var isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+      var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
+      badge.textContent=isActive?(names[sub.plan]||"PRO"):"Free";
+      badge.className="nav-badge "+(isActive?"pro":"free");
+    }else{login.style.display="";profile.classList.remove("show");}
   }
-  function toggleUNavDrop(e){e.stopPropagation();document.getElementById('uNavDrop').classList.toggle('show');}
-  function uNavLogout(){localStorage.removeItem('dokumo_user');localStorage.removeItem('dokumo_sub');(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(()=>{window.location.href='index.html';});}
-  window.toggleUNavDrop=toggleUNavDrop;window.uNavLogout=uNavLogout;
-  document.addEventListener('click',()=>{const d=document.getElementById('uNavDrop');if(d)d.classList.remove('show');});
-  renderUNav();window._renderUNav=renderUNav;
+  window.toggleDrop=function(e){e.stopPropagation();document.getElementById("navDrop").classList.toggle("show");};
+  window.navLogout=function(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href="index.html";});};
+  document.addEventListener("click",function(){var d=document.getElementById("navDrop");if(d)d.classList.remove("show");});
+  renderNav();window._renderNav=renderNav;
 })();
-</script>
 
-<!-- DOCUMENT STACK -->
-
-<div style="max-width:860px;margin:40px auto 0;padding:0 2rem;">
-  <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:#1a1714;letter-spacing:-.03em;line-height:1.15;">Twój przewodnik po świecie<br><span style="background:linear-gradient(90deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">internetu.</span></h2>
-</div>
-
-<div class="doc-stack">
-
-  <!-- 1. Regulamin -->
-  <div class="doc-card ready" onclick="openDoc('regulamin')">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-        </svg>
-      </div>
-      <div class="doc-info">
-        <div class="doc-header">
-          <span class="doc-name">Regulamin Sklepu</span>
-        </div>
-        <p class="doc-desc">Dostosowany do Twoich produktów — fizyczne, cyfrowe lub SaaS. Uwzględnia obowiązkowe zapisy dyrektywy Omnibus o cenach.</p>
-      </div>
-    </div>
-    <div class="doc-action">
-      <button class="doc-btn">Generuj <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-    </div>
-    <div class="doc-status"></div>
-  </div>
-
-  <!-- 2. Polityka RODO -->
-  <div class="doc-card ready" onclick="openDoc('rodo')">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          <circle cx="12" cy="16" r="1" fill="#fb923c"/>
-        </svg>
-      </div>
-      <div class="doc-info">
-        <div class="doc-header">
-          <span class="doc-name">Polityka Prywatności & Cookies</span>
-        </div>
-        <p class="doc-desc">Generuje też gotowe treści checkboxów pod formularz kontaktowy i zapis do newslettera. Osobna sekcja dla plików cookies.</p>
-      </div>
-    </div>
-    <div class="doc-action">
-      <button class="doc-btn">Generuj <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-    </div>
-    <div class="doc-status"></div>
-  </div>
-
-  <!-- 3. Zwroty -->
-  <div class="doc-card ready" onclick="openDoc('zwroty')">
-    <div class="doc-edge"></div>
-    <div class="doc-body">
-      <div class="doc-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="1 4 1 10 7 10"/>
-          <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
-        </svg>
-      </div>
-      <div class="doc-info">
-        <div class="doc-header">
-          <span class="doc-name">Zwroty & Reklamacje</span>
-        </div>
-        <p class="doc-desc">Pouczenie o prawie do odstąpienia i formularz zwrotu — gotowy do dołączenia do maila potwierdzającego zamówienie.</p>
-      </div>
-    </div>
-    <div class="doc-action">
-      <button class="doc-btn">Generuj <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-    </div>
-    <div class="doc-status"></div>
-  </div>
-
-</div>
-
-
-<div style="max-width:860px;margin:16px auto 0;padding:0 2rem;">
-  <p style="font-size:.72rem;color:#9b9590;letter-spacing:.02em;">📋 Ostatnia aktualizacja prawna: 11 marca 2026. Zgodne z najnowszymi wytycznymi UOKiK.</p>
-</div>
-
-<!-- GENERATOR MODAL -->
-<div id="genOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;">
-  <div id="genSheet" style="background:#141518;border:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0;padding:32px;width:100%;max-width:960px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.6,1);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-      <h2 id="genTitle" style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:#f0ede8;letter-spacing:-.02em;"></h2>
-      <button onclick="closeGen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.75rem;">✕ Zamknij</button>
-    </div>
-    <div id="genForm"></div>
-    <div id="genLoading" style="display:none;text-align:center;padding:40px 0;">
-      <div style="font-size:2rem;margin-bottom:12px;">⚡</div>
-      <p style="color:rgba(240,237,232,.6);font-size:.85rem;">AI tworzy Twój dokument…</p>
-    </div>
-    <div id="genResult" style="display:none;flex-direction:column;">
-      <textarea id="genText" style="width:100%;min-height:320px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;color:#f0ede8;font-size:.82rem;line-height:1.7;resize:vertical;font-family:'DM Sans',sans-serif;"></textarea>
-      <div style="display:flex;flex-direction:row;gap:8px;margin-top:16px;flex-wrap:nowrap;">
-        <button onclick="copyResult()" style="flex:1;min-width:0;padding:11px 8px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:#39ff8a;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📋 Kopiuj</button>
-        <button onclick="downloadResultAs('pdf')" style="flex:1;min-width:0;padding:11px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⬇ PDF</button>
-        <button onclick="downloadResultAs('rtf')" style="flex:1;min-width:0;padding:11px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⬇ Word</button>
-        <button onclick="downloadResultAs('txt')" style="flex:1;min-width:0;padding:11px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#f0ede8;border-radius:10px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⬇ TXT</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
+/* ── FORMS DATA ── */
 var FORMS = {
   regulamin: {
     title: 'Regulamin Sklepu',
     icon: '🛒',
     steps: [
       { label: 'Dane firmy', fields: [
-        {id:'nip', l:'NIP', p:'1234567890'},
-        {id:'firma', l:'Pełna nazwa firmy', p:'MójSklep Sp. z o.o.', r:true},
-        {id:'forma_prawna', l:'Forma prawna', t:'select', o:['Sp. z o.o.','Jednoosobowa działalność gospodarcza','Spółka cywilna','S.A.','Spółka jawna']},
-        {id:'regon', l:'REGON', p:'123456789'},
-        {id:'adres', l:'Adres siedziby', p:'ul. Kwiatowa 1, 00-001 Warszawa', r:true},
-        {id:'email', l:'Email kontaktowy / reklamacje', p:'kontakt@mojsklep.pl', r:true},
-        {id:'tel', l:'Telefon', p:'+48 600 000 000'},
-        {id:'godziny', l:'Godziny obsługi klienta', p:'pon–pt 9:00–17:00'}
+        {id:'nip', label:'NIP', ph:'1234567890', opt:true},
+        {id:'firma', label:'Pełna nazwa firmy', ph:'MójSklep Sp. z o.o.'},
+        {id:'forma_prawna', label:'Forma prawna', type:'select', opts:['Sp. z o.o.','Jednoosobowa działalność gospodarcza','Spółka cywilna','S.A.','Spółka jawna']},
+        {id:'regon', label:'REGON', ph:'123456789', opt:true},
+        {id:'adres', label:'Adres siedziby', ph:'ul. Kwiatowa 1, 00-001 Warszawa'},
+        {id:'email', label:'Email kontaktowy / reklamacje', ph:'kontakt@mojsklep.pl'},
+        {id:'tel', label:'Telefon', ph:'+48 600 000 000', opt:true},
+        {id:'godziny', label:'Godziny obsługi klienta', ph:'pon–pt 9:00–17:00', opt:true}
       ]},
       { label: 'Sklep internetowy', fields: [
-        {id:'url', l:'Adres strony (URL)', p:'www.mojsklep.pl', r:true},
-        {id:'branza', l:'Rodzaj sprzedawanych produktów / usług', p:'odzież damska, akcesoria, obuwie', r:true},
-        {id:'produkty_cyfrowe', l:'Czy sprzedajesz produkty cyfrowe?', t:'select', o:['Nie','Tak – pliki do pobrania','Tak – dostęp online / subskrypcja']},
-        {id:'konto_uzytkownika', l:'Czy sklep posiada konto użytkownika?', t:'select', o:['Tak, zakup wymaga rejestracji','Tak, ale zakup możliwy bez rejestracji','Nie, tylko zakupy bez rejestracji']}
+        {id:'url', label:'Adres strony (URL)', ph:'www.mojsklep.pl'},
+        {id:'branza', label:'Rodzaj sprzedawanych produktów / usług', ph:'odzież damska, akcesoria, obuwie'},
+        {id:'produkty_cyfrowe', label:'Czy sprzedajesz produkty cyfrowe?', type:'select', opts:['Nie','Tak – pliki do pobrania','Tak – dostęp online / subskrypcja']},
+        {id:'konto_uzytkownika', label:'Czy sklep posiada konto użytkownika?', type:'select', opts:['Tak, zakup wymaga rejestracji','Tak, ale zakup możliwy bez rejestracji','Nie, tylko zakupy bez rejestracji']}
       ]},
       { label: 'Płatności', fields: [
-        {id:'metody_platnosci', l:'Dostępne metody płatności', t:'chips', o:['BLIK','Karta płatnicza','Przelew tradycyjny','PayPal','Apple Pay','Google Pay','Płatność przy odbiorze'], p:'lub wpisz własne...', r:true},
-        {id:'operator_platnosci', l:'Operator płatności', t:'chips', o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'], p:'lub wpisz własny...'},
-        {id:'platnosc_pobranie', l:'Płatność przy odbiorze?', t:'select', o:['Nie','Tak']},
-        {id:'raty', l:'Płatności ratalne?', t:'select', o:['Nie','Tak – Twisto / PayPo / inne']}
+        {id:'metody_platnosci', label:'Dostępne metody płatności', type:'chips', opts:['BLIK','Karta płatnicza','Przelew tradycyjny','PayPal','Apple Pay','Google Pay','Płatność przy odbiorze'], ph:'lub wpisz własne...'},
+        {id:'operator_platnosci', label:'Operator płatności', type:'chips', opts:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'], ph:'lub wpisz własny...', opt:true},
+        {id:'platnosc_pobranie', label:'Płatność przy odbiorze?', type:'select', opts:['Nie','Tak']},
+        {id:'raty', label:'Płatności ratalne?', type:'select', opts:['Nie','Tak – Twisto / PayPo / inne']}
       ]},
       { label: 'Dostawa', fields: [
-        {id:'firmy_kurierskie', l:'Firmy dostawcze', t:'chips', o:['InPost Paczkomat','InPost Kurier','DPD','DHL','Poczta Polska','GLS','FedEx','Orlen Paczka'], p:'lub wpisz własne...'},
-        {id:'czas_dostawy', l:'Czas realizacji / dostawy', p:'1–3 dni robocze'},
-        {id:'koszt_dostawy', l:'Koszt dostawy', p:'od 9,99 zł – zależy od wybranej opcji'},
-        {id:'darmowa_dostawa', l:'Darmowa dostawa od kwoty', p:'199 zł (lub wpisz "brak")'},
-        {id:'dostawa_zagranica', l:'Dostawa za granicę?', t:'select', o:['Nie','Tak – tylko UE','Tak – cały świat']}
+        {id:'firmy_kurierskie', label:'Firmy dostawcze', type:'chips', opts:['InPost Paczkomat','InPost Kurier','DPD','DHL','Poczta Polska','GLS','FedEx','Orlen Paczka'], ph:'lub wpisz własne...', opt:true},
+        {id:'czas_dostawy', label:'Czas realizacji / dostawy', ph:'1–3 dni robocze', opt:true},
+        {id:'koszt_dostawy', label:'Koszt dostawy', ph:'od 9,99 zł – zależy od wybranej opcji', opt:true},
+        {id:'darmowa_dostawa', label:'Darmowa dostawa od kwoty', ph:'199 zł (lub wpisz "brak")', opt:true},
+        {id:'dostawa_zagranica', label:'Dostawa za granicę?', type:'select', opts:['Nie','Tak – tylko UE','Tak – cały świat']}
       ]},
       { label: 'Zwroty & Reklamacje', fields: [
-        {id:'termin_zwrotu', l:'Termin zwrotu', t:'select', o:['14 dni (ustawowe minimum)','30 dni','60 dni']},
-        {id:'koszty_zwrotu', l:'Koszty odesłania towaru przy zwrocie ponosi', t:'select', o:['Kupujący','Sprzedawca (bezpłatny zwrot)']},
-        {id:'czas_zwrotu_pieniedzy', l:'Czas na zwrot pieniędzy', t:'select', o:['14 dni (ustawowe)','7 dni','3 dni robocze']},
-        {id:'metoda_zwrotu_pieniedzy', l:'Metoda zwrotu pieniędzy', p:'przelewem na konto bankowe podane przez klienta'},
-        {id:'wyjatki_zwrotu', l:'Produkty wyłączone ze zwrotu', p:'produkty personalizowane, treści cyfrowe po pobraniu'},
-        {id:'podstawa_reklamacji', l:'Podstawa reklamacji', t:'select', o:['Rękojmia (2 lata – Kodeks Cywilny)','Rękojmia + gwarancja producenta','Tylko gwarancja producenta']},
-        {id:'czas_reklamacji', l:'Czas rozpatrzenia reklamacji', t:'select', o:['14 dni (ustawowe)','7 dni roboczych']}
+        {id:'termin_zwrotu', label:'Termin zwrotu', type:'select', opts:['14 dni (ustawowe minimum)','30 dni','60 dni']},
+        {id:'koszty_zwrotu', label:'Koszty odesłania towaru przy zwrocie ponosi', type:'select', opts:['Kupujący','Sprzedawca (bezpłatny zwrot)']},
+        {id:'czas_zwrotu_pieniedzy', label:'Czas na zwrot pieniędzy', type:'select', opts:['14 dni (ustawowe)','7 dni','3 dni robocze']},
+        {id:'metoda_zwrotu_pieniedzy', label:'Metoda zwrotu pieniędzy', ph:'przelewem na konto bankowe podane przez klienta', opt:true},
+        {id:'wyjatki_zwrotu', label:'Produkty wyłączone ze zwrotu', ph:'produkty personalizowane, treści cyfrowe po pobraniu', opt:true},
+        {id:'podstawa_reklamacji', label:'Podstawa reklamacji', type:'select', opts:['Rękojmia (2 lata – Kodeks Cywilny)','Rękojmia + gwarancja producenta','Tylko gwarancja producenta']},
+        {id:'czas_reklamacji', label:'Czas rozpatrzenia reklamacji', type:'select', opts:['14 dni (ustawowe)','7 dni roboczych']}
       ]},
       { label: 'Postanowienia', fields: [
-        {id:'newsletter', l:'Czy sklep prowadzi newsletter?', t:'select', o:['Nie','Tak']},
-        {id:'program_lojalnosciowy', l:'Czy jest program lojalnościowy / punkty?', t:'select', o:['Nie','Tak']},
-        {id:'sad_polubowny', l:'Pozasądowe rozwiązywanie sporów (ODR)', t:'select', o:['Tak – link do platformy ODR','Nie']}
+        {id:'newsletter', label:'Czy sklep prowadzi newsletter?', type:'select', opts:['Nie','Tak']},
+        {id:'program_lojalnosciowy', label:'Czy jest program lojalnościowy / punkty?', type:'select', opts:['Nie','Tak']},
+        {id:'sad_polubowny', label:'Pozasądowe rozwiązywanie sporów (ODR)', type:'select', opts:['Tak – link do platformy ODR','Nie']}
       ]}
     ],
-    prompt:(v)=>`Napisz bardzo szczegółowy i profesjonalny regulamin sklepu internetowego zgodny z polskim prawem. Dane sprzedawcy: ${v.firma||'[?]'} (${v.forma_prawna||'[?]'}), NIP: ${v.nip||'[?]'}, REGON: ${v.regon||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, godziny obsługi: ${v.godziny||'[?]'}. URL sklepu: ${v.url||'[?]'}, sprzedawane produkty: ${v.branza||'[?]'}. Produkty cyfrowe: ${v.produkty_cyfrowe||'nie'}. Konto użytkownika: ${v.konto_uzytkownika||'[?]'}. Metody płatności: ${v.metody_platnosci||'[?]'}, operator: ${v.operator_platnosci||'[?]'}, za pobraniem: ${v.platnosc_pobranie||'nie'}, raty: ${v.raty||'nie'}. Dostawa: ${v.firmy_kurierskie||'[?]'}, czas: ${v.czas_dostawy||'[?]'}, koszt: ${v.koszt_dostawy||'[?]'}, darmowa od: ${v.darmowa_dostawa||'[?]'}, zagranica: ${v.dostawa_zagranica||'nie'}. Zwroty: termin ${v.termin_zwrotu||'14 dni'}, koszty zwrotu ponosi ${v.koszty_zwrotu||'kupujący'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wyjątki: ${v.wyjatki_zwrotu||'brak'}. Reklamacje: podstawa ${v.podstawa_reklamacji||'rękojmia'}, czas rozpatrzenia ${v.czas_reklamacji||'14 dni'}. Newsletter: ${v.newsletter||'nie'}. Program lojalnościowy: ${v.program_lojalnosciowy||'nie'}. ODR: ${v.sad_polubowny||'tak'}. Dodatkowe: ${v._extra_info||'brak'}. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Rejestracja i konto, §3 Składanie zamówień, §4 Ceny i płatności, §5 Dostawa, §6 Prawo odstąpienia, §7 Reklamacje i rękojmia, §8 Ochrona danych, §9 Pliki cookies, §10 Postanowienia końcowe. Zacznij od razu od treści regulaminu.`
+    prompt: function(v){ return 'Napisz bardzo szczegółowy i profesjonalny regulamin sklepu internetowego zgodny z polskim prawem. Dane sprzedawcy: '+(v.firma||'[?]')+' ('+(v.forma_prawna||'[?]')+'), NIP: '+(v.nip||'[?]')+', REGON: '+(v.regon||'[?]')+', adres: '+(v.adres||'[?]')+', email: '+(v.email||'[?]')+', tel: '+(v.tel||'[?]')+', godziny obsługi: '+(v.godziny||'[?]')+'. URL sklepu: '+(v.url||'[?]')+', sprzedawane produkty: '+(v.branza||'[?]')+'. Produkty cyfrowe: '+(v.produkty_cyfrowe||'nie')+'. Konto użytkownika: '+(v.konto_uzytkownika||'[?]')+'. Metody płatności: '+(v.metody_platnosci||'[?]')+', operator: '+(v.operator_platnosci||'[?]')+', za pobraniem: '+(v.platnosc_pobranie||'nie')+', raty: '+(v.raty||'nie')+'. Dostawa: '+(v.firmy_kurierskie||'[?]')+', czas: '+(v.czas_dostawy||'[?]')+', koszt: '+(v.koszt_dostawy||'[?]')+', darmowa od: '+(v.darmowa_dostawa||'[?]')+', zagranica: '+(v.dostawa_zagranica||'nie')+'. Zwroty: termin '+(v.termin_zwrotu||'14 dni')+', koszty zwrotu ponosi '+(v.koszty_zwrotu||'kupujący')+', zwrot pieniędzy w '+(v.czas_zwrotu_pieniedzy||'14 dni')+' '+(v.metoda_zwrotu_pieniedzy||'przelewem')+', wyjątki: '+(v.wyjatki_zwrotu||'brak')+'. Reklamacje: podstawa '+(v.podstawa_reklamacji||'rękojmia')+', czas rozpatrzenia '+(v.czas_reklamacji||'14 dni')+'. Newsletter: '+(v.newsletter||'nie')+'. Program lojalnościowy: '+(v.program_lojalnosciowy||'nie')+'. ODR: '+(v.sad_polubowny||'tak')+'. Dodatkowe: '+(v._extra_info||'brak')+'. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Rejestracja i konto, §3 Składanie zamówień, §4 Ceny i płatności, §5 Dostawa, §6 Prawo odstąpienia, §7 Reklamacje i rękojmia, §8 Ochrona danych, §9 Pliki cookies, §10 Postanowienia końcowe. Zacznij od razu od treści regulaminu.'; }
   },
   rodo: {
     title: 'Polityka Prywatności & Cookies',
     icon: '🔒',
     steps: [
       { label: 'Administrator danych', fields: [
-        {id:'nip', l:'NIP', p:'1234567890'},
-        {id:'firma', l:'Pełna nazwa firmy', p:'MójSklep Sp. z o.o.', r:true},
-        {id:'adres', l:'Adres siedziby', p:'ul. Kwiatowa 1, 00-001 Warszawa', r:true},
-        {id:'email', l:'Email kontaktowy / do spraw RODO', p:'rodo@mojsklep.pl', r:true},
-        {id:'tel', l:'Telefon kontaktowy', p:'+48 600 000 000'},
-        {id:'url', l:'Adres strony internetowej', p:'www.mojsklep.pl', r:true},
-        {id:'iod', l:'Czy jest wyznaczony Inspektor Ochrony Danych (IOD)?', t:'select', o:['Nie','Tak – i podaję adres email IOD']},
-        {id:'iod_email', l:'Email IOD (jeśli dotyczy)', p:'iod@mojsklep.pl'}
+        {id:'nip', label:'NIP', ph:'1234567890', opt:true},
+        {id:'firma', label:'Pełna nazwa firmy', ph:'MójSklep Sp. z o.o.'},
+        {id:'adres', label:'Adres siedziby', ph:'ul. Kwiatowa 1, 00-001 Warszawa'},
+        {id:'email', label:'Email kontaktowy / do spraw RODO', ph:'rodo@mojsklep.pl'},
+        {id:'tel', label:'Telefon kontaktowy', ph:'+48 600 000 000', opt:true},
+        {id:'url', label:'Adres strony internetowej', ph:'www.mojsklep.pl'},
+        {id:'iod', label:'Czy jest wyznaczony Inspektor Ochrony Danych (IOD)?', type:'select', opts:['Nie','Tak – i podaję adres email IOD']},
+        {id:'iod_email', label:'Email IOD (jeśli dotyczy)', ph:'iod@mojsklep.pl', opt:true}
       ]},
       { label: 'Cele przetwarzania', fields: [
-        {id:'cel_sprzedaz', l:'Realizacja zamówień / umów?', t:'select', o:['Tak','Nie']},
-        {id:'cel_newsletter', l:'Newsletter / marketing emailowy?', t:'select', o:['Nie','Tak – na podstawie zgody']},
-        {id:'cel_marketing', l:'Marketing własny (retargeting, reklamy)?', t:'select', o:['Nie','Tak – na podstawie prawnie uzasadnionego interesu']},
-        {id:'cel_ksiegowosc', l:'Obowiązki podatkowe / księgowość?', t:'select', o:['Tak','Nie']}
+        {id:'cel_sprzedaz', label:'Realizacja zamówień / umów?', type:'select', opts:['Tak','Nie']},
+        {id:'cel_newsletter', label:'Newsletter / marketing emailowy?', type:'select', opts:['Nie','Tak – na podstawie zgody']},
+        {id:'cel_marketing', label:'Marketing własny (retargeting, reklamy)?', type:'select', opts:['Nie','Tak – na podstawie prawnie uzasadnionego interesu']},
+        {id:'cel_ksiegowosc', label:'Obowiązki podatkowe / księgowość?', type:'select', opts:['Tak','Nie']}
       ]},
       { label: 'Narzędzia & Podmioty', fields: [
-        {id:'google_analytics', l:'Google Analytics / Google Tag Manager?', t:'select', o:['Nie','Tak']},
-        {id:'facebook_pixel', l:'Facebook Pixel / Meta Ads?', t:'select', o:['Nie','Tak']},
-        {id:'inne_narzedzia', l:'Inne narzędzia marketingowe / analityczne', t:'chips', o:['Hotjar','HubSpot','Mailchimp','TikTok Pixel','LinkedIn Insight Tag','Klaviyo'], p:'lub wpisz własne...'},
-        {id:'operator_platnosci', l:'Operator płatności (przekazywanie danych)', t:'chips', o:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'], p:'lub wpisz własny...'},
-        {id:'firma_kurierska', l:'Firmy kurierskie / logistyczne', t:'chips', o:['InPost','DPD','DHL','Poczta Polska','GLS'], p:'lub wpisz własne...'},
-        {id:'transfer_poza_ue', l:'Czy przekazujesz dane poza EOG?', t:'select', o:['Nie','Tak (np. serwery USA – Google, Meta)']}
+        {id:'google_analytics', label:'Google Analytics / Google Tag Manager?', type:'select', opts:['Nie','Tak']},
+        {id:'facebook_pixel', label:'Facebook Pixel / Meta Ads?', type:'select', opts:['Nie','Tak']},
+        {id:'inne_narzedzia', label:'Inne narzędzia marketingowe / analityczne', type:'chips', opts:['Hotjar','HubSpot','Mailchimp','TikTok Pixel','LinkedIn Insight Tag','Klaviyo'], ph:'lub wpisz własne...', opt:true},
+        {id:'operator_platnosci', label:'Operator płatności (przekazywanie danych)', type:'chips', opts:['Przelewy24','PayU','Stripe','PayNow','Tpay','BlueMedia'], ph:'lub wpisz własny...', opt:true},
+        {id:'firma_kurierska', label:'Firmy kurierskie / logistyczne', type:'chips', opts:['InPost','DPD','DHL','Poczta Polska','GLS'], ph:'lub wpisz własne...', opt:true},
+        {id:'transfer_poza_ue', label:'Czy przekazujesz dane poza EOG?', type:'select', opts:['Nie','Tak (np. serwery USA – Google, Meta)']}
       ]},
       { label: 'Cookies & Retencja', fields: [
-        {id:'cookies', l:'Czy używasz plików cookies?', t:'select', o:['Tak','Nie']},
-        {id:'cookies_rodzaje', l:'Rodzaje cookies', t:'chips', o:['Niezbędne','Analityczne','Marketingowe','Funkcjonalne'], p:'lub wpisz własne...'},
-        {id:'okres_przechowywania', l:'Jak długo przechowujesz dane zamówień?', t:'select', o:['5 lat (obowiązek podatkowy)','3 lata','10 lat']},
-        {id:'okres_newsletter', l:'Jak długo przechowujesz dane do newslettera?', t:'select', o:['Do czasu wycofania zgody','2 lata bez aktywności']}
+        {id:'cookies', label:'Czy używasz plików cookies?', type:'select', opts:['Tak','Nie']},
+        {id:'cookies_rodzaje', label:'Rodzaje cookies', type:'chips', opts:['Niezbędne','Analityczne','Marketingowe','Funkcjonalne'], ph:'lub wpisz własne...', opt:true},
+        {id:'okres_przechowywania', label:'Jak długo przechowujesz dane zamówień?', type:'select', opts:['5 lat (obowiązek podatkowy)','3 lata','10 lat']},
+        {id:'okres_newsletter', label:'Jak długo przechowujesz dane do newslettera?', type:'select', opts:['Do czasu wycofania zgody','2 lata bez aktywności']}
       ]},
       { label: 'Prawa użytkowników', fields: [
-        {id:'prawo_dostepu', l:'Czy zapewniasz dostęp do danych na żądanie?', t:'select', o:['Tak','Nie']},
-        {id:'czas_odpowiedzi', l:'Czas odpowiedzi na żądania', t:'select', o:['30 dni (ustawowy maksimum)','14 dni','7 dni roboczych']}
+        {id:'prawo_dostepu', label:'Czy zapewniasz dostęp do danych na żądanie?', type:'select', opts:['Tak','Nie']},
+        {id:'czas_odpowiedzi', label:'Czas odpowiedzi na żądania', type:'select', opts:['30 dni (ustawowy maksimum)','14 dni','7 dni roboczych']}
       ]}
     ],
-    prompt:(v)=>`Napisz bardzo szczegółową i profesjonalną politykę prywatności zgodną z RODO. Administrator: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, strona: ${v.url||'[?]'}. IOD: ${v.iod||'nie wyznaczono'}${v.iod_email?', email IOD: '+v.iod_email:''}. Cele przetwarzania: realizacja zamówień (${v.cel_sprzedaz||'tak'}), newsletter (${v.cel_newsletter||'nie'}), marketing (${v.cel_marketing||'nie'}), księgowość (${v.cel_ksiegowosc||'tak'}). Narzędzia: Google Analytics (${v.google_analytics||'nie'}), Facebook Pixel (${v.facebook_pixel||'nie'}), inne: ${v.inne_narzedzia||'brak'}. Operator płatności: ${v.operator_platnosci||'[?]'}. Firmy kurierskie: ${v.firma_kurierska||'[?]'}. Transfer poza EOG: ${v.transfer_poza_ue||'nie'}. Cookies: ${v.cookies||'tak'}, rodzaje: ${v.cookies_rodzaje||'niezbędne, analityczne'}. Retencja zamówień: ${v.okres_przechowywania||'5 lat'}, newsletter: ${v.okres_newsletter||'do wycofania zgody'}. Prawa: dostęp (${v.prawo_dostepu||'tak'}), odpowiedź w ${v.czas_odpowiedzi||'30 dni'}. Dodatkowe: ${v._extra_info||'brak'}. Zawrzyj sekcje: 1. Administrator danych, 2. Inspektor Ochrony Danych, 3. Cele i podstawy prawne przetwarzania, 4. Kategorie danych, 5. Odbiorcy danych, 6. Transfer poza EOG, 7. Okres przechowywania, 8. Prawa osób, 9. Pliki cookies, 10. Prawo skargi do UODO. Zacznij od razu od treści dokumentu.`
+    prompt: function(v){ return 'Napisz bardzo szczegółową i profesjonalną politykę prywatności zgodną z RODO. Administrator: '+(v.firma||'[?]')+', NIP: '+(v.nip||'[?]')+', adres: '+(v.adres||'[?]')+', email: '+(v.email||'[?]')+', tel: '+(v.tel||'[?]')+', strona: '+(v.url||'[?]')+'. IOD: '+(v.iod||'nie wyznaczono')+(v.iod_email?', email IOD: '+v.iod_email:'')+'. Cele przetwarzania: realizacja zamówień ('+(v.cel_sprzedaz||'tak')+'), newsletter ('+(v.cel_newsletter||'nie')+'), marketing ('+(v.cel_marketing||'nie')+'), księgowość ('+(v.cel_ksiegowosc||'tak')+'). Narzędzia: Google Analytics ('+(v.google_analytics||'nie')+'), Facebook Pixel ('+(v.facebook_pixel||'nie')+'), inne: '+(v.inne_narzedzia||'brak')+'. Operator płatności: '+(v.operator_platnosci||'[?]')+'. Firmy kurierskie: '+(v.firma_kurierska||'[?]')+'. Transfer poza EOG: '+(v.transfer_poza_ue||'nie')+'. Cookies: '+(v.cookies||'tak')+', rodzaje: '+(v.cookies_rodzaje||'niezbędne, analityczne')+'. Retencja zamówień: '+(v.okres_przechowywania||'5 lat')+', newsletter: '+(v.okres_newsletter||'do wycofania zgody')+'. Prawa: dostęp ('+(v.prawo_dostepu||'tak')+'), odpowiedź w '+(v.czas_odpowiedzi||'30 dni')+'. Dodatkowe: '+(v._extra_info||'brak')+'. Zawrzyj sekcje: 1. Administrator danych, 2. Inspektor Ochrony Danych, 3. Cele i podstawy prawne przetwarzania, 4. Kategorie danych, 5. Odbiorcy danych, 6. Transfer poza EOG, 7. Okres przechowywania, 8. Prawa osób, 9. Pliki cookies, 10. Prawo skargi do UODO. Zacznij od razu od treści dokumentu.'; }
   },
   zwroty: {
     title: 'Zwroty & Reklamacje',
-    icon: '↩',
+    icon: '↩️',
     steps: [
       { label: 'Dane firmy', fields: [
-        {id:'nip', l:'NIP', p:'1234567890'},
-        {id:'firma', l:'Nazwa firmy', p:'MójSklep Sp. z o.o.', r:true},
-        {id:'adres_firmy', l:'Adres siedziby', p:'ul. Kwiatowa 1, 00-001 Warszawa'},
-        {id:'email', l:'Email do spraw zwrotów i reklamacji', p:'zwroty@mojsklep.pl', r:true},
-        {id:'tel', l:'Telefon kontaktowy', p:'+48 600 000 000'},
-        {id:'adres_zwroty', l:'Adres do odsyłania towaru (magazyn)', p:'ul. Magazynowa 5, 00-002 Warszawa', r:true}
+        {id:'nip', label:'NIP', ph:'1234567890', opt:true},
+        {id:'firma', label:'Nazwa firmy', ph:'MójSklep Sp. z o.o.'},
+        {id:'adres_firmy', label:'Adres siedziby', ph:'ul. Kwiatowa 1, 00-001 Warszawa', opt:true},
+        {id:'email', label:'Email do spraw zwrotów i reklamacji', ph:'zwroty@mojsklep.pl'},
+        {id:'tel', label:'Telefon kontaktowy', ph:'+48 600 000 000', opt:true},
+        {id:'adres_zwroty', label:'Adres do odsyłania towaru (magazyn)', ph:'ul. Magazynowa 5, 00-002 Warszawa'}
       ]},
       { label: 'Prawo odstąpienia', fields: [
-        {id:'termin_zwrotu', l:'Termin na złożenie zwrotu', t:'select', o:['14 dni (ustawowe minimum)','30 dni','60 dni']},
-        {id:'jak_zlozyc_zwrot', l:'Jak klient składa zwrot?', p:'przez formularz na stronie / emailem / listownie'},
-        {id:'koszty_zwrotu', l:'Koszty odesłania towaru ponosi', t:'select', o:['Kupujący (klient)','Sprzedawca – bezpłatny zwrot','Sprzedawca – przy zamówieniach powyżej X zł']},
-        {id:'darmowy_zwrot_od', l:'Jeśli darmowy od kwoty – od jakiej?', p:'np. 200 zł (lub zostaw puste)'},
-        {id:'stan_towaru', l:'Warunek stanu towaru przy zwrocie', p:'towar nieużywany, w oryginalnym opakowaniu, z metkami'},
-        {id:'czas_zwrotu_pieniedzy', l:'Czas na zwrot pieniędzy klientowi', t:'select', o:['14 dni od otrzymania towaru (ustawowe)','7 dni od otrzymania towaru','3 dni robocze od otrzymania towaru']},
-        {id:'metoda_zwrotu_pieniedzy', l:'Metoda zwrotu pieniędzy', p:'przelewem na konto bankowe wskazane przez klienta'},
-        {id:'wymiana', l:'Czy jest możliwa wymiana towaru?', t:'select', o:['Nie','Tak – na inny rozmiar / kolor','Tak – na dowolny produkt']}
+        {id:'termin_zwrotu', label:'Termin na złożenie zwrotu', type:'select', opts:['14 dni (ustawowe minimum)','30 dni','60 dni']},
+        {id:'jak_zlozyc_zwrot', label:'Jak klient składa zwrot?', ph:'przez formularz na stronie / emailem / listownie', opt:true},
+        {id:'koszty_zwrotu', label:'Koszty odesłania towaru ponosi', type:'select', opts:['Kupujący (klient)','Sprzedawca – bezpłatny zwrot','Sprzedawca – przy zamówieniach powyżej X zł']},
+        {id:'darmowy_zwrot_od', label:'Jeśli darmowy od kwoty – od jakiej?', ph:'np. 200 zł (lub zostaw puste)', opt:true},
+        {id:'stan_towaru', label:'Warunek stanu towaru przy zwrocie', ph:'towar nieużywany, w oryginalnym opakowaniu, z metkami', opt:true},
+        {id:'czas_zwrotu_pieniedzy', label:'Czas na zwrot pieniędzy klientowi', type:'select', opts:['14 dni od otrzymania towaru (ustawowe)','7 dni od otrzymania towaru','3 dni robocze od otrzymania towaru']},
+        {id:'metoda_zwrotu_pieniedzy', label:'Metoda zwrotu pieniędzy', ph:'przelewem na konto bankowe wskazane przez klienta', opt:true},
+        {id:'wymiana', label:'Czy jest możliwa wymiana towaru?', type:'select', opts:['Nie','Tak – na inny rozmiar / kolor','Tak – na dowolny produkt']}
       ]},
       { label: 'Wyjątki ze zwrotu', fields: [
-        {id:'wyjatki_personalizacja', l:'Produkty spersonalizowane / na zamówienie?', t:'select', o:['Tak – wyłączone ze zwrotu','Nie sprzedajemy takich']},
-        {id:'wyjatki_cyfrowe', l:'Treści cyfrowe (e-booki, pliki po pobraniu)?', t:'select', o:['Tak – wyłączone ze zwrotu po dostarczeniu','Nie sprzedajemy']},
-        {id:'wyjatki_higieniczne', l:'Produkty higieniczne / zapieczętowane?', t:'select', o:['Tak – wyłączone po otwarciu opakowania','Nie dotyczy']},
-        {id:'wyjatki_inne', l:'Inne wyjątki', p:'np. bilety, kwiaty, produkty szybko psujące się...'}
+        {id:'wyjatki_personalizacja', label:'Produkty spersonalizowane / na zamówienie?', type:'select', opts:['Tak – wyłączone ze zwrotu','Nie sprzedajemy takich']},
+        {id:'wyjatki_cyfrowe', label:'Treści cyfrowe (e-booki, pliki po pobraniu)?', type:'select', opts:['Tak – wyłączone ze zwrotu po dostarczeniu','Nie sprzedajemy']},
+        {id:'wyjatki_higieniczne', label:'Produkty higieniczne / zapieczętowane?', type:'select', opts:['Tak – wyłączone po otwarciu opakowania','Nie dotyczy']},
+        {id:'wyjatki_inne', label:'Inne wyjątki', ph:'np. bilety, kwiaty, produkty szybko psujące się...', opt:true}
       ]},
       { label: 'Reklamacje', fields: [
-        {id:'podstawa_reklamacji', l:'Podstawa reklamacji', t:'select', o:['Rękojmia – Kodeks Cywilny (2 lata)','Rękojmia + gwarancja producenta','Rozszerzona gwarancja sprzedawcy']},
-        {id:'jak_zlozyc_reklamacje', l:'Jak składać reklamację?', p:'emailem na adres kontakt@sklep.pl lub listownie'},
-        {id:'czas_rozpatrzenia', l:'Czas rozpatrzenia reklamacji', t:'select', o:['14 dni (ustawowe)','7 dni roboczych','5 dni roboczych']},
-        {id:'decyzja_reklamacji', l:'Możliwe decyzje przy uwzględnieniu reklamacji', t:'select', o:['Wymiana na nowy, naprawa lub zwrot pieniędzy','Naprawa lub wymiana','Zwrot pieniędzy']}
+        {id:'podstawa_reklamacji', label:'Podstawa reklamacji', type:'select', opts:['Rękojmia – Kodeks Cywilny (2 lata)','Rękojmia + gwarancja producenta','Rozszerzona gwarancja sprzedawcy']},
+        {id:'jak_zlozyc_reklamacje', label:'Jak składać reklamację?', ph:'emailem na adres kontakt@sklep.pl lub listownie', opt:true},
+        {id:'czas_rozpatrzenia', label:'Czas rozpatrzenia reklamacji', type:'select', opts:['14 dni (ustawowe)','7 dni roboczych','5 dni roboczych']},
+        {id:'decyzja_reklamacji', label:'Możliwe decyzje przy uwzględnieniu reklamacji', type:'select', opts:['Wymiana na nowy, naprawa lub zwrot pieniędzy','Naprawa lub wymiana','Zwrot pieniędzy']}
       ]},
       { label: 'Rozwiązywanie sporów', fields: [
-        {id:'sad_polubowny', l:'Stały polubowny sąd konsumencki?', t:'select', o:['Tak – informacja zawarta w dokumencie','Nie']},
-        {id:'platforma_odr', l:'Platforma ODR (ec.europa.eu/consumers/odr)?', t:'select', o:['Tak – link w dokumencie','Nie']}
+        {id:'sad_polubowny', label:'Stały polubowny sąd konsumencki?', type:'select', opts:['Tak – informacja zawarta w dokumencie','Nie']},
+        {id:'platforma_odr', label:'Platforma ODR (ec.europa.eu/consumers/odr)?', type:'select', opts:['Tak – link w dokumencie','Nie']}
       ]}
     ],
-    prompt:(v)=>`Napisz bardzo szczegółową politykę zwrotów i reklamacji dla sklepu internetowego. Dane firmy: ${v.firma||'[?]'}, NIP: ${v.nip||'[?]'}, adres: ${v.adres_firmy||'[?]'}, email: ${v.email||'[?]'}, tel: ${v.tel||'[?]'}, adres do zwrotów: ${v.adres_zwroty||'[?]'}. ZWROTY: termin ${v.termin_zwrotu||'14 dni'}, jak złożyć: ${v.jak_zlozyc_zwrot||'emailem'}, koszty zwrotu: ${v.koszty_zwrotu||'kupujący'}${v.darmowy_zwrot_od?', darmowy od: '+v.darmowy_zwrot_od:''}, stan towaru: ${v.stan_towaru||'oryginalny'}, zwrot pieniędzy w ${v.czas_zwrotu_pieniedzy||'14 dni'} ${v.metoda_zwrotu_pieniedzy||'przelewem'}, wymiana: ${v.wymiana||'nie'}. WYJĄTKI ze zwrotu: personalizacja (${v.wyjatki_personalizacja||'nie dotyczy'}), treści cyfrowe (${v.wyjatki_cyfrowe||'nie dotyczy'}), higieniczne (${v.wyjatki_higieniczne||'nie dotyczy'}), inne: ${v.wyjatki_inne||'brak'}. REKLAMACJE: podstawa ${v.podstawa_reklamacji||'rękojmia 2 lata'}, jak złożyć: ${v.jak_zlozyc_reklamacje||'emailem'}, czas rozpatrzenia ${v.czas_rozpatrzenia||'14 dni'}, decyzja: ${v.decyzja_reklamacji||'wymiana/naprawa/zwrot'}. Spory: sąd polubowny (${v.sad_polubowny||'tak'}), ODR (${v.platforma_odr||'tak'}). Dodatkowe: ${v._extra_info||'brak'}. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Prawo odstąpienia od umowy (z gotowym wzorem formularza), §3 Towary wyłączone z prawa odstąpienia, §4 Procedura zwrotu, §5 Zwrot należności, §6 Wymiana towaru, §7 Reklamacje – podstawa prawna, §8 Procedura reklamacyjna, §9 Pozasądowe rozwiązywanie sporów. Zacznij od razu od treści dokumentu.`
+    prompt: function(v){ return 'Napisz bardzo szczegółową politykę zwrotów i reklamacji dla sklepu internetowego. Dane firmy: '+(v.firma||'[?]')+', NIP: '+(v.nip||'[?]')+', adres: '+(v.adres_firmy||'[?]')+', email: '+(v.email||'[?]')+', tel: '+(v.tel||'[?]')+', adres do zwrotów: '+(v.adres_zwroty||'[?]')+'. ZWROTY: termin '+(v.termin_zwrotu||'14 dni')+', jak złożyć: '+(v.jak_zlozyc_zwrot||'emailem')+', koszty zwrotu: '+(v.koszty_zwrotu||'kupujący')+(v.darmowy_zwrot_od?', darmowy od: '+v.darmowy_zwrot_od:'')+', stan towaru: '+(v.stan_towaru||'oryginalny')+', zwrot pieniędzy w '+(v.czas_zwrotu_pieniedzy||'14 dni')+' '+(v.metoda_zwrotu_pieniedzy||'przelewem')+', wymiana: '+(v.wymiana||'nie')+'. WYJĄTKI ze zwrotu: personalizacja ('+(v.wyjatki_personalizacja||'nie dotyczy')+'), treści cyfrowe ('+(v.wyjatki_cyfrowe||'nie dotyczy')+'), higieniczne ('+(v.wyjatki_higieniczne||'nie dotyczy')+'), inne: '+(v.wyjatki_inne||'brak')+'. REKLAMACJE: podstawa '+(v.podstawa_reklamacji||'rękojmia 2 lata')+', jak złożyć: '+(v.jak_zlozyc_reklamacje||'emailem')+', czas rozpatrzenia '+(v.czas_rozpatrzenia||'14 dni')+', decyzja: '+(v.decyzja_reklamacji||'wymiana/naprawa/zwrot')+'. Spory: sąd polubowny ('+(v.sad_polubowny||'tak')+'), ODR ('+(v.platforma_odr||'tak')+'). Dodatkowe: '+(v._extra_info||'brak')+'. Zawrzyj sekcje: §1 Postanowienia ogólne, §2 Prawo odstąpienia od umowy (z gotowym wzorem formularza), §3 Towary wyłączone z prawa odstąpienia, §4 Procedura zwrotu, §5 Zwrot należności, §6 Wymiana towaru, §7 Reklamacje – podstawa prawna, §8 Procedura reklamacyjna, §9 Pozasądowe rozwiązywanie sporów. Zacznij od razu od treści dokumentu.'; }
   }
 };
 
-// ── NIP Lookup ────────────────────────────────────────────────────────────
-var NIP_FIELD_MAP_EC = {
+/* ── NIP FIELD MAP ── */
+var NIP_FIELD_MAP = {
   nip: { name: 'firma', adres: 'adres', adres2: 'adres_firmy' }
 };
 
-async function lookupNIP(fieldId) {
-  var el = document.getElementById('gf_' + fieldId);
-  if (!el) return;
-  var nip = el.value.replace(/[\s\-\.]/g, '');
-  if (!/^\d{10}$/.test(nip)) return;
-  var origPh = el.placeholder;
-  el.placeholder = '⏳ Pobieranie danych...';
-  el.disabled = true;
-  el.style.borderColor = 'rgba(57,255,138,.5)';
-  try {
-    var r = await fetch('/api/nip-lookup?nip=' + nip);
-    el.disabled = false;
-    if (!r.ok) { el.placeholder = origPh; el.style.borderColor = ''; return; }
-    var data = await r.json();
-    var map = NIP_FIELD_MAP_EC[fieldId];
-    if (!map) { el.placeholder = origPh; el.style.borderColor = ''; return; }
-    function flashFill(id, val) {
-      if (!id || !val) return;
-      var t = document.getElementById('gf_' + id);
-      if (t && !t.value) {
-        t.value = val; wizVals[id] = val;
-        t.style.transition = 'background .4s';
-        t.style.background = 'rgba(57,255,138,.12)';
-        setTimeout(function(){ t.style.background = ''; }, 1800);
-      }
-    }
-    flashFill(map.name, data.name);
-    flashFill(map.adres, data.adres);
-    flashFill(map.adres2, data.adres);
-    el.placeholder = '✓ ' + (data.name ? data.name.split(' ').slice(0,3).join(' ') : 'Pobrano');
-    el.style.borderColor = 'rgba(57,255,138,.5)';
-    setTimeout(function(){ el.placeholder = origPh; el.style.borderColor = ''; }, 3500);
-  } catch(e) {
-    el.disabled = false;
-    el.placeholder = origPh;
-    el.style.borderColor = '';
+/* ── STATE ── */
+var mainStep = 0;
+var subStep  = 0;
+var selDoc   = null;
+var wizVals  = {};
+var genText  = '';
+
+var STEP_LABELS = ["Wybierz","Dane","Podgląd","Gotowe"];
+
+/* ── NAV STEPS ── */
+function renderNavSteps(){
+  var el=document.getElementById('navSteps'), html='';
+  for(var i=0;i<4;i++){
+    if(i>0) html+='<div class="step-line'+(i<=mainStep?' done':'')+'"></div>';
+    var cls=i<mainStep?'done':i===mainStep?'active':'';
+    html+='<div class="step-item">'
+      +'<div class="step-dot '+cls+'">'+(i<mainStep?'✓':i+1)+'</div>'
+      +'<span class="step-lbl'+(i===mainStep?' active':'')+'">'+STEP_LABELS[i]+'</span>'
+      +'</div>';
+  }
+  el.innerHTML=html;
+}
+
+/* ── BOTTOM BAR ── */
+function renderBar(){
+  var back=document.getElementById('btnBack'),next=document.getElementById('btnNext'),info=document.getElementById('barInfo');
+  if(mainStep===0){
+    back.className='btn-back hide'; next.className='btn-next hide';
+    info.textContent='Wybierz dokument, aby kontynuować';
+  } else if(mainStep===1){
+    var form=FORMS[selDoc], total=form.steps.length, isLast=subStep===total-1;
+    back.className='btn-back'; back.textContent='← Wróć';
+    info.textContent='Krok '+(subStep+1)+' z '+total+' · '+form.steps[subStep].label;
+    next.className='btn-next'; next.textContent=isLast?'Generuj dokument ⚡':'Dalej →';
+  } else if(mainStep===2){
+    back.className='btn-back hide'; next.className='btn-next hide';
+    info.textContent='Generowanie dokumentu…';
+  } else {
+    back.className='btn-back'; back.textContent='← Nowy dokument';
+    info.textContent='';
+    next.className='btn-next hide';
   }
 }
 
-function attachNIPListeners() {
-  Object.keys(NIP_FIELD_MAP_EC).forEach(function(id) {
-    var el = document.getElementById('gf_' + id);
-    if (!el || el._nipListened) return;
-    el._nipListened = true;
-    el.addEventListener('blur', function(){ lookupNIP(id); });
-    el.addEventListener('input', function(){
-      if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupNIP(id);
-    });
-  });
+/* ── SCREEN SWITCH ── */
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('screen'+n).classList.add('active');
+  mainStep=n; renderNavSteps(); renderBar();
+  window.scrollTo(0,0);
 }
 
-// ── Wizard ────────────────────────────────────────────────────────────────
-var currentDoc = null, currentStep = 0, wizVals = {};
-
-var LABEL_STYLE = 'display:block;font-size:.72rem;font-weight:600;color:rgba(240,237,232,.45);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;';
-var INPUT_STYLE = 'width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f0ede8;font-size:.85rem;outline:none;font-family:\'DM Sans\',sans-serif;';
-
-function renderStep() {
-  var form = FORMS[currentDoc];
-  var steps = form.steps;
-  var step = steps[currentStep];
-  var total = steps.length;
-  var pct = Math.round((currentStep / total) * 100);
-  var el = document.getElementById('genForm');
-
-  var segs = '';
-  for (var i = 0; i < total; i++) {
-    segs += '<div style="flex:1;height:3px;border-radius:99px;background:' + (i <= currentStep ? '#39ff8a' : 'rgba(255,255,255,.1)') + ';transition:background .3s;"></div>';
+function goNext(){
+  if(mainStep===1){
+    collectVals();
+    var total=FORMS[selDoc].steps.length;
+    if(subStep<total-1){ subStep++; renderForm(); renderBar(); }
+    else doGenerate();
   }
+}
 
-  var progressHTML = '<div style="margin-bottom:20px;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-    + '<span style="font-size:.7rem;font-weight:700;color:#39ff8a;letter-spacing:.06em;text-transform:uppercase;">Krok ' + (currentStep+1) + ' z ' + total + ': ' + step.label + '</span>'
-    + '<span style="font-size:.7rem;color:rgba(240,237,232,.3);">' + pct + '% ukończone</span>'
-    + '</div>'
-    + '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;">'
-    + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#22c55e,#39ff8a);border-radius:99px;transition:width .4s ease;"></div>'
-    + '</div>'
-    + '<div style="display:flex;gap:6px;margin-top:10px;">' + segs + '</div>'
-    + '</div>';
+function goBack(){
+  if(mainStep===1){
+    collectVals();
+    if(subStep>0){ subStep--; renderForm(); renderBar(); }
+    else goTo(0);
+  } else if(mainStep===3){
+    goTo(0);
+  }
+}
 
-  var fieldsHTML = '';
-  var fields = step.fields;
-  for (var j = 0; j < fields.length; j++) {
-    var f = fields[j];
-    var label = f.l || f.label || '';
-    var ph = f.p || f.placeholder || '';
-    var type = f.t || f.type || '';
-    var val = wizVals[f.id] !== undefined ? wizVals[f.id] : '';
-    var optLabel = '<label style="' + LABEL_STYLE + '">' + label + (f.r ? '' : ' <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span>') + '</label>';
+/* ── SELECT DOC ── */
+function selectDoc(id){
+  selDoc=id; subStep=0; wizVals={};
+  var p={}; try{p=JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){}
+  if(p && Object.keys(p).length>0){
+    if(p.firma) wizVals['firma']=p.firma;
+    if(p.adres){ wizVals['adres']=p.adres; wizVals['adres_firmy']=p.adres; }
+    if(p.email) wizVals['email']=p.email;
+    if(p.nip) wizVals['nip']=p.nip;
+  }
+  goTo(1); renderForm();
+}
 
-    if (type === 'select') {
-      var opts = (f.o || []).map(function(o){
-        return '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' + o + '</option>';
+/* ── RENDER FORM ── */
+function renderForm(){
+  var form=FORMS[selDoc], step=form.steps[subStep], total=form.steps.length;
+  var segs='';
+  for(var i=0;i<total;i++) segs+='<div class="sub-seg'+(i<=subStep?' on':'')+'"></div>';
+
+  var html='';
+  step.fields.forEach(function(f){
+    var val=wizVals[f.id]||'';
+    var lbl='<label class="field-lbl">'+f.label+(f.opt?' <span>(opcjonalnie)</span>':'')+'</label>';
+
+    if(f.type==='select'){
+      var opts=(f.opts||[]).map(function(o){
+        return '<option value="'+o+'"'+(val===o?' selected':'')+'>'+o+'</option>';
       }).join('');
-      fieldsHTML += '<div style="margin-bottom:16px;">' + optLabel
-        + '<select id="gf_' + f.id + '" style="' + INPUT_STYLE + 'cursor:pointer;">' + opts + '</select></div>';
-    } else if (type === 'chips') {
-      var currentVals = val ? val.split(',').map(function(s){return s.trim();}) : [];
-      var chips = (f.o || []).map(function(o){
-        var active = currentVals.indexOf(o) !== -1;
-        return '<button type="button" data-val="' + o + '" data-inp="gf_' + f.id + '" onclick="toggleChip(this)" style="padding:6px 12px;background:' + (active?'rgba(34,197,94,.2)':'rgba(255,255,255,.05)') + ';border:1px solid ' + (active?'rgba(34,197,94,.4)':'rgba(255,255,255,.12)') + ';border-radius:20px;color:' + (active?'#4ade80':'rgba(240,237,232,.5)') + ';font-size:.75rem;cursor:pointer;white-space:nowrap;">' + o + '</button>';
+      html+='<div class="field">'+lbl+'<select class="field-in" id="gf_'+f.id+'" onchange="liveUpdate()">'+opts+'</select></div>';
+    } else if(f.type==='chips'){
+      var currentVals=val?val.split(',').map(function(s){return s.trim();}):[];
+      var chips=(f.opts||[]).map(function(o){
+        var active=currentVals.indexOf(o)!==-1;
+        return '<button type="button" class="chip'+(active?' on':'')+'" data-val="'+o+'" data-inp="gf_'+f.id+'" onclick="toggleChip(this)">'+o+'</button>';
       }).join('');
-      fieldsHTML += '<div style="margin-bottom:16px;">' + optLabel
-        + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' + chips + '</div>'
-        + '<input id="gf_' + f.id + '" type="text" placeholder="' + ph + '" value="' + val + '" style="' + INPUT_STYLE + '"></div>';
+      html+='<div class="field">'+lbl
+        +'<div class="chips-row">'+chips+'</div>'
+        +'<input class="field-in" id="gf_'+f.id+'" type="text" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()"></div>';
+    } else if(f.type==='pills'){
+      var pills=(f.opts||[]).map(function(o){
+        return '<button type="button" class="pill'+(val===o?' on':'')+'" data-field="'+f.id+'" data-val="'+o+'" onclick="pickPill(this)">'+o+'</button>';
+      }).join('');
+      html+='<div class="field">'+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
+           +'<input type="hidden" id="gf_'+f.id+'" value="'+val+'"></div>';
+    } else if(f.type==='date'){
+      html+='<div class="field">'+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
     } else {
-      var nipHint = f.id === 'nip'
-        ? '<p style="font-size:.7rem;color:rgba(57,255,138,.55);margin:5px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>'
-        : '';
-      fieldsHTML += '<div style="margin-bottom:16px;">' + optLabel
-        + '<input id="gf_' + f.id + '" type="text" placeholder="' + ph + '" value="' + val + '" style="' + INPUT_STYLE + '">' + nipHint + '</div>';
+      var isNip=(f.id==='nip'||f.id.indexOf('_nip')!==-1);
+      var nipHint=isNip?'<p class="nip-hint">🔍 Wpisz NIP — automatycznie uzupełnimy nazwę i adres firmy</p>':'';
+      html+='<div class="field">'+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()">'+nipHint+'</div>';
     }
+  });
+
+  if(subStep===total-1){
+    var ex=wizVals['_extra_info']||'';
+    html+='<div class="field"><label class="field-lbl">Dodatkowe informacje <span>(opcjonalnie)</span></label>'
+         +'<textarea class="field-in" id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi..." style="resize:vertical;min-height:80px;" oninput="liveUpdate()">'+ex+'</textarea></div>';
   }
 
-  if (currentStep === total - 1) {
-    var extraVal = wizVals['_extra_info'] || '';
-    fieldsHTML += '<div style="margin-bottom:16px;">'
-      + '<label style="' + LABEL_STYLE + '">📝 Dodatkowe informacje <span style="font-weight:400;opacity:.5;">(opcjonalnie)</span></label>'
-      + '<textarea id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi lub wymagania..." style="' + INPUT_STYLE + 'resize:vertical;">' + extraVal + '</textarea></div>';
-  }
+  document.getElementById('formLeft').innerHTML=
+    '<div class="sub-bar">'+segs+'</div>'
+    +'<div class="form-step-title">'+step.label+'</div>'
+    +'<div class="form-step-sub">Uzupełnij poniższe dane.</div>'
+    +html;
 
-  var navHTML = '<div style="display:flex;gap:10px;margin-top:8px;">'
-    + (currentStep > 0 ? '<button type="button" onclick="wizBack()" style="flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.6);border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;">← Wróć</button>' : '')
-    + '<button type="button" onclick="wizNext()" style="flex:1;padding:13px;background:rgba(57,255,138,.12);border:1.5px solid rgba(57,255,138,.25);color:#39ff8a;border-radius:12px;cursor:pointer;font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:.9rem;">'
-    + (currentStep === total - 1 ? 'Generuj dokument ⚡' : 'Dalej: ' + steps[currentStep+1].label + ' →')
-    + '</button></div>';
-
-  el.innerHTML = progressHTML + fieldsHTML + navHTML;
+  renderPreview();
   attachNIPListeners();
 }
 
-function toggleChip(btn) {
-  var inputId = btn.dataset.inp;
-  var val = btn.dataset.val;
-  var inp = document.getElementById(inputId);
-  var current = inp.value ? inp.value.split(',').map(function(s){return s.trim();}).filter(Boolean) : [];
-  var idx = current.indexOf(val);
-  if (idx === -1) {
-    current.push(val);
-    btn.style.background = 'rgba(34,197,94,.2)';
-    btn.style.borderColor = 'rgba(34,197,94,.4)';
-    btn.style.color = '#4ade80';
-  } else {
-    current.splice(idx, 1);
-    btn.style.background = 'rgba(255,255,255,.05)';
-    btn.style.borderColor = 'rgba(255,255,255,.12)';
-    btn.style.color = 'rgba(240,237,232,.5)';
+function toggleChip(btn){
+  var inputId=btn.dataset.inp;
+  var val=btn.dataset.val;
+  var inp=document.getElementById(inputId);
+  var current=inp.value?inp.value.split(',').map(function(s){return s.trim();}).filter(Boolean):[];
+  var idx=current.indexOf(val);
+  if(idx===-1){ current.push(val); btn.classList.add('on'); }
+  else { current.splice(idx,1); btn.classList.remove('on'); }
+  inp.value=current.join(', ');
+  liveUpdate();
+}
+
+function pickPill(btn){
+  var fid=btn.dataset.field, val=btn.dataset.val;
+  document.getElementById('gf_'+fid).value=val;
+  document.getElementById('pills_'+fid).querySelectorAll('.pill').forEach(function(b){
+    b.classList.toggle('on',b.dataset.val===val);
+  });
+  liveUpdate();
+}
+
+function collectVals(){
+  var fields=FORMS[selDoc].steps[subStep].fields;
+  fields.forEach(function(f){ var el=document.getElementById('gf_'+f.id); if(el) wizVals[f.id]=el.value; });
+  var ex=document.getElementById('gf__extra_info'); if(ex) wizVals['_extra_info']=ex.value;
+}
+
+function liveUpdate(){ collectVals(); renderPreview(); }
+
+/* ── LIVE PREVIEW ── */
+function renderPreview(){
+  var el=document.getElementById('formRight'); if(!el||!selDoc) return;
+  var form=FORMS[selDoc];
+  var allFields=[];
+  form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
+  var rows=[];
+  allFields.forEach(function(f){
+    if(wizVals[f.id] && rows.length<6) rows.push({l:f.label,v:wizVals[f.id]});
+  });
+  var filled=rows.map(function(r){
+    return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';
+  }).join('');
+  if(!filled){
+    filled='<div class="prev-row"><div class="prev-row-val empty">Uzupełnij formularz…</div></div>'
+      +'<div class="shimmer-line" style="width:75%"></div>'
+      +'<div class="shimmer-line" style="width:55%"></div>'
+      +'<div class="shimmer-line" style="width:65%"></div>';
   }
-  inp.value = current.join(', ');
+  el.innerHTML='<div class="prev-card"><div class="prev-card-head"><span class="prev-card-ico">'+form.icon+'</span>'
+    +'<div class="prev-card-title">'+form.title+'</div></div>'+filled+'</div>';
 }
 
-function collectVals() {
-  var fields = FORMS[currentDoc].steps[currentStep].fields;
-  for (var i = 0; i < fields.length; i++) {
-    var el = document.getElementById('gf_' + fields[i].id);
-    if (el) wizVals[fields[i].id] = el.value;
-  }
-  var extraEl = document.getElementById('gf__extra_info');
-  if (extraEl) wizVals['_extra_info'] = extraEl.value;
-}
-
-function wizNext() {
-  collectVals();
-  if (currentStep < FORMS[currentDoc].steps.length - 1) {
-    currentStep++;
-    renderStep();
-  } else {
-    doGenerate();
-  }
-}
-
-function wizBack() {
-  collectVals();
-  if (currentStep > 0) { currentStep--; renderStep(); }
-}
-
-function openDoc(id) {
-  if (!FORMS[id]) return;
-  currentDoc = id; currentStep = 0; wizVals = {};
-  var _prof = (function(){ try{return JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){return{};} })();
-  if (_prof) {
-    if (_prof.firma) wizVals['firma'] = _prof.firma;
-    if (_prof.adres) { wizVals['adres'] = _prof.adres; wizVals['adres_firmy'] = _prof.adres; }
-    if (_prof.email) wizVals['email'] = _prof.email;
-    if (_prof.nip) wizVals['nip'] = _prof.nip;
-  }
-  document.getElementById('genTitle').textContent = FORMS[id].title;
-  document.getElementById('genLoading').style.display = 'none';
-  document.getElementById('genResult').style.display = 'none';
-  document.getElementById('genForm').style.display = 'block';
-  renderStep();
-  var overlay = document.getElementById('genOverlay');
-  var sheet = document.getElementById('genSheet');
-  overlay.style.opacity = '1';
-  overlay.style.pointerEvents = 'auto';
-  requestAnimationFrame(function(){ sheet.style.transform = 'translateY(0)'; });
-}
-
-function closeGen() {
-  var sheet = document.getElementById('genSheet');
-  sheet.style.transform = 'translateY(100%)';
-  var ov = document.getElementById('genOverlay');
-  ov.style.opacity = '0';
-  setTimeout(function(){ ov.style.pointerEvents = 'none'; }, 300);
-}
-
-async function doGenerate() {
-  if (!window.checkPlanAccess(['biznes','promax','pro'])) return;
-
-  document.getElementById('genForm').style.display = 'none';
-  document.getElementById('genLoading').style.display = 'block';
+/* ── GENERATE ── */
+async function doGenerate(){
+  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax','pro'])) return;
+  goTo(2);
   try {
-    var prompt = FORMS[currentDoc].prompt(wizVals);
-    var token = window._fbToken || '';
-    var res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({prompt:prompt, docId:currentDoc, docName:FORMS[currentDoc].title, docCat:'biznes', docCatLabel:'Biznes', docIcon:'📄'})
+    var form=FORMS[selDoc];
+    var prompt=form.prompt(wizVals);
+    var token=window._fbToken||'';
+    var res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({prompt:prompt,docId:selDoc,docName:form.title,docCat:'biznes',docCatLabel:'Biznes',docIcon:form.icon})
     });
-    var rawText = await res.text();
-    var data; try { data = JSON.parse(rawText); } catch(e) { throw new Error('Błąd serwera (HTTP ' + res.status + '). Sprawdź klucz ANTHROPIC_API_KEY w Vercel.'); }
-    if (data.error) throw new Error(data.error);
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('genText').value = data.text || data.result || 'Błąd generowania';
-    document.getElementById('genResult').style.display = 'flex';
-  } catch(e) {
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('genForm').style.display = 'block';
-    renderStep();
-    alert(e.message || 'Błąd połączenia. Spróbuj ponownie.');
+    var rawText=await res.text();
+    var data; try{data=JSON.parse(rawText);}catch(e){throw new Error('Błąd serwera (HTTP '+res.status+'). Sprawdź klucz ANTHROPIC_API_KEY.');}
+    if(data.error) throw new Error(data.error);
+    genText=data.text||data.result||'Błąd generowania';
+    document.getElementById('docPaper').textContent=genText;
+    document.getElementById('resSub').textContent='Twój dokument "'+form.title+'" jest gotowy do pobrania lub opublikowania.';
+    if(token) document.getElementById('checkSaved').style.display='flex';
+    goTo(3);
+  } catch(e){
+    goTo(1); renderForm();
+    alert(e.message||'Błąd połączenia. Spróbuj ponownie.');
   }
 }
 
-function copyResult() { navigator.clipboard.writeText(document.getElementById('genText').value); }
-function downloadResultAs(format) {
-  var text = document.getElementById("genText").value;
-  var title = FORMS[currentDoc].title;
-  var safeName = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,"_");
-  if (format === 'txt') {
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([text], {type:"text/plain;charset=utf-8"}));
-    a.download = safeName + ".txt"; a.click();
-  } else if (format === 'pdf') {
-    var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    var win = window.open('','_blank');
-    if (!win) { alert('Zezwól na otwieranie okien dla tej strony.'); return; }
+/* ── DOWNLOAD / COPY ── */
+function copyDoc(){ if(genText) navigator.clipboard.writeText(genText); }
+
+function downloadAs(fmt){
+  if(!genText) return;
+  var form=FORMS[selDoc]||{};
+  var title=form.title||'dokument';
+  var safe=title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
+  if(fmt==='txt'){
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([genText],{type:'text/plain;charset=utf-8'}));
+    a.download=safe+'.txt'; a.click();
+  } else if(fmt==='pdf'){
+    var esc=genText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var win=window.open('','_blank');
+    if(!win){alert('Zezwól na otwieranie okien dla tej strony.');return;}
     win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>');
     win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
-    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
-    win.document.write('</head><body><pre>'+safe+'</pre>');
-    win.document.write('<script>window.onload=function(){html2pdf().set({margin:25,filename:"'+safeName+'.pdf",image:{type:"jpeg",quality:0.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/script>');
+    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>');
+    win.document.write('</head><body><pre>'+esc+'</pre>');
+    win.document.write('<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"'+safe+'.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/scr'+'ipt>');
     win.document.write('</body></html>'); win.document.close();
-  } else if (format === 'rtf') {
-    var esc = function(s){ return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';}); };
-    var lines = text.split('\n').map(function(l){var e=esc(l);return e.trim()?e+'\\par':'\\par';}).join('\n');
-    var rtf = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 {\\b\\fs28 '+esc(title)+'}\\par\\par '+lines+'}';
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([rtf],{type:'application/rtf'}));
-    a.download = safeName + ".rtf"; a.click();
+  } else if(fmt==='rtf'){
+    var esc2=function(s){return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';});};
+    var lines=genText.split('\n').map(function(l){var e=esc2(l);return e.trim()?e+'\\par':'\\par';}).join('\n');
+    var rtf='{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 {\\b\\fs28 '+esc2(title)+'}\\par\\par '+lines+'}';
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([rtf],{type:'application/rtf'}));
+    a.download=safe+'.rtf'; a.click();
   }
 }
 
-document.getElementById('genOverlay').addEventListener('click', function(e){ if(e.target===this) closeGen(); });
+/* ── NIP LOOKUP ── */
+async function lookupNIP(fieldId){
+  var el=document.getElementById('gf_'+fieldId); if(!el) return;
+  var nip=el.value.replace(/[\s\-\.]/g,'');
+  if(!/^\d{10}$/.test(nip)) return;
+  var origPh=el.placeholder; el.placeholder='⏳ Pobieranie danych...'; el.disabled=true;
+  try{
+    var r=await fetch('/api/nip-lookup?nip='+nip); el.disabled=false;
+    if(!r.ok){el.placeholder=origPh;return;}
+    var data=await r.json();
+    var map=NIP_FIELD_MAP[fieldId]; if(!map){el.placeholder=origPh;return;}
+    function flashFill(id,val){
+      if(!id||!val)return;
+      var t=document.getElementById('gf_'+id);
+      if(t&&!t.value){
+        t.value=val; wizVals[id]=val;
+        t.style.transition='background .4s';
+        t.style.background='rgba(52,199,89,.08)';
+        setTimeout(function(){t.style.background='';},1800);
+      }
+    }
+    flashFill(map.name,data.name);
+    flashFill(map.adres,data.adres);
+    if(map.adres2) flashFill(map.adres2,data.adres);
+    el.placeholder='✓ '+(data.name?data.name.split(' ').slice(0,3).join(' '):'Pobrano');
+    setTimeout(function(){el.placeholder=origPh;},3000);
+    liveUpdate();
+  }catch(e){el.disabled=false;el.placeholder=origPh;}
+}
+
+function attachNIPListeners(){
+  Object.keys(NIP_FIELD_MAP).forEach(function(id){
+    var el=document.getElementById('gf_'+id); if(!el||el._nipListened) return; el._nipListened=true;
+    el.addEventListener('blur',function(){lookupNIP(id);});
+    el.addEventListener('input',function(){if(this.value.replace(/[\s\-\.]/g,'').length===10)lookupNIP(id);});
+  });
+}
+
+/* ── INIT ── */
+renderNavSteps();
+renderBar();
 </script>
+
 <script src="plan-guard.js"></script>
 
+<!-- FAQ -->
 <section class="faq-section">
   <div class="faq-section-title">Najczęstsze pytania</div>
   <div class="faq-section-sub">E-commerce i sklep internetowy — odpowiedzi</div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaqEc(this)">Co musi zawierać regulamin sklepu internetowego? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">Co musi zawierać regulamin sklepu internetowego? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Regulamin sklepu internetowego powinien zawierać: <strong>dane sprzedawcy</strong> (firma, NIP, adres), opis procesu składania zamówień, dostępne metody płatności i dostawy, terminy realizacji zamówień, <strong>politykę zwrotów i reklamacji</strong> (14 dni na odstąpienie od umowy dla konsumentów), procedurę reklamacyjną oraz informacje o pozasądowym rozwiązywaniu sporów. Regulamin musi być dostępny przed złożeniem zamówienia.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaqEc(this)">Ile dni ma konsument na zwrot towaru kupionego online? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">Ile dni ma konsument na zwrot towaru kupionego online? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Konsument kupujący w sklepie internetowym ma <strong>14 dni</strong> na odstąpienie od umowy bez podania przyczyny — licząc od dnia odebrania towaru. Sprzedawca ma obowiązek zwrócić pieniądze w ciągu 14 dni od otrzymania oświadczenia o odstąpieniu. Prawo zwrotu nie dotyczy towarów personalizowanych, cyfrowych z usuniętym zabezpieczeniem ani produktów szybko psujących się.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaqEc(this)">Czym różni się reklamacja z rękojmi od gwarancji? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">Czym różni się reklamacja z rękojmi od gwarancji? <span class="faq-chevron">▼</span></button>
     <div class="faq-a"><strong>Rękojmia</strong> to ustawowe prawo konsumenta — sprzedawca odpowiada za wady towaru przez <strong>2 lata</strong> od zakupu, niezależnie od tego czy daje gwarancję. Konsument może żądać naprawy, wymiany, obniżenia ceny lub zwrotu pieniędzy. <strong>Gwarancja</strong> to dobrowolne zobowiązanie producenta lub sprzedawcy, na warunkach określonych w karcie gwarancyjnej. Oba uprawnienia przysługują niezależnie od siebie.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaqEc(this)">Jakie wymagania RODO dotyczą sklepu internetowego? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">Jakie wymagania RODO dotyczą sklepu internetowego? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Sklep internetowy musi posiadać <strong>politykę prywatności</strong> informującą o celach i podstawach przetwarzania danych, czasie ich przechowywania oraz prawach użytkowników. Zgody marketingowe (newsletter, remarketing) muszą być dobrowolne i oddzielne od regulaminu. Konieczne jest też zawarcie umów powierzenia danych z dostawcami usług (hosting, płatności, kurierzy) oraz zapewnienie możliwości realizacji praw podmiotów danych.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaqEc(this)">Czy muszę rejestrować firmę, żeby prowadzić sklep online? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">Czy muszę rejestrować firmę, żeby prowadzić sklep online? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Jeśli sprzedaż ma charakter <strong>zarobkowy i ciągły</strong>, konieczna jest rejestracja działalności gospodarczej (JDG lub spółka). Przy okazjonalnej sprzedaży prywatnych rzeczy rejestracja nie jest wymagana. Prowadzenie sklepu bez rejestracji firmy, gdy masz stałych klientów i regularny przychód, jest nielegalne i grozi konsekwencjami podatkowymi. Najprostsza forma to <strong>jednoosobowa działalność gospodarcza</strong> zarejestrowana w CEIDG.</div>
   </div>
 
   <div class="faq-item" style="border-bottom:none;">
-    <button class="faq-q" onclick="toggleFaqEc(this)">Jakie informacje muszą być widoczne na stronie sklepu? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="this.closest('.faq-item').classList.toggle('open')">Jakie informacje muszą być widoczne na stronie sklepu? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Na stronie sklepu internetowego muszą być widoczne: <strong>pełna nazwa firmy, adres siedziby, NIP i REGON</strong>, dane kontaktowe (e-mail, telefon lub formularz). Ceny muszą zawierać VAT i być podane w złotych. Przed finalizacją zamówienia klient musi zostać poinformowany o łącznym koszcie, w tym dostawy. Wymagane jest też oznaczenie plików cookies oraz link do polityki prywatności.</div>
   </div>
 </section>
-
-<script>
-function toggleFaqEc(btn) { btn.closest('.faq-item').classList.toggle('open'); }
-</script>
 
 </body>
 </html>

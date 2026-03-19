@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/jpeg" href="logo2.png">
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dokumenty dla Firmy — Regulamin Sklepu, RODO, Zwroty | Dokumo</title>
-<meta name="description" content="Generuj regulamin sklepu internetowego, politykę prywatności RODO i politykę zwrotów przez AI w minutę. Zgodne z polskim prawem i RODO.">
-<meta name="keywords" content="regulamin sklepu internetowego, polityka prywatności RODO, polityka zwrotów, generator dokumentów AI, Dokumo">
+<title>Strefa Biznesu – Umowy, Regulaminy, NDA i RODO | Dokumo</title>
+<meta name="description" content="Generuj dokumenty biznesowe z AI: regulamin sklepu internetowego, polityka prywatności RODO, umowa B2B, NDA, biznesplan. Gotowe w minutę, zgodne z polskim prawem.">
 <link rel="canonical" href="https://dokumoflow.com/biznes.html">
-<meta property="og:title" content="Dokumenty dla Firmy — Regulamin, RODO, Zwroty | Dokumo">
-<meta property="og:description" content="Regulamin sklepu, polityka RODO i polityka zwrotów — generowane przez AI w minutę. Zgodne z polskim prawem i UE.">
+<meta property="og:title" content="Strefa Biznesu – Umowy, Regulaminy i RODO | Dokumo">
+<meta property="og:description" content="Regulamin sklepu, polityka RODO, umowa NDA i B2B — generowane przez AI w minutę. Zgodne z polskim prawem.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/biznes.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
@@ -19,711 +19,446 @@
 <meta name="robots" content="index, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
 <style>
 :root {
-  --bg: #ffffff;
-  --ink: #111111;
-  --ink2: #555555;
-  --ink3: #999999;
-  --border: #e5e5e5;
-  --surface: #f5f5f7;
-  --accent: #111111;
-  --pill: 50px;
+  --bg: #f5f3ef;
+  --ink: #1a1714;
+  --ink2: #6b6560;
+  --card1: #0f1923;
+  --card2: #1c1c1e;
+  --card3: #0a2e1f;
+  --gold: #c9903a;
+  --cream: #faf8f4;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; min-height: 100vh; overflow-x: hidden; }
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
 
 /* ── NAV ── */
-.wiz-nav { position: sticky; top: 0; z-index: 200; height: 60px; background: rgba(255,255,255,.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 1rem; }
-.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-weight: 800; font-size: .95rem; letter-spacing: -.02em; flex-shrink: 0; }
-.nav-steps { flex: 1; display: flex; justify-content: center; align-items: center; }
-.step-item { display: flex; align-items: center; }
-.step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; transition: all .3s; background: var(--surface); color: var(--ink3); border: 1.5px solid var(--border); flex-shrink: 0; }
-.step-dot.active { background: var(--ink); color: #fff; border-color: var(--ink); }
-.step-dot.done { background: var(--surface); color: var(--ink); border-color: #ccc; }
-.step-lbl { font-size: .72rem; font-weight: 500; color: var(--ink3); margin-left: 6px; transition: color .3s; white-space: nowrap; }
-.step-lbl.active { color: var(--ink); font-weight: 700; }
-.step-line { width: 36px; height: 1.5px; background: var(--border); margin: 0 8px; transition: background .3s; flex-shrink: 0; }
-.step-line.done { background: var(--ink); }
-.nav-right { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
-.nav-login { font-size: .75rem; font-weight: 600; color: var(--ink2); text-decoration: none; padding: 7px 14px; border-radius: var(--pill); border: 1.5px solid var(--border); transition: all .2s; }
-.nav-login:hover { border-color: #999; color: var(--ink); }
-.nav-badge { font-size: .6rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
-.nav-badge.pro { background: rgba(52,199,89,.12); color: #1a8a3e; border: 1px solid rgba(52,199,89,.25); }
-.nav-badge.free { background: var(--surface); color: var(--ink3); border: 1px solid var(--border); }
-.nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface); color: var(--ink); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1.5px solid var(--border); flex-shrink: 0; overflow: hidden; }
-.nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.nav-profile { display: none; align-items: center; gap: 8px; position: relative; }
-.nav-profile.show { display: flex; }
-.nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.12); padding: 8px; min-width: 200px; z-index: 300; display: none; }
-.nav-dropdown.show { display: block; }
-.nav-dd-email { font-size: .72rem; color: var(--ink3); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-.nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
-.nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
-.nav-dd-link:hover { background: var(--surface); color: var(--ink); }
-.nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
-.nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #c00; transition: background .15s; font-family: 'Figtree', sans-serif; }
-.nav-dd-logout:hover { background: rgba(200,0,0,.06); }
-
-/* ── SCREENS ── */
-.screen { display: none; min-height: calc(100vh - 60px - 72px); }
-.screen.active { display: block; animation: fadeUp .38s ease both; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes popIn { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes shimmer { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-
-/* ── SCREEN 0 — CHOOSE ── */
-.choose-hero { max-width: 640px; margin: 72px auto 0; padding: 0 2rem; text-align: center; }
-.choose-h1 { font-size: clamp(2.6rem,6vw,4.2rem); font-weight: 900; letter-spacing: -.05em; line-height: 1.08; }
-.choose-sub { margin-top: 14px; font-size: 1.05rem; color: var(--ink2); font-weight: 400; line-height: 1.6; }
-.doc-grid { max-width: 980px; margin: 52px auto 80px; padding: 0 2rem; display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-.doc-card { background: #fff; border: 1.5px solid var(--border); border-radius: 24px; padding: 36px 30px; cursor: pointer; transition: border-color .2s, transform .25s cubic-bezier(.34,1.2,.64,1); text-align: left; display: flex; flex-direction: column; }
-.doc-card:hover { border-color: var(--ink); transform: translateY(-4px); }
-.doc-card-icon { font-size: 2.8rem; margin-bottom: 20px; display: block; }
-.doc-card-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 10px; }
-.doc-card-desc { font-size: .88rem; color: var(--ink2); line-height: 1.6; font-weight: 400; }
-.doc-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
-.doc-card-tag { font-size: .7rem; font-weight: 600; padding: 5px 12px; border-radius: 999px; background: var(--surface); color: var(--ink3); }
-.doc-card-btn { display: inline-block; margin-top: auto; padding-top: 22px; padding: 11px 22px; border-radius: var(--pill); border: 1.5px solid var(--border); background: #fff; font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s; color: var(--ink); }
-.doc-card:hover .doc-card-btn { background: var(--ink); color: #fff; border-color: var(--ink); }
-
-/* ── SCREEN 1 — FORM ── */
-.form-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: start; }
-.sub-bar { display: flex; gap: 6px; margin-bottom: 24px; }
-.sub-seg { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .3s; }
-.sub-seg.on { background: var(--ink); }
-.form-step-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
-.form-step-sub { font-size: .88rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.5; }
-.field { margin-bottom: 20px; }
-.field-lbl { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px; }
-.field-lbl span { font-weight: 400; opacity: .7; text-transform: none; letter-spacing: 0; font-size: .7rem; }
-.field-in { width: 100%; padding: 12px 16px; font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 500; color: var(--ink); background: var(--surface); border: 1.5px solid transparent; border-radius: 12px; outline: none; transition: all .2s; -webkit-appearance: none; appearance: none; }
-.field-in:focus { background: #fff; border-color: var(--ink); }
-.field-in::placeholder { color: var(--ink3); font-weight: 400; }
-.field-in[type="date"] { color-scheme: light; }
-.pills-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.pill { padding: 9px 16px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #fff; color: var(--ink2); }
-.pill:hover { border-color: #999; color: var(--ink); }
-.pill.on { background: var(--ink); color: #fff; border-color: var(--ink); }
-
-/* Live preview card */
-.prev-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 28px 24px; position: sticky; top: 80px; }
-.prev-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
-.prev-card-ico { font-size: 1.4rem; }
-.prev-card-title { font-size: .95rem; font-weight: 800; letter-spacing: -.02em; }
-.prev-row { margin-bottom: 14px; }
-.prev-row-lbl { font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
-.prev-row-val { font-size: .88rem; font-weight: 500; color: var(--ink); }
-.prev-row-val.empty { color: var(--ink3); font-style: italic; font-weight: 400; }
-.shimmer-line { height: 10px; border-radius: 4px; background: var(--border); margin-bottom: 8px; animation: shimmer 1.5s ease infinite; }
-
-/* ── SCREEN 2 — PREVIEW ── */
-.result-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1.3fr 1fr; gap: 52px; align-items: start; }
-.doc-paper { background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 52px 56px; font-family: 'Georgia', 'Times New Roman', serif; font-size: .875rem; line-height: 1.9; color: #111; white-space: pre-wrap; word-break: break-word; min-height: 480px; }
-.doc-paper.loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
-.res-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
-.res-sub { font-size: .85rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.55; }
-.checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-.check-row { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; font-weight: 500; }
-.check-ico { width: 22px; height: 22px; border-radius: 50%; background: rgba(52,199,89,.1); border: 1.5px solid rgba(52,199,89,.3); color: #1a8a3e; display: flex; align-items: center; justify-content: center; font-size: .62rem; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
-.act-btns { display: flex; flex-direction: column; gap: 10px; }
-.act-btn { width: 100%; padding: 14px 20px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: all .2s; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.act-btn.primary { background: var(--ink); color: #fff; }
-.act-btn.primary:hover { background: #333; }
-.act-btn.secondary { background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); }
-.act-btn.secondary:hover { border-color: #999; }
-
-/* ── SCREEN 3 — SUCCESS ── */
-.success-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 72px 2rem; min-height: calc(100vh - 60px - 72px); }
-.success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(52,199,89,.1); border: 2px solid rgba(52,199,89,.25); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 28px; animation: float 3s ease-in-out infinite, popIn .5s ease both; }
-.success-h1 { font-size: clamp(2rem,4vw,2.8rem); font-weight: 900; letter-spacing: -.05em; margin-bottom: 12px; }
-.success-sub { font-size: 1rem; color: var(--ink2); max-width: 420px; line-height: 1.6; margin-bottom: 36px; }
-.success-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 52px; }
-.suc-btn { padding: 14px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: all .2s; }
-.suc-btn.primary { background: var(--ink); color: #fff; border: none; }
-.suc-btn.primary:hover { background: #333; }
-.suc-btn.outline { background: #fff; color: var(--ink); border: 1.5px solid var(--border); }
-.suc-btn.outline:hover { border-color: #999; }
-.metrics { display: flex; border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; }
-.metric { flex: 1; padding: 20px 28px; text-align: center; border-right: 1.5px solid var(--border); }
-.metric:last-child { border-right: none; }
-.metric-val { font-size: 1.6rem; font-weight: 900; letter-spacing: -.04em; margin-bottom: 4px; }
-.metric-lbl { font-size: .72rem; color: var(--ink3); font-weight: 500; line-height: 1.4; }
-
-/* ── BOTTOM BAR ── */
-.bot-bar { position: sticky; bottom: 0; z-index: 200; height: 72px; background: rgba(255,255,255,.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 16px; }
-.btn-back { padding: 12px 22px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .85rem; font-weight: 600; cursor: pointer; background: var(--surface); border: 1.5px solid var(--border); color: var(--ink2); transition: all .2s; }
-.btn-back:hover { border-color: #999; color: var(--ink); }
-.btn-back.hide { visibility: hidden; pointer-events: none; }
-.bar-info { flex: 1; text-align: center; font-size: .78rem; color: var(--ink3); font-weight: 500; }
-.btn-next { padding: 12px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; background: var(--ink); color: #fff; border: none; transition: all .2s; margin-left: auto; }
-.btn-next:hover { background: #333; }
-.btn-next.hide { visibility: hidden; pointer-events: none; }
-
-/* ── MOBILE ── */
-@media (max-width: 760px) {
-  .nav-steps { display: none; }
-  .doc-grid { grid-template-columns: 1fr; max-width: 460px; }
-  .form-wrap { grid-template-columns: 1fr; gap: 0; }
-  .form-right-col { display: none; }
-  .result-wrap { grid-template-columns: 1fr; }
-  .metrics { flex-direction: column; }
-  .metric { border-right: none; border-bottom: 1.5px solid var(--border); }
-  .metric:last-child { border-bottom: none; }
-  .doc-paper { padding: 28px 24px; }
-}
-@media (max-width: 480px) {
-  .wiz-nav { padding: 0 1rem; }
-  .bot-bar { padding: 0 1rem; gap: 8px; }
-  .btn-next { padding: 12px 18px; font-size: .82rem; }
-  .choose-hero { margin-top: 48px; }
+.u-nav{background:#faf8f4;border-bottom:1px solid rgba(26,23,20,.08);position:sticky;top:0;z-index:100;height:58px;display:flex;align-items:center;padding:0 1.5rem;gap:0;}
+.u-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.05rem;color:#1a1714;letter-spacing:-.02em;flex-shrink:0;}
+.u-nav-dot{width:26px;height:26px;background:#1a1714;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.u-nav-back{display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:#6b6560;text-decoration:none;transition:color .2s;padding:6px 10px;border-radius:8px;background:rgba(26,23,20,.05);margin-left:12px;white-space:nowrap;flex-shrink:0;}
+.u-nav-back:hover{color:#1a1714;background:rgba(26,23,20,.09);}
+.u-nav-spacer{flex:1;}
+.u-nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.u-nav-login{font-size:.75rem;font-weight:600;color:#6b6560;text-decoration:none;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(26,23,20,.12);transition:all .2s;white-space:nowrap;}
+.u-nav-login:hover{border-color:#1a1714;color:#1a1714;}
+.u-nav-badge{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;white-space:nowrap;}
+.u-nav-badge.pro{background:#1a3a2e;color:#fff;}
+.u-nav-badge.free{background:rgba(26,23,20,.07);color:#6b6560;}
+.u-nav-avatar{width:30px;height:30px;border-radius:50%;background:#1a1714;color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;position:relative;}
+.u-nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.u-nav-profile{display:none;align-items:center;gap:8px;position:relative;}
+.u-nav-profile.show{display:flex;}
+.u-nav-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1.5px solid rgba(26,23,20,.08);border-radius:14px;box-shadow:0 8px 32px rgba(26,23,20,.1);padding:8px;min-width:200px;z-index:200;display:none;}
+.u-nav-dropdown.show{display:block;}
+.u-nav-dd-email{font-size:.72rem;color:#6b6560;padding:8px 10px 10px;border-bottom:1px solid rgba(26,23,20,.06);margin-bottom:4px;}
+.u-nav-dd-name{font-size:.82rem;font-weight:700;color:#1a1714;margin-bottom:1px;}
+.u-nav-dd-link{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:.8rem;font-weight:500;color:#1a1714;text-decoration:none;transition:background .15s;}
+.u-nav-dd-link:hover{background:rgba(26,23,20,.05);}
+.u-nav-dd-sep{height:1px;background:rgba(26,23,20,.06);margin:4px 0;}
+.u-nav-dd-logout{width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:.8rem;font-weight:500;color:#c0392b;transition:background .15s;}
+.u-nav-dd-logout:hover{background:#fdf0ef;}
+@media(max-width:480px){
+  .u-nav{padding:0 1rem;}
+  .u-nav-back span.back-label{display:none;}
+  .u-nav-login{padding:6px 9px;font-size:.7rem;}
 }
 
-/* FAQ */
-.faq-section { max-width: 760px; margin: 0 auto 80px; padding: 0 2rem; }
-.faq-section-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
-.faq-section-sub { font-size: .9rem; color: var(--ink2); margin-bottom: 24px; }
-.faq-item { border-bottom: 1px solid var(--border); }
-.faq-q { width: 100%; text-align: left; background: none; border: none; padding: 20px 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: 'Figtree', sans-serif; font-size: .95rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
-.faq-chevron { font-size: .75rem; flex-shrink: 0; transition: transform .2s; display: inline-block; }
-.faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
-.faq-item.open .faq-chevron { transform: rotate(180deg); }
-.faq-item.open .faq-a { display: block; }
+/* ── HERO ── */
+.k-hero {
+  padding: 64px 2rem 12px;
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.k-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+.k-eyebrow-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.7); }
+}
+.k-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.k-title em { font-style: italic; font-weight: 300; color: var(--ink2); }
+.k-subtitle {
+  font-size: 1rem;
+  color: var(--ink2);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* ── CARDS ── */
+.k-cards {
+  max-width: 1100px;
+  margin: 52px auto 80px;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 860px) {
+  .k-cards { grid-template-columns: 1fr; max-width: 480px; }
+  .k-hero { padding: 40px 1.5rem 8px; }
+}
+
+.k-card {
+  border-radius: 24px;
+  padding: 36px 32px 32px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
+  text-decoration: none;
+}
+.k-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 32px 64px rgba(0,0,0,.22);
+}
+.k-card:active { transform: translateY(-2px) scale(.995); }
+
+.k-card-1 { background: var(--card1); }
+.k-card-2 { background: var(--card2); }
+.k-card-3 { background: var(--card3); }
+
+.k-card::before {
+  content: '';
+  position: absolute;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  top: -80px; right: -60px;
+  background: rgba(255,255,255,.05);
+  pointer-events: none;
+}
+.k-card::after {
+  content: '';
+  position: absolute;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  bottom: -50px; left: -30px;
+  background: rgba(255,255,255,.03);
+  pointer-events: none;
+}
+
+.k-card-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 28px;
+}
+
+.k-card-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+  transition: background .2s, transform .2s;
+}
+.k-card:hover .k-card-icon {
+  background: rgba(255,255,255,.18);
+  transform: scale(1.08);
+}
+
+.k-card-tag {
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4) !important;
+  margin-bottom: 10px;
+}
+
+.k-card-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.k-card-desc {
+  font-size: .82rem;
+  color: rgba(255,255,255,.5);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.k-card-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.k-pill {
+  font-size: .7rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+.k-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: background .2s, border-color .2s, gap .2s;
+  align-self: flex-start;
+  margin-top: auto;
+}
+.k-card:hover .k-card-cta {
+  background: rgba(255,255,255,.2);
+  border-color: rgba(255,255,255,.3);
+  gap: 10px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.k-card { opacity: 0; animation: fadeUp .42s ease both; }
+.k-card:nth-child(1) { animation-delay: .05s; }
+.k-card:nth-child(2) { animation-delay: .12s; }
+.k-card:nth-child(3) { animation-delay: .19s; }
+.faq-section{max-width:760px;margin:60px auto 80px;padding:0 2rem;}
+.faq-section-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
+.faq-section-sub{font-size:.9rem;color:var(--ink2);margin-bottom:24px;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+.faq-chevron{font-size:.75rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
+.faq-a{display:none;padding:0 0 20px;font-size:.9rem;color:var(--ink2);line-height:1.7;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.faq-item.open .faq-a{display:block;}
 </style>
 
+<!-- Firebase Auth -->
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
-const app=getApps().length?getApps()[0]:initializeApp(__c);
-window._fbSignOut=()=>signOut(getAuth(app));
-onAuthStateChanged(getAuth(app),async u=>{
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const app=getApps().length?getApps()[0]:initializeApp(__c);window._fbSignOut=()=>signOut(getAuth(app));
+onAuthStateChanged(getAuth(app), async u=>{
   if(u){
-    localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));
+    localStorage.setItem('dokumo_user',JSON.stringify({name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}));
     window._fbToken=await u.getIdToken();
-    try{const res=await fetch("/api/check-sub",{headers:{"Authorization":"Bearer "+window._fbToken}});const data=await res.json();if(data.expiresAt)localStorage.setItem("dokumo_sub",JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));}catch(e){}
-  }else{window._fbToken=null;}
-  if(window._renderNav)window._renderNav();
+    window._fbReady=true;
+    // Odśwież sub z API
+    try{
+      const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
+      const data=await res.json();
+      if(data.active&&data.expiresAt){
+        localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+      }
+    }catch(e){}
+  } else {
+    window._fbToken=null;
+    window._fbReady=true;
+  }
+  if(window._renderUNav) window._renderUNav();
 });
 </script>
 </head>
 <body>
 
 <!-- NAV -->
-<nav class="wiz-nav">
-  <a href="index.html" class="nav-logo">
-    <img src="logo2.png" style="height:26px;width:auto;display:block;">
+<nav class="u-nav" id="uNav">
+  <a href="index.html" class="u-nav-logo">
+    <img src="logo2.png" style="height:28px;width:auto;display:block;">
     Dokumo
   </a>
-  <div class="nav-steps" id="navSteps"></div>
-  <div class="nav-right">
-    <a href="konto.html" class="nav-login" id="navLogin">Zaloguj się</a>
-    <div class="nav-profile" id="navProfile">
-      <span class="nav-badge free" id="navBadge">Free</span>
-      <div class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)">?</div>
-      <div class="nav-dropdown" id="navDrop">
-        <div class="nav-dd-email">
-          <div class="nav-dd-name" id="navName"></div>
-          <div id="navEmail" style="font-size:.72rem;color:var(--ink3);"></div>
+  <a href="index.html" class="u-nav-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span class="back-label">Strona główna</span>
+  </a>
+  <div class="u-nav-spacer"></div>
+  <div class="u-nav-right">
+    <a href="konto.html" class="u-nav-login" id="uNavLogin">Zaloguj się</a>
+    <div class="u-nav-profile" id="uNavProfile">
+      <span class="u-nav-badge free" id="uNavBadge">Free</span>
+      <div class="u-nav-avatar" id="uNavAvatar" onclick="toggleUNavDrop(event)">?</div>
+      <div class="u-nav-dropdown" id="uNavDrop">
+        <div class="u-nav-dd-email">
+          <div class="u-nav-dd-name" id="uNavName"></div>
+          <div id="uNavEmail"></div>
         </div>
-        <a href="konto.html" class="nav-dd-link">👤 Moje konto</a>
-        <a href="moje-dokumenty.html" class="nav-dd-link">📁 Moje dokumenty</a>
-        <a href="subskrypcja.html" class="nav-dd-link">⭐ Subskrypcja</a>
-        <div class="nav-dd-sep"></div>
-        <button class="nav-dd-logout" onclick="navLogout()">← Wyloguj się</button>
+        <a href="konto.html" class="u-nav-dd-link">👤 Moje konto</a>
+        <a href="moje-dokumenty.html" class="u-nav-dd-link">📁 Moje dokumenty</a>
+        <a href="subskrypcja.html" class="u-nav-dd-link" onclick="sessionStorage.removeItem('dokumo_after_sub')">⭐ Subskrypcja</a>
+        <div class="u-nav-dd-sep"></div>
+        <button class="u-nav-dd-logout" onclick="uNavLogout()">← Wyloguj się</button>
       </div>
     </div>
   </div>
 </nav>
 
-<!-- SCREEN 0: WYBIERZ DOKUMENT -->
-<section class="screen active" id="screen0">
-  <div class="choose-hero" style="margin-top:52px;">
-    <h1 class="choose-h1">Dokumenty<br>dla Firmy</h1>
-    <p class="choose-sub">Regulamin sklepu, polityka RODO i polityka zwrotów — generowane przez AI. Zgodne z polskim prawem i UE.</p>
-  </div>
-  <div class="doc-grid">
-    <div class="doc-card" onclick="selectDoc('regulamin')">
-      <span class="doc-card-icon">🛒</span>
-      <div class="doc-card-title">Regulamin sklepu internetowego</div>
-      <div class="doc-card-desc">Kompletny regulamin z sekcjami: zamówienia, płatności, dostawa, zwroty i reklamacje. Zgodny z UOKiK.</div>
-      <div class="doc-card-tags">
-        <span class="doc-card-tag">UOKiK 2026</span>
-        <span class="doc-card-tag">Obowiązkowy</span>
-      </div>
-      <button class="doc-card-btn">Wybierz →</button>
-    </div>
-    <div class="doc-card" onclick="selectDoc('rodo')">
-      <span class="doc-card-icon">🔒</span>
-      <div class="doc-card-title">Polityka prywatności RODO</div>
-      <div class="doc-card-desc">Polityka prywatności i cookies zgodna z RODO. Cele przetwarzania, podstawy prawne i prawa użytkowników.</div>
-      <div class="doc-card-tags">
-        <span class="doc-card-tag">RODO</span>
-        <span class="doc-card-tag">Cookies</span>
-      </div>
-      <button class="doc-card-btn">Wybierz →</button>
-    </div>
-    <div class="doc-card" onclick="selectDoc('zwroty')">
-      <span class="doc-card-icon">↩️</span>
-      <div class="doc-card-title">Polityka zwrotów i reklamacji</div>
-      <div class="doc-card-desc">Procedura zwrotów 14-dniowych, reklamacje z rękojmi i pozasądowe rozwiązywanie sporów ODR.</div>
-      <div class="doc-card-tags">
-        <span class="doc-card-tag">14 dni</span>
-        <span class="doc-card-tag">Kodeks Cywilny</span>
-      </div>
-      <button class="doc-card-btn">Wybierz →</button>
-    </div>
-  </div>
-</section>
-
-<!-- SCREEN 1: FORMULARZ -->
-<section class="screen" id="screen1">
-  <div class="form-wrap">
-    <div id="formLeft"></div>
-    <div class="form-right-col" id="formRight"></div>
-  </div>
-</section>
-
-<!-- SCREEN 2: PODGLĄD -->
-<section class="screen" id="screen2">
-  <div class="result-wrap">
-    <div>
-      <div class="doc-paper loading" id="docPaper">
-        <div style="width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .8s linear infinite;"></div>
-        <p style="color:var(--ink3);font-size:.85rem;font-weight:500;margin-top:4px;">Generowanie dokumentu przez AI…</p>
-      </div>
-    </div>
-    <div>
-      <div class="res-title">Podgląd dokumentu</div>
-      <div class="res-sub">Sprawdź wygenerowany dokument przed pobraniem lub opublikowaniem.</div>
-      <div class="checklist">
-        <div class="check-row"><div class="check-ico">✓</div><span>Wygenerowany automatycznie</span></div>
-        <div class="check-row"><div class="check-ico">✓</div><span>Zgodny z RODO i prawem UE</span></div>
-        <div class="check-row"><div class="check-ico">✓</div><span>Gotowy do publikacji</span></div>
-        <div class="check-row" id="checkSaved" style="display:none;"><div class="check-ico">✓</div><span>Zapisano w Twoich dokumentach</span></div>
-      </div>
-      <div class="act-btns">
-        <button class="act-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
-        <button class="act-btn secondary" onclick="copyDoc()">📋 Kopiuj tekst</button>
-        <button class="act-btn secondary" onclick="downloadAs('rtf')">⬇ Pobierz Word (.rtf)</button>
-        <button class="act-btn secondary" onclick="downloadAs('txt')">⬇ Pobierz TXT</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SCREEN 3: SUKCES -->
-<section class="screen" id="screen3">
-  <div class="success-wrap">
-    <div class="success-icon">✓</div>
-    <h1 class="success-h1">Dokument gotowy!</h1>
-    <p class="success-sub" id="successSub">Twój dokument został wygenerowany i jest gotowy do opublikowania.</p>
-    <div class="success-btns">
-      <button class="suc-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
-      <button class="suc-btn outline" onclick="copyDoc()">📋 Kopiuj</button>
-      <button class="suc-btn outline" onclick="goTo(0)">+ Nowy dokument</button>
-    </div>
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-val">~20s</div>
-        <div class="metric-lbl">czas<br>generowania</div>
-      </div>
-      <div class="metric">
-        <div class="metric-val">100%</div>
-        <div class="metric-lbl">zgodność<br>z RODO</div>
-      </div>
-      <div class="metric" id="metricPages">
-        <div class="metric-val">3–8</div>
-        <div class="metric-lbl">strony<br>dokumentu</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- BOTTOM BAR -->
-<div class="bot-bar">
-  <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
-  <span class="bar-info" id="barInfo">Wybierz dokument, aby kontynuować</span>
-  <button class="btn-next hide" id="btnNext" onclick="goNext()">Dalej →</button>
-</div>
-
 <script>
-/* ── AUTH NAV ── */
 (function(){
-  function getUser(){try{return JSON.parse(localStorage.getItem("dokumo_user"));}catch(e){return null;}}
-  function getSub(){try{return JSON.parse(localStorage.getItem("dokumo_sub"));}catch(e){return null;}}
-  function renderNav(){
-    var user=getUser(),sub=getSub();
-    var login=document.getElementById("navLogin"),profile=document.getElementById("navProfile");
-    var badge=document.getElementById("navBadge"),avatar=document.getElementById("navAvatar");
+  function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
+  function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
+  function renderUNav(){
+    const user=getUser(),sub=getSub();
+    const login=document.getElementById('uNavLogin');
+    const profile=document.getElementById('uNavProfile');
+    const badge=document.getElementById('uNavBadge');
+    const avatar=document.getElementById('uNavAvatar');
+    const nameEl=document.getElementById('uNavName');
+    const emailEl=document.getElementById('uNavEmail');
     if(!login)return;
     if(user){
-      login.style.display="none";profile.classList.add("show");
-      document.getElementById("navName").textContent=user.name||user.email||"";
-      document.getElementById("navEmail").textContent=user.email||"";
-      if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="">';
-      else avatar.textContent=(user.name||user.email||"?")[0].toUpperCase();
-      var isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
-      var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
-      badge.textContent=isActive?(names[sub.plan]||"PRO"):"Free";
-      badge.className="nav-badge "+(isActive?"pro":"free");
-    }else{login.style.display="";profile.classList.remove("show");}
-  }
-  window.toggleDrop=function(e){e.stopPropagation();document.getElementById("navDrop").classList.toggle("show");};
-  window.navLogout=function(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href="index.html";});};
-  document.addEventListener("click",function(){var d=document.getElementById("navDrop");if(d)d.classList.remove("show");});
-  renderNav();window._renderNav=renderNav;
-})();
-
-/* ── FORMS DATA ── */
-var FORMS = {
-  regulamin: {
-    title:"Regulamin sklepu", icon:"🛒",
-    steps:[
-      {label:"Dane firmy",fields:[
-        {id:"nip",label:"NIP",ph:"np. 1234567890",opt:true},
-        {id:"firma",label:"Pełna nazwa firmy",ph:"np. MójSklep Sp. z o.o."},
-        {id:"adres",label:"Adres siedziby",ph:"np. ul. Kwiatowa 1, 00-001 Warszawa"},
-        {id:"email",label:"Email kontaktowy",ph:"np. kontakt@sklep.pl"},
-        {id:"tel",label:"Telefon",ph:"np. +48 600 000 000",opt:true},
-        {id:"url",label:"Adres strony (URL)",ph:"np. www.mojsklep.pl"}
-      ]},
-      {label:"Sklep i Płatności",fields:[
-        {id:"branza",label:"Rodzaj sprzedawanych produktów",ph:"np. odzież, elektronika, kosmetyki"},
-        {id:"metody_platnosci",label:"Metody płatności",ph:"np. BLIK, karta, przelew, PayPal"},
-        {id:"czas_dostawy",label:"Czas realizacji zamówienia",type:"pills",opts:["1–2 dni robocze","3–5 dni roboczych","7–14 dni roboczych","Do 30 dni"]},
-        {id:"darmowa_dostawa",label:"Darmowa dostawa od",ph:"np. 199 zł lub 'brak'",opt:true}
-      ]},
-      {label:"Zwroty i Reklamacje",fields:[
-        {id:"termin_zwrotu",label:"Termin na zwrot",type:"pills",opts:["14 dni (min. ustawowe)","30 dni","60 dni"]},
-        {id:"koszty_zwrotu",label:"Koszty zwrotu ponosi",type:"pills",opts:["Kupujący","Sprzedawca (darmowy zwrot)"]},
-        {id:"podstawa_reklamacji",label:"Podstawa reklamacji",type:"pills",opts:["Rękojmia 2 lata (KC)","Rękojmia + gwarancja","Rozszerzona gwarancja"]},
-        {id:"czas_reklamacji",label:"Czas rozpatrzenia",type:"pills",opts:["14 dni","7 dni roboczych"]}
-      ]}
-    ],
-    prompt:function(v){return "Napisz bardzo szczegółowy regulamin sklepu internetowego zgodny z polskim prawem. Firma: "+v.firma+", NIP: "+(v.nip||"[brak]")+", adres: "+v.adres+", email: "+v.email+", tel: "+(v.tel||"[brak]")+", URL: "+v.url+". Produkty: "+v.branza+". Płatności: "+v.metody_platnosci+". Dostawa: "+(v.czas_dostawy||"3-5 dni")+", darmowa od: "+(v.darmowa_dostawa||"[brak]")+". Zwroty: "+(v.termin_zwrotu||"14 dni")+", koszty: "+(v.koszty_zwrotu||"kupujący")+". Reklamacje: "+(v.podstawa_reklamacji||"rękojmia 2 lata")+", czas: "+(v.czas_reklamacji||"14 dni")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zawrzyj sekcje: Postanowienia ogólne, Zamówienia, Płatności, Dostawa, Prawo odstąpienia, Reklamacje, Ochrona danych, Postanowienia końcowe. Zacznij od treści regulaminu.";}
-  },
-  rodo: {
-    title:"Polityka prywatności RODO", icon:"🔒",
-    steps:[
-      {label:"Administrator danych",fields:[
-        {id:"nip",label:"NIP",ph:"np. 1234567890",opt:true},
-        {id:"firma",label:"Nazwa firmy",ph:"np. MójSklep Sp. z o.o."},
-        {id:"adres",label:"Adres siedziby",ph:"np. ul. Kwiatowa 1, Warszawa"},
-        {id:"email",label:"Email kontaktowy (RODO)",ph:"np. rodo@sklep.pl"},
-        {id:"url",label:"Adres strony",ph:"np. www.mojsklep.pl"}
-      ]},
-      {label:"Cele i narzędzia",fields:[
-        {id:"cel_newsletter",label:"Newsletter / marketing emailowy?",type:"pills",opts:["Tak","Nie"]},
-        {id:"cel_marketing",label:"Reklamy / retargeting?",type:"pills",opts:["Tak","Nie"]},
-        {id:"google_analytics",label:"Google Analytics?",type:"pills",opts:["Tak","Nie"]},
-        {id:"facebook_pixel",label:"Facebook Pixel?",type:"pills",opts:["Tak","Nie"]},
-        {id:"cookies",label:"Rodzaje cookies",ph:"np. niezbędne, analityczne, marketingowe"},
-        {id:"okres_przechowywania",label:"Retencja danych zamówień",type:"pills",opts:["5 lat (obowiązek podatkowy)","3 lata","10 lat"]}
-      ]}
-    ],
-    prompt:function(v){return "Napisz bardzo szczegółową politykę prywatności zgodną z RODO. Administrator: "+v.firma+", NIP: "+(v.nip||"[brak]")+", adres: "+v.adres+", email: "+v.email+", strona: "+v.url+". Newsletter: "+(v.cel_newsletter||"Nie")+". Retargeting: "+(v.cel_marketing||"Nie")+". Google Analytics: "+(v.google_analytics||"Nie")+". Facebook Pixel: "+(v.facebook_pixel||"Nie")+". Cookies: "+(v.cookies||"niezbędne, analityczne")+". Retencja: "+(v.okres_przechowywania||"5 lat")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zawrzyj sekcje: Administrator, Cele przetwarzania, Podstawy prawne, Prawa użytkowników, Cookies, Okres przechowywania, Transfer danych, Prawo skargi do UODO. Zacznij od treści dokumentu.";}
-  },
-  zwroty: {
-    title:"Polityka zwrotów i reklamacji", icon:"↩️",
-    steps:[
-      {label:"Dane firmy",fields:[
-        {id:"nip",label:"NIP",ph:"np. 1234567890",opt:true},
-        {id:"firma",label:"Nazwa firmy",ph:"np. MójSklep Sp. z o.o."},
-        {id:"email",label:"Email do zwrotów",ph:"np. zwroty@sklep.pl"},
-        {id:"adres_zwroty",label:"Adres odsyłania towaru",ph:"np. ul. Magazynowa 5, Warszawa"}
-      ]},
-      {label:"Zwroty i Reklamacje",fields:[
-        {id:"termin_zwrotu",label:"Termin na zwrot",type:"pills",opts:["14 dni (ustawowe)","30 dni","60 dni"]},
-        {id:"koszty_zwrotu",label:"Koszty odesłania ponosi",type:"pills",opts:["Kupujący","Sprzedawca (darmowy zwrot)"]},
-        {id:"czas_zwrotu_pieniedzy",label:"Zwrot pieniędzy w",type:"pills",opts:["14 dni od otrzymania towaru","7 dni","3 dni robocze"]},
-        {id:"podstawa_reklamacji",label:"Podstawa reklamacji",type:"pills",opts:["Rękojmia 2 lata (KC)","Rękojmia + gwarancja","Rozszerzona gwarancja"]},
-        {id:"czas_rozpatrzenia",label:"Czas rozpatrzenia",type:"pills",opts:["14 dni","7 dni roboczych"]},
-        {id:"wymiana",label:"Możliwa wymiana towaru?",type:"pills",opts:["Tak","Nie"]}
-      ]}
-    ],
-    prompt:function(v){return "Napisz szczegółową politykę zwrotów i reklamacji dla sklepu internetowego. Firma: "+v.firma+", NIP: "+(v.nip||"[brak]")+", email: "+v.email+", adres zwrotów: "+v.adres_zwroty+". Zwroty: termin "+(v.termin_zwrotu||"14 dni")+", koszty: "+(v.koszty_zwrotu||"kupujący")+", pieniądze w "+(v.czas_zwrotu_pieniedzy||"14 dni")+", wymiana: "+(v.wymiana||"Nie")+". Reklamacje: "+(v.podstawa_reklamacji||"rękojmia 2 lata")+", czas "+(v.czas_rozpatrzenia||"14 dni")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zawrzyj: §1 Postanowienia ogólne, §2 Prawo odstąpienia (z wzorem formularza), §3 Wyjątki, §4 Procedura zwrotu, §5 Zwrot należności, §6 Reklamacje, §7 Pozasądowe rozwiązywanie sporów. Zacznij od treści dokumentu.";}
-  }
-};
-
-/* ── NIP FIELD MAP ── */
-var NIP_FIELD_MAP={nip:{name:'firma',adres:'adres'}};
-
-/* ── STATE ── */
-var mainStep = 0;
-var subStep  = 0;
-var selDoc   = null;
-var wizVals  = {};
-var genText  = '';
-
-var STEP_LABELS = ["Wybierz","Dane","Podgląd","Gotowe"];
-
-/* ── NAV STEPS ── */
-function renderNavSteps(){
-  var el=document.getElementById('navSteps'), html='';
-  for(var i=0;i<4;i++){
-    if(i>0) html+='<div class="step-line'+(i<=mainStep?' done':'')+'"></div>';
-    var cls=i<mainStep?'done':i===mainStep?'active':'';
-    html+='<div class="step-item">'
-      +'<div class="step-dot '+cls+'">'+(i<mainStep?'✓':i+1)+'</div>'
-      +'<span class="step-lbl'+(i===mainStep?' active':'')+'">'+STEP_LABELS[i]+'</span>'
-      +'</div>';
-  }
-  el.innerHTML=html;
-}
-
-/* ── BOTTOM BAR ── */
-function renderBar(){
-  var back=document.getElementById('btnBack'),next=document.getElementById('btnNext'),info=document.getElementById('barInfo');
-  if(mainStep===0){
-    back.className='btn-back hide'; next.className='btn-next hide';
-    info.textContent='Wybierz dokument, aby kontynuować';
-  } else if(mainStep===1){
-    var form=FORMS[selDoc], total=form.steps.length, isLast=subStep===total-1;
-    back.className='btn-back'; back.textContent='← Wróć';
-    info.textContent='Krok '+(subStep+1)+' z '+total+' · '+form.steps[subStep].label;
-    next.className='btn-next'; next.textContent=isLast?'Generuj dokument ⚡':'Dalej →';
-  } else if(mainStep===2){
-    back.className='btn-back'; back.textContent='← Wróć do formularza';
-    info.textContent='';
-    next.className='btn-next'; next.textContent='Zakończ →';
-  } else {
-    back.className='btn-back hide'; next.className='btn-next hide';
-    info.textContent='';
-  }
-}
-
-/* ── SCREEN SWITCH ── */
-function goTo(n){
-  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
-  document.getElementById('screen'+n).classList.add('active');
-  mainStep=n; renderNavSteps(); renderBar();
-  window.scrollTo(0,0);
-}
-
-function goNext(){
-  if(mainStep===1){
-    collectVals();
-    var total=FORMS[selDoc].steps.length;
-    if(subStep<total-1){ subStep++; renderForm(); renderBar(); }
-    else doGenerate();
-  } else if(mainStep===2){
-    goTo(3);
-  }
-}
-
-function goBack(){
-  if(mainStep===1){
-    collectVals();
-    if(subStep>0){ subStep--; renderForm(); renderBar(); }
-    else goTo(0);
-  } else if(mainStep===2){
-    goTo(1); renderForm();
-  } else if(mainStep===3){
-    goTo(2);
-  }
-}
-
-/* ── SELECT DOC ── */
-function selectDoc(id){
-  selDoc=id; subStep=0; wizVals={};
-  var p={}; try{p=JSON.parse(localStorage.getItem('dokumo_profile')||'{}');}catch(e){}
-  var af={
-    firma:function(p){return p.firma||'';},
-    nip:function(p){return p.nip||'';},
-    adres:function(p){return p.adres||'';},
-    email:function(p){return p.email||'';}
-  };
-  if(Object.keys(p).length>0) Object.keys(af).forEach(function(k){var v=af[k](p);if(v)wizVals[k]=v;});
-  goTo(1); renderForm();
-}
-
-/* ── RENDER FORM ── */
-function renderForm(){
-  var form=FORMS[selDoc], step=form.steps[subStep], total=form.steps.length;
-  var segs='';
-  for(var i=0;i<total;i++) segs+='<div class="sub-seg'+(i<=subStep?' on':'')+'"></div>';
-
-  var html='';
-  step.fields.forEach(function(f){
-    var val=wizVals[f.id]||'';
-    var lbl='<label class="field-lbl">'+f.label+(f.opt?' <span>(opcjonalnie)</span>':'')+'</label>';
-    if(f.type==='pills'){
-      var pills=f.opts.map(function(o){
-        return '<button type="button" class="pill'+(val===o?' on':'')+'" data-field="'+f.id+'" data-val="'+o+'" onclick="pickPill(this)">'+o+'</button>';
-      }).join('');
-      html+='<div class="field">'+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
-           +'<input type="hidden" id="gf_'+f.id+'" value="'+val+'"></div>';
-    } else if(f.type==='date'){
-      html+='<div class="field">'+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
+      login.style.display='none';
+      profile.classList.add('show');
+      nameEl.textContent=user.name||user.email||'';
+      emailEl.textContent=user.email||'';
+      if(user.photo){avatar.innerHTML='<img src="'+user.photo+'" alt="">';}
+      else{avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();}
+      const isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
+      const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
+      badge.textContent=isActive?(names[sub.plan]||'PRO'):'Free';
+      badge.className='u-nav-badge '+(isActive?'pro':'free');
     } else {
-      var nipHint=(f.id==='nip'||f.id.indexOf('_nip')!==-1)
-        ?'<p style="font-size:.7rem;color:var(--ink3);margin:4px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy dane firmy</p>'
-        :'';
-      html+='<div class="field">'+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()">'+nipHint+'</div>';
+      login.style.display='';
+      profile.classList.remove('show');
     }
-  });
-
-  if(subStep===total-1){
-    var ex=wizVals['_extra_info']||'';
-    html+='<div class="field"><label class="field-lbl">Dodatkowe informacje <span>(opcjonalnie)</span></label>'
-         +'<textarea class="field-in" id="gf__extra_info" rows="3" placeholder="Wpisz dodatkowe uwagi..." style="resize:vertical;min-height:80px;" oninput="liveUpdate()">'+ex+'</textarea></div>';
   }
-
-  document.getElementById('formLeft').innerHTML=
-    '<div class="sub-bar">'+segs+'</div>'
-    +'<div class="form-step-title">'+step.label+'</div>'
-    +'<div class="form-step-sub">Uzupełnij poniższe dane.</div>'
-    +html;
-
-  renderPreview();
-  attachNIPListeners();
-}
-
-function pickPill(btn){
-  var fid=btn.dataset.field, val=btn.dataset.val;
-  document.getElementById('gf_'+fid).value=val;
-  document.getElementById('pills_'+fid).querySelectorAll('.pill').forEach(function(b){
-    b.classList.toggle('on',b.dataset.val===val);
-  });
-  liveUpdate();
-}
-
-function collectVals(){
-  var fields=FORMS[selDoc].steps[subStep].fields;
-  fields.forEach(function(f){ var el=document.getElementById('gf_'+f.id); if(el) wizVals[f.id]=el.value; });
-  var ex=document.getElementById('gf__extra_info'); if(ex) wizVals['_extra_info']=ex.value;
-}
-
-function liveUpdate(){ collectVals(); renderPreview(); }
-
-/* ── LIVE PREVIEW (GENERIC) ── */
-function renderPreview(){
-  var el=document.getElementById('formRight'); if(!el||!selDoc) return;
-  var form=FORMS[selDoc];
-  var allFields=[];
-  form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
-  var rows=[];
-  allFields.forEach(function(f){
-    if(wizVals[f.id] && rows.length<6) rows.push({l:f.label,v:wizVals[f.id]});
-  });
-  var filled=rows.map(function(r){
-    return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';
-  }).join('');
-  if(!filled){
-    filled='<div class="prev-row"><div class="prev-row-val empty">Uzupełnij formularz…</div></div>'
-      +'<div class="shimmer-line" style="width:75%"></div>'
-      +'<div class="shimmer-line" style="width:55%"></div>'
-      +'<div class="shimmer-line" style="width:65%"></div>';
+  function toggleUNavDrop(e){
+    e.stopPropagation();
+    document.getElementById('uNavDrop').classList.toggle('show');
   }
-  el.innerHTML='<div class="prev-card"><div class="prev-card-head"><span class="prev-card-ico">'+form.icon+'</span>'
-    +'<div class="prev-card-title">'+form.title+'</div></div>'+filled+'</div>';
-}
-
-/* ── GENERATE ── */
-async function doGenerate(){
-  if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','promax','pro'])) return;
-  goTo(2);
-  var paper=document.getElementById('docPaper');
-  paper.className='doc-paper loading';
-  paper.innerHTML='<div style="width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .8s linear infinite;"></div>'
-    +'<p style="color:var(--ink3);font-size:.85rem;font-weight:500;margin-top:4px;">Generowanie przez AI…</p>';
-  try {
-    var form=FORMS[selDoc];
-    var prompt=form.prompt(wizVals);
-    if(wizVals._extra_info) prompt+='\nDodatkowe informacje: '+wizVals._extra_info;
-    var token=window._fbToken||'';
-    var res=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,docId:selDoc,docName:form.title,docCat:'biznes',docCatLabel:'Biznes',docIcon:form.icon})
-    });
-    var data=await res.json();
-    genText=data.text||data.result||'Błąd generowania';
-    paper.className='doc-paper';
-    paper.textContent=genText;
-    if(token) document.getElementById('checkSaved').style.display='flex';
-    var pages=Math.max(3,Math.round(genText.split('\n').length/38));
-    document.getElementById('metricPages').querySelector('.metric-val').textContent=pages<=5?'3–8':pages+'';
-    document.getElementById('successSub').textContent='Twój dokument "'+form.title+'" jest gotowy do pobrania lub opublikowania.';
-  } catch(e){
-    paper.className='doc-paper';
-    paper.textContent='Błąd połączenia. Spróbuj ponownie.';
+  function uNavLogout(){
+    localStorage.removeItem('dokumo_user');
+    localStorage.removeItem('dokumo_sub');
+    (window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(()=>{window.location.href='index.html';});
   }
-}
-
-/* ── DOWNLOAD / COPY ── */
-function copyDoc(){ if(genText) navigator.clipboard.writeText(genText); }
-
-function downloadAs(fmt){
-  if(!genText) return;
-  var form=FORMS[selDoc]||{};
-  var title=form.title||'dokument';
-  var safe=title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
-  if(fmt==='txt'){
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([genText],{type:'text/plain;charset=utf-8'}));
-    a.download=safe+'.txt'; a.click();
-  } else if(fmt==='pdf'){
-    var esc=genText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    var win=window.open('','_blank');
-    if(!win){alert('Zezwól na otwieranie okien dla tej strony.');return;}
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>');
-    win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
-    win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>');
-    win.document.write('</head><body><pre>'+esc+'</pre>');
-    win.document.write('<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"'+safe+'.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/scr'+'ipt>');
-    win.document.write('</body></html>'); win.document.close();
-  } else if(fmt==='rtf'){
-    var esc2=function(s){return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';});};
-    var lines=genText.split('\n').map(function(l){var e=esc2(l);return e.trim()?e+'\\par':'\\par';}).join('\n');
-    var rtf='{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\froman\\fcharset238 Times New Roman;}}{\\colortbl ;\\red17\\green17\\blue17;}\\f0\\fs24\\cf1\\sl360\\slmult1 {\\b\\fs28 '+esc2(title)+'}\\par\\par '+lines+'}';
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([rtf],{type:'application/rtf'}));
-    a.download=safe+'.rtf'; a.click();
-  }
-}
-
-/* ── NIP LOOKUP ── */
-async function lookupNIP(fieldId){
-  var el=document.getElementById('gf_'+fieldId); if(!el) return;
-  var nip=el.value.replace(/[\s\-\.]/g,'');
-  if(!/^\d{10}$/.test(nip)) return;
-  var origPh=el.placeholder; el.placeholder='⏳ Pobieranie...'; el.disabled=true;
-  try{
-    var r=await fetch('/api/nip-lookup?nip='+nip); el.disabled=false;
-    if(!r.ok){el.placeholder=origPh;return;}
-    var data=await r.json();
-    var map=NIP_FIELD_MAP[fieldId]; if(!map){el.placeholder=origPh;return;}
-    function flashFill(id,val){if(!id||!val)return;var t=document.getElementById('gf_'+id);if(t&&!t.value){t.value=val;wizVals[id]=val;t.style.background='rgba(17,17,17,.06)';setTimeout(function(){t.style.background='';},1500);}}
-    flashFill(map.name,data.name); flashFill(map.adres,data.adres);
-    el.placeholder='✓ '+(data.name?data.name.split(' ').slice(0,3).join(' '):'Pobrano');
-    setTimeout(function(){el.placeholder=origPh;},3000);
-  }catch(e){el.disabled=false;el.placeholder=origPh;}
-}
-function attachNIPListeners(){
-  Object.keys(NIP_FIELD_MAP).forEach(function(id){
-    var el=document.getElementById('gf_'+id); if(!el||el._nip) return; el._nip=true;
-    el.addEventListener('blur',function(){lookupNIP(id);});
-    el.addEventListener('input',function(){if(this.value.replace(/[\s\-\.]/g,'').length===10)lookupNIP(id);});
+  window.toggleUNavDrop=toggleUNavDrop;
+  window.uNavLogout=uNavLogout;
+  document.addEventListener('click',function(){
+    const d=document.getElementById('uNavDrop');
+    if(d) d.classList.remove('show');
   });
-}
-
-/* ── INIT ── */
-renderNavSteps();
-renderBar();
+  renderUNav();
+  window._renderUNav=renderUNav;
+})();
 </script>
 
-<script src="plan-guard.js"></script>
+<!-- CARDS -->
+<section class="k-cards">
 
-<!-- FAQ -->
+  <!-- KARTA 1 — Start & E-commerce -->
+  <a href="ecommerce.html" class="k-card k-card-1">
+    <div class="k-card-num">01</div>
+    <div class="k-card-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+    </div>
+    <div class="k-card-tag">Start & E-commerce</div>
+    <h2 class="k-card-title">Właśnie otwieram<br>firmę lub sklep</h2>
+    <p class="k-card-desc">Wystartuj bezpiecznie. Wszystko, czego wymaga od Ciebie prawo — gotowe w minuty.</p>
+    <div class="k-card-pills">
+      <span class="k-pill">Regulamin sklepu</span>
+      <span class="k-pill">Polityka RODO</span>
+      <span class="k-pill">Zwroty i reklamacje</span>
+    </div>
+    <span class="k-card-cta">
+      Zacznij teraz
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </span>
+  </a>
+
+  <!-- KARTA 2 — Ludzie & Relacje -->
+  <a href="hr.html" class="k-card k-card-2">
+    <div class="k-card-num">02</div>
+    <div class="k-card-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div class="k-card-tag">Ludzie & Relacje</div>
+    <h2 class="k-card-title">Zatrudniam lub biorę<br>zlecenia B2B</h2>
+    <p class="k-card-desc">Chroń swoje know-how. Profesjonalne umowy z kontrahentami i pracownikami.</p>
+    <div class="k-card-pills">
+      <span class="k-pill">Umowa B2B</span>
+      <span class="k-pill">NDA / Poufność</span>
+      <span class="k-pill">Umowa o dzieło</span>
+    </div>
+    <span class="k-card-cta">
+      Przeglądaj umowy
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </span>
+  </a>
+
+  <!-- KARTA 3 — Administracja & Majątek -->
+  <a href="admin.html" class="k-card k-card-3">
+    <div class="k-card-num">03</div>
+    <div class="k-card-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div class="k-card-tag">Administracja & Majątek</div>
+    <h2 class="k-card-title">Codzienne sprawy<br>firmowe</h2>
+    <p class="k-card-desc">Sprawy biurowe w 60 sekund. Porządek w dokumentacji majątkowej i operacyjnej.</p>
+    <div class="k-card-pills">
+      <span class="k-pill">Umowa najmu</span>
+      <span class="k-pill">Protokół zdawczy</span>
+      <span class="k-pill">Pisma do urzędów</span>
+    </div>
+    <span class="k-card-cta">
+      Przeglądaj wzory
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </span>
+  </a>
+
+</section>
+
 <section class="faq-section">
   <div class="faq-section-title">Najczęstsze pytania</div>
   <div class="faq-section-sub">Dokumenty dla firm — odpowiedzi</div>
