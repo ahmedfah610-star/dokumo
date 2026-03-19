@@ -46,7 +46,8 @@ export default async function handler(req, res) {
     const r = await fetch(
       'https://api.anthropic.com/v1/messages',
       { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:3500, messages:[{role:'user',content:prompt}] }) }
+        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:3500, messages:[{role:'user',content:prompt}] }),
+        signal: AbortSignal.timeout(55000) }
     );
     const data = await r.json();
     if (data.error) return res.status(500).json({ error: data.error.message });
