@@ -715,7 +715,7 @@ function renderPreview(){
   form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
   var rows=[];
   allFields.forEach(function(f){
-    if(wizVals[f.id] && rows.length<6) rows.push({l:f.label,v:wizVals[f.id]});
+    if(wizVals[f.id]) rows.push({l:f.label,v:wizVals[f.id]});
   });
   var filled=rows.map(function(r){
     return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';

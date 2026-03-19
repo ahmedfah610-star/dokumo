@@ -625,36 +625,17 @@ function liveUpdate(){ collectVals(); renderPreview(); }
 function renderPreview(){
   var el=document.getElementById('formRight'); if(!el||!selDoc) return;
   var form=FORMS[selDoc];
+  var allFields=[];
+  form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
   var rows=[];
-  if(selDoc==='wypowiedzenie'){
-    rows=[
-      {l:'Pracownik',v:wizVals.w_imie},
-      {l:'Pracodawca',v:wizVals.w_firma},
-      {l:'Stanowisko',v:wizVals.w_st},
-      {l:'Zatrudniony od',v:wizVals.w_od?new Date(wizVals.w_od).toLocaleDateString('pl-PL'):''},
-      {l:'Tryb',v:wizVals.w_tryb},
-      {l:'Data zakończenia',v:wizVals.w_kon?new Date(wizVals.w_kon).toLocaleDateString('pl-PL'):''}
-    ];
-  } else if(selDoc==='urlop'){
-    rows=[
-      {l:'Pracownik',v:wizVals.u_imie},
-      {l:'Firma',v:wizVals.u_firma},
-      {l:'Przełożony',v:wizVals.u_prz},
-      {l:'Rodzaj urlopu',v:wizVals.u_typ},
-      {l:'Od',v:wizVals.u_od?new Date(wizVals.u_od).toLocaleDateString('pl-PL'):''},
-      {l:'Do',v:wizVals.u_do?new Date(wizVals.u_do).toLocaleDateString('pl-PL'):''}
-    ];
-  } else {
-    rows=[
-      {l:'Pracownik',v:wizVals.s_imie},
-      {l:'Firma',v:wizVals.s_firma},
-      {l:'Stanowisko',v:wizVals.s_st},
-      {l:'Wymiar',v:wizVals.s_wym},
-      {l:'Rozwiązanie',v:wizVals.s_tryb}
-    ];
-  }
+  allFields.forEach(function(f){
+    if(!wizVals[f.id]) return;
+    var v=wizVals[f.id];
+    if(f.type==='date'&&v){ try{ v=new Date(v).toLocaleDateString('pl-PL'); }catch(e){} }
+    rows.push({l:f.label,v:v});
+  });
 
-  var filled=rows.filter(function(r){return r.v;}).map(function(r){
+  var filled=rows.map(function(r){
     return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';
   }).join('');
 
