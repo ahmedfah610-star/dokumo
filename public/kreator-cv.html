@@ -64,10 +64,13 @@ function buildCVHTML(tpl) {
   const c2 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c2 : t.color2;
   const name = [d.imie, d.nazwisko].filter(Boolean).join(' ') || 'Imię Nazwisko';
   const skills = d.umiejetnosci ? d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean) : [];
-  const certs = [
-    ...(d.certyfikatyList||[]).filter(c=>c.nazwa).map(c => c.nazwa + (c.wydawca ? ' – '+c.wydawca : '') + (c.rok ? ', '+c.rok : '')),
-    ...(d.kursy||[]).filter(k=>k.nazwa).map(k => k.nazwa + (k.prowadzacy ? ' – '+k.prowadzacy : '')),
-    ...(d.staze||[]).filter(s=>s.firma).map(s => s.firma + (s.od ? ' ('+s.od+(s.do?' – '+s.do:s.obecnie?' – obecnie':'')+')' : '')),
+  const certItems = (d.certyfikatyList||[]).filter(c=>c.nazwa).map(c => c.nazwa + (c.wydawca ? ' – '+c.wydawca : '') + (c.rok ? ', '+c.rok : ''));
+  const kursyItems = (d.kursy||[]).filter(k=>k.nazwa).map(k => k.nazwa + (k.prowadzacy ? ' – '+k.prowadzacy : ''));
+  const stazeItems = (d.staze||[]).filter(s=>s.firma).map(s => s.firma + (s.od ? ' ('+s.od+(s.do?' – '+s.do:s.obecnie?' – obecnie':'')+')' : ''));
+  const certGroups = [
+    ...(certItems.length ? [{ label: 'Certyfikaty', items: certItems }] : []),
+    ...(kursyItems.length ? [{ label: 'Kursy', items: kursyItems }] : []),
+    ...(stazeItems.length ? [{ label: 'Staże', items: stazeItems }] : []),
   ];
   const photo = d.zdjecie ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
   const contact = [
@@ -133,11 +136,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px"><strong>${l.jezyk}</strong> <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="margin-bottom:16px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>
-            ${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -172,11 +171,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.78);margin-bottom:5px">${l.jezyk} <span style="color:rgba(255,255,255,0.4)">· ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">
-            <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">Certyfikaty</div>
-            ${certs.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.72);margin-bottom:4px">· ${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px"><div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.72);margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">
             <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${L("interests")}</div>
@@ -270,7 +265,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div>
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -331,7 +326,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} – ${l.poziom}</div>`).join('')}
           </div>`:''}
-          ${certs.length?`<div style="margin-top:16px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-top:16px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div style="margin-top:16px">
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px">${L("interests")}</div>
@@ -390,7 +385,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`<div style="background:#fff;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="background:#fff;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div style="background:#fff;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,0.05);border-radius:4px">
             <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -439,7 +434,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#f1f5f9;margin-bottom:3px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c2};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c2};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`<div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -460,7 +455,7 @@ function buildCVHTML(tpl) {
           ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.75);margin-bottom:5px;word-break:break-all">${x}</div>`).join('')}
           ${skills.length?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${s}</div>`).join('')}`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">${l.jezyk} – ${l.poziom}</div>`).join('')}`:''}
-          ${certs.length?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${c}</div>`).join('')}`:''}
+          ${certGroups.map(({label,items}) => `<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:4px">· ${c}</div>`).join('')}`).join('')}
           ${d.zainteresowania?`<div style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px">${L("interests")}</div><div style="font-size:8.5px;color:rgba(255,255,255,0.75);line-height:1.65">${d.zainteresowania}</div>`:''}
         </div>
         <div style="padding:28px 28px;display:flex;flex-direction:column">
@@ -530,7 +525,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;margin-bottom:4px;padding:3px 8px;background:${c1}15;border-radius:3px;color:#444">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#444">${l.jezyk} <span style="color:#bbb">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -583,7 +578,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px;padding-left:8px;border-left:2px solid ${c1}">  ${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk} <span style="color:#999">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certs.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -630,7 +625,7 @@ function buildCVHTML(tpl) {
         <div>
           ${skills.length?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;background:${c1}12;padding:3px 8px;margin-bottom:4px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certs.length?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06);margin-bottom:10px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06)"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
@@ -681,7 +676,7 @@ function buildCVHTML(tpl) {
               </div>
             </div>`).join('')}
         </div>`:''}
-        ${certs.length?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">Certyfikaty</div>${certs.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:#1a2744;flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`:''}
+        ${certGroups.map(({label,items}) => `<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:#1a2744;flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
         ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         <div style="margin-top:16px;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>${renderCustomSections(c1)}
       </div>
@@ -743,11 +738,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:9px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:#333;margin-bottom:5px">${l.jezyk}<span style="color:#aaa"> – ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="border-top:1px solid #e5e5e5;padding-top:13px;margin-bottom:15px">
-            <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:8px">Certyfikaty</div>
-            ${certs.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px">· ${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="border-top:1px solid #e5e5e5;padding-top:13px;margin-bottom:15px"><div style="font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div style="border-top:1px solid #e5e5e5;padding-top:13px">
             <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:8px">${L("interests")}</div>
@@ -819,11 +810,7 @@ function buildCVHTML(tpl) {
           <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px">${L("languages")}</div>
           ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk}<span style="color:#aaa"> – ${l.poziom}</span></div>`).join('')}
         </div>`:''}
-        ${certs.length?`
-        <div style="margin-bottom:14px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Certyfikaty</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px">${certs.map(c=>`<span style="font-size:8.5px;padding:3px 9px;background:#f5f5f5;color:#555;border-radius:3px">${c}</span>`).join('')}</div>
-        </div>`:''}
+        ${certGroups.map(({label,items}) => `<div style="margin-bottom:14px"><div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${label}</div><div style="display:flex;flex-wrap:wrap;gap:5px">${items.map(c=>`<span style="font-size:8.5px;padding:3px 9px;background:#f5f5f5;color:#555;border-radius:3px">${c}</span>`).join('')}</div></div>`).join('')}
         ${d.zainteresowania?`
         <div style="margin-bottom:14px">
           <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -855,11 +842,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:#333;margin-bottom:5px">${l.jezyk}<span style="color:#888"> – ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px">
-            <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Certyfikaty</div>
-            ${certs.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px">· ${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px"><div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px">
             <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${L("interests")}</div>
@@ -957,7 +940,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:10px;color:#555">${e.szkola}</div>
           </div>`).join('')}
         </div>`:''}
-        ${(skills.length||d.jezyki.some(l=>l.jezyk)||certs.length||d.zainteresowania)?`
+        ${(skills.length||d.jezyki.some(l=>l.jezyk)||certGroups.length||d.zainteresowania)?`
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px">
           ${skills.length?`
           <div style="margin-bottom:16px">
@@ -977,14 +960,7 @@ function buildCVHTML(tpl) {
             </div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk}<span style="color:#aaa"> – ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="margin-bottom:16px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-              <span style="display:inline-block;width:3px;height:14px;background:${c1};border-radius:2px;flex-shrink:0"></span>
-              <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1}">Certyfikaty</div>
-            </div>
-            ${certs.map(c=>`<div style="font-size:9px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:4px;height:4px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="display:inline-block;width:3px;height:14px;background:${c1};border-radius:2px;flex-shrink:0"></span><div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1}">${label}</div></div>${items.map(c=>`<div style="font-size:9px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:4px;height:4px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div style="margin-bottom:16px">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1068,14 +1044,7 @@ function buildCVHTML(tpl) {
             </div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;font-family:Arial,sans-serif;margin-bottom:4px">${l.jezyk} <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="margin-bottom:16px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-              <div style="width:3px;height:14px;background:${c1};flex-shrink:0"></div>
-              <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#111;font-family:Arial,sans-serif">Certyfikaty</div>
-            </div>
-            ${certs.map(c=>`<div style="font-size:9.5px;color:#444;font-family:Arial,sans-serif;margin-bottom:4px">${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:3px;height:14px;background:${c1};flex-shrink:0"></div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#111;font-family:Arial,sans-serif">${label}</div></div>${items.map(c=>`<div style="font-size:9.5px;color:#444;font-family:Arial,sans-serif;margin-bottom:4px">${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div>
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
@@ -1155,11 +1124,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:5px"><strong>${l.jezyk}</strong><div style="font-size:8px;color:#999">${l.poziom}</div></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">Certyfikaty</div>
-            ${certs.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;padding:3px 6px;background:#fff;border-left:2px solid ${c1}">${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:18px"><div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;padding:3px 6px;background:#fff;border-left:2px solid ${c1}">${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div>
             <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div>
@@ -1226,11 +1191,7 @@ function buildCVHTML(tpl) {
             <div style="font-size:7.5px;color:${c1};letter-spacing:3px;margin-bottom:10px">${L("languages")}</div>
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:#c9d1d9;margin-bottom:5px"><span style="color:${c1}">${l.jezyk}</span><div style="font-size:7.5px;color:#484f58">${l.poziom}</div></div>`).join('')}
           </div>`:''}
-          ${certs.length?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:7.5px;color:${c1};letter-spacing:3px;margin-bottom:9px">CERTS</div>
-            ${certs.map(c=>`<div style="font-size:8px;color:#7d8590;margin-bottom:4px"># ${c}</div>`).join('')}
-          </div>`:''}
+          ${certGroups.map(({label,items}) => `<div style="margin-bottom:18px"><div style="font-size:7.5px;color:${c1};letter-spacing:3px;margin-bottom:9px">${label.toUpperCase()}</div>${items.map(c=>`<div style="font-size:8px;color:#7d8590;margin-bottom:4px"># ${c}</div>`).join('')}</div>`).join('')}
           ${d.zainteresowania?`
           <div>
             <div style="font-size:7.5px;color:${c1};letter-spacing:3px;margin-bottom:8px">${L("interests")}</div>
@@ -1303,11 +1264,7 @@ function buildCVHTML(tpl) {
               <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">${L("languages")}</div>
               ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:5px"><strong>${l.jezyk}</strong> <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
             </div>`:''}
-            ${certs.length?`
-            <div style="margin-bottom:16px">
-              <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">Certyfikaty</div>
-              ${certs.map(c=>`<div style="font-size:8.5px;color:#555;margin-bottom:4px">· ${c}</div>`).join('')}
-            </div>`:''}
+            ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#555;margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
             ${d.zainteresowania?`
             <div>
               <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div>
