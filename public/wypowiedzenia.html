@@ -445,11 +445,13 @@ var FORMS = {
     steps:[
       {label:"Pracownik",fields:[
         {id:"s_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",              icon:"👤"},
-        {id:"s_ur",    label:"Data urodzenia",               type:"date",                        icon:"🎂", opt:true}
+        {id:"s_ur",    label:"Data urodzenia",               type:"date",                        icon:"🎂", opt:true},
+        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",               icon:"🆔", opt:true}
       ]},
       {label:"Pracodawca",fields:[
         {id:"s_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",             icon:"🏢"},
-        {id:"s_siedz", label:"Siedziba firmy",               ph:"np. ul. Kwiatowa 1, Warszawa",   icon:"📍", opt:true}
+        {id:"s_siedz", label:"Siedziba firmy",               ph:"np. ul. Kwiatowa 1, Warszawa",   icon:"📍", opt:true},
+        {id:"s_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",             icon:"🏛️", opt:true}
       ]},
       {label:"Zatrudnienie",fields:[
         {id:"s_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. marketingu", icon:"💼"},
@@ -462,9 +464,7 @@ var FORMS = {
         {id:"s_tryb",  label:"Sposób rozwiązania",           type:"pills", icon:"📋",
          opts:["Za porozumieniem stron","Wypowiedzenie przez pracownika","Wypowiedzenie przez pracodawcę","Wygaśnięcie umowy"]},
         {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)",ph:"np. 14",  icon:"🏖️", opt:true},
-        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",    ph:"np. 6",   icon:"💵", opt:true},
-        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345", icon:"🆔", opt:true},
-        {id:"s_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79", icon:"🏛️", opt:true}
+        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",    ph:"np. 6",   icon:"💵", opt:true}
       ]}
     ],
     prompt:function(v){
