@@ -59,13 +59,6 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .lm-toggle-rec svg{transition:transform .2s;}
 .lm-toggle-rec.open svg{transform:rotate(180deg);}
 
-@media print{
-  .nav,.lm-editor,.lm-bar{display:none!important;}
-  body{overflow:visible!important;}
-  .lm-wrap{display:block!important;overflow:visible!important;}
-  .lm-preview{background:#fff!important;padding:0!important;display:block!important;}
-  .lm-paper{box-shadow:none!important;max-width:100%!important;padding:20mm 20mm!important;min-height:auto!important;}
-}
 
 /* ── PREVIEW ── */
 .lm-preview{flex:1;overflow-y:auto;background:#f0f0f2;display:flex;justify-content:center;padding:28px 20px 48px;}
@@ -85,6 +78,7 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
   .lm-preview{display:none;}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -345,7 +339,25 @@ function renderPreview() {
 }
 
 // ── Export ──
-function downloadPdf() { window.print(); }
+function downloadPdf() {
+  var btn = document.querySelector('.btn-dl');
+  if (btn) { btn.disabled = true; btn.textContent = 'Generowanie…'; }
+  var company = val('fCompany') || 'dokumo';
+  var filename = 'list-motywacyjny-' + company.replace(/\s+/g,'-').toLowerCase() + '.pdf';
+  html2pdf()
+    .set({
+      margin: [18, 18, 18, 18],
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    })
+    .from(document.getElementById('lmPaper'))
+    .save()
+    .then(function() {
+      if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz PDF'; }
+    });
+}
 function getFullText() {
   var fn = val('fFirstName'), ln = val('fLastName');
   var fullName = [fn, ln].filter(Boolean).join(' ');
