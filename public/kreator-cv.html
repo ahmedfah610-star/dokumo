@@ -65,8 +65,8 @@ function buildCVHTML(tpl) {
   const name = [d.imie, d.nazwisko].filter(Boolean).join(' ') || 'Imię Nazwisko';
   const skills = d.umiejetnosci ? d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean) : [];
   const certItems = (d.certyfikatyList||[]).filter(c=>c.nazwa).map(c => c.nazwa + (c.wydawca ? ' – '+c.wydawca : '') + (c.rok ? ', '+c.rok : ''));
-  const kursyItems = (d.kursy||[]).filter(k=>k.nazwa).map(k => k.nazwa + (k.prowadzacy ? ' – '+k.prowadzacy : ''));
-  const stazeItems = (d.staze||[]).filter(s=>s.firma).map(s => s.firma + (s.od ? ' ('+s.od+(s.do?' – '+s.do:s.obecnie?' – obecnie':'')+')' : ''));
+  const kursyItems = (d.kursy||[]).filter(k=>k.nazwa).map(k => { let dates=''; if(k.od&&k.do) dates=' ('+k.od+' – '+k.do+')'; else if(k.od&&k.obecnie) dates=' ('+k.od+' – obecnie)'; else if(k.od&&!k.do) dates=' ('+k.od+')'; return k.nazwa+(k.prowadzacy?' – '+k.prowadzacy:'')+dates; });
+  const stazeItems = (d.staze||[]).filter(s=>s.firma).map(s => { let dates=''; if(s.od&&s.do) dates=' ('+s.od+' – '+s.do+')'; else if(s.od&&s.obecnie) dates=' ('+s.od+' – obecnie)'; else if(s.od&&!s.do) dates=' ('+s.od+')'; else if(s.do&&!s.od) dates=' (do '+s.do+')'; return s.firma+dates; });
   const certGroups = [
     ...(certItems.length ? [{ label: 'Certyfikaty', items: certItems }] : []),
     ...(kursyItems.length ? [{ label: 'Kursy', items: kursyItems }] : []),
