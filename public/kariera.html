@@ -21,7 +21,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Strona główna","item":"https://dokumoflow.com"},{"@type":"ListItem","position":2,"name":"Strefa Kariery","item":"https://dokumoflow.com/kariera.html"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -40,7 +40,7 @@
 
 body {
   background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--ink);
   min-height: 100vh;
 }
@@ -82,7 +82,7 @@ body {
   50% { opacity: .5; transform: scale(.7); }
 }
 .k-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 800;
   line-height: 1.1;
@@ -159,7 +159,7 @@ body {
 }
 
 .k-card-num {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: .68rem;
   font-weight: 700;
   letter-spacing: .18em;
@@ -182,7 +182,7 @@ body {
 }
 
 .k-card-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
   color: #fff;
@@ -250,7 +250,7 @@ body {
   margin-bottom: 40px;
 }
 .k-calc-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.9rem;
   font-weight: 800;
   letter-spacing: -.03em;
@@ -280,7 +280,7 @@ body {
   background: #fff;
   border: 1.5px solid rgba(26,23,20,.1);
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   color: var(--ink);
   outline: none;
@@ -298,7 +298,7 @@ body {
   color: #fff;
   border: none;
   border-radius: 14px;
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: .95rem;
   font-weight: 700;
   letter-spacing: .01em;
@@ -326,7 +326,7 @@ body {
   margin-bottom: 6px;
 }
 .k-result-amount {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 2.4rem;
   font-weight: 800;
   color: #fff;
@@ -414,7 +414,7 @@ body {
   flex-shrink: 0; transition: background .25s;
 }
 .jm-header-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem; font-weight: 800; color: #1a1714; letter-spacing: -.02em;
 }
 .jm-header-sub { font-size: .73rem; color: #9a9690; margin-top: 2px; }
@@ -536,7 +536,7 @@ body {
 .jm-wiz-input {
   width: 100%; padding: 13px 14px;
   border: 1.5px solid rgba(26,23,20,.12); border-radius: 12px;
-  font-family: 'DM Sans', sans-serif; font-size: .9rem; color: #1a1714;
+  font-family: 'Inter', sans-serif; font-size: .9rem; color: #1a1714;
   background: #faf8f4; outline: none; resize: none;
   transition: border-color .2s, background .2s;
 }
@@ -545,7 +545,7 @@ body {
 .jm-wiz-next {
   width: 100%; padding: 13px; margin-top: 8px;
   background: #1c2e4a; color: #fff; border: none; border-radius: 12px;
-  font-family: 'Bricolage Grotesque', sans-serif; font-size: .88rem; font-weight: 800;
+  font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 800;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   transition: background .2s, transform .1s;
 }
@@ -1545,6 +1545,73 @@ function updateNavAuth() {
 
 
 </script>
+
+<!-- FAQ -->
+<style>
+.k-faq { max-width: 760px; margin: 0 auto 80px; padding: 0 2rem; }
+.k-faq-title { font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; color: var(--ink); margin-bottom: 6px; }
+.k-faq-sub { font-size: .9rem; color: var(--ink2); margin-bottom: 28px; }
+.k-faq-item { border-bottom: 1px solid rgba(26,23,20,.1); }
+.k-faq-q { width: 100%; text-align: left; background: none; border: none; padding: 20px 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.k-faq-chevron { font-size: .75rem; flex-shrink: 0; transition: transform .2s; display: inline-block; color: var(--ink2); }
+.k-faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
+.k-faq-item.open .k-faq-chevron { transform: rotate(180deg); }
+.k-faq-item.open .k-faq-a { display: block; }
+</style>
+
+<section class="k-faq">
+  <div class="k-faq-title">Najczęstsze pytania</div>
+  <div class="k-faq-sub">Kariera i dokumenty pracownicze — odpowiedzi</div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Jak szybko wygeneruję CV? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Kreator CV przeprowadzi Cię przez kilka kroków — imię i nazwisko, doświadczenie, wykształcenie, umiejętności. Cały proces zajmuje około 5–10 minut. Na końcu pobierzesz gotowe CV w PDF.</div>
+  </div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Czy CV wygenerowane przez Dokumo jest zgodne z polskim rynkiem pracy? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Tak. Szablony CV w Dokumo są zaprojektowane z myślą o polskich pracodawcach i spełniają standardy obowiązujące na krajowym rynku pracy. Możesz też wybrać wersję angielską lub inną językową.</div>
+  </div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Jak napisać wypowiedzenie umowy o pracę? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Wypowiedzenie musi zawierać: dane pracownika i pracodawcy, datę, okres wypowiedzenia i podpis. Nasz kreator wypełni wszystkie pola automatycznie i wygeneruje dokument zgodny z Kodeksem Pracy.</div>
+  </div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Ile wynosi okres wypowiedzenia umowy o pracę? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Okres wypowiedzenia zależy od stażu pracy: do 6 miesięcy — 2 tygodnie, od 6 miesięcy do 3 lat — 1 miesiąc, ponad 3 lata — 3 miesiące. Kalkulator w kreatorze oblicza to automatycznie.</div>
+  </div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Czy mogę obliczyć wynagrodzenie netto z brutto? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Tak — kalkulator wynagrodzeń uwzględnia składki ZUS, podatek dochodowy, ulgę dla pracowników i zerowy PIT dla osób do 26. roku życia. Obsługuje zarówno umowę o pracę jak i B2B.</div>
+  </div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Czy wniosek o urlop jest prawnie ważny? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Wygenerowany wniosek zawiera wszystkie wymagane elementy zgodnie z Kodeksem Pracy. Po wydrukowaniu i podpisaniu jest w pełni ważnym dokumentem, który możesz złożyć pracodawcy.</div>
+  </div>
+
+  <div class="k-faq-item">
+    <button class="k-faq-q" onclick="this.closest('.k-faq-item').classList.toggle('open')">
+      Czy mogę zaimportować swoje stare CV do kreatora? <span class="k-faq-chevron">▼</span>
+    </button>
+    <div class="k-faq-a">Tak. Kreator CV pozwala zaimportować plik PDF z istniejącym CV — dane zostaną automatycznie odczytane i wstępnie wypełnione. Następnie możesz je edytować i wybrać nowy szablon.</div>
+  </div>
+</section>
 
 </body>
 </html>
