@@ -292,15 +292,19 @@ function renderPreview() {
   var rStreet = val('rStreet'), rZip = val('rZip'), rCity = val('rCity');
 
   var today = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
-  var cityDate = esc((city || 'Miejscowość') + ', ' + today);
 
-  var senderLines = [];
-  if (street) senderLines.push(esc(street));
+  // ── Sender block (top-left) ──
+  var senderHtml = '<b>' + esc(fullName || 'Imię Nazwisko') + '</b>';
+  if (street) senderHtml += '<br>' + esc(street);
   var zipCity = [zip, city].filter(Boolean).join(' ');
-  if (zipCity) senderLines.push(esc(zipCity));
-  if (email)  senderLines.push(esc(email));
-  if (phone)  senderLines.push(esc(phone));
+  if (zipCity) senderHtml += '<br>' + esc(zipCity);
+  if (email)   senderHtml += '<br>' + esc(email);
+  if (phone)   senderHtml += '<br>' + esc(phone);
 
+  // ── Date (top-right) ──
+  var dateHtml = esc((city || 'Miejscowość') + ', ' + today);
+
+  // ── Recipient block (left, below sender gap) ──
   var recipientBlock = '';
   if (rCompany || rContact) {
     var rLines = [];
@@ -309,11 +313,11 @@ function renderPreview() {
     if (rStreet)  rLines.push(esc(rStreet));
     var rZipCity = [rZip, rCity].filter(Boolean).join(' ');
     if (rZipCity) rLines.push(esc(rZipCity));
-    recipientBlock = '<div style="margin-bottom:24px;">' + rLines.join('<br>') + '</div>';
+    recipientBlock = '<div style="margin-bottom:32px;">' + rLines.join('<br>') + '</div>';
   }
 
   var subjectLine = pos
-    ? ('<div style="margin-bottom:22px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>')
+    ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
     : '';
 
   var salutation = rContact
@@ -325,16 +329,17 @@ function renderPreview() {
     : '<div style="color:#bbb;font-style:italic;">Tutaj pojawi się treść Twojego listu motywacyjnego…</div>';
 
   var html =
-    '<div style="text-align:right;margin-bottom:32px;">' + cityDate + '</div>' +
-    '<div style="margin-bottom:26px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b><br>' +
-      (senderLines.length ? senderLines.join('<br>') : '<span style="color:#bbb;">adres…</span>') +
+    // Header row: sender left, date right
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">' +
+      '<div style="line-height:1.7;">' + senderHtml + '</div>' +
+      '<div style="text-align:right;white-space:nowrap;padding-left:16px;">' + dateHtml + '</div>' +
     '</div>' +
     recipientBlock +
     subjectLine +
     '<div style="margin-bottom:20px;">' + salutation + '</div>' +
-    '<div style="margin-bottom:32px;">' + bodyHtml + '</div>' +
-    '<div style="margin-bottom:6px;">Z poważaniem,</div>' +
-    '<div style="margin-top:28px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
+    '<div style="margin-bottom:40px;">' + bodyHtml + '</div>' +
+    '<div>Z poważaniem,</div>' +
+    '<div style="margin-top:36px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
 
   document.getElementById('lmPaper').innerHTML = html;
 }
