@@ -166,18 +166,18 @@ body{
     <span class="ws-lang-label">🌐 Język CV</span>
     <div class="ws-lang-dd" id="wsLangDd">
       <div class="ws-lang-btn" id="wsLangBtn" onclick="toggleLangMenu()">
-        <span id="wsLangFlag">🇵🇱</span>
+        <img id="wsLangFlag" src="https://flagcdn.com/16x12/pl.png" alt="PL" style="width:16px;height:12px;border-radius:2px;flex-shrink:0;">
         <span id="wsLangName">Polski</span>
         <span class="ws-chevron">▼</span>
       </div>
       <div class="ws-lang-menu" id="wsLangMenu">
-        <div class="ws-lang-opt active" onclick="pickLang('pl','🇵🇱','Polski',this)">🇵🇱 Polski</div>
-        <div class="ws-lang-opt" onclick="pickLang('en','🇬🇧','English',this)">🇬🇧 English</div>
-        <div class="ws-lang-opt" onclick="pickLang('de','🇩🇪','Deutsch',this)">🇩🇪 Deutsch</div>
-        <div class="ws-lang-opt" onclick="pickLang('uk','🇺🇦','Українська',this)">🇺🇦 Українська</div>
-        <div class="ws-lang-opt" onclick="pickLang('es','🇪🇸','Español',this)">🇪🇸 Español</div>
-        <div class="ws-lang-opt" onclick="pickLang('cs','🇨🇿','Čeština',this)">🇨🇿 Čeština</div>
-        <div class="ws-lang-opt" onclick="pickLang('nl','🇳🇱','Nederlands',this)">🇳🇱 Nederlands</div>
+        <div class="ws-lang-opt active" onclick="pickLang('pl','https://flagcdn.com/16x12/pl.png','PL','Polski',this)"><img src="https://flagcdn.com/16x12/pl.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Polski</div>
+        <div class="ws-lang-opt" onclick="pickLang('en','https://flagcdn.com/16x12/gb.png','GB','English',this)"><img src="https://flagcdn.com/16x12/gb.png" alt="" style="width:16px;height:12px;border-radius:2px;"> English</div>
+        <div class="ws-lang-opt" onclick="pickLang('de','https://flagcdn.com/16x12/de.png','DE','Deutsch',this)"><img src="https://flagcdn.com/16x12/de.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Deutsch</div>
+        <div class="ws-lang-opt" onclick="pickLang('uk','https://flagcdn.com/16x12/ua.png','UA','Українська',this)"><img src="https://flagcdn.com/16x12/ua.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Українська</div>
+        <div class="ws-lang-opt" onclick="pickLang('es','https://flagcdn.com/16x12/es.png','ES','Español',this)"><img src="https://flagcdn.com/16x12/es.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Español</div>
+        <div class="ws-lang-opt" onclick="pickLang('cs','https://flagcdn.com/16x12/cz.png','CZ','Čeština',this)"><img src="https://flagcdn.com/16x12/cz.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Čeština</div>
+        <div class="ws-lang-opt" onclick="pickLang('nl','https://flagcdn.com/16x12/nl.png','NL','Nederlands',this)"><img src="https://flagcdn.com/16x12/nl.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Nederlands</div>
       </div>
     </div>
   </div>
@@ -207,7 +207,6 @@ body{
 // ── Templates ────────────────────────────────────────────────
 const T = [
   { id:'nova',      name:'Nova',       c1:'#1a3a2e', c2:'#2d6b52' },
-  { id:'clean',     name:'Clean',      c1:'#1a2744', c2:'#2c4a8a' },
   { id:'cascade',   name:'Cascade',    c1:'#0f766e', c2:'#14b8a6' },
   { id:'metro',     name:'Metro',      c1:'#1a3a2e', c2:'#2d6b52' },
   { id:'executive', name:'Executive',  c1:'#92400e', c2:'#d97706' },
@@ -372,13 +371,9 @@ function preview(id, c1, c2) {
 
   const R = {
     nova: wrap(`
-      ${headerDark('#fff','rgba(255,255,255,0.75)',c1,'28px 32px 22px')}
-      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
-
-    clean: wrap(`
       <div style="padding:28px 32px 16px;border-bottom:3px solid ${c1}">
-        <div style="font-size:30px;font-weight:800;color:${c1};letter-spacing:-0.03em">${S.name}</div>
-        <div style="font-size:14px;color:${mu};margin-top:5px">${S.role}</div>
+        <div style="font-size:30px;font-weight:800;color:#111;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:14px;color:${c1};font-weight:600;margin-top:5px">${S.role}</div>
         <div style="margin-top:10px;font-size:11px;color:${mu}">
           ${contactRow('', S.email, mu)}${contactRow('', S.phone, mu)}${contactRow('', S.city, mu)}
         </div>
@@ -428,14 +423,16 @@ function preview(id, c1, c2) {
       </div>
       <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
 
-    slate: wrapRow(`
-      <div style="width:38%;background:${c1};padding:28px 20px 24px;flex-shrink:0;overflow:hidden">
-        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.18);margin-bottom:16px"></div>
-        <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2">${S.name}</div>
-        <div style="font-size:11.5px;color:rgba(255,255,255,0.65);margin-top:5px">${S.role}</div>
-        ${sidebarCol(c1,'rgba(255,255,255,0.82)','rgba(255,255,255,0.45)')}
+    slate: wrap(`
+      <div style="border-top:6px solid ${c1};padding:28px 36px 18px;font-family:Georgia,serif;flex-shrink:0">
+        <div style="font-size:28px;font-weight:700;color:${c1};letter-spacing:-0.02em">${S.name}</div>
+        <div style="font-size:12px;color:${c2};font-style:italic;margin-top:5px">${S.role}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <div style="height:1px;background:${c1};flex:1;margin-right:16px"></div>
+          <div style="font-size:10px;color:#666">${contactRow('', S.email, '#666')}${contactRow('', S.phone, '#666')}</div>
+        </div>
       </div>
-      <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
+      <div style="flex:1;padding:0 36px 24px;overflow:hidden;font-family:Georgia,serif">${body(c1)}</div>`),
 
     metro: wrap(`
       <div style="background:#1a1a1a;padding:28px 32px 22px;flex-shrink:0">
@@ -448,25 +445,15 @@ function preview(id, c1, c2) {
       <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body('#1a1a1a')}</div>`),
 
     midnight: wrap(`
-      <div style="background:${c1};padding:28px 32px 22px;flex-shrink:0">
-        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
-        <div style="font-size:14px;color:${c2};margin-top:6px">${S.role}</div>
-        <div style="height:1px;background:rgba(255,255,255,0.1);margin:14px 0 10px"></div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.45)">
-          ${contactRow('', S.email, 'rgba(255,255,255,0.45)')}${contactRow('', S.phone, 'rgba(255,255,255,0.45)')}
+      <div style="background:#0f172a;padding:28px 32px 20px;flex-shrink:0">
+        <div style="font-size:28px;font-weight:700;color:#f8fafc;letter-spacing:-0.02em">${S.name}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:5px;letter-spacing:0.1em;text-transform:uppercase">${S.role}</div>
+        <div style="margin-top:10px;font-size:10px;color:#94a3b8">
+          ${contactRow('', S.email, '#94a3b8')}${contactRow('', S.phone, '#94a3b8')}
         </div>
       </div>
-      <div style="flex:1;padding:0 32px 24px;overflow:hidden;background:${c1}">
-        ${sl('Podsumowanie', c2, 0)}
-        <div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.6;margin-bottom:4px">${S.sum}</div>
-        ${sl('Doświadczenie', c2)}
-        ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, c2).replace(/color:#1e293b/g,'color:#e2e8f0').replace(/color:#475569/g,'color:rgba(255,255,255,0.55)')}
-        ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, c2).replace(/color:#1e293b/g,'color:#e2e8f0').replace(/color:#475569/g,'color:rgba(255,255,255,0.55)')}
-        ${sl('Wykształcenie', c2)}
-        ${eduEntry(S.edu1, S.edu1d, S.edu1y).replace(/color:#1e293b/g,'color:#e2e8f0').replace(/color:#64748b/g,'color:rgba(255,255,255,0.5)')}
-        ${sl('Umiejętności', c2)}
-        <div>${skillChip(S.sk1,'rgba(255,255,255,0.1)','rgba(255,255,255,0.85)')}${skillChip(S.sk2,'rgba(255,255,255,0.1)','rgba(255,255,255,0.85)')}${skillChip(S.sk3,'rgba(255,255,255,0.1)','rgba(255,255,255,0.85)')}</div>
-      </div>`),
+      <div style="height:3px;background:linear-gradient(90deg,${c1},${c2},transparent)"></div>
+      <div style="flex:1;padding:20px 32px 24px;overflow:hidden">${body(c2)}</div>`),
 
     matrix: wrap(`
       <div style="background:#0d1117;padding:28px 32px 22px;flex-shrink:0">
@@ -488,26 +475,30 @@ function preview(id, c1, c2) {
       </div>`, '#0d1117'),
 
     executive: wrap(`
-      <div style="background:#111;padding:28px 32px 22px;flex-shrink:0">
-        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
-        <div style="font-size:14px;color:${c2};margin-top:6px">${S.role}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:10px">
-          ${contactRow('', S.email, 'rgba(255,255,255,0.45)')}${contactRow('', S.phone, 'rgba(255,255,255,0.45)')}
+      <div style="padding:32px 40px 16px;font-family:Georgia,serif">
+        <div style="font-size:30px;font-weight:700;color:#0a0a0a;letter-spacing:-0.03em">${S.name}</div>
+        <div style="font-size:12px;color:${c2};font-weight:600;margin-top:6px;letter-spacing:0.05em;text-transform:uppercase">${S.role}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px 16px;padding:10px 0;border-top:1px solid #ddd;border-bottom:3px solid ${c1};margin-top:12px;font-size:10px;color:#666">
+          ${contactRow('', S.email, '#666')}${contactRow('', S.phone, '#666')}${contactRow('', S.city, '#666')}
         </div>
       </div>
-      <div style="height:4px;background:${c2}"></div>
-      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c2)}</div>`),
+      <div style="flex:1;padding:0 40px 24px;overflow:hidden;font-family:Georgia,serif">${body(c2)}</div>`),
 
-    athens: wrap(`
-      <div style="background:${c1};padding:26px 32px 20px;flex-shrink:0">
-        <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.7);margin-top:5px">${S.role}</div>
-      </div>
-      <div style="display:flex;flex:1;overflow:hidden">
-        <div style="width:34%;background:#eff6ff;padding:20px 18px;overflow:hidden;flex-shrink:0">
-          ${sidebarCol(c2,dk,'#64748b').replace(/rgba\(255,255,255,0\.15\)/g,'rgba(0,0,0,0.07)').replace(/rgba\(255,255,255,0\.[0-9.]+\)/g,'rgba(0,0,0,0.4)')}
+    athens: wrapRow(`
+      <div style="width:595px;min-height:842px;display:flex;flex-direction:column">
+        <div style="background:${c1};padding:26px 32px 22px;flex-shrink:0">
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.03em">${S.name}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:5px">${S.role}</div>
+          <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.6)">
+            ${contactRow('', S.email, 'rgba(255,255,255,0.65)')}${contactRow('', S.phone, 'rgba(255,255,255,0.65)')}
+          </div>
         </div>
-        <div style="flex:1;padding:20px 22px;overflow:hidden">${mainCol(c1)}</div>
+        <div style="display:flex;flex:1;overflow:hidden">
+          <div style="width:34%;background:#eff6ff;padding:20px 18px;overflow:hidden;flex-shrink:0">
+            ${sidebarCol(c2,dk,'#64748b').replace(/rgba\(255,255,255,0\.15\)/g,'rgba(0,0,0,0.07)').replace(/rgba\(255,255,255,0\.[0-9.]+\)/g,'rgba(0,0,0,0.4)')}
+          </div>
+          <div style="flex:1;padding:20px 22px;overflow:hidden">${mainCol(c1)}</div>
+        </div>
       </div>`),
 
     prism: wrap(`
@@ -521,8 +512,14 @@ function preview(id, c1, c2) {
       <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
 
     teal: wrap(`
-      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
-      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+      <div style="background:#fff;border-bottom:4px solid ${c1};padding:24px 32px 18px;flex-shrink:0">
+        <div style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-0.02em">${S.name}</div>
+        <div style="font-size:12px;color:${c1};font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:0.08em">${S.role}</div>
+        <div style="margin-top:10px;font-size:10px;color:#666">
+          ${contactRow('', S.email, '#666')}${contactRow('', S.phone, '#666')}${contactRow('', S.city, '#666')}
+        </div>
+      </div>
+      <div style="flex:1;padding:0 32px 24px;overflow:hidden;background:#f8fffe">${body(c1)}</div>`, '#f8fffe'),
 
     ocean: wrap(`
       ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(90deg,${c1},${c2})`)}
@@ -532,9 +529,14 @@ function preview(id, c1, c2) {
       ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
       <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
 
-    coral: wrap(`
-      ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
-      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+    coral: wrapRow(`
+      <div style="width:38%;background:linear-gradient(180deg,${c1},${c2});padding:28px 20px 24px;flex-shrink:0;overflow:hidden">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:16px"></div>
+        <div style="font-size:17px;font-weight:700;color:#fff;line-height:1.2">${S.name}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:4px;text-transform:uppercase;letter-spacing:0.05em">${S.role}</div>
+        ${sidebarCol(c1,'rgba(255,255,255,0.88)','rgba(255,255,255,0.5)')}
+      </div>
+      <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
 
     rose: wrap(`
       ${headerDark('#fff','rgba(255,255,255,0.75)',`linear-gradient(135deg,${c1},${c2})`)}
@@ -630,9 +632,11 @@ let wsLang = 'pl';
 function toggleLangMenu() {
   document.getElementById('wsLangMenu').classList.toggle('open');
 }
-function pickLang(code, flag, name, el) {
+function pickLang(code, flagSrc, alt, name, el) {
   wsLang = code;
-  document.getElementById('wsLangFlag').textContent = flag;
+  var flagEl = document.getElementById('wsLangFlag');
+  flagEl.src = flagSrc;
+  flagEl.alt = alt;
   document.getElementById('wsLangName').textContent = name;
   document.querySelectorAll('.ws-lang-opt').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
