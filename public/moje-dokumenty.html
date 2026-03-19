@@ -710,8 +710,12 @@ function editDoc(docId) {
   if (doc.typeId === 'cover-letter' || (doc.text && doc.text.indexOf('__LM_HTML__:') === 0)) {
     if (doc.covDataJson) {
       sessionStorage.setItem('dokumo_editLmData', doc.covDataJson);
+      sessionStorage.removeItem('dokumo_editLmText');
     } else {
       sessionStorage.removeItem('dokumo_editLmData');
+      var rawText = (doc.text || '').indexOf('__LM_HTML__:') === 0 ? '' : (doc.text || '');
+      if (rawText) sessionStorage.setItem('dokumo_editLmText', rawText);
+      else sessionStorage.removeItem('dokumo_editLmText');
     }
     sessionStorage.setItem('dokumo_editLmDocId', docId);
     window.location.href = 'generator.html';

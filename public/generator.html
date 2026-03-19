@@ -296,23 +296,30 @@ window.addEventListener('DOMContentLoaded', function() {
   var editData = null;
   try { editData = JSON.parse(sessionStorage.getItem('dokumo_editLmData') || 'null'); } catch(e) {}
   var editDocId = sessionStorage.getItem('dokumo_editLmDocId') || '';
-  if (editData) {
-    sessionStorage.removeItem('dokumo_editLmData');
-    sessionStorage.removeItem('dokumo_editLmDocId');
+  var editText  = sessionStorage.getItem('dokumo_editLmText') || '';
+  sessionStorage.removeItem('dokumo_editLmData');
+  sessionStorage.removeItem('dokumo_editLmDocId');
+  sessionStorage.removeItem('dokumo_editLmText');
+
+  if (editDocId) {
     var setVal = function(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
-    setVal('fPos', editData.position); setVal('fCompany', editData.company);
-    setVal('fFirstName', editData.firstName); setVal('fLastName', editData.lastName);
-    setVal('fEmail', editData.email); setVal('fPhone', editData.phone);
-    setVal('fStreet', editData.street); setVal('fZip', editData.zip); setVal('fCity', editData.city);
-    setVal('rCompany', editData.rCompany); setVal('rContact', editData.rContact);
-    setVal('rStreet', editData.rStreet); setVal('rZip', editData.rZip); setVal('rCity', editData.rCity);
-    setVal('fBody', editData.body);
-    if (editData.rCompany || editData.rContact) {
-      _recOpen = true;
-      document.getElementById('recFields').classList.add('open');
-      document.getElementById('recToggle').classList.add('open');
+    if (editData) {
+      setVal('fPos', editData.position); setVal('fCompany', editData.company);
+      setVal('fFirstName', editData.firstName); setVal('fLastName', editData.lastName);
+      setVal('fEmail', editData.email); setVal('fPhone', editData.phone);
+      setVal('fStreet', editData.street); setVal('fZip', editData.zip); setVal('fCity', editData.city);
+      setVal('rCompany', editData.rCompany); setVal('rContact', editData.rContact);
+      setVal('rStreet', editData.rStreet); setVal('rZip', editData.rZip); setVal('rCity', editData.rCity);
+      setVal('fBody', editData.body);
+      if (editData.rCompany || editData.rContact) {
+        _recOpen = true;
+        document.getElementById('recFields').classList.add('open');
+        document.getElementById('recToggle').classList.add('open');
+      }
+    } else if (editText) {
+      setVal('fBody', editText);
     }
-    if (editDocId) _saveDocId = editDocId;
+    _saveDocId = editDocId;
     _autoGenDone = true;
     renderPreview();
     showEditor();
