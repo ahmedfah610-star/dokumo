@@ -2935,7 +2935,6 @@ function renderCVForm() {
           <span class="acc-drag-spacer"></span>
           <div class="acc-info">
             <span class="acc-label">${L("personalData")}</span>
-            <span class="acc-summary" id="accPersonalSummary">${fullName||''}</span>
           </div>
           <button class="acc-btn" onclick="event.stopPropagation();toggleAccPersonal()">
             <svg width="14" height="14" viewBox="0 0 14 14"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="acc-plus-v"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -2948,16 +2947,12 @@ function renderCVForm() {
                 ${cvData.zdjecie?`<img src="${cvData.zdjecie}" style="width:100%;height:100%;object-fit:cover">`:`<span style="font-size:1.5rem;display:block">📷</span><span style="font-size:0.58rem;color:#9a9690;margin-top:3px;display:block">Zdjęcie</span>`}
               </div>
               <input type="file" id="cvPhotoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
-              <div class="acc-personal-meta">
-                <div class="acc-personal-name" id="accPersonalName">${fullName||L('fullNamePlaceholder')}</div>
-                <div class="acc-personal-role" id="accPersonalRole">${cvData.stanowisko||L('fillBelow')}</div>
-                ${cvData.zdjecie?`<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">${L("removePhoto")}</button>`:''}
-              </div>
+              ${cvData.zdjecie?`<button class="cvf-remove-btn" onclick="cvData.zdjecie=null;renderCVForm();updateCVPreview()">${L("removePhoto")}</button>`:''}
             </div>
             <div class="cvf-grid2">
-              <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.imie}" placeholder="Jan"></div>
-              <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview();document.getElementById('accPersonalName').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')||L('fullNamePlaceholder');document.getElementById('accPersonalSummary').textContent=[cvData.imie,cvData.nazwisko].filter(Boolean).join(' ')" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
-              <div class="cvf-group cvf-full"><label>${L("position")}</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview();document.getElementById('accPersonalRole').textContent=this.value||L('fillBelow')" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
+              <div class="cvf-group"><label>${L("firstName")}</label><input class="cvf-input" oninput="cvData.imie=this.value;updateCVPreview()" value="${cvData.imie}" placeholder="Jan"></div>
+              <div class="cvf-group"><label>${L("lastName")}</label><input class="cvf-input" oninput="cvData.nazwisko=this.value;updateCVPreview()" value="${cvData.nazwisko}" placeholder="Kowalski"></div>
+              <div class="cvf-group cvf-full"><label>${L("position")}</label><input class="cvf-input" oninput="cvData.stanowisko=this.value;updateCVPreview()" value="${cvData.stanowisko}" placeholder="Specjalista ds. marketingu"></div>
               <div class="cvf-group"><label>${L("email")}</label><input class="cvf-input" type="email" oninput="cvData.email=this.value;updateCVPreview()" value="${cvData.email}" placeholder="jan@email.pl"></div>
               <div class="cvf-group"><label>${L("phone")}</label><input class="cvf-input" oninput="cvData.tel=this.value;updateCVPreview()" value="${cvData.tel}" placeholder="+48 600 000 000"></div>
               <div class="cvf-group"><label>${L("city")}</label><input class="cvf-input" oninput="cvData.adres=this.value;updateCVPreview()" value="${cvData.adres}" placeholder="Warszawa"></div>
