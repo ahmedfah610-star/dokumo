@@ -1450,6 +1450,65 @@ body { overflow:hidden; }
 .cv-photo-label { font-size:0.75rem; font-weight:600; color:#222; display:block; margin-bottom:2px; }
 .cv-photo-hint { font-size:0.65rem; color:#999; display:block; }
 
+/* ── PHOTO CROP MODAL ── */
+#cvCropOverlay {
+  display:none; position:fixed; inset:0; z-index:9000;
+  background:rgba(0,0,0,0.82); align-items:center; justify-content:center;
+}
+#cvCropOverlay.open { display:flex; }
+#cvCropModal {
+  background:#1c1c1e; border-radius:18px; padding:28px 24px 22px;
+  display:flex; flex-direction:column; align-items:center; gap:18px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.7); width:340px; max-width:96vw;
+}
+#cvCropTitle {
+  color:#fff; font-size:0.95rem; font-weight:600; letter-spacing:0.01em;
+  align-self:flex-start;
+}
+#cvCropCircleWrap {
+  width:260px; height:260px; border-radius:50%; overflow:hidden;
+  background:#111; cursor:grab; flex-shrink:0; position:relative;
+  box-shadow:0 0 0 3px #333, 0 0 0 5px rgba(255,255,255,0.06);
+  touch-action:none;
+}
+#cvCropCircleWrap:active { cursor:grabbing; }
+#cvCropCanvas { display:block; }
+.cv-crop-slider-row {
+  width:100%; display:flex; flex-direction:column; gap:6px;
+}
+.cv-crop-slider-label {
+  display:flex; justify-content:space-between; align-items:center;
+}
+.cv-crop-slider-label span:first-child { color:#aaa; font-size:0.78rem; }
+#cvCropPct { color:#fff; font-size:0.78rem; font-weight:600; }
+#cvCropSlider {
+  width:100%; -webkit-appearance:none; appearance:none;
+  height:4px; border-radius:2px; background:#333; outline:none; cursor:pointer;
+}
+#cvCropSlider::-webkit-slider-thumb {
+  -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
+  background:#fff; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.5);
+}
+#cvCropSlider::-moz-range-thumb {
+  width:18px; height:18px; border-radius:50%; background:#fff;
+  cursor:pointer; border:none; box-shadow:0 1px 4px rgba(0,0,0,0.5);
+}
+.cv-crop-btns {
+  display:flex; gap:10px; width:100%;
+}
+.cv-crop-btn-cancel {
+  flex:1; padding:10px; border-radius:10px; border:1px solid #444;
+  background:transparent; color:#ccc; font-size:0.88rem; font-weight:500;
+  cursor:pointer; transition:background 0.15s;
+}
+.cv-crop-btn-cancel:hover { background:#2a2a2a; }
+.cv-crop-btn-confirm {
+  flex:2; padding:10px; border-radius:10px; border:none;
+  background:#fff; color:#111; font-size:0.88rem; font-weight:600;
+  cursor:pointer; transition:opacity 0.15s;
+}
+.cv-crop-btn-confirm:hover { opacity:0.88; }
+
 /* ── ACCORDION LIST ── */
 .acc-list { background:var(--white); }
 .acc-item { border-bottom:1px solid var(--border); }
@@ -3543,7 +3602,7 @@ function loadPhotoFile(file) {
     alert('Plik jest za duży. Maksymalny rozmiar to 2 MB'); return;
   }
   const reader = new FileReader();
-  reader.onload = e => { cvData.zdjecie = e.target.result; renderCVForm(); updateCVPreview(); };
+  reader.onload = e => openCropModal(e.target.result);
   reader.readAsDataURL(file);
 }
 function cvPhotoDragOver(e) {
@@ -3560,6 +3619,113 @@ function cvPhotoDropHandler(e) {
   const file = e.dataTransfer.files[0];
   if (file) loadPhotoFile(file);
 }
+
+/* ── PHOTO CROP ── */
+const CROP_SIZE = 260;
+let _cropImg = null;
+let _cropScale = 1.0;   // multiplier on top of base cover-scale
+let _cropOffX = 0;
+let _cropOffY = 0;
+let _cropDragging = false;
+let _cropDragStartX = 0, _cropDragStartY = 0;
+let _cropDragBaseX = 0, _cropDragBaseY = 0;
+
+function openCropModal(src) {
+  _cropOffX = 0; _cropOffY = 0; _cropScale = 1.0;
+  const slider = document.getElementById('cvCropSlider');
+  const pct = document.getElementById('cvCropPct');
+  slider.value = 100; pct.textContent = '100%';
+  document.getElementById('cvCropOverlay').classList.add('open');
+  _cropImg = new Image();
+  _cropImg.onload = () => { clampCropOffset(); renderCropCanvas(); };
+  _cropImg.src = src;
+  // global mouse/touch up handlers
+  document.addEventListener('mousemove', cropMouseMove);
+  document.addEventListener('mouseup', cropMouseUp);
+}
+
+function closeCropModal() {
+  document.getElementById('cvCropOverlay').classList.remove('open');
+  document.removeEventListener('mousemove', cropMouseMove);
+  document.removeEventListener('mouseup', cropMouseUp);
+  _cropImg = null;
+  // reset file input so same file can be re-selected
+  const inp = document.getElementById('cvPhotoInput');
+  if (inp) inp.value = '';
+}
+
+function _cropBaseScale() {
+  if (!_cropImg) return 1;
+  return Math.max(CROP_SIZE / _cropImg.naturalWidth, CROP_SIZE / _cropImg.naturalHeight);
+}
+
+function clampCropOffset() {
+  if (!_cropImg) return;
+  const s = _cropBaseScale() * _cropScale;
+  const hw = (_cropImg.naturalWidth * s - CROP_SIZE) / 2;
+  const hh = (_cropImg.naturalHeight * s - CROP_SIZE) / 2;
+  _cropOffX = Math.max(-Math.max(hw, 0), Math.min(Math.max(hw, 0), _cropOffX));
+  _cropOffY = Math.max(-Math.max(hh, 0), Math.min(Math.max(hh, 0), _cropOffY));
+}
+
+function renderCropCanvas() {
+  const canvas = document.getElementById('cvCropCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, CROP_SIZE, CROP_SIZE);
+  if (!_cropImg) return;
+  const s = _cropBaseScale() * _cropScale;
+  const w = _cropImg.naturalWidth * s;
+  const h = _cropImg.naturalHeight * s;
+  const x = (CROP_SIZE - w) / 2 + _cropOffX;
+  const y = (CROP_SIZE - h) / 2 + _cropOffY;
+  ctx.drawImage(_cropImg, x, y, w, h);
+}
+
+function cropSliderChange(val) {
+  _cropScale = val / 100;
+  document.getElementById('cvCropPct').textContent = val + '%';
+  clampCropOffset();
+  renderCropCanvas();
+}
+
+function cropMouseDown(e) {
+  _cropDragging = true;
+  _cropDragStartX = e.clientX; _cropDragStartY = e.clientY;
+  _cropDragBaseX = _cropOffX; _cropDragBaseY = _cropOffY;
+  e.preventDefault();
+}
+function cropMouseMove(e) {
+  if (!_cropDragging) return;
+  _cropOffX = _cropDragBaseX + (e.clientX - _cropDragStartX);
+  _cropOffY = _cropDragBaseY + (e.clientY - _cropDragStartY);
+  clampCropOffset();
+  renderCropCanvas();
+}
+function cropMouseUp() { _cropDragging = false; }
+
+function cropTouchStart(e) {
+  if (e.touches.length !== 1) return;
+  _cropDragging = true;
+  _cropDragStartX = e.touches[0].clientX; _cropDragStartY = e.touches[0].clientY;
+  _cropDragBaseX = _cropOffX; _cropDragBaseY = _cropOffY;
+  e.preventDefault();
+}
+function cropTouchMove(e) {
+  if (!_cropDragging || e.touches.length !== 1) return;
+  _cropOffX = _cropDragBaseX + (e.touches[0].clientX - _cropDragStartX);
+  _cropOffY = _cropDragBaseY + (e.touches[0].clientY - _cropDragStartY);
+  clampCropOffset();
+  renderCropCanvas();
+}
+function cropTouchEnd() { _cropDragging = false; }
+
+function cropConfirm() {
+  const canvas = document.getElementById('cvCropCanvas');
+  cvData.zdjecie = canvas.toDataURL('image/png');
+  closeCropModal();
+  renderCVForm(); updateCVPreview();
+}
+function cropCancel() { closeCropModal(); }
 
 function addCVExp() {
   cvData.doswiadczenie.push({ firma:'', stanowisko:'', od:'', do:'', opis:'' });
@@ -4079,5 +4245,31 @@ async function saveCVToMyDocs(fullName) {
 })();
 </script>
 <script src="plan-guard.js"></script>
+
+<!-- PHOTO CROP MODAL -->
+<div id="cvCropOverlay">
+  <div id="cvCropModal">
+    <div id="cvCropTitle">Dopasuj zdjęcie</div>
+    <div id="cvCropCircleWrap"
+      onmousedown="cropMouseDown(event)"
+      ontouchstart="cropTouchStart(event)"
+      ontouchmove="cropTouchMove(event)"
+      ontouchend="cropTouchEnd()">
+      <canvas id="cvCropCanvas" width="260" height="260"></canvas>
+    </div>
+    <div class="cv-crop-slider-row">
+      <div class="cv-crop-slider-label">
+        <span>Powiększ zdjęcie</span>
+        <span id="cvCropPct">100%</span>
+      </div>
+      <input id="cvCropSlider" type="range" min="100" max="300" value="100"
+        oninput="cropSliderChange(this.value)">
+    </div>
+    <div class="cv-crop-btns">
+      <button class="cv-crop-btn-cancel" onclick="cropCancel()">Anuluj</button>
+      <button class="cv-crop-btn-confirm" onclick="cropConfirm()">Potwierdź</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
