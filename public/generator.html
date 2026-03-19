@@ -68,14 +68,21 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .lm-bar{height:52px;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:8px;flex-shrink:0;background:#fff;z-index:10;}
 .btn-dl{padding:8px 18px;border-radius:var(--pill);border:none;background:var(--ink);font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:#fff;display:flex;align-items:center;gap:6px;transition:background .2s;}
 .btn-dl:hover{background:#333;}
-.btn-copy{padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink);display:flex;align-items:center;gap:6px;transition:all .2s;}
-.btn-copy:hover{border-color:#999;background:var(--surface);}
 .btn-new{padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--ink2);transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;margin-left:auto;}
 .btn-new:hover{border-color:#999;color:var(--ink);}
+.btn-preview{display:none;padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink);align-items:center;gap:6px;transition:all .2s;}
+.btn-preview:hover{border-color:#999;background:var(--surface);}
+
+/* PREVIEW MODAL */
+.preview-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);overflow-y:auto;padding:20px 12px 40px;}
+.preview-modal.open{display:flex;flex-direction:column;align-items:center;}
+.preview-modal-close{position:fixed;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:501;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.preview-modal .lm-paper{width:100%;max-width:600px;margin-top:12px;}
 
 @media(max-width:700px){
   .lm-editor{width:100%;min-width:0;border-right:none;}
   .lm-preview{display:none;}
+  .btn-preview{display:flex;}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -180,8 +187,16 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <div class="lm-bar" id="lmBar" style="display:none;">
   <button class="btn-dl" onclick="downloadPdf()">⬇ Pobierz PDF</button>
-  <button class="btn-copy" onclick="copyText()">⎘ Kopiuj</button>
+  <button class="btn-preview" onclick="openPreview()">👁 Podgląd</button>
   <a href="kariera.html" class="btn-new">Nowy list</a>
+</div>
+
+<!-- PREVIEW MODAL (mobile only) -->
+<div class="preview-modal" id="previewModal">
+  <button class="preview-modal-close" onclick="closePreview()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="lm-paper" id="lmPaperModal"></div>
 </div>
 
 <script>
@@ -336,6 +351,8 @@ function renderPreview() {
     '<div style="margin-top:36px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
 
   document.getElementById('lmPaper').innerHTML = html;
+  var modal = document.getElementById('lmPaperModal');
+  if (modal) modal.innerHTML = html;
 }
 
 // ── Export ──
@@ -392,8 +409,13 @@ function getFullText() {
   return lines.join('\n');
 }
 
-function copyText() {
-  navigator.clipboard.writeText(getFullText()).then(function(){ showToast('Skopiowano!'); });
+function openPreview() {
+  document.getElementById('previewModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePreview() {
+  document.getElementById('previewModal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function downloadTxt() {
