@@ -3365,35 +3365,35 @@ function addInterestChip(interest) {
 function addCert() {
   if (!cvData.certyfikatyList) cvData.certyfikatyList = [];
   cvData.certyfikatyList.push({ nazwa:'', wydawca:'', rok:'' });
-  renderCVForm(); updateCVPreview();
   cvOpenSections.add('certyfikaty');
+  renderCVForm(); updateCVPreview();
 }
 function removeCert(i) {
   cvData.certyfikatyList.splice(i, 1);
-  renderCVForm(); updateCVPreview();
   cvOpenSections.add('certyfikaty');
+  renderCVForm(); updateCVPreview();
 }
 function addKurs() {
   if (!cvData.kursy) cvData.kursy = [];
   cvData.kursy.push({ nazwa:'', prowadzacy:'', od:'', do:'', obecnie:false });
-  renderCVForm(); updateCVPreview();
   cvOpenSections.add('kursy');
+  renderCVForm(); updateCVPreview();
 }
 function removeKurs(i) {
   cvData.kursy.splice(i, 1);
-  renderCVForm(); updateCVPreview();
   cvOpenSections.add('kursy');
+  renderCVForm(); updateCVPreview();
 }
 function addStaz() {
   if (!cvData.staze) cvData.staze = [];
   cvData.staze.push({ firma:'', od:'', do:'', obecnie:false });
-  renderCVForm(); updateCVPreview();
   cvOpenSections.add('staze');
+  renderCVForm(); updateCVPreview();
 }
 function removeStaz(i) {
   cvData.staze.splice(i, 1);
-  renderCVForm(); updateCVPreview();
   cvOpenSections.add('staze');
+  renderCVForm(); updateCVPreview();
 }
 
 // ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
