@@ -188,6 +188,17 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
   .btn-next { padding: 12px 18px; font-size: .82rem; }
   .choose-hero { margin-top: 48px; }
 }
+
+/* FAQ */
+.faq-section { max-width: 760px; margin: 0 auto 80px; padding: 0 2rem; }
+.faq-section-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
+.faq-section-sub { font-size: .9rem; color: var(--ink2); margin-bottom: 24px; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q { width: 100%; text-align: left; background: none; border: none; padding: 20px 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: 'Figtree', sans-serif; font-size: .95rem; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.faq-chevron { font-size: .75rem; flex-shrink: 0; transition: transform .2s; display: inline-block; }
+.faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-item.open .faq-a { display: block; }
 </style>
 
 <script type="module">
@@ -730,5 +741,48 @@ renderBar();
 </script>
 
 <script src="plan-guard.js"></script>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-section-title">Najczęstsze pytania</div>
+  <div class="faq-section-sub">Dokumenty pracownicze — odpowiedzi</div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">Ile wynosi okres wypowiedzenia umowy o pracę? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Okres wypowiedzenia zależy od stażu pracy u danego pracodawcy. Przy umowie na czas nieokreślony: <strong>2 tygodnie</strong> przy stażu poniżej 6 miesięcy, <strong>1 miesiąc</strong> przy stażu od 6 miesięcy do 3 lat, <strong>3 miesiące</strong> przy stażu powyżej 3 lat. Przy umowie na czas określony obowiązuje takie samo uzależnienie od stażu.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">Czy wypowiedzenie musi być złożone na piśmie? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Tak, wypowiedzenie umowy o pracę powinno być złożone <strong>na piśmie</strong>. Pracodawca jest zobowiązany do podania przyczyny wypowiedzenia w przypadku umowy na czas nieokreślony. Pracownik nie musi uzasadniać swojej decyzji o rozwiązaniu umowy.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">Kiedy można złożyć wniosek o urlop wypoczynkowy? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Pracownik nabywa prawo do urlopu wypoczynkowego z dniem podjęcia pracy. Wymiar urlopu wynosi <strong>20 dni</strong> przy stażu pracy poniżej 10 lat oraz <strong>26 dni</strong> przy stażu 10 lat i więcej. Urlop powinien być udzielony zgodnie z planem urlopowym lub po uzgodnieniu z pracodawcą.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">Co powinno zawierać świadectwo pracy? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Świadectwo pracy musi zawierać: <strong>okres i rodzaj wykonywanej pracy</strong>, zajmowane stanowiska, tryb rozwiązania stosunku pracy, informacje o urlopach i uprawnieniach pracowniczych. Pracodawca ma obowiązek wydać świadectwo pracy <strong>niezwłocznie po zakończeniu zatrudnienia</strong>, nie później niż w dniu ustania stosunku pracy.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(this)">Czym różni się wypowiedzenie od rozwiązania umowy za porozumieniem? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Przy <strong>wypowiedzeniu</strong> umowa rozwiązuje się po upływie okresu wypowiedzenia, a pracodawca przy umowie na czas nieokreślony musi podać przyczynę. Przy <strong>rozwiązaniu za porozumieniem stron</strong> obie strony uzgadniają datę zakończenia stosunku pracy — może to być natychmiastowe lub w dowolnym terminie, bez konieczności podawania przyczyny.</div>
+  </div>
+
+  <div class="faq-item" style="border-bottom:none;">
+    <button class="faq-q" onclick="toggleFaq(this)">Czy pracodawca może zwolnić pracownika bez wypowiedzenia? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Tak, pracodawca może rozwiązać umowę bez zachowania okresu wypowiedzenia tylko w przypadku <strong>ciężkiego naruszenia podstawowych obowiązków pracowniczych</strong> (zwolnienie dyscyplinarne), popełnienia przestępstwa przez pracownika lub utraty uprawnień niezbędnych do pracy. Pracownik ma prawo odwołać się do sądu pracy w terminie <strong>21 dni</strong> od dnia doręczenia pisma.</div>
+  </div>
+</section>
+
+<script>
+function toggleFaq(btn) {
+  btn.closest('.faq-item').classList.toggle('open');
+}
+</script>
+
 </body>
 </html>
