@@ -387,14 +387,16 @@ var FORMS = {
   wypowiedzenie: {
     title:"Wypowiedzenie umowy o pracę", icon:"📄",
     steps:[
-      {label:"Strony umowy",fields:[
+      {label:"Pracownik",fields:[
         {id:"w_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",             icon:"👤"},
         {id:"w_adres", label:"Adres pracownika",             ph:"np. ul. Różana 2, Kraków",     icon:"🏠", opt:true},
-        {id:"w_firma", label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
-        {id:"w_adres_firma",label:"Adres pracodawcy",        ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
         {id:"w_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. sprzedaży",icon:"💼"},
         {id:"w_od",    label:"Zatrudniony od",               type:"date",                       icon:"📅"},
-        {id:"w_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",              icon:"🆔", opt:true},
+        {id:"w_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",              icon:"🆔", opt:true}
+      ]},
+      {label:"Pracodawca",fields:[
+        {id:"w_firma", label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
+        {id:"w_adres_firma",label:"Adres pracodawcy",        ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
         {id:"w_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",            icon:"🏛️", opt:true}
       ]},
       {label:"Tryb wypowiedzenia",fields:[
