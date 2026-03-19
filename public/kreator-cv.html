@@ -40,6 +40,7 @@
   --border2: #f0f0f0;
 }
 body { font-family: 'Figtree', -apple-system, sans-serif; background: #ffffff; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.cvf-struct-entry { background: #f9f9f9; border: 1px solid #ebebeb; border-radius: 10px; padding: 12px 14px 8px; margin-bottom: 10px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -63,7 +64,11 @@ function buildCVHTML(tpl) {
   const c2 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c2 : t.color2;
   const name = [d.imie, d.nazwisko].filter(Boolean).join(' ') || 'Imię Nazwisko';
   const skills = d.umiejetnosci ? d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean) : [];
-  const certs = d.certyfikaty ? d.certyfikaty.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const certs = [
+    ...(d.certyfikatyList||[]).filter(c=>c.nazwa).map(c => c.nazwa + (c.wydawca ? ' – '+c.wydawca : '') + (c.rok ? ', '+c.rok : '')),
+    ...(d.kursy||[]).filter(k=>k.nazwa).map(k => k.nazwa + (k.prowadzacy ? ' – '+k.prowadzacy : '')),
+    ...(d.staze||[]).filter(s=>s.firma).map(s => s.firma + (s.od ? ' ('+s.od+(s.do?' – '+s.do:s.obecnie?' – obecnie':'')+')' : '')),
+  ];
   const photo = d.zdjecie ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
   const contact = [
     d.email && `<span>✉ ${d.email}</span>`,
@@ -1938,7 +1943,9 @@ async function resetCVData() {
     doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
     wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
     umiejetnosci:'',
-    certyfikaty:'',
+    certyfikatyList:[],
+    kursy:[],
+    staze:[],
     jezyki:[{ jezyk:'', poziom:'B2' }],
     zainteresowania:''
   };
@@ -2409,7 +2416,9 @@ let cvData = {
   doswiadczenie:[{ firma:'', stanowisko:'', od:'', do:'', opis:'' }],
   wyksztalcenie:[{ szkola:'', kierunek:'', od:'', do:'', opis:'' }],
   umiejetnosci:'',
-  certyfikaty:'',
+  certyfikatyList:[],
+  kursy:[],
+  staze:[],
   jezyki:[{ jezyk:'', poziom:'B2' }],
   zainteresowania:''
 };
@@ -2641,6 +2650,8 @@ const SEC_LABELS = {
   get wyksztalcenie()  { return L('educationSection'); },
   get umiejetnosci()   { return L('skillsSection'); },
   get certyfikaty()    { return 'Certyfikaty'; },
+  get kursy()          { return 'Kursy'; },
+  get staze()          { return 'Staże'; },
   get jezyki()         { return L('languagesSection'); },
   get zainteresowania(){ return L('interestsSection'); }
 };
@@ -2656,7 +2667,9 @@ function getSectionSummary(sec) {
     return f.length ? f.map(e=>e.szkola).join(', ') : '';
   }
   if (sec === 'umiejetnosci') return cvData.umiejetnosci ? cvData.umiejetnosci.substring(0,50) : '';
-  if (sec === 'certyfikaty') return cvData.certyfikaty ? cvData.certyfikaty.substring(0,50) : '';
+  if (sec === 'certyfikaty') { const f = (cvData.certyfikatyList||[]).filter(c=>c.nazwa); return f.length ? f.map(c=>c.nazwa).join(', ').substring(0,50) : ''; }
+  if (sec === 'kursy') { const f = (cvData.kursy||[]).filter(k=>k.nazwa); return f.length ? f.map(k=>k.nazwa).join(', ').substring(0,50) : ''; }
+  if (sec === 'staze') { const f = (cvData.staze||[]).filter(s=>s.firma); return f.length ? f.map(s=>s.firma).join(', ').substring(0,50) : ''; }
   if (sec === 'jezyki') return cvData.jezyki.filter(l=>l.jezyk).map(l=>l.jezyk).join(', ');
   if (sec === 'zainteresowania') return cvData.zainteresowania ? cvData.zainteresowania.substring(0,50) : '';
   return '';
@@ -2669,7 +2682,6 @@ function toggleAccSection(sec) {
     cvOpenSections.add(sec);
     setTimeout(() => {
       if (sec === 'umiejetnosci') updateSkillChips();
-      if (sec === 'certyfikaty') updateCertChips();
       if (sec === 'zainteresowania') updateInterestChips();
     }, 30);
   }
@@ -3004,10 +3016,13 @@ function renderCVForm() {
   } else if (cvWizardStep === 3) {
     stepContent = `<div class="acc-list" id="cvSectionsContainer">${buildSectionFormHTML('wyksztalcenie')}</div>`;
   } else if (cvWizardStep === 4) {
-    stepContent = `<div class="acc-list">${buildSectionFormHTML('umiejetnosci')}${buildSectionFormHTML('jezyki')}${buildSectionFormHTML('certyfikaty')}</div>`;
+    stepContent = `<div class="acc-list">${buildSectionFormHTML('umiejetnosci')}${buildSectionFormHTML('jezyki')}</div>`;
   } else if (cvWizardStep === 5) {
     stepContent = `
       <div class="acc-list">
+        ${buildSectionFormHTML('certyfikaty')}
+        ${buildSectionFormHTML('kursy')}
+        ${buildSectionFormHTML('staze')}
         ${buildSectionFormHTML('zainteresowania')}
         ${cvCustomSections.map(sec => buildCustomSectionHTML(sec)).join('')}
       </div>
@@ -3038,7 +3053,6 @@ function renderCVForm() {
 
   initDragDrop();
   if (cvWizardStep === 4 && cvOpenSections.has('umiejetnosci')) updateSkillChips();
-  if (cvWizardStep === 4 && cvOpenSections.has('certyfikaty')) updateCertChips();
   if (cvWizardStep === 5 && cvOpenSections.has('zainteresowania')) updateInterestChips();
   applySpellcheck();
 }
@@ -3220,11 +3234,55 @@ function buildSectionBodyHTML(sec) {
     </div>`;
 
   if (sec === 'certyfikaty') return `
-    <input class="cvf-input" id="certInput" oninput="cvData.certyfikaty=this.value;updateCVPreview();updateCertChips()" value="${cvData.certyfikaty}" placeholder="np. Google Analytics, Scrum Master...">
-    <p class="acc-hint">${L('certHint')}</p>
-    <div class="cvf-suggestions" id="certSuggestions">
-      ${TOP_CERTS.map(c => `<span class="cvf-chip" onclick="addCertChip('${c.replace(/'/g,"\\'")}')">${c}</span>`).join('')}
-    </div>`;
+    <div id="certList">
+      ${(cvData.certyfikatyList||[]).map((c,i) => `
+        <div class="cvf-struct-entry" data-ci="${i}">
+          <div class="cvf-grid2" style="margin-bottom:4px">
+            <div class="cvf-group cvf-full"><label>Nazwa certyfikatu</label><input class="cvf-input" oninput="cvData.certyfikatyList[${i}].nazwa=this.value;updateCVPreview()" value="${c.nazwa||''}" placeholder="np. Google Analytics, AWS Certified..."></div>
+            <div class="cvf-group"><label>Wydany przez</label><input class="cvf-input" oninput="cvData.certyfikatyList[${i}].wydawca=this.value;updateCVPreview()" value="${c.wydawca||''}" placeholder="np. Google, Amazon"></div>
+            <div class="cvf-group"><label>Rok ukończenia</label><input class="cvf-input" oninput="cvData.certyfikatyList[${i}].rok=this.value;updateCVPreview()" value="${c.rok||''}" placeholder="2024"></div>
+          </div>
+          <button class="cvf-remove-btn" onclick="removeCert(${i})">✕ Usuń</button>
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" style="margin-top:8px" onclick="addCert()">+ Dodaj certyfikat</button>`;
+
+  if (sec === 'kursy') return `
+    <div id="kursyList">
+      ${(cvData.kursy||[]).map((k,i) => `
+        <div class="cvf-struct-entry" data-ki="${i}">
+          <div class="cvf-grid2" style="margin-bottom:4px">
+            <div class="cvf-group cvf-full"><label>Nazwa kursu</label><input class="cvf-input" oninput="cvData.kursy[${i}].nazwa=this.value;updateCVPreview()" value="${k.nazwa||''}" placeholder="np. Kurs Python, Adobe Photoshop..."></div>
+            <div class="cvf-group cvf-full"><label>Prowadzony przez</label><input class="cvf-input" oninput="cvData.kursy[${i}].prowadzacy=this.value;updateCVPreview()" value="${k.prowadzacy||''}" placeholder="np. Udemy, Coursera"></div>
+            <div class="cvf-group"><label>Data rozpoczęcia</label><input class="cvf-input" oninput="cvData.kursy[${i}].od=this.value;updateCVPreview()" value="${k.od||''}" placeholder="01.2024"></div>
+            <div class="cvf-group"><label>Data zakończenia</label><input class="cvf-input" id="kurs-do-${i}" oninput="cvData.kursy[${i}].do=this.value;updateCVPreview()" value="${k.do||''}" placeholder="06.2024" ${k.obecnie?'disabled':''}></div>
+            <div class="cvf-group cvf-full" style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="kurs-obecnie-${i}" ${k.obecnie?'checked':''} onchange="cvData.kursy[${i}].obecnie=this.checked;cvData.kursy[${i}].do=this.checked?'':cvData.kursy[${i}].do;document.getElementById('kurs-do-${i}').disabled=this.checked;document.getElementById('kurs-do-${i}').value='';updateCVPreview()">
+              <label for="kurs-obecnie-${i}" style="font-size:0.85rem;cursor:pointer">Obecnie się uczę</label>
+            </div>
+          </div>
+          <button class="cvf-remove-btn" onclick="removeKurs(${i})">✕ Usuń</button>
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" style="margin-top:8px" onclick="addKurs()">+ Dodaj kurs</button>`;
+
+  if (sec === 'staze') return `
+    <div id="stazeList">
+      ${(cvData.staze||[]).map((s,i) => `
+        <div class="cvf-struct-entry" data-si="${i}">
+          <div class="cvf-grid2" style="margin-bottom:4px">
+            <div class="cvf-group cvf-full"><label>Gdzie (firma / organizacja)</label><input class="cvf-input" oninput="cvData.staze[${i}].firma=this.value;updateCVPreview()" value="${s.firma||''}" placeholder="np. Google, Startup XYZ"></div>
+            <div class="cvf-group"><label>Data rozpoczęcia</label><input class="cvf-input" oninput="cvData.staze[${i}].od=this.value;updateCVPreview()" value="${s.od||''}" placeholder="01.2024"></div>
+            <div class="cvf-group"><label>Data zakończenia</label><input class="cvf-input" id="staz-do-${i}" oninput="cvData.staze[${i}].do=this.value;updateCVPreview()" value="${s.do||''}" placeholder="06.2024" ${s.obecnie?'disabled':''}></div>
+            <div class="cvf-group cvf-full" style="display:flex;align-items:center;gap:8px">
+              <input type="checkbox" id="staz-obecnie-${i}" ${s.obecnie?'checked':''} onchange="cvData.staze[${i}].obecnie=this.checked;cvData.staze[${i}].do=this.checked?'':cvData.staze[${i}].do;document.getElementById('staz-do-${i}').disabled=this.checked;document.getElementById('staz-do-${i}').value='';updateCVPreview()">
+              <label for="staz-obecnie-${i}" style="font-size:0.85rem;cursor:pointer">Trwa obecnie</label>
+            </div>
+          </div>
+          <button class="cvf-remove-btn" onclick="removeStaz(${i})">✕ Usuń</button>
+        </div>`).join('')}
+    </div>
+    <button class="acc-add-more" style="margin-top:8px" onclick="addStaz()">+ Dodaj staż</button>`;
 
   if (sec === 'zainteresowania') return `
     <input class="cvf-input" id="interestsInput" oninput="cvData.zainteresowania=this.value;updateCVPreview();updateInterestChips()" value="${cvData.zainteresowania}" placeholder="fotografia, sport, muzyka...">
@@ -3303,25 +3361,39 @@ function addInterestChip(interest) {
   updateInterestChips();
 }
 
-// ── CERTYFIKATY CHIPS ─────────────────────────────────────
-function updateCertChips() {
-  const container = document.getElementById('certSuggestions');
-  if (!container) return;
-  const current = (cvData.certyfikaty || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  container.innerHTML = TOP_CERTS.map(c => {
-    const used = current.includes(c.toLowerCase());
-    return `<span class="cvf-chip${used?' used':''}" onclick="addCertChip('${c.replace(/'/g,"\\'")}')">${c}</span>`;
-  }).join('');
+// ── CERTYFIKATY / KURSY / STAŻE ───────────────────────────
+function addCert() {
+  if (!cvData.certyfikatyList) cvData.certyfikatyList = [];
+  cvData.certyfikatyList.push({ nazwa:'', wydawca:'', rok:'' });
+  renderCVForm(); updateCVPreview();
+  cvOpenSections.add('certyfikaty');
 }
-function addCertChip(cert) {
-  const current = (cvData.certyfikaty || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (current.map(s=>s.toLowerCase()).includes(cert.toLowerCase())) return;
-  current.push(cert);
-  cvData.certyfikaty = current.join(', ');
-  const input = document.getElementById('certInput');
-  if (input) input.value = cvData.certyfikaty;
-  updateCVPreview();
-  updateCertChips();
+function removeCert(i) {
+  cvData.certyfikatyList.splice(i, 1);
+  renderCVForm(); updateCVPreview();
+  cvOpenSections.add('certyfikaty');
+}
+function addKurs() {
+  if (!cvData.kursy) cvData.kursy = [];
+  cvData.kursy.push({ nazwa:'', prowadzacy:'', od:'', do:'', obecnie:false });
+  renderCVForm(); updateCVPreview();
+  cvOpenSections.add('kursy');
+}
+function removeKurs(i) {
+  cvData.kursy.splice(i, 1);
+  renderCVForm(); updateCVPreview();
+  cvOpenSections.add('kursy');
+}
+function addStaz() {
+  if (!cvData.staze) cvData.staze = [];
+  cvData.staze.push({ firma:'', od:'', do:'', obecnie:false });
+  renderCVForm(); updateCVPreview();
+  cvOpenSections.add('staze');
+}
+function removeStaz(i) {
+  cvData.staze.splice(i, 1);
+  renderCVForm(); updateCVPreview();
+  cvOpenSections.add('staze');
 }
 
 // ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
