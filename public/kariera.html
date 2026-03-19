@@ -1205,9 +1205,55 @@ function _jmRenderWizard() {
   }
   prog += '</div>';
 
+  var positionSuggestions = q.key === 'position'
+    ? '<datalist id="jmPositionList">'
+      + '<option value="Frontend Developer">'
+      + '<option value="Backend Developer">'
+      + '<option value="Full Stack Developer">'
+      + '<option value="Software Engineer">'
+      + '<option value="UX/UI Designer">'
+      + '<option value="Product Manager">'
+      + '<option value="Project Manager">'
+      + '<option value="Specjalista ds. marketingu">'
+      + '<option value="Specjalista ds. sprzedaży">'
+      + '<option value="Specjalista ds. HR">'
+      + '<option value="Specjalista ds. obsługi klienta">'
+      + '<option value="Analityk danych">'
+      + '<option value="Analityk biznesowy">'
+      + '<option value="Grafik komputerowy">'
+      + '<option value="Copywriter">'
+      + '<option value="Content Manager">'
+      + '<option value="Social Media Manager">'
+      + '<option value="Menedżer sprzedaży">'
+      + '<option value="Kierownik projektu">'
+      + '<option value="Kierownik zespołu">'
+      + '<option value="Dyrektor sprzedaży">'
+      + '<option value="Dyrektor marketingu">'
+      + '<option value="Accountant / Księgowy">'
+      + '<option value="Prawnik">'
+      + '<option value="Inżynier mechanik">'
+      + '<option value="Inżynier budownictwa">'
+      + '<option value="Inżynier elektryk">'
+      + '<option value="Operator maszyn">'
+      + '<option value="Logistyk">'
+      + '<option value="Magazynier">'
+      + '<option value="Kierowca">'
+      + '<option value="Lekarz">'
+      + '<option value="Pielęgniarka / Pielęgniarz">'
+      + '<option value="Nauczyciel">'
+      + '<option value="Asystent zarządu">'
+      + '<option value="Recepcjonista">'
+      + '<option value="Tester oprogramowania (QA)">'
+      + '<option value="DevOps Engineer">'
+      + '<option value="Data Scientist">'
+      + '<option value="Cybersecurity Analyst">'
+      + '</datalist>'
+    : '';
   var inputHtml = q.type === 'textarea'
     ? '<textarea class="jm-wiz-input" id="jmWizInput" rows="' + (q.rows||3) + '" placeholder="' + q.placeholder + '"></textarea>'
-    : '<input type="text" class="jm-wiz-input" id="jmWizInput" placeholder="' + q.placeholder + '">';
+    : '<input type="text" class="jm-wiz-input" id="jmWizInput" placeholder="' + q.placeholder + '"'
+      + (q.key === 'position' ? ' list="jmPositionList" autocomplete="off"' : '')
+      + '>' + positionSuggestions;
 
   var isLast = qi === qs.length - 1;
   var btnLabel = isLast

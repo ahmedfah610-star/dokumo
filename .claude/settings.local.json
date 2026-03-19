@@ -48,7 +48,8 @@
       "Bash(grep -r \"gemini\\\\|generativeai\\\\|google.*ai\" C:UsersasusDesktopdokumo --include=*.json --include=*.js)",
       "Bash(git checkout:*)",
       "Skill(update-config)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(ls C:/Users/asus/Desktop/dokumo/public/*.html)"
     ]
   },
   "hooks": {

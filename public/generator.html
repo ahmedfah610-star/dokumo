@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List motywacyjny – Dokumo</title>
+<link rel="canonical" href="https://dokumoflow.com/generator.html">
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--ink:#111;--ink2:#555;--ink3:#999;--border:#e5e5e5;--surface:#f5f5f7;--pill:50px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;height:60px;background:rgba(255,255,255,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 2rem;gap:1rem;flex-shrink:0;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#111827;font-family:'Inter',sans-serif;font-weight:800;font-size:1.125rem;letter-spacing:-.02em;flex-shrink:0;}
+.nav-right{flex:1;display:flex;justify-content:flex-end;align-items:center;gap:8px;}
+.nav-link{font-size:.75rem;font-weight:600;color:var(--ink2);text-decoration:none;padding:7px 14px;border-radius:var(--pill);border:1.5px solid var(--border);transition:all .2s;}
+.nav-link:hover{border-color:#999;color:var(--ink);}
+
+/* MAIN */
+.main{flex:1;max-width:720px;margin:0 auto;padding:40px 2rem 80px;width:100%;}
+
+/* STATES */
+.state-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;gap:16px;}
+.spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-title{font-size:1rem;font-weight:700;color:var(--ink);}
+.loading-sub{font-size:.85rem;color:var(--ink3);text-align:center;}
+
+/* RESULT */
+.result-header{margin-bottom:24px;}
+.result-badge{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;margin-bottom:14px;}
+.result-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:4px;}
+.result-sub{font-size:.88rem;color:var(--ink3);}
+
+.doc-paper{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:36px 40px;font-size:.92rem;line-height:1.85;color:#222;white-space:pre-wrap;font-family:Georgia,'Times New Roman',serif;min-height:400px;margin-bottom:20px;}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;}
+.btn-copy{padding:11px 22px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--ink);display:flex;align-items:center;gap:7px;}
+.btn-copy:hover{border-color:#999;background:var(--surface);}
+.btn-dl{padding:11px 22px;border-radius:var(--pill);border:none;background:var(--ink);font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;color:#fff;display:flex;align-items:center;gap:7px;}
+.btn-dl:hover{background:#333;}
+.btn-new{padding:11px 22px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--ink2);}
+.btn-new:hover{border-color:#999;color:var(--ink);}
+
+.state-error{text-align:center;padding:60px 20px;}
+.err-title{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
+.err-sub{font-size:.88rem;color:var(--ink3);margin-bottom:24px;}
+.btn-retry{padding:11px 24px;border-radius:var(--pill);background:var(--ink);color:#fff;border:none;font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;}
+</style>
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
+const app=getApps().length?getApps()[0]:initializeApp(__c);
+onAuthStateChanged(getAuth(app),async u=>{
+  if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));window._fbToken=await u.getIdToken();}
+  else{window._fbToken=null;}
+  if(window._onAuthReady) window._onAuthReady();
+});
+</script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="kariera.html" class="nav-logo">
+    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+    Dokumo
+  </a>
+  <div class="nav-right">
+    <a href="kariera.html" class="nav-link">← Wróć</a>
+  </div>
+</nav>
+
+<main class="main" id="main">
+  <div class="state-loading" id="stateLoading">
+    <div class="spinner"></div>
+    <div class="loading-title">AI tworzy Twój list motywacyjny…</div>
+    <div class="loading-sub">Przygotowujemy spersonalizowaną treść<br>na podstawie Twoich odpowiedzi.</div>
+  </div>
+</main>
+
+<script>
+var _params = {};
+var _genText = '';
+
+(function(){
+  var p = new URLSearchParams(window.location.search);
+  _params = {
+    position:     p.get('position')     || '',
+    company:      p.get('company')      || '',
+    achievements: p.get('achievements') || '',
+    motivation:   p.get('motivation')   || ''
+  };
+})();
+
+function buildPrompt(v) {
+  var dz = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
+  return 'Napisz profesjonalny list motywacyjny po polsku. Uzywaj DOKLADNIE ponizszych danych.\n\n'
+    + 'DANE:\n'
+    + '- Data: ' + dz + '\n'
+    + '- Stanowisko: ' + (v.position || '[stanowisko]') + '\n'
+    + '- Firma: ' + (v.company || '[firma]') + '\n'
+    + '- Kluczowe osiagniecia: ' + (v.achievements || '') + '\n'
+    + '- Motywacja / powod aplikowania: ' + (v.motivation || '') + '\n\n'
+    + 'Struktura: naglowek z data, dane kandydata, dane firmy, wstep z informacja o stanowisku, '
+    + 'rozwinięcie z osiagnięciami i motywacja, zakonczenie z zaproszeniem do rozmowy, podpis. '
+    + 'Formalny, konkretny, gotowy do wydruku. Zero markdown, zero gwiazdek, zero emoji.';
+}
+
+async function generate() {
+  try {
+    var token = window._fbToken || '';
+    var prompt = buildPrompt(_params);
+    var res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        prompt: prompt,
+        docId: 'cover-letter',
+        docName: 'List motywacyjny',
+        docCat: 'kariera',
+        docCatLabel: 'Kariera',
+        docIcon: '✉️'
+      })
+    });
+    var data = await res.json();
+    _genText = data.text || data.result || '';
+    if (!_genText) throw new Error('empty');
+    showResult();
+  } catch(e) {
+    showError();
+  }
+}
+
+function showResult() {
+  var main = document.getElementById('main');
+  main.innerHTML =
+    '<div class="result-header">' +
+      '<div class="result-badge">✓ Gotowe</div>' +
+      '<div class="result-title">List motywacyjny</div>' +
+      '<div class="result-sub">Stanowisko: ' + escHtml(_params.position) + ' · ' + escHtml(_params.company) + '</div>' +
+    '</div>' +
+    '<div class="doc-paper" id="docPaper">' + escHtml(_genText) + '</div>' +
+    '<div class="actions">' +
+      '<button class="btn-dl" onclick="downloadTxt()">⬇ Pobierz .txt</button>' +
+      '<button class="btn-copy" onclick="copyText()">⎘ Kopiuj</button>' +
+      '<button class="btn-new" onclick="window.location.href=\'kariera.html\'">Nowy list</button>' +
+    '</div>';
+}
+
+function showError() {
+  document.getElementById('main').innerHTML =
+    '<div class="state-error">' +
+      '<div class="err-title">Nie udało się wygenerować listu</div>' +
+      '<div class="err-sub">Sprawdź połączenie z internetem i spróbuj ponownie.</div>' +
+      '<button class="btn-retry" onclick="window.location.href=\'kariera.html\'">Spróbuj ponownie</button>' +
+    '</div>';
+}
+
+function copyText() {
+  if (_genText) navigator.clipboard.writeText(_genText).then(function(){ showToast('Skopiowano!'); });
+}
+
+function downloadTxt() {
+  if (!_genText) return;
+  var blob = new Blob([_genText], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'list-motywacyjny-' + (_params.company || 'dokumo').replace(/\s+/g,'-').toLowerCase() + '.txt';
+  a.click();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 20px;border-radius:999px;font-size:.82rem;font-weight:600;z-index:9999;font-family:Figtree,sans-serif;';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2000);
+}
+
+// Wait for auth then generate
+window._onAuthReady = generate;
+// If auth takes too long, generate anyway after 2s
+setTimeout(function(){ if(!_genText) generate(); }, 2000);
+</script>
+</body>
+</html>
