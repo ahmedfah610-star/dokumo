@@ -31,7 +31,7 @@ body{
 /* ── NAV ── */
 .ws-nav{
   height:60px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:center;
   padding:0 2rem;
   background:rgba(255,255,255,.88);
   backdrop-filter:blur(20px);
@@ -39,6 +39,9 @@ body{
   border-bottom:1px solid #e5e5e5;
   z-index:50;
 }
+.ws-nav-left{display:flex;align-items:center;gap:8px;flex:1;}
+.ws-nav-center{display:flex;align-items:center;justify-content:center;}
+.ws-nav-right{flex:1;display:flex;justify-content:flex-end;align-items:center;}
 .ws-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#111111;}
 .ws-logo span{font-family:'Inter',sans-serif;font-size:1.125rem;font-weight:800;letter-spacing:-0.02em;color:#111827;}
 .ws-step{font-size:0.72rem;font-weight:600;color:#999999;letter-spacing:0.03em;}
@@ -160,30 +163,36 @@ body{
 <body>
 
 <nav class="ws-nav">
-  <a href="index.html" class="ws-logo">
-    <img src="logo2.png" style="height:26px;width:auto;display:block;">
-    <span>Dokumo</span>
-  </a>
-  <a href="kariera.html" class="ws-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Strefa Kariery</a>
-  <div class="ws-lang-wrap">
-    <div class="ws-lang-dd" id="wsLangDd">
-      <div class="ws-lang-btn" id="wsLangBtn" onclick="toggleLangMenu()">
-        <img id="wsLangFlag" src="https://flagcdn.com/16x12/pl.png" alt="PL" style="width:16px;height:12px;border-radius:2px;flex-shrink:0;">
-        <span id="wsLangName">Polski</span>
-        <span class="ws-chevron">▼</span>
-      </div>
-      <div class="ws-lang-menu" id="wsLangMenu">
-        <div class="ws-lang-opt active" onclick="pickLang('pl','https://flagcdn.com/16x12/pl.png','PL','Polski',this)"><img src="https://flagcdn.com/16x12/pl.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Polski</div>
-        <div class="ws-lang-opt" onclick="pickLang('en','https://flagcdn.com/16x12/gb.png','GB','English',this)"><img src="https://flagcdn.com/16x12/gb.png" alt="" style="width:16px;height:12px;border-radius:2px;"> English</div>
-        <div class="ws-lang-opt" onclick="pickLang('de','https://flagcdn.com/16x12/de.png','DE','Deutsch',this)"><img src="https://flagcdn.com/16x12/de.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Deutsch</div>
-        <div class="ws-lang-opt" onclick="pickLang('uk','https://flagcdn.com/16x12/ua.png','UA','Українська',this)"><img src="https://flagcdn.com/16x12/ua.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Українська</div>
-        <div class="ws-lang-opt" onclick="pickLang('es','https://flagcdn.com/16x12/es.png','ES','Español',this)"><img src="https://flagcdn.com/16x12/es.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Español</div>
-        <div class="ws-lang-opt" onclick="pickLang('cs','https://flagcdn.com/16x12/cz.png','CZ','Čeština',this)"><img src="https://flagcdn.com/16x12/cz.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Čeština</div>
-        <div class="ws-lang-opt" onclick="pickLang('nl','https://flagcdn.com/16x12/nl.png','NL','Nederlands',this)"><img src="https://flagcdn.com/16x12/nl.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Nederlands</div>
+  <div class="ws-nav-left">
+    <a href="index.html" class="ws-logo">
+      <img src="logo2.png" style="height:26px;width:auto;display:block;">
+      <span>Dokumo</span>
+    </a>
+    <a href="kariera.html" class="ws-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Strefa Kariery</a>
+  </div>
+  <div class="ws-nav-center">
+    <div class="ws-lang-wrap">
+      <div class="ws-lang-dd" id="wsLangDd">
+        <div class="ws-lang-btn" id="wsLangBtn" onclick="toggleLangMenu()">
+          <img id="wsLangFlag" src="https://flagcdn.com/16x12/pl.png" alt="PL" style="width:16px;height:12px;border-radius:2px;flex-shrink:0;">
+          <span id="wsLangName">Polski</span>
+          <span class="ws-chevron">▼</span>
+        </div>
+        <div class="ws-lang-menu" id="wsLangMenu">
+          <div class="ws-lang-opt active" onclick="pickLang('pl','https://flagcdn.com/16x12/pl.png','PL','Polski',this)"><img src="https://flagcdn.com/16x12/pl.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Polski</div>
+          <div class="ws-lang-opt" onclick="pickLang('en','https://flagcdn.com/16x12/gb.png','GB','English',this)"><img src="https://flagcdn.com/16x12/gb.png" alt="" style="width:16px;height:12px;border-radius:2px;"> English</div>
+          <div class="ws-lang-opt" onclick="pickLang('de','https://flagcdn.com/16x12/de.png','DE','Deutsch',this)"><img src="https://flagcdn.com/16x12/de.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Deutsch</div>
+          <div class="ws-lang-opt" onclick="pickLang('uk','https://flagcdn.com/16x12/ua.png','UA','Українська',this)"><img src="https://flagcdn.com/16x12/ua.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Українська</div>
+          <div class="ws-lang-opt" onclick="pickLang('es','https://flagcdn.com/16x12/es.png','ES','Español',this)"><img src="https://flagcdn.com/16x12/es.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Español</div>
+          <div class="ws-lang-opt" onclick="pickLang('cs','https://flagcdn.com/16x12/cz.png','CZ','Čeština',this)"><img src="https://flagcdn.com/16x12/cz.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Čeština</div>
+          <div class="ws-lang-opt" onclick="pickLang('nl','https://flagcdn.com/16x12/nl.png','NL','Nederlands',this)"><img src="https://flagcdn.com/16x12/nl.png" alt="" style="width:16px;height:12px;border-radius:2px;"> Nederlands</div>
+        </div>
       </div>
     </div>
   </div>
-  <span class="ws-step">Wybierz szablon</span>
+  <div class="ws-nav-right">
+    <span class="ws-step">Wybierz szablon</span>
+  </div>
 </nav>
 
 <div class="ws-stage">
