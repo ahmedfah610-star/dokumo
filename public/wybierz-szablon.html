@@ -127,17 +127,32 @@ body{
 /* ── LANG SELECTOR ── */
 .ws-lang-wrap{display:flex;align-items:center;gap:7px;}
 .ws-lang-label{font-size:0.7rem;font-weight:600;color:#999999;letter-spacing:0.03em;white-space:nowrap;font-family:'Figtree',sans-serif;}
-.ws-lang-select{
-  font-size:0.72rem;font-family:'Figtree',sans-serif;font-weight:600;
+.ws-lang-dd{position:relative;}
+.ws-lang-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:0.78rem;font-family:'Figtree',sans-serif;font-weight:600;
   color:#111111;background:#f5f5f7;
   border:1.5px solid #e5e5e5;border-radius:8px;
-  padding:5px 24px 5px 8px;cursor:pointer;outline:none;
-  -webkit-appearance:none;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 7px center;
-  transition:border-color 0.15s;
+  padding:5px 10px 5px 8px;cursor:pointer;
+  transition:border-color 0.15s;white-space:nowrap;user-select:none;
 }
-.ws-lang-select:hover{border-color:#999999;}
+.ws-lang-btn:hover{border-color:#999999;}
+.ws-lang-btn .ws-chevron{font-size:0.6rem;color:#999;margin-left:2px;}
+.ws-lang-menu{
+  display:none;position:absolute;top:calc(100% + 6px);right:0;
+  background:#fff;border:1.5px solid #e5e5e5;border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.10);padding:4px;
+  min-width:150px;z-index:200;
+}
+.ws-lang-menu.open{display:block;}
+.ws-lang-opt{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:7px;cursor:pointer;
+  font-size:0.8rem;font-family:'Figtree',sans-serif;font-weight:600;color:#111;
+  transition:background 0.12s;
+}
+.ws-lang-opt:hover{background:#f5f5f7;}
+.ws-lang-opt.active{background:#f0f0f2;}
 </style>
 </head>
 <body>
@@ -149,15 +164,22 @@ body{
   </a>
   <div class="ws-lang-wrap">
     <span class="ws-lang-label">🌐 Język CV</span>
-    <select class="ws-lang-select" id="wsLangSelect" onchange="wsLang=this.value">
-      <option value="pl">🇵🇱 Polski</option>
-      <option value="en">🇬🇧 English</option>
-      <option value="de">🇩🇪 Deutsch</option>
-      <option value="uk">🇺🇦 Українська</option>
-      <option value="es">🇪🇸 Español</option>
-      <option value="cs">🇨🇿 Čeština</option>
-      <option value="nl">🇳🇱 Nederlands</option>
-    </select>
+    <div class="ws-lang-dd" id="wsLangDd">
+      <div class="ws-lang-btn" id="wsLangBtn" onclick="toggleLangMenu()">
+        <span id="wsLangFlag">🇵🇱</span>
+        <span id="wsLangName">Polski</span>
+        <span class="ws-chevron">▼</span>
+      </div>
+      <div class="ws-lang-menu" id="wsLangMenu">
+        <div class="ws-lang-opt active" onclick="pickLang('pl','🇵🇱','Polski',this)">🇵🇱 Polski</div>
+        <div class="ws-lang-opt" onclick="pickLang('en','🇬🇧','English',this)">🇬🇧 English</div>
+        <div class="ws-lang-opt" onclick="pickLang('de','🇩🇪','Deutsch',this)">🇩🇪 Deutsch</div>
+        <div class="ws-lang-opt" onclick="pickLang('uk','🇺🇦','Українська',this)">🇺🇦 Українська</div>
+        <div class="ws-lang-opt" onclick="pickLang('es','🇪🇸','Español',this)">🇪🇸 Español</div>
+        <div class="ws-lang-opt" onclick="pickLang('cs','🇨🇿','Čeština',this)">🇨🇿 Čeština</div>
+        <div class="ws-lang-opt" onclick="pickLang('nl','🇳🇱','Nederlands',this)">🇳🇱 Nederlands</div>
+      </div>
+    </div>
   </div>
   <span class="ws-step">Wybierz szablon</span>
 </nav>
@@ -186,8 +208,6 @@ body{
 const T = [
   { id:'nova',      name:'Nova',       c1:'#1a3a2e', c2:'#2d6b52' },
   { id:'clean',     name:'Clean',      c1:'#1a2744', c2:'#2c4a8a' },
-  { id:'nordic',    name:'Nordic',     c1:'#1a3a2e', c2:'#2d6b52' },
-  { id:'stripe',    name:'Stripe',     c1:'#1a2744', c2:'#2c4a8a' },
   { id:'cascade',   name:'Cascade',    c1:'#0f766e', c2:'#14b8a6' },
   { id:'metro',     name:'Metro',      c1:'#1a3a2e', c2:'#2d6b52' },
   { id:'executive', name:'Executive',  c1:'#92400e', c2:'#d97706' },
@@ -202,12 +222,10 @@ const T = [
   { id:'teal',      name:'Teal',       c1:'#0f766e', c2:'#14b8a6' },
   { id:'slate',     name:'Slate',      c1:'#334155', c2:'#64748b' },
   { id:'ocean',     name:'Ocean',      c1:'#1e40af', c2:'#38bdf8' },
-  { id:'diagonal',  name:'Diagonal',   c1:'#1a3a2e', c2:'#2d6b52' },
   { id:'creative',  name:'Creative',   c1:'#6b21a8', c2:'#a855f7' },
   { id:'coral',     name:'Coral',      c1:'#c2410c', c2:'#fb923c' },
   { id:'rose',      name:'Rose',       c1:'#9d174d', c2:'#ec4899' },
   { id:'shield',    name:'Shield',     c1:'#1a2744', c2:'#e8e4dc' },
-  { id:'arrow',     name:'Arrow',      c1:'#7c2d12', c2:'#fb923c' },
 ];
 
 // ── Sample data ───────────────────────────────────────────────
@@ -607,8 +625,26 @@ function preview(id, c1, c2) {
     <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`);
 }
 
-// ── Carousel state ─────────────────────────────────────────
+// ── Lang dropdown ──────────────────────────────────────────
 let wsLang = 'pl';
+function toggleLangMenu() {
+  document.getElementById('wsLangMenu').classList.toggle('open');
+}
+function pickLang(code, flag, name, el) {
+  wsLang = code;
+  document.getElementById('wsLangFlag').textContent = flag;
+  document.getElementById('wsLangName').textContent = name;
+  document.querySelectorAll('.ws-lang-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('wsLangMenu').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  if (!document.getElementById('wsLangDd').contains(e.target)) {
+    document.getElementById('wsLangMenu').classList.remove('open');
+  }
+});
+
+// ── Carousel state ─────────────────────────────────────────
 let idx = 0;
 const total = T.length;
 
