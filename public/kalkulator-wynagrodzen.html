@@ -39,6 +39,8 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .nav-right{flex:1;display:flex;justify-content:flex-end;align-items:center;gap:8px;}
 .nav-link{font-size:.75rem;font-weight:600;color:var(--ink2);text-decoration:none;padding:7px 14px;border-radius:var(--pill);border:1.5px solid var(--border);transition:all .2s;}
 .nav-link:hover{border-color:#999;color:var(--ink);}
+.nav-back{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:var(--ink2);text-decoration:none;padding:7px 14px;border-radius:var(--pill);border:1.5px solid var(--border);transition:all .2s;}
+.nav-back:hover{border-color:#999;color:var(--ink);}
 .nav-badge{font-size:.6rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;}
 .nav-badge.pro{background:rgba(52,199,89,.12);color:#1a8a3e;border:1px solid rgba(52,199,89,.25);}
 .nav-badge.free{background:var(--surface);color:var(--ink3);border:1px solid var(--border);}
@@ -191,6 +193,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     <img src="logo2.png" style="height:26px;width:auto;display:block;">
     Dokumo
   </a>
+  <a href="kariera.html" class="nav-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Strefa Kariery</a>
   <div class="nav-right">
     <a href="konto.html" class="nav-link" id="navLogin">Zaloguj się</a>
     <div class="nav-profile" id="navProfile">
