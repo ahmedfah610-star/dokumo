@@ -393,7 +393,9 @@ var FORMS = {
         {id:"w_firma", label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
         {id:"w_adres_firma",label:"Adres pracodawcy",        ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
         {id:"w_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. sprzedaży",icon:"💼"},
-        {id:"w_od",    label:"Zatrudniony od",               type:"date",                       icon:"📅"}
+        {id:"w_od",    label:"Zatrudniony od",               type:"date",                       icon:"📅"},
+        {id:"w_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",              icon:"🆔", opt:true},
+        {id:"w_nip",   label:"NIP pracodawcy",               ph:"np. 123-456-78-90",            icon:"🏛️", opt:true}
       ]},
       {label:"Tryb wypowiedzenia",fields:[
         {id:"w_tryb",  label:"Sposób zakończenia",           type:"pills", icon:"📋",
@@ -405,7 +407,7 @@ var FORMS = {
     prompt:function(v){
       var tryb=(v.w_tryb||"za porozumieniem stron").toLowerCase();
       var dz=new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      return "Napisz wypowiedzenie umowy o prace "+tryb+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.w_imie||"[imie]")+(v.w_adres?", adres: "+v.w_adres:"")+"\n- Pracodawca: "+(v.w_firma||"[firma]")+(v.w_adres_firma?", adres: "+v.w_adres_firma:"")+"\n- Stanowisko: "+(v.w_st||"[stanowisko]")+"\n- Zatrudniony od: "+(v.w_od||"[data]")+"\n- Data zakonczenia: "+(v.w_kon||"[data]")+"\n- Tryb: "+tryb+(v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"")+"\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
+      return "Napisz wypowiedzenie umowy o prace "+tryb+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.w_imie||"[imie]")+(v.w_pesel?", PESEL: "+v.w_pesel:"")+(v.w_adres?", adres: "+v.w_adres:"")+"\n- Pracodawca: "+(v.w_firma||"[firma]")+(v.w_nip?", NIP: "+v.w_nip:"")+(v.w_adres_firma?", adres: "+v.w_adres_firma:"")+"\n- Stanowisko: "+(v.w_st||"[stanowisko]")+"\n- Zatrudniony od: "+(v.w_od||"[data]")+"\n- Data zakonczenia: "+(v.w_kon||"[data]")+"\n- Tryb: "+tryb+(v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"")+"\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
     }
   },
   urlop: {
@@ -414,7 +416,9 @@ var FORMS = {
       {label:"Dane pracownika",fields:[
         {id:"u_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",     icon:"👤"},
         {id:"u_prz",   label:"Imię i nazwisko przełożonego", ph:"np. Anna Nowak",       icon:"👔"},
-        {id:"u_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",   icon:"🏢"}
+        {id:"u_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",   icon:"🏢"},
+        {id:"u_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",      icon:"🆔", opt:true},
+        {id:"u_nip",   label:"NIP pracodawcy",               ph:"np. 123-456-78-90",    icon:"🏛️", opt:true}
       ]},
       {label:"Rodzaj urlopu",fields:[
         {id:"u_typ",   label:"Rodzaj urlopu",                type:"pills", icon:"☀️",
@@ -433,7 +437,7 @@ var FORMS = {
       var doFmt=v.u_do?new Date(v.u_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data do]";
       var typ=(v.u_typ||"wypoczynkowy").toLowerCase();
       var okol=(v.u_okol&&v.u_typ==="Okolicznościowy")?" z powodu: "+v.u_okol.toLowerCase():"";
-      return "Napisz formalny wniosek o urlop "+typ+okol+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+"\n- Przelozony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+"\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
+      return "Napisz formalny wniosek o urlop "+typ+okol+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+(v.u_pesel?", PESEL: "+v.u_pesel:"")+"\n- Przelozony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+(v.u_nip?", NIP: "+v.u_nip:"")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+"\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
     }
   },
   swiadectwo: {
@@ -459,7 +463,8 @@ var FORMS = {
          opts:["Za porozumieniem stron","Wypowiedzenie przez pracownika","Wypowiedzenie przez pracodawcę","Wygaśnięcie umowy"]},
         {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)",ph:"np. 14",  icon:"🏖️", opt:true},
         {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",    ph:"np. 6",   icon:"💵", opt:true},
-        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345", icon:"🆔", opt:true}
+        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345", icon:"🆔", opt:true},
+        {id:"s_nip",   label:"NIP pracodawcy",               ph:"np. 123-456-78-90", icon:"🏛️", opt:true}
       ]}
     ],
     prompt:function(v){
@@ -468,7 +473,7 @@ var FORMS = {
       var doF=v.s_do?new Date(v.s_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data]";
       var urF=v.s_ur?new Date(v.s_ur).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"";
       var tm={"Za porozumieniem stron":"na mocy porozumienia stron (art. 30 par. 1 pkt 1 KP)","Wypowiedzenie przez pracownika":"przez pracownika za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wypowiedzenie przez pracodawcę":"przez pracodawce za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wygaśnięcie umowy":"wskutek uplywy czasu (art. 30 par. 1 pkt 4 KP)"};
-      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: "+dz+"\n- Pracownik: "+(v.s_imie||"[imie]")+(urF?" ur. "+urF:"")+(v.s_pesel?", PESEL: "+v.s_pesel:"")+"\n- Pracodawca: "+(v.s_firma||"[firma]")+", "+(v.s_siedz||"[siedziba]")+"\n- Okres: od "+odF+" do "+doF+"\n- Stanowisko: "+(v.s_st||"[stanowisko]")+"\n- Wymiar: "+(v.s_wym||"pelny etat")+"\n- Rozwiazanie: "+(tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron")+"\n- Urlop: "+(v.s_urlop||"0")+" dni\n- Ekwiwalent: "+(v.s_ekwi||"0")+" dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
+      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: "+dz+"\n- Pracownik: "+(v.s_imie||"[imie]")+(urF?" ur. "+urF:"")+(v.s_pesel?", PESEL: "+v.s_pesel:"")+"\n- Pracodawca: "+(v.s_firma||"[firma]")+(v.s_nip?", NIP: "+v.s_nip:"")+", "+(v.s_siedz||"[siedziba]")+"\n- Okres: od "+odF+" do "+doF+"\n- Stanowisko: "+(v.s_st||"[stanowisko]")+"\n- Wymiar: "+(v.s_wym||"pelny etat")+"\n- Rozwiazanie: "+(tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron")+"\n- Urlop: "+(v.s_urlop||"0")+" dni\n- Ekwiwalent: "+(v.s_ekwi||"0")+" dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
     }
   }
 };
