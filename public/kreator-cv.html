@@ -3385,6 +3385,9 @@ function addCustomSection() {
   cvOpenSections.add('custom-' + id); // auto-open new section
   renderCVForm();
   updateCVPreview();
+  // Scroll new section into view
+  const content = document.getElementById('cvwContent');
+  if (content) setTimeout(() => { content.scrollTop = content.scrollHeight; }, 0);
 }
 function removeCustomSection(id) {
   cvCustomSections = cvCustomSections.filter(s => s.id !== id);
