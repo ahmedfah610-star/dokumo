@@ -22,6 +22,17 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .nav-back{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--ink2);text-decoration:none;padding:7px 13px;border-radius:var(--pill);border:1.5px solid var(--border);transition:all .2s;}
 .nav-back:hover{border-color:#999;color:var(--ink);}
 
+/* LOADING */
+.lm-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.lm-spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:lmspin .8s linear infinite;}
+@keyframes lmspin{to{transform:rotate(360deg);}}
+.lm-loading-title{font-size:1rem;font-weight:700;color:var(--ink);}
+.lm-loading-sub{font-size:.85rem;color:var(--ink3);text-align:center;}
+.lm-error{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:40px;}
+.lm-error-title{font-size:1rem;font-weight:700;}
+.lm-error-sub{font-size:.85rem;color:var(--ink3);}
+.lm-retry{padding:10px 24px;border-radius:var(--pill);background:var(--ink);color:#fff;border:none;font-family:'Figtree',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;margin-top:8px;}
+
 /* LAYOUT */
 .lm-wrap{flex:1;display:flex;overflow:hidden;}
 
@@ -99,7 +110,13 @@ onAuthStateChanged(getAuth(app),async u=>{
   </a>
 </nav>
 
-<div class="lm-wrap">
+<div class="lm-loading" id="lmLoading">
+  <div class="lm-spinner"></div>
+  <div class="lm-loading-title">AI tworzy Twój list motywacyjny…</div>
+  <div class="lm-loading-sub">Przygotowujemy spersonalizowaną treść<br>na podstawie Twoich odpowiedzi.</div>
+</div>
+
+<div class="lm-wrap" id="lmWrap" style="display:none;">
 
   <!-- ── EDITOR ── -->
   <div class="lm-editor">
@@ -167,7 +184,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 </div>
 
-<div class="lm-bar">
+<div class="lm-bar" id="lmBar" style="display:none;">
   <button class="btn-dl" onclick="downloadPdf()">⬇ Pobierz PDF</button>
   <button class="btn-copy" onclick="copyText()">⎘ Kopiuj</button>
   <a href="kariera.html" class="btn-new">Nowy list</a>
@@ -206,11 +223,25 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+function showEditor() {
+  document.getElementById('lmLoading').style.display = 'none';
+  document.getElementById('lmWrap').style.display = '';
+  document.getElementById('lmBar').style.display = '';
+}
+
+function showGenError() {
+  var loading = document.getElementById('lmLoading');
+  loading.innerHTML =
+    '<div class="lm-error">' +
+      '<div class="lm-error-title">Nie udało się wygenerować listu</div>' +
+      '<div class="lm-error-sub">Sprawdź połączenie z internetem i spróbuj ponownie.</div>' +
+      '<button class="lm-retry" onclick="window.location.href=\'kariera.html\'">Spróbuj ponownie</button>' +
+    '</div>';
+}
+
 async function autoGenerateFromWizard() {
   if (_autoGenDone) return;
   _autoGenDone = true;
-  var bodyEl = document.getElementById('fBody');
-  if (bodyEl) { bodyEl.disabled = true; bodyEl.placeholder = 'AI generuje treść…'; }
   try {
     var token = window._fbToken || '';
     var dz = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
@@ -233,10 +264,11 @@ async function autoGenerateFromWizard() {
     var data = await res.json();
     var text = data.text || data.result || '';
     if (!text) throw new Error('empty');
-    if (bodyEl) { bodyEl.disabled = false; bodyEl.value = text; }
+    document.getElementById('fBody').value = text;
     renderPreview();
+    showEditor();
   } catch(e) {
-    if (bodyEl) { bodyEl.disabled = false; bodyEl.placeholder = 'Opisz w 3-4 zdaniach, dlaczego jesteś idealnym kandydatem na to stanowisko.'; }
+    showGenError();
   }
 }
 
