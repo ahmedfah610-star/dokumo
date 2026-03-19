@@ -147,6 +147,19 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .faq-item.open .faq-chevron{transform:rotate(180deg);}
 .faq-item.open .faq-a{display:block;}
 
+/* PIT-0 toggle */
+.pit0-wrap { display:none; margin-bottom:24px; }
+.pit0-wrap.visible { display:block; }
+.pit0-toggle { display:inline-flex; align-items:center; gap:10px; cursor:pointer; user-select:none; padding:12px 16px; border:1.5px solid var(--border); border-radius:14px; background:#fff; transition:border-color .2s; }
+.pit0-toggle:hover { border-color:#999; }
+.pit0-toggle.on { border-color:#2563eb; background:rgba(37,99,235,.04); }
+.pit0-check { width:20px; height:20px; border-radius:6px; border:1.5px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s; font-size:.75rem; color:#fff; font-weight:800; }
+.pit0-toggle.on .pit0-check { background:#2563eb; border-color:#2563eb; }
+.pit0-toggle.on .pit0-check::after { content:'✓'; }
+.pit0-text { font-size:.88rem; font-weight:600; color:var(--ink2); }
+.pit0-toggle.on .pit0-text { color:var(--ink); }
+.pit0-badge { font-size:.7rem; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(37,99,235,.1); color:#2563eb; }
+
 /* MOBILE */
 @media(max-width:600px){
   .rates-grid{grid-template-columns:repeat(2,1fr);}
@@ -213,6 +226,14 @@ onAuthStateChanged(getAuth(app),async u=>{
   <div class="input-group">
     <input class="main-input" type="number" id="mainInput" value="5000" min="100" max="200000" step="50" oninput="onInputChange()">
     <span class="input-currency">PLN</span>
+  </div>
+
+  <div class="pit0-wrap" id="pit0Wrap">
+    <div class="pit0-toggle" id="pit0Toggle" onclick="togglePit0()">
+      <div class="pit0-check" id="pit0Check"></div>
+      <span class="pit0-text">Mam do 26 lat</span>
+      <span class="pit0-badge">PIT 0%</span>
+    </div>
   </div>
 
   <div class="mode-toggle" style="margin-bottom:24px;">
@@ -356,6 +377,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 /* ── KALKULATOR ── */
 var mode     = 'brutto';
 var contract = 'uop';
+var pit0     = false;
 
 var CONTRACT_NOTES = {
   uop: 'Umowa o pracę — pełne ubezpieczenia ZUS, koszty uzyskania przychodu 250 zł/mies, kwota wolna 30 000 zł.',
@@ -374,12 +396,22 @@ function pitProgressive(annual) {
   return 10800 + (annual - 120000) * 0.32;
 }
 
+var PIT0_LIMIT = 85528; // ulga dla młodych — roczny limit
+
+function pitWithUlga(annualBase) {
+  if (pit0) {
+    var taxable = Math.max(0, annualBase - PIT0_LIMIT);
+    return pitProgressive(taxable);
+  }
+  return pitProgressive(annualBase);
+}
+
 /* ── UoP ── */
 function calcUoP(brutto) {
   var zusEm = brutto * 0.0976, zusRe = brutto * 0.015, zusCh = brutto * 0.0245;
   var zusSum = zusEm + zusRe + zusCh;
   var zdrow  = (brutto - zusSum) * 0.09;
-  var taxM   = Math.max(0, Math.round(pitProgressive((brutto - zusSum - 250) * 12) / 12));
+  var taxM   = Math.max(0, Math.round(pitWithUlga((brutto - zusSum - 250) * 12) / 12));
   var netto  = brutto - zusSum - zdrow - taxM;
   var emp    = brutto * (1 + 0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
   return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, tax: taxM, netto, emp };
@@ -391,7 +423,7 @@ function calcUZ(brutto) {
   var zusSum = zusEm + zusRe + zusCh;
   var zdrow  = (brutto - zusSum) * 0.09;
   var kup    = (brutto - zusSum) * 0.20;
-  var taxM   = Math.max(0, Math.round(pitProgressive((brutto - zusSum - kup) * 12) / 12));
+  var taxM   = Math.max(0, Math.round(pitWithUlga((brutto - zusSum - kup) * 12) / 12));
   var netto  = brutto - zusSum - zdrow - taxM;
   var emp    = brutto * (1 + 0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
   return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, kup, tax: taxM, netto, emp };
@@ -444,6 +476,12 @@ function setMode(m) {
   calculate();
 }
 
+function togglePit0() {
+  pit0 = !pit0;
+  document.getElementById('pit0Toggle').classList.toggle('on', pit0);
+  calculate();
+}
+
 function setContract(ct) {
   contract = ct;
   document.querySelectorAll('.contract-btn').forEach(function(b){
@@ -451,6 +489,10 @@ function setContract(ct) {
       ct === 'uop' ? 'pracę' : ct === 'uz' ? 'zlecenie' : ct === 'uod' ? 'dzieło' : 'b2b') !== -1);
   });
   document.getElementById('contractNote').textContent = CONTRACT_NOTES[ct];
+  // show PIT-0 toggle only for uop and uz
+  var showPit0 = ct === 'uop' || ct === 'uz';
+  document.getElementById('pit0Wrap').classList.toggle('visible', showPit0);
+  if (!showPit0 && pit0) { pit0 = false; document.getElementById('pit0Toggle').classList.remove('on'); }
   // B2B: disable netto→brutto (less meaningful)
   document.getElementById('modeNetto').style.display = ct === 'b2b' ? 'none' : '';
   if (ct === 'b2b' && mode === 'netto') setMode('brutto');
@@ -575,6 +617,7 @@ function calculate() {
     rows += brRow('#ccc', 'KUP (20% od brutto)', pct(c.kup, b), '−' + Math.round(c.kup).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(odliczenie)</span>', true);
   }
   var pitLabel = contract === 'b2b' ? 'Podatek liniowy (19%)' : 'Zaliczka na podatek PIT';
+  if (pit0 && c.tax === 0) pitLabel += ' <span style="font-size:.75em;color:#2563eb;font-weight:700;">ulga dla młodych</span>';
   rows += brRow('#d4d4d4', pitLabel, c.tax > 0 ? pct(c.tax, b) : '—', c.tax > 0 ? fmtM(c.tax) : '0 zł', c.tax > 0);
   document.getElementById('breakdown').innerHTML = rows;
 
