@@ -264,6 +264,15 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--i
 .k-card:nth-child(1) { animation-delay: .05s; }
 .k-card:nth-child(2) { animation-delay: .12s; }
 .k-card:nth-child(3) { animation-delay: .19s; }
+.faq-section{max-width:760px;margin:60px auto 80px;padding:0 2rem;}
+.faq-section-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
+.faq-section-sub{font-size:.9rem;color:var(--ink2);margin-bottom:24px;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+.faq-chevron{font-size:.75rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
+.faq-a{display:none;padding:0 0 20px;font-size:.9rem;color:var(--ink2);line-height:1.7;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.faq-item.open .faq-a{display:block;}
 </style>
 
 <!-- Firebase Auth -->
@@ -450,6 +459,44 @@ onAuthStateChanged(getAuth(app), async u=>{
 
 </section>
 
+<section class="faq-section">
+  <div class="faq-section-title">Najczęstsze pytania</div>
+  <div class="faq-section-sub">Dokumenty dla firm — odpowiedzi</div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqBiz(this)">Jakie dokumenty są potrzebne przy zakładaniu firmy? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Przy zakładaniu jednoosobowej działalności gospodarczej (JDG) wystarczy wniosek do <strong>CEIDG przez internet</strong> — bez żadnych dokumentów w formie papierowej. Przy spółce z o.o. potrzebna jest umowa spółki (notarialna lub przez S24), wpis do KRS, NIP i REGON. Warto od razu przygotować <strong>regulamin pracy</strong> (jeśli planujesz zatrudnienie), umowy z pierwszymi kontrahentami oraz dokumenty RODO.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqBiz(this)">Czym różni się JDG od spółki z o.o.? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a"><strong>JDG (jednoosobowa działalność gospodarcza)</strong> jest prosta w założeniu i prowadzeniu, ale właściciel odpowiada całym swoim majątkiem za zobowiązania firmy. <strong>Spółka z o.o.</strong> wymaga minimalnego kapitału zakładowego 5 000 zł i więcej formalności, ale wspólnicy odpowiadają do wysokości wniesionych wkładów. Spółka jest lepszym wyborem gdy prowadzisz ryzykowną działalność lub chcesz rozdzielić majątek prywatny od firmowego.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqBiz(this)">Kiedy potrzebna jest polityka RODO dla firmy? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Polityka prywatności i dokumentacja RODO są potrzebne <strong>od pierwszego dnia działalności</strong>, jeśli przetwarzasz dane osobowe — dane klientów, pracowników lub kontrahentów. Obowiązkowe jest prowadzenie rejestru czynności przetwarzania, wdrożenie odpowiednich zabezpieczeń oraz informowanie osób o przetwarzaniu ich danych. Brak dokumentacji RODO może skutkować karą do <strong>20 mln euro lub 4% rocznego obrotu</strong>.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqBiz(this)">Czy umowa najmu lokalu musi być pisemna? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Umowa najmu zawarta na czas oznaczony dłuższy niż rok powinna być sporządzona <strong>w formie pisemnej</strong> — w przeciwnym razie uważa się ją za zawartą na czas nieoznaczony. Dla umów najmu lokali użytkowych dla firm forma pisemna jest silnie zalecana, aby precyzyjnie określić warunki, czynsz, koszty dodatkowe i zasady wypowiedzenia. Umowa pisemna chroni obie strony w razie sporu.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqBiz(this)">Jakie dokumenty warto mieć przed pierwszym zleceniem? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Przed realizacją pierwszego zlecenia warto mieć gotowe: <strong>umowę o świadczenie usług lub umowę o dzieło</strong> dostosowaną do swojej branży, umowę NDA jeśli przekazujesz lub otrzymujesz poufne informacje, regulamin lub ogólne warunki współpracy oraz <strong>szablon faktury</strong>. Dobra umowa precyzuje zakres prac, terminy, wynagrodzenie, prawa autorskie i warunki reklamacji — chroni Cię w razie nieporozumień z klientem.</div>
+  </div>
+
+  <div class="faq-item" style="border-bottom:none;">
+    <button class="faq-q" onclick="toggleFaqBiz(this)">Jak długo przechowywać dokumenty firmowe? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Faktury i dokumenty księgowe przechowuj przez <strong>5 lat</strong> od końca roku podatkowego. Umowy z pracownikami i akta osobowe — przez <strong>10 lat</strong> od zakończenia stosunku pracy (dla pracowników zatrudnionych po 2018 r.). Dokumenty ZUS — 5 lat. Umowy z kontrahentami warto przechowywać przez okres przedawnienia roszczeń, czyli <strong>3 lata dla działalności gospodarczej</strong>, plus dodatkowy bufor bezpieczeństwa.</div>
+  </div>
+</section>
+
+<script>
+function toggleFaqBiz(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+</script>
 
 </body>
 </html>

@@ -320,6 +320,15 @@ body {
   .doc-action { padding: 0 16px 18px; }
   .doc-btn { width: 100%; justify-content: center; }
 }
+.faq-section{max-width:760px;margin:0 auto 80px;padding:0 2rem;}
+.faq-section-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
+.faq-section-sub{font-size:.9rem;color:var(--ink2);margin-bottom:24px;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+.faq-chevron{font-size:.75rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
+.faq-a{display:none;padding:0 0 20px;font-size:.9rem;color:var(--ink2);line-height:1.7;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.faq-item.open .faq-a{display:block;}
 </style>
 
 <!-- Firebase Auth -->
@@ -923,5 +932,45 @@ function downloadResultAs(format) {
 document.getElementById('genOverlay').addEventListener('click', function(e){ if(e.target===this) closeGen(); });
 </script>
 <script src="plan-guard.js"></script>
+
+<section class="faq-section">
+  <div class="faq-section-title">Najczęstsze pytania</div>
+  <div class="faq-section-sub">E-commerce i sklep internetowy — odpowiedzi</div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqEc(this)">Co musi zawierać regulamin sklepu internetowego? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Regulamin sklepu internetowego powinien zawierać: <strong>dane sprzedawcy</strong> (firma, NIP, adres), opis procesu składania zamówień, dostępne metody płatności i dostawy, terminy realizacji zamówień, <strong>politykę zwrotów i reklamacji</strong> (14 dni na odstąpienie od umowy dla konsumentów), procedurę reklamacyjną oraz informacje o pozasądowym rozwiązywaniu sporów. Regulamin musi być dostępny przed złożeniem zamówienia.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqEc(this)">Ile dni ma konsument na zwrot towaru kupionego online? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Konsument kupujący w sklepie internetowym ma <strong>14 dni</strong> na odstąpienie od umowy bez podania przyczyny — licząc od dnia odebrania towaru. Sprzedawca ma obowiązek zwrócić pieniądze w ciągu 14 dni od otrzymania oświadczenia o odstąpieniu. Prawo zwrotu nie dotyczy towarów personalizowanych, cyfrowych z usuniętym zabezpieczeniem ani produktów szybko psujących się.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqEc(this)">Czym różni się reklamacja z rękojmi od gwarancji? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a"><strong>Rękojmia</strong> to ustawowe prawo konsumenta — sprzedawca odpowiada za wady towaru przez <strong>2 lata</strong> od zakupu, niezależnie od tego czy daje gwarancję. Konsument może żądać naprawy, wymiany, obniżenia ceny lub zwrotu pieniędzy. <strong>Gwarancja</strong> to dobrowolne zobowiązanie producenta lub sprzedawcy, na warunkach określonych w karcie gwarancyjnej. Oba uprawnienia przysługują niezależnie od siebie.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqEc(this)">Jakie wymagania RODO dotyczą sklepu internetowego? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Sklep internetowy musi posiadać <strong>politykę prywatności</strong> informującą o celach i podstawach przetwarzania danych, czasie ich przechowywania oraz prawach użytkowników. Zgody marketingowe (newsletter, remarketing) muszą być dobrowolne i oddzielne od regulaminu. Konieczne jest też zawarcie umów powierzenia danych z dostawcami usług (hosting, płatności, kurierzy) oraz zapewnienie możliwości realizacji praw podmiotów danych.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqEc(this)">Czy muszę rejestrować firmę, żeby prowadzić sklep online? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Jeśli sprzedaż ma charakter <strong>zarobkowy i ciągły</strong>, konieczna jest rejestracja działalności gospodarczej (JDG lub spółka). Przy okazjonalnej sprzedaży prywatnych rzeczy rejestracja nie jest wymagana. Prowadzenie sklepu bez rejestracji firmy, gdy masz stałych klientów i regularny przychód, jest nielegalne i grozi konsekwencjami podatkowymi. Najprostsza forma to <strong>jednoosobowa działalność gospodarcza</strong> zarejestrowana w CEIDG.</div>
+  </div>
+
+  <div class="faq-item" style="border-bottom:none;">
+    <button class="faq-q" onclick="toggleFaqEc(this)">Jakie informacje muszą być widoczne na stronie sklepu? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Na stronie sklepu internetowego muszą być widoczne: <strong>pełna nazwa firmy, adres siedziby, NIP i REGON</strong>, dane kontaktowe (e-mail, telefon lub formularz). Ceny muszą zawierać VAT i być podane w złotych. Przed finalizacją zamówienia klient musi zostać poinformowany o łącznym koszcie, w tym dostawy. Wymagane jest też oznaczenie plików cookies oraz link do polityki prywatności.</div>
+  </div>
+</section>
+
+<script>
+function toggleFaqEc(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+</script>
+
 </body>
 </html>

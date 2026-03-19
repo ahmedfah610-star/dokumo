@@ -117,6 +117,15 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--i
   .doc-action { padding: 0 16px 18px; }
   .doc-btn { width: 100%; justify-content: center; }
 }
+.faq-section{max-width:760px;margin:0 auto 80px;padding:0 2rem;}
+.faq-section-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
+.faq-section-sub{font-size:.9rem;color:var(--ink2);margin-bottom:24px;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+.faq-chevron{font-size:.75rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
+.faq-a{display:none;padding:0 0 20px;font-size:.9rem;color:var(--ink2);line-height:1.7;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.faq-item.open .faq-a{display:block;}
 </style>
 
 <script type="module">
@@ -759,5 +768,45 @@ document.addEventListener("click", function(e){
 </script>
 
 <script src="plan-guard.js"></script>
+
+<section class="faq-section">
+  <div class="faq-section-title">Najczęstsze pytania</div>
+  <div class="faq-section-sub">Dokumenty HR i umowy — odpowiedzi</div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqHr(this)">Co powinna zawierać umowa B2B? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Umowa B2B (business-to-business) powinna określać: <strong>strony umowy</strong> (dane firmy i NIP), <strong>zakres usług</strong>, wynagrodzenie i terminy płatności, zasady wystawiania faktur, czas trwania i warunki wypowiedzenia. Ważne jest też określenie odpowiedzialności, własności intelektualnej oraz ewentualnych kar umownych. Umowa B2B nie jest umową o pracę — zleceniobiorca nie ma prawa do urlopu ani zasiłku chorobowego z tytułu tej umowy.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqHr(this)">Czym różni się umowa o dzieło od umowy zlecenia? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a"><strong>Umowa o dzieło</strong> zakłada osiągnięcie konkretnego, z góry określonego rezultatu (np. projekt graficzny, artykuł, oprogramowanie). Nie podlega składkom ZUS. <strong>Umowa zlecenia</strong> to umowa starannego działania — zleceniobiorca zobowiązuje się do wykonywania czynności, nie konkretnego wyniku. Podlega składkom ZUS (co najmniej do wysokości minimalnego wynagrodzenia).</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqHr(this)">Co to jest NDA i kiedy warto je podpisać? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">NDA (Non-Disclosure Agreement), czyli umowa o poufności, chroni tajemnice przedsiębiorstwa przed ujawnieniem przez pracowników, kontrahentów lub współpracowników. Warto podpisać NDA przed każdą współpracą, w której przekazujesz <strong>know-how, dane klientów, procesy biznesowe lub strategie</strong>. NDA może być jednostronne (jedna strona chroni swoje dane) lub wzajemne.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqHr(this)">Jakie dokumenty są wymagane przy zatrudnieniu pracownika? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Przy zatrudnianiu pracownika niezbędne są: <strong>umowa o pracę</strong> (na piśmie, przed dopuszczeniem do pracy), informacja o warunkach zatrudnienia, skierowanie na badania wstępne, kwestionariusz osobowy. Pracownik powinien też podpisać potwierdzenie zapoznania się z regulaminem pracy i przepisami BHP. Pracodawca ma obowiązek zgłosić pracownika do ZUS w ciągu <strong>7 dni od dnia zatrudnienia</strong>.</div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-q" onclick="toggleFaqHr(this)">Czy regulamin pracy jest obowiązkowy? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Regulamin pracy jest obowiązkowy dla pracodawców zatrudniających <strong>co najmniej 50 pracowników</strong>. Pracodawcy zatrudniający od 20 do 49 pracowników muszą wprowadzić regulamin, jeśli zażąda tego zakładowa organizacja związkowa. Przy mniejszym zatrudnieniu regulamin nie jest wymagany, ale jego wdrożenie jest dobrą praktyką — porządkuje zasady pracy i chroni pracodawcę.</div>
+  </div>
+
+  <div class="faq-item" style="border-bottom:none;">
+    <button class="faq-q" onclick="toggleFaqHr(this)">Jak chronić dane pracowników zgodnie z RODO? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Pracodawca przetwarza dane pracowników na podstawie <strong>Kodeksu pracy i RODO</strong>. Może zbierać tylko dane niezbędne do zatrudnienia. Pracownicy muszą otrzymać klauzulę informacyjną RODO przy zatrudnieniu. Dane wrażliwe (np. choroby) wymagają pisemnej zgody. Pracodawca musi zapewnić odpowiednie zabezpieczenia techniczne i organizacyjne oraz prowadzić rejestr czynności przetwarzania.</div>
+  </div>
+</section>
+
+<script>
+function toggleFaqHr(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+</script>
+
 </body>
 </html>
