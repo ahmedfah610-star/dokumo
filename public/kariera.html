@@ -1278,9 +1278,19 @@ function _jmUpdateAcDrop(query) {
     return '<div class="jm-ac-opt" onmousedown="event.preventDefault();_jmPickAc(\''+p.replace(/'/g,'\\\'')+'\')">' + p + '</div>';
   }).join('');
   var rect = inp.getBoundingClientRect();
-  drop.style.top   = (rect.bottom + 4) + 'px';
+  var spaceBelow = window.innerHeight - rect.bottom - 8;
+  var spaceAbove = rect.top - 8;
   drop.style.left  = rect.left + 'px';
   drop.style.width = rect.width + 'px';
+  if (spaceBelow >= 160 || spaceBelow >= spaceAbove) {
+    drop.style.top    = (rect.bottom + 4) + 'px';
+    drop.style.bottom = '';
+    drop.style.maxHeight = Math.max(spaceBelow, 80) + 'px';
+  } else {
+    drop.style.top    = '';
+    drop.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+    drop.style.maxHeight = Math.max(spaceAbove, 80) + 'px';
+  }
   drop.classList.add('open');
 }
 function _jmCloseAcDrop() {

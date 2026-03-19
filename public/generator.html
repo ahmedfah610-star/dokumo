@@ -82,6 +82,7 @@ const app=getApps().length?getApps()[0]:initializeApp(__c);
 onAuthStateChanged(getAuth(app),async u=>{
   if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));window._fbToken=await u.getIdToken();}
   else{window._fbToken=null;}
+  if(window._onAuthReady) window._onAuthReady();
 });
 </script>
 </head>
@@ -180,13 +181,11 @@ function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
 
 // ── Pre-fill on load ──
+var _autoGenDone = false;
+
 window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('fPos').value     = gp('position');
   document.getElementById('fCompany').value = gp('company');
-  var body = '';
-  if (gp('achievements')) body += gp('achievements');
-  if (gp('motivation'))   body += (body ? '\n\n' : '') + gp('motivation');
-  if (body) document.getElementById('fBody').value = body;
 
   try {
     var u = JSON.parse(localStorage.getItem('dokumo_user') || '{}');
@@ -199,7 +198,47 @@ window.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
 
   renderPreview();
+
+  // Auto-generate when coming from wizard (position param present)
+  if (gp('position')) {
+    window._onAuthReady = function() { if (!_autoGenDone) autoGenerateFromWizard(); };
+    setTimeout(function() { if (!_autoGenDone) autoGenerateFromWizard(); }, 2000);
+  }
 });
+
+async function autoGenerateFromWizard() {
+  if (_autoGenDone) return;
+  _autoGenDone = true;
+  var bodyEl = document.getElementById('fBody');
+  if (bodyEl) { bodyEl.disabled = true; bodyEl.placeholder = 'AI generuje treść…'; }
+  try {
+    var token = window._fbToken || '';
+    var dz = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
+    var fullName = [val('fFirstName'), val('fLastName')].filter(Boolean).join(' ');
+    var extra = '';
+    if (gp('achievements')) extra += '\n- Osiągnięcia: ' + gp('achievements');
+    if (gp('motivation'))   extra += '\n- Motywacja: ' + gp('motivation');
+    var prompt = 'Napisz treść listu motywacyjnego po polsku (tylko główna treść – bez nagłówka adresowego, bez "Szanowni Państwo", bez "Z poważaniem").\n\n'
+      + 'DANE:\n'
+      + '- Stanowisko: ' + (gp('position') || '[stanowisko]') + '\n'
+      + '- Firma: ' + (gp('company') || '[firma]') + '\n'
+      + '- Kandydat: ' + (fullName || '[imię i nazwisko]') + '\n'
+      + '- Data: ' + dz + extra + '\n\n'
+      + 'Napisz 3-4 akapity. Formalny, konkretny, gotowy do wklejenia. Zero markdown, zero gwiazdek, zero emoji.';
+    var res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ prompt: prompt, docId: 'cover-letter', docName: 'List motywacyjny', docCat: 'kariera', docCatLabel: 'Kariera', docIcon: '✉️' })
+    });
+    var data = await res.json();
+    var text = data.text || data.result || '';
+    if (!text) throw new Error('empty');
+    if (bodyEl) { bodyEl.disabled = false; bodyEl.value = text; }
+    renderPreview();
+  } catch(e) {
+    if (bodyEl) { bodyEl.disabled = false; bodyEl.placeholder = 'Opisz w 3-4 zdaniach, dlaczego jesteś idealnym kandydatem na to stanowisko.'; }
+  }
+}
 
 // ── Odbiorca toggle ──
 var _recOpen = false;
