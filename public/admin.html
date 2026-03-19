@@ -40,7 +40,7 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 
 /* ── NAV ── */
 .wiz-nav { position: sticky; top: 0; z-index: 200; height: 60px; background: rgba(255,255,255,.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 1rem; }
-.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-weight: 800; font-size: .95rem; letter-spacing: -.02em; flex-shrink: 0; }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #111827; font-weight: 800; font-size: 1.125rem; letter-spacing: -.02em; flex-shrink: 0; }
 .nav-steps { flex: 1; display: flex; justify-content: center; align-items: center; }
 .step-item { display: flex; align-items: center; }
 .step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; transition: all .3s; background: var(--surface); color: var(--ink3); border: 1.5px solid var(--border); flex-shrink: 0; }
@@ -219,7 +219,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 <!-- NAV -->
 <nav class="wiz-nav">
   <a href="index.html" class="nav-logo">
-    <img src="logo2.png" style="height:26px;width:auto;display:block;">
+    <img src="logo2.png" style="height:28px;width:auto;display:block;">
     Dokumo
   </a>
   <div class="nav-steps" id="navSteps"></div>
