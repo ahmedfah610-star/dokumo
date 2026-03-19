@@ -424,7 +424,8 @@ var FORMS = {
         {id:"u_typ",   label:"Rodzaj urlopu",                type:"pills", icon:"☀️",
          opts:["Wypoczynkowy","Na żądanie","Okolicznościowy","Bezpłatny"]},
         {id:"u_okol",  label:"Powód urlopu okolicznościowego",type:"pills",icon:"🎉", opt:true,
-         opts:["Własny ślub (2 dni)","Ślub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica (2 dni)","Pogrzeb rodzeństwa (1 dzień)"]}
+         opts:["Własny ślub (2 dni)","Ślub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica (2 dni)","Pogrzeb rodzeństwa (1 dzień)"]},
+        {id:"u_info",  label:"Dodatkowe informacje",          ph:"np. dodatkowe uwagi do wniosku...", icon:"📝", opt:true}
       ]},
       {label:"Daty urlopu",fields:[
         {id:"u_od",    label:"Data od",                      type:"date",  icon:"📅"},
@@ -437,7 +438,7 @@ var FORMS = {
       var doFmt=v.u_do?new Date(v.u_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data do]";
       var typ=(v.u_typ||"wypoczynkowy").toLowerCase();
       var okol=(v.u_okol&&v.u_typ==="Okolicznościowy")?" z powodu: "+v.u_okol.toLowerCase():"";
-      return "Napisz formalny wniosek o urlop "+typ+okol+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+(v.u_pesel?", PESEL: "+v.u_pesel:"")+"\n- Przelozony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+(v.u_nip?", NIP: "+v.u_nip:"")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+"\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
+      return "Napisz formalny wniosek o urlop "+typ+okol+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+(v.u_pesel?", PESEL: "+v.u_pesel:"")+"\n- Przelozony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+(v.u_nip?", NIP: "+v.u_nip:"")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+(v.u_info?"\n- Dodatkowe informacje: "+v.u_info:"")+"\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
     }
   },
   swiadectwo: {
