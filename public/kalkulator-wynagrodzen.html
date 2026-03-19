@@ -399,6 +399,13 @@ function pitProgressive(annual) {
   return 10800 + (annual - 120000) * 0.32;
 }
 
+// UoD: bez kwoty wolnej (zleceniodawca nie stosuje ulgi bez PIT-2)
+function pitNoRelief(annual) {
+  if (annual <= 0)       return 0;
+  if (annual <= 120000)  return annual * 0.12;
+  return 14400 + (annual - 120000) * 0.32;
+}
+
 var PIT0_LIMIT = 85528; // ulga dla młodych — roczny limit
 
 function pitWithUlga(annualBase) {
@@ -435,7 +442,7 @@ function calcUZ(brutto) {
 /* ── UoD ── */
 function calcUoD(brutto) {
   var kup  = brutto * 0.20;
-  var taxM = Math.max(0, Math.round(pitProgressive((brutto - kup) * 12) / 12));
+  var taxM = Math.max(0, Math.round(pitNoRelief((brutto - kup) * 12) / 12));
   var netto = brutto - taxM;
   return { brutto, zusEm:0, zusRe:0, zusCh:0, zusSum:0, zdrow:0, kup, tax: taxM, netto, emp: brutto };
 }
