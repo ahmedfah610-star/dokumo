@@ -72,7 +72,7 @@ function renderCustomSections(c1, c2) {
     athens:    `font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px`,
     matrix:    `font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.9;margin-bottom:10px`,
     executive: `font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:${c2};border-bottom:1.5px solid ${c2};padding-bottom:3px;opacity:0.85;margin-bottom:10px`,
-    prism:     `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px`,
+    prism:     `font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;opacity:0.85;margin-bottom:6px`,
     linen:     `font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px`,
   })[tpl] || `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px`;
 
@@ -1217,78 +1217,74 @@ function buildCVHTML(tpl) {
   }
 
   // ── PRISM ─────────────────────────────────────────────────
-  if (tpl === 'prism') return `
-    <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#fff;min-height:842px;overflow:hidden">
-      <div style="position:relative;background:linear-gradient(125deg,${c1} 0%,${c2} 100%);padding:32px 36px 50px;clip-path:polygon(0 0,100% 0,100% 70%,0 100%)">
-        <div style="display:flex;align-items:center;gap:18px">
-          ${d.zdjecie?`<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,0.35)">${photo}</div>`:''}
-          <div>
-            <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1.1">${name}</div>
-            ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.75);margin-top:6px;text-transform:uppercase;letter-spacing:2px">${d.stanowisko}</div>`:''}
-            <div style="display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:9px">
-              ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<span style="font-size:8.5px;color:rgba(255,255,255,0.7)">${x}</span>`).join('')}
-            </div>
-          </div>
+  if (tpl === 'prism') {
+    const phdr = (lbl, mt=18) => `<div style="font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:${c1};margin-top:${mt}px;margin-bottom:6px;border-bottom:1.5px solid ${c1};padding-bottom:3px;opacity:0.85">${lbl}</div>`;
+    return `
+    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px;display:flex;flex-direction:column">
+      <div style="background:linear-gradient(135deg,${c1},${c2});padding:28px 32px 22px;flex-shrink:0">
+        <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.03em;line-height:1.1">${name}</div>
+        ${d.stanowisko?`<div style="font-size:14px;color:rgba(255,255,255,0.75);margin-top:6px">${d.stanowisko}</div>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:3px 18px;margin-top:10px;font-size:9px;color:rgba(255,255,255,0.6)">
+          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<span>${x}</span>`).join('')}
         </div>
       </div>
-      <div style="padding:8px 36px 24px;margin-top:-16px">
+      <div style="flex:1;padding:0 32px 24px">
         ${d.podsumowanie?`
-        <div style="margin-bottom:20px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:7px">${L("profile")}</div>
-          <div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div>
+        <div>
+          ${phdr(L("profile"),18)}
+          <div style="font-size:9.5px;line-height:1.75;color:#475569;margin-bottom:4px">${d.podsumowanie}</div>
         </div>`:''}
-        <div style="display:grid;grid-template-columns:1fr 175px;gap:0 28px">
-          <div>
-            ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-            <div style="margin-bottom:18px">
-              <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid ${c1}">${L("experience")}</div>
-              ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:15px">
-                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
-                  <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}</div>
-                  <div style="font-size:8.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c2};font-weight:600;margin-bottom:3px">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#555;line-height:1.65">${e.opis}</div>`:''}
-              </div>`).join('')}
-            </div>`:''}
-            ${d.wyksztalcenie.some(e=>e.szkola)?`
-            <div>
-              <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid ${c1}">${L("education")}</div>
-              ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;gap:8px">
-                  <div style="font-size:10.5px;font-weight:700;color:#111">${e.kierunek||''}</div>
-                  <div style="font-size:8.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:9.5px;color:#555">${e.szkola}</div>
-              </div>`).join('')}
-            </div>`:''}
+        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+        <div>
+          ${phdr(L("experience"))}
+          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+          <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:11.5px;font-weight:700;color:#1e293b">${e.firma||''}</div>
+              <div style="font-size:8.5px;color:#94a3b8;flex-shrink:0;margin-left:8px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+            </div>
+            <div style="font-size:10px;color:${c1};font-weight:600;margin-top:2px">${e.stanowisko||''}</div>
+            ${e.opis?`<div style="font-size:9.5px;color:#475569;margin-top:5px;line-height:1.5">${e.opis}</div>`:''}
+          </div>`).join('')}
+        </div>`:''}
+        ${d.wyksztalcenie.some(e=>e.szkola)?`
+        <div>
+          ${phdr(L("education"))}
+          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+          <div style="margin-bottom:12px">
+            <div style="font-size:11.5px;font-weight:700;color:#1e293b">${e.szkola}</div>
+            <div style="font-size:9.5px;color:#64748b;margin-top:2px">${[e.kierunek,([e.od,e.do].filter(Boolean).join(' – '))].filter(Boolean).join(' · ')}</div>
+          </div>`).join('')}
+        </div>`:''}
+        ${skills.length?`
+        <div>
+          ${phdr(L("skills"))}
+          <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px">
+            ${skills.map(s=>`<span style="display:inline-block;background:rgba(0,0,0,0.06);color:#1e293b;font-size:8.5px;font-weight:600;padding:4px 10px;border-radius:99px">${s}</span>`).join('')}
           </div>
-          <div>
-            ${skills.length?`
-            <div style="margin-bottom:16px">
-              <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px">${L("skills")}</div>
-              <div style="display:flex;flex-wrap:wrap;gap:5px">
-                ${skills.map(s=>`<span style="font-size:8.5px;padding:4px 8px;background:linear-gradient(135deg,${c1}18,${c2}18);color:${c1};border-radius:4px;font-weight:600">${s}</span>`).join('')}
-              </div>
-            </div>`:''}
-            ${d.jezyki.some(l=>l.jezyk)?`
-            <div style="margin-bottom:16px">
-              <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">${L("languages")}</div>
-              ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:5px"><strong>${l.jezyk}</strong> <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
-            </div>`:''}
-            ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#555;margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
-            ${d.zainteresowania?`
-            <div>
-              <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div>
-              <div style="font-size:8.5px;color:#555;line-height:1.65">${d.zainteresowania}</div>
-            </div>`:''}
+        </div>`:''}
+        ${d.jezyki.some(l=>l.jezyk)?`
+        <div>
+          ${phdr(L("languages"))}
+          <div style="display:flex;gap:20px;font-size:9px;color:#1e293b;flex-wrap:wrap">
+            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<span><b>${l.jezyk}</b>${l.poziom?` — ${l.poziom}`:''}</span>`).join('')}
           </div>
-        </div>
-      </div>${renderCustomSections(c1, c2)}
+        </div>`:''}
+        ${certGroups.map(({label,items})=>`
+        <div>
+          ${phdr(label)}
+          ${items.map(c=>`<div style="font-size:9px;color:#475569;margin-bottom:3px">${c}</div>`).join('')}
+        </div>`).join('')}
+        ${d.zainteresowania?`
+        <div>
+          ${phdr(L("interests"))}
+          <div style="font-size:9px;color:#475569;line-height:1.65">${d.zainteresowania}</div>
+        </div>`:''}
+        ${renderCustomSections(c1, c2)}
+      </div>
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #eee">${L("consent")}</div>
     </div>`;
+  }
 
   // ── LINEN ─────────────────────────────────────────────────
   if (tpl === 'linen') return `
