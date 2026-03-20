@@ -1,5 +1,3 @@
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
@@ -27,6 +25,11 @@ export default async function handler(req, res) {
   const { html, filename } = req.body || {};
   if (!html) return res.status(400).json({ error: 'Brak HTML' });
 
+  const pdfServiceUrl = process.env.PDF_SERVICE_URL;
+  const pdfApiKey = process.env.PDF_API_KEY;
+
+  if (!pdfServiceUrl) return res.status(500).json({ error: 'PDF_SERVICE_URL nie ustawiony' });
+
   const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -40,44 +43,27 @@ export default async function handler(req, res) {
 <body>${html}</body>
 </html>`;
 
-  chromium.setHeadlessMode = true;
-  chromium.setGraphicsMode = false;
-
-  let browser;
   try {
-    const extraArgs = [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
-    ];
-    browser = await puppeteer.launch({
-      args: [...chromium.args, ...extraArgs],
-      defaultViewport: { width: 595, height: 842 },
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+    const resp = await fetch(`${pdfServiceUrl}/generate-pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html: fullHtml, apiKey: pdfApiKey }),
     });
 
-    const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      return res.status(502).json({ error: err.error || 'Błąd serwisu PDF: ' + resp.status });
+    }
 
-    const pdf = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    });
+    const { pdf } = await resp.json();
+    const buffer = Buffer.from(pdf, 'base64');
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${(filename || 'CV').replace(/"/g, '')}.pdf"`);
-    res.setHeader('Content-Length', pdf.length);
-    return res.status(200).send(Buffer.from(pdf));
+    res.setHeader('Content-Length', buffer.length);
+    return res.status(200).send(buffer);
   } catch (err) {
-    console.error('PDF error:', err.message);
+    console.error('PDF proxy error:', err.message);
     return res.status(500).json({ error: err.message || 'Błąd generowania PDF' });
-  } finally {
-    if (browser) await browser.close();
   }
 }
