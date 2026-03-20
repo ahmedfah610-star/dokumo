@@ -37,6 +37,7 @@ app.post('/generate-pdf', async (req, res) => {
     });
 
     const page = await browser.newPage();
+    await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
     const buffer = await page.pdf({

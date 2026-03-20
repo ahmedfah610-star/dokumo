@@ -34,10 +34,10 @@ export default async function handler(req, res) {
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=595">
+<meta name="viewport" content="width=794">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { width: 595px; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { width: 794px; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 </style>
 </head>
 <body>${html}</body>
