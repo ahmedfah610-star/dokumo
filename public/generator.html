@@ -369,11 +369,13 @@ async function autoGenerateFromWizard() {
       + '- Firma: ' + (gp('company') || '[firma]') + '\n'
       + '- Kandydat: ' + (fullName || '[imię i nazwisko]') + '\n'
       + '- Data: ' + dz + extra + '\n\n'
-      + 'Napisz 3-4 akapity. Formalny, konkretny, gotowy do wklejenia. Zero markdown, zero gwiazdek, zero emoji.';
+      + 'Napisz 3-4 akapity. Formalny, konkretny, gotowy do wklejenia. Zero markdown, zero gwiazdek, zero emoji.\n'
+      + 'BEZWZGLĘDNY ZAKAZ: nie używaj ŻADNYCH angielskich słów ani zwrotów — nawet branżowych. Pisz wyłącznie po polsku.';
+    var coverSystemPrompt = 'Piszesz wyłącznie po polsku. ABSOLUTNY ZAKAZ używania jakichkolwiek angielskich słów lub zwrotów — dotyczy to również terminów branżowych, nawet powszechnie używanych. Zawsze stosuj polskie odpowiedniki: "umiejętności techniczne" zamiast "technical skills", "zarządzanie projektem" zamiast "project management", "oprogramowanie" zamiast "software", "programowanie" zamiast "coding", "dane" zamiast "data" itp. Zero markdown, zero gwiazdek. Tylko czysty tekst po polsku.';
     var res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ prompt: prompt, docId: 'cover-letter', docName: 'List motywacyjny', docCat: 'kariera', docCatLabel: 'Kariera', docIcon: '✉️' })
+      body: JSON.stringify({ prompt: prompt, systemPrompt: coverSystemPrompt, docId: 'cover-letter', docName: 'List motywacyjny', docCat: 'kariera', docCatLabel: 'Kariera', docIcon: '✉️' })
     });
     var data = await res.json();
     var text = data.text || data.result || '';
