@@ -143,7 +143,7 @@ body { overflow:hidden; }
 
   <!-- NAV -->
   <div class="cv-nav">
-    <button class="btn-back" onclick="window.location.href='dokumenty.html'">← Wróć</button>
+    <button class="btn-back" onclick="window.location.href='kariera.html'">← Wróć</button>
     <a href="index.html" class="logo cv-nav-logo">Doku<span>mo</span><span class="cv-nav-subtitle"> · Kreator CV</span></a>
     <div class="cv-nav-right">
       <button class="btn-import-pdf" onclick="openImportModal()" title="Importuj CV z PDF">
