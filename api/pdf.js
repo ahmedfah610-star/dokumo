@@ -37,7 +37,8 @@ export default async function handler(req, res) {
 <meta name="viewport" content="width=794">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { width: 794px; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html { width: 794px !important; max-width: 794px !important; overflow: hidden; }
+  body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 </style>
 </head>
 <body>${html}</body>
