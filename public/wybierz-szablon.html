@@ -430,15 +430,35 @@ function preview(id, c1, c2) {
       <div style="flex:1;padding:28px 24px 24px;overflow:hidden">${mainCol(c1)}</div>`),
 
     slate: wrap(`
-      <div style="border-top:6px solid ${c1};padding:28px 36px 18px;font-family:Georgia,serif;flex-shrink:0">
-        <div style="font-size:28px;font-weight:700;color:${c1};letter-spacing:-0.02em">${S.name}</div>
-        <div style="font-size:12px;color:${c2};font-style:italic;margin-top:5px">${S.role}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-          <div style="height:1px;background:${c1};flex:1;margin-right:16px"></div>
-          <div style="font-size:10px;color:#666">${contactRow('', S.email, '#666')}${contactRow('', S.phone, '#666')}</div>
+      <div style="border-top:6px solid ${c1};padding:22px 32px 14px;font-family:Georgia,serif;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+          <div style="flex:1">
+            <div style="font-size:24px;font-weight:700;color:${c1};letter-spacing:-0.02em">${S.name}</div>
+            <div style="font-size:11px;color:${c2};font-style:italic;margin-top:3px">${S.role}</div>
+          </div>
+          <div style="text-align:right;font-size:9px;color:#666">${S.email}<br>${S.phone}</div>
         </div>
+        <div style="height:1px;background:${c1}"></div>
       </div>
-      <div style="flex:1;padding:0 36px 24px;overflow:hidden;font-family:Georgia,serif">${body(c1)}</div>`),
+      <div style="flex:1;display:grid;grid-template-columns:1fr 120px;padding:12px 32px 16px;gap:16px;overflow:hidden;font-family:Georgia,serif">
+        <div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Doświadczenie</div>
+          ${[{f:S.exp1f,r:S.exp1r,d:S.exp1d},{f:S.exp2f,r:S.exp2r,d:S.exp2d}].map(e=>`
+          <div style="margin-bottom:9px">
+            <div style="display:flex;justify-content:space-between"><div style="font-size:11px;font-weight:700;color:#222">${e.r}</div><div style="font-size:9px;color:#999;font-style:italic">${e.d}</div></div>
+            <div style="font-size:10px;color:${c2};font-style:italic">${e.f}</div>
+          </div>`).join('')}
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin:10px 0 8px">Wykształcenie</div>
+          <div style="font-size:11px;font-weight:700;color:#222">${S.edu1}</div>
+          <div style="font-size:10px;color:${c2};font-style:italic">${S.edu1d}</div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">Umiejętności</div>
+          ${[S.sk1,S.sk2,S.sk3,S.sk4].map(s=>`<div style="font-size:9px;color:#444;padding-left:8px;border-left:2px solid ${c1};margin-bottom:4px">${s}</div>`).join('')}
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin:10px 0 6px">Języki</div>
+          <div style="font-size:9px;color:#444">Angielski <span style="color:#999">– C1</span></div>
+        </div>
+      </div>`),
 
     metro: wrap(`
       <div style="background:#1a1a1a;padding:28px 32px 22px;flex-shrink:0">
