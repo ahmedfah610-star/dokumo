@@ -218,10 +218,12 @@ onAuthStateChanged(getAuth(app),async u=>{
 <main class="calc-section">
 
   <div class="contract-toggle" style="margin-top:48px;">
-    <button class="contract-btn active" onclick="setContract('uop')">Umowa o pracę</button>
-    <button class="contract-btn" onclick="setContract('uz')">Umowa zlecenie</button>
-    <button class="contract-btn" onclick="setContract('uod')">Umowa o dzieło</button>
-    <button class="contract-btn" onclick="setContract('b2b')">B2B (liniowy)</button>
+    <button class="contract-btn active" data-ct="uop" onclick="setContract('uop')">Umowa o pracę</button>
+    <button class="contract-btn" data-ct="uz" onclick="setContract('uz')">Umowa zlecenie</button>
+    <button class="contract-btn" data-ct="uod" onclick="setContract('uod')">Umowa o dzieło</button>
+    <button class="contract-btn" data-ct="b2b_ryczalt" onclick="setContract('b2b_ryczalt')">B2B · Ryczałt 12%</button>
+    <button class="contract-btn" data-ct="b2b_skala" onclick="setContract('b2b_skala')">B2B · Skala</button>
+    <button class="contract-btn" data-ct="b2b" onclick="setContract('b2b')">B2B · Liniowy 19%</button>
   </div>
   <div class="contract-note" id="contractNote"></div>
 
@@ -383,10 +385,12 @@ var contract = 'uop';
 var pit0     = false;
 
 var CONTRACT_NOTES = {
-  uop: 'Umowa o pracę — pełne ubezpieczenia ZUS, koszty uzyskania przychodu 250 zł/mies, kwota wolna 30 000 zł.',
-  uz:  'Umowa zlecenie — ZUS obowiązkowy gdy to jedyne zatrudnienie. KUP = 20% od podstawy po ZUS. Chorobowa dobrowolna.',
-  uod: 'Umowa o dzieło — brak składek ZUS i zdrowotnej. KUP = 20% (lub 50% dla praw autorskich). Brak prawa do zasiłku.',
-  b2b: 'B2B (podatek liniowy 19%) — ZUS przedsiębiorcy ok. 1 600 zł/mies (stały), zdrowotna 4,9% dochodu. Wartości przybliżone.'
+  uop:        'Umowa o pracę — pełne ubezpieczenia ZUS, koszty uzyskania przychodu 250 zł/mies, kwota wolna 30 000 zł.',
+  uz:         'Umowa zlecenie — ZUS obowiązkowy gdy to jedyne zatrudnienie. KUP = 20% od podstawy po ZUS. Chorobowa dobrowolna.',
+  uod:        'Umowa o dzieło — brak składek ZUS i zdrowotnej. KUP = 20% (lub 50% dla praw autorskich). Brak prawa do zasiłku.',
+  b2b_ryczalt:'B2B · Ryczałt 12% — podatek od przychodu × 12%, brak odliczenia kosztów. ZUS duży: 1 926,77 zł/mies. Zdrowotna stała wg progu rocznego przychodu (minus ZUS). Można odliczyć 50% zdrowotnej od podstawy podatku.',
+  b2b_skala:  'B2B · Skala podatkowa — 12% do 120 000 zł dochodu, 32% powyżej. Kwota wolna 30 000 zł. ZUS duży: 1 926,77 zł/mies. Zdrowotna: 9% dochodu, min 432,54 zł/mies.',
+  b2b:        'B2B · Liniowy 19% — ZUS duży: 1 926,77 zł/mies. Zdrowotna: 4,9% dochodu, min 432,54 zł/mies. Odliczenie zdrowotnej od podatku: max 14 100 zł/rok (1 175 zł/mies).'
 };
 
 function fmt(n) { return Math.round(n).toLocaleString('pl-PL') + ' zł'; }
@@ -447,20 +451,45 @@ function calcUoD(brutto) {
   return { brutto, zusEm:0, zusRe:0, zusCh:0, zusSum:0, zdrow:0, kup, tax: taxM, netto, emp: brutto };
 }
 
-/* ── B2B liniowy ── */
-function calcB2B(przychod) {
-  var zusStaly = 1600; // przybliżony ZUS społeczne przedsiębiorcy 2026
+/* ── B2B Ryczałt 12% ── */
+function calcB2BRyczalt(przychod) {
+  var zusStaly = 1926.77;
+  // próg zdrowotnej liczony od rocznego przychodu minus roczny ZUS
+  var rocznyBase = przychod * 12 - zusStaly * 12;
+  var zdrow = rocznyBase <= 60000  ? 498.35
+            : rocznyBase <= 300000 ? 830.58
+            :                        1495.44;
+  // podatek: 12% od przychodu, można odliczyć 50% zdrowotnej od podstawy
+  var podstawa = Math.max(0, przychod - zdrow * 0.5);
+  var taxM = Math.round(podstawa * 0.12);
+  var netto = przychod - zusStaly - zdrow - taxM;
+  return { brutto: przychod, zusStaly, zdrow, tax: taxM, netto, emp: przychod, _zdrowOdlicz: zdrow * 0.5 };
+}
+
+/* ── B2B Skala ── */
+function calcB2BSkala(przychod) {
+  var zusStaly = 1926.77;
   var dochod   = Math.max(0, przychod - zusStaly);
-  var zdrow    = Math.max(420, dochod * 0.049); // min zdrowotna ~420 zł
-  var zdrowOdlicz = Math.min(zdrow, 967);        // max odlicz jako koszt (11 600/rok)
-  var taxM     = Math.max(0, Math.round((dochod - zdrowOdlicz) * 0.19));
+  var zdrow    = Math.max(432.54, dochod * 0.09);
+  var taxM     = Math.max(0, Math.round(pitProgressive(dochod * 12) / 12));
   var netto    = przychod - zusStaly - zdrow - taxM;
   return { brutto: przychod, zusStaly, zdrow, tax: taxM, netto, emp: przychod };
 }
 
+/* ── B2B Liniowy 19% ── */
+function calcB2B(przychod) {
+  var zusStaly = 1926.77;
+  var dochod   = Math.max(0, przychod - zusStaly);
+  var zdrow    = Math.max(432.54, dochod * 0.049);
+  var zdrowOdlicz = Math.min(zdrow, 1175); // max 14 100 zł/rok = 1 175 zł/mies
+  var taxM     = Math.max(0, Math.round((dochod - zdrowOdlicz) * 0.19));
+  var netto    = przychod - zusStaly - zdrow - taxM;
+  return { brutto: przychod, zusStaly, zdrow, tax: taxM, netto, emp: przychod, _zdrowOdlicz: zdrowOdlicz };
+}
+
 /* ── dispatcher ── */
 function calcFor(val, ct) {
-  var fn = { uop: calcUoP, uz: calcUZ, uod: calcUoD, b2b: calcB2B }[ct];
+  var fn = { uop: calcUoP, uz: calcUZ, uod: calcUoD, b2b_ryczalt: calcB2BRyczalt, b2b_skala: calcB2BSkala, b2b: calcB2B }[ct];
   return fn(val);
 }
 
@@ -476,12 +505,14 @@ function calcReverse(targetNetto, ct) {
 }
 
 /* ── UI ── */
+function isB2B(ct) { return ct === 'b2b' || ct === 'b2b_ryczalt' || ct === 'b2b_skala'; }
+
 function setMode(m) {
   mode = m;
   document.getElementById('modeBrutto').classList.toggle('active', m === 'brutto');
   document.getElementById('modeNetto').classList.toggle('active',  m === 'netto');
   document.getElementById('inputLabel').textContent = m === 'brutto'
-    ? (contract === 'b2b' ? 'Przychód miesięczny (faktura)' : 'Wynagrodzenie brutto miesięcznie')
+    ? (isB2B(contract) ? 'Przychód miesięczny (faktura)' : 'Wynagrodzenie brutto miesięcznie')
     : 'Wynagrodzenie netto miesięcznie';
   calculate();
 }
@@ -495,8 +526,7 @@ function togglePit0() {
 function setContract(ct) {
   contract = ct;
   document.querySelectorAll('.contract-btn').forEach(function(b){
-    b.classList.toggle('active', b.textContent.toLowerCase().indexOf(
-      ct === 'uop' ? 'pracę' : ct === 'uz' ? 'zlecenie' : ct === 'uod' ? 'dzieło' : 'b2b') !== -1);
+    b.classList.toggle('active', b.dataset.ct === ct);
   });
   document.getElementById('contractNote').textContent = CONTRACT_NOTES[ct];
   // show PIT-0 toggle only for uop and uz
@@ -504,8 +534,8 @@ function setContract(ct) {
   document.getElementById('pit0Wrap').classList.toggle('visible', showPit0);
   if (!showPit0 && pit0) { pit0 = false; document.getElementById('pit0Toggle').classList.remove('on'); }
   // B2B: disable netto→brutto (less meaningful)
-  document.getElementById('modeNetto').style.display = ct === 'b2b' ? 'none' : '';
-  if (ct === 'b2b' && mode === 'netto') setMode('brutto');
+  document.getElementById('modeNetto').style.display = isB2B(ct) ? 'none' : '';
+  if (isB2B(ct) && mode === 'netto') setMode('brutto');
   else { setMode(mode); }
   calculate();
 }
@@ -594,16 +624,18 @@ function calculate() {
   var b = c.brutto;
 
   // Pie chart
+  var zusLabel = isB2B(contract) ? 'ZUS społeczny' : 'ZUS pracownik';
+  var taxLabel = contract === 'b2b' ? 'Podatek liniowy' : contract === 'b2b_ryczalt' ? 'Podatek ryczałt' : contract === 'b2b_skala' ? 'Podatek skala' : 'Podatek PIT';
   drawPie([
-    { color: '#111',    label: 'Netto',             value: Math.max(0, c.netto) },
-    { color: '#999',    label: 'ZUS pracownik',      value: c.zusSum || (c.zusStaly||0) },
-    { color: '#bbb',    label: 'Składka zdrowotna',  value: c.zdrow },
-    { color: '#d4d4d4', label: 'Podatek PIT',        value: c.tax }
+    { color: '#111',    label: 'Netto',            value: Math.max(0, c.netto) },
+    { color: '#999',    label: zusLabel,            value: c.zusSum || (c.zusStaly||0) },
+    { color: '#bbb',    label: 'Składka zdrowotna', value: c.zdrow },
+    { color: '#d4d4d4', label: taxLabel,            value: c.tax }
   ]);
 
   // Breakdown rows
   var rows = '';
-  var brLabel = contract === 'b2b'
+  var brLabel = isB2B(contract)
     ? 'Przychód (faktura)'
     : (mode === 'brutto' ? 'Wynagrodzenie brutto' : 'Wyliczone brutto');
   rows += brRow('#e5e5e5', brLabel, '', fmt(b), false);
@@ -613,12 +645,21 @@ function calculate() {
     rows += brRow('#aaa', 'Rentowa (1,5%)',        '1,50%', fmtM(c.zusRe), true);
     rows += brRow('#b5b5b5', 'Chorobowa (2,45%)' + (contract==='uz'?' <span style="font-size:.7em;opacity:.6;">dobrowolna</span>':''), '2,45%', fmtM(c.zusCh), true);
   }
-  if (contract === 'b2b') {
-    rows += brRow('#999', 'ZUS przedsiębiorcy (stały)', '~' + pct(c.zusStaly, b), fmtM(c.zusStaly), true);
+  if (isB2B(contract)) {
+    rows += brRow('#999', 'ZUS społeczny (duży)', '~' + pct(c.zusStaly, b), fmtM(c.zusStaly), true);
   }
   if (contract !== 'uod') {
-    var zdLabel = contract === 'b2b' ? 'Składka zdrowotna (4,9% doch.)' : 'Składka zdrowotna (9%)';
+    var zdLabel = contract === 'b2b'        ? 'Zdrowotna (4,9% doch., min 432,54 zł)'
+                : contract === 'b2b_skala'  ? 'Zdrowotna (9% doch., min 432,54 zł)'
+                : contract === 'b2b_ryczalt'? 'Zdrowotna (stała wg progu przychodu)'
+                :                             'Składka zdrowotna (9%)';
     rows += brRow('#bbb', zdLabel, pct(c.zdrow, b), fmtM(c.zdrow), true);
+  }
+  if (contract === 'b2b_ryczalt' && c._zdrowOdlicz > 0) {
+    rows += brRow('#ddd', 'Odliczenie: 50% zdrowotnej od podstawy', '', '−' + Math.round(c._zdrowOdlicz).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(obniża podatek)</span>', true);
+  }
+  if (contract === 'b2b' && c._zdrowOdlicz > 0) {
+    rows += brRow('#ddd', 'Odliczenie zdrowotnej od podatku', '', '−' + Math.round(c._zdrowOdlicz).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(max 1 175 zł/mies)</span>', true);
   }
   if (contract === 'uz') {
     rows += brRow('#ccc', 'KUP (20% od podstawy)', pct(c.kup, b), '−' + Math.round(c.kup).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(odliczenie)</span>', true);
@@ -626,7 +667,10 @@ function calculate() {
   if (contract === 'uod') {
     rows += brRow('#ccc', 'KUP (20% od brutto)', pct(c.kup, b), '−' + Math.round(c.kup).toLocaleString('pl-PL') + ' zł <span style="font-size:.75em;opacity:.6;">(odliczenie)</span>', true);
   }
-  var pitLabel = contract === 'b2b' ? 'Podatek liniowy (19%)' : 'Zaliczka na podatek PIT';
+  var pitLabel = contract === 'b2b'         ? 'Podatek liniowy (19%)'
+               : contract === 'b2b_ryczalt' ? 'Podatek ryczałtowy (12%)'
+               : contract === 'b2b_skala'   ? 'Podatek wg skali (12%/32%)'
+               :                              'Zaliczka na podatek PIT';
   if (pit0 && c.tax === 0) pitLabel += ' <span style="font-size:.75em;color:#2563eb;font-weight:700;">ulga dla młodych</span>';
   rows += brRow('#d4d4d4', pitLabel, c.tax > 0 ? pct(c.tax, b) : '—', c.tax > 0 ? fmtM(c.tax) : '0 zł', c.tax > 0);
   document.getElementById('breakdown').innerHTML = rows;
@@ -646,10 +690,13 @@ function calculate() {
       + '<div style="text-align:right;"><div class="emp-value">' + fmt(c.emp) + '</div>'
       + '<div style="font-size:.72rem;color:var(--ink3);">/ mies.</div></div>'
       + '</div>';
-  } else if (contract === 'b2b') {
+  } else if (isB2B(contract)) {
+    var b2bSub = contract === 'b2b_ryczalt' ? 'Ryczałt 12% · ZUS 1 926,77 zł · zdrowotna stała wg progu'
+               : contract === 'b2b_skala'   ? 'Skala 12%/32% · ZUS 1 926,77 zł · zdrowotna 9% dochodu'
+               :                              'Liniowy 19% · ZUS 1 926,77 zł · zdrowotna 4,9% dochodu';
     empHtml = '<div class="employer-card">'
       + '<div><div class="emp-left">Koszt dla klienta / zleceniodawcy</div>'
-      + '<div class="emp-sub">Kwota faktury — brak dodatkowych składek po Twojej stronie</div></div>'
+      + '<div class="emp-sub">' + b2bSub + '</div></div>'
       + '<div style="text-align:right;"><div class="emp-value">' + fmt(c.emp) + '</div>'
       + '<div style="font-size:.72rem;color:var(--ink3);">/ mies.</div></div>'
       + '</div>';
