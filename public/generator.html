@@ -62,7 +62,7 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 
 /* ── PREVIEW ── */
 .lm-preview{flex:1;overflow-y:auto;background:#f0f0f2;display:flex;justify-content:center;padding:28px 20px 48px;}
-.lm-paper{background:#fff;width:100%;max-width:600px;min-height:760px;padding:52px 56px;font-family:Georgia,'Times New Roman',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;box-shadow:0 2px 24px rgba(0,0,0,.09);border-radius:2px;align-self:flex-start;}
+.lm-paper{background:#fff;width:100%;max-width:600px;min-height:760px;padding:52px 56px;font-family:Georgia,'Times New Roman',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;box-shadow:0 2px 24px rgba(0,0,0,.09);border-radius:2px;align-self:flex-start;overflow-wrap:break-word;word-break:break-word;}
 
 /* ── BOTTOM BAR ── */
 .lm-bar{height:52px;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:8px;flex-shrink:0;background:#fff;z-index:10;}
@@ -86,6 +86,10 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
   .lm-editor{width:100%;min-width:0;border-right:none;}
   .lm-preview{display:none;}
   .btn-preview{display:flex;}
+}
+@media(max-width:480px){
+  .preview-modal{padding:12px 8px 32px;}
+  .preview-modal .lm-paper{padding:28px 20px;font-size:12px;min-height:0;}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
