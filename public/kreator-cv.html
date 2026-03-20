@@ -69,6 +69,7 @@ function renderCustomSections(c1, c2) {
     slate:     `font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px`,
     teal:      `font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px`,
     creative:  `font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px`,
+    timeline:  `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};padding-bottom:4px;border-bottom:2px solid ${c1};margin-bottom:10px`,
     shield:    `font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px`,
     athens:    `font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px`,
     matrix:    `font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.9;margin-bottom:10px`,
@@ -111,71 +112,110 @@ function buildCVHTML(tpl) {
   ].filter(Boolean).join('');
 
   // ── TIMELINE ──────────────────────────────────────────────
-  if (tpl === 'timeline') return `
-    <div style="font-family:Arial,sans-serif;background:#fff;padding:0;min-height:842px">
-      <div style="background:linear-gradient(135deg,${c1},${c2});padding:36px 40px 28px;display:flex;align-items:center;gap:22px">
-        ${d.zdjecie ? `<div style="width:88px;height:88px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.5);flex-shrink:0">${photo}</div>` : ''}
+  if (tpl === 'timeline') {
+    const sh = (lbl) => `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};padding-bottom:4px;border-bottom:2px solid ${c1};margin-bottom:10px">${lbl}</div>`;
+    const tlDot = (last=false, big=true) => `<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:${big?10:7}px">
+      <div style="width:${big?10:7}px;height:${big?10:7}px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:3px"></div>
+      ${!last?`<div style="width:${big?2:1.5}px;flex:1;background:#e8e8e8;margin-top:3px;min-height:${big?16:9}px"></div>`:''}
+    </div>`;
+    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    return `
+    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px">
+      <div style="background:linear-gradient(135deg,${c1},${c2});padding:32px 40px 26px;display:flex;align-items:center;gap:22px">
+        ${d.zdjecie?`<div style="width:88px;height:88px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.5);flex-shrink:0">${photo}</div>`:''}
         <div>
           <div style="font-size:26px;font-weight:700;color:#fff;line-height:1.1">${name}</div>
           ${d.stanowisko?`<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
           <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:9.5px;color:rgba(255,255,255,0.75)">${contact}</div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 200px;gap:0;padding:24px 40px;align-items:start">
-        <div style="padding-right:32px;border-right:2px solid #f0f0f0">
-          ${d.podsumowanie?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:6px">${L("profile")}</div><div style="font-size:10px;line-height:1.7;color:#555">${d.podsumowanie}</div></div>`:''}
+      <div style="display:grid;grid-template-columns:1fr 185px;padding:24px 40px 20px;gap:0;align-items:start">
+        <div style="padding-right:28px;border-right:2px solid #f0f0f0">
+          ${d.podsumowanie?`
+          <div style="margin-bottom:20px">
+            ${sh(L("profile"))}
+            <div style="display:flex;gap:12px">
+              ${tlDot(true)}
+              <div style="font-size:9.5px;line-height:1.7;color:#555">${d.podsumowanie}</div>
+            </div>
+          </div>`:''}
           ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
           <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:12px">${L("experience")}</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="display:flex;gap:12px;margin-bottom:18px">
-                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
-                  <div style="width:10px;height:10px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:2px"></div>
-                  <div style="width:2px;flex:1;background:#e8e8e8;margin-top:3px"></div>
-                </div>
-                <div style="padding-bottom:12px">
-                  <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.stanowisko||''}</div>
-                  <div style="font-size:10px;color:${c2};font-weight:600">${e.firma||''}</div>
-                  <div style="font-size:9px;color:#aaa;margin-bottom:3px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                  ${e.opis?`<div style="font-size:9.5px;color:#666;line-height:1.6">${e.opis}</div>`:''}
-                </div>
-              </div>`).join('')}
+            ${sh(L("experience"))}
+            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map((e,i,arr)=>`
+            <div style="display:flex;gap:12px">
+              ${tlDot(i===arr.length-1)}
+              <div style="padding-bottom:${i<arr.length-1?'14':'2'}px">
+                <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.stanowisko||''}</div>
+                <div style="font-size:10px;color:${c2};font-weight:600">${e.firma||''}</div>
+                <div style="font-size:9px;color:#aaa;margin-bottom:3px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+                ${e.opis?`<div style="font-size:9.5px;color:#666;line-height:1.6">${e.opis}</div>`:''}
+              </div>
+            </div>`).join('')}
           </div>`:''}
           ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:12px">${L("education")}</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="display:flex;gap:12px;margin-bottom:16px">
-                <div style="width:10px;height:10px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:2px"></div>
-                <div>
-                  <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.kierunek||''}</div>
-                  <div style="font-size:10px;color:#666">${e.szkola}</div>
-                  <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-              </div>`).join('')}
-          </div>`:''}${renderCustomSections(c1, c2)}
+          <div style="margin-bottom:20px">
+            ${sh(L("education"))}
+            ${d.wyksztalcenie.filter(e=>e.szkola).map((e,i,arr)=>`
+            <div style="display:flex;gap:12px">
+              ${tlDot(i===arr.length-1)}
+              <div style="padding-bottom:${i<arr.length-1?'12':'2'}px">
+                <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.kierunek||''}</div>
+                <div style="font-size:10px;color:#666">${e.szkola}</div>
+                <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>
+            </div>`).join('')}
+          </div>`:''}
+          ${customSects.map(s=>`
+          <div style="margin-bottom:18px">
+            ${sh(s.title||'')}
+            <div style="display:flex;gap:12px">
+              ${tlDot(true)}
+              <div style="font-size:9.5px;color:#555;line-height:1.65">${s.content||''}</div>
+            </div>
+          </div>`).join('')}
         </div>
         <div style="padding-left:20px">
           ${skills.length?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("skills")}</div>
-            ${skills.map(s=>`<div style="font-size:9.5px;margin-bottom:5px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${s}</div>`).join('')}
+          <div style="margin-bottom:18px">
+            ${sh(L("skills"))}
+            ${skills.map((s,i,arr)=>`
+            <div style="display:flex;gap:9px">
+              ${tlDot(i===arr.length-1,false)}
+              <div style="font-size:9px;color:#444;padding-bottom:${i<arr.length-1?'5':'1'}px">${s}</div>
+            </div>`).join('')}
           </div>`:''}
           ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("languages")}</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:5px"><strong>${l.jezyk}</strong> <span style="color:#aaa">– ${l.poziom}</span></div>`).join('')}
+          <div style="margin-bottom:18px">
+            ${sh(L("languages"))}
+            ${d.jezyki.filter(l=>l.jezyk).map((l,i,arr)=>`
+            <div style="display:flex;gap:9px">
+              ${tlDot(i===arr.length-1,false)}
+              <div style="font-size:9px;padding-bottom:${i<arr.length-1?'5':'1'}px"><strong>${l.jezyk}</strong><span style="color:#aaa"> – ${l.poziom}</span></div>
+            </div>`).join('')}
           </div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
+          ${certGroups.map(({label,items})=>`
+          <div style="margin-bottom:18px">
+            ${sh(label)}
+            ${items.map((c,i,arr)=>`
+            <div style="display:flex;gap:9px">
+              ${tlDot(i===arr.length-1,false)}
+              <div style="font-size:9px;color:#444;padding-bottom:${i<arr.length-1?'5':'1'}px">${c}</div>
+            </div>`).join('')}
+          </div>`).join('')}
           ${d.zainteresowania?`
           <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div>
-            <div style="font-size:9.5px;color:#666;line-height:1.6">${d.zainteresowania}</div>
+            ${sh(L("interests"))}
+            <div style="display:flex;gap:9px">
+              ${tlDot(true,false)}
+              <div style="font-size:9px;color:#666;line-height:1.6">${d.zainteresowania}</div>
+            </div>
           </div>`:''}
         </div>
       </div>
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
+  }
 
   // ── SIDEBAR ───────────────────────────────────────────────
   if (tpl === 'sidebar') {

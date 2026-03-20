@@ -559,17 +559,54 @@ function preview(id, c1, c2) {
           ${contactRow('', S.email, 'rgba(255,255,255,0.55)')}${contactRow('', S.phone, 'rgba(255,255,255,0.55)')}
         </div>
       </div>
-      <div style="flex:1;padding:16px 32px 24px;overflow:hidden">
-        ${sl('Podsumowanie', c1, 0)}
-        <div style="font-size:11px;color:#475569;line-height:1.6;margin-bottom:4px">${S.sum}</div>
-        ${sl('Doświadczenie', c1)}
-        <div style="border-left:3px solid ${c1};padding-left:16px">
-          ${expEntry(S.exp1f, S.exp1r, S.exp1d, S.exp1desc, c1)}
-          ${expEntry(S.exp2f, S.exp2r, S.exp2d, S.exp2desc, c1)}
-          ${expEntry(S.exp3f, S.exp3r, S.exp3d, S.exp3desc, c1)}
+      <div style="display:grid;grid-template-columns:1fr 160px;flex:1;overflow:hidden">
+        <div style="padding:16px 20px 24px;border-right:2px solid #f0f0f0;overflow:hidden">
+          ${sl('Doświadczenie', c1, 0)}
+          ${[{f:S.exp1f,r:S.exp1r,d:S.exp1d,desc:S.exp1desc},{f:S.exp2f,r:S.exp2r,d:S.exp2d,desc:S.exp2desc},{f:S.exp3f,r:S.exp3r,d:S.exp3d,desc:S.exp3desc}].map((e,i,arr)=>`
+          <div style="display:flex;gap:10px">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:3px"></div>
+              ${i<arr.length-1?`<div style="width:2px;flex:1;background:#e8e8e8;margin-top:3px;min-height:14px"></div>`:''}
+            </div>
+            <div style="padding-bottom:${i<arr.length-1?'12':'2'}px">
+              <div style="font-size:13px;font-weight:700;color:#1a1a1a">${e.r}</div>
+              <div style="font-size:11px;color:${c2};font-weight:600">${e.f}</div>
+              <div style="font-size:10px;color:#aaa">${e.d}</div>
+            </div>
+          </div>`).join('')}
+          ${sl('Wykształcenie', c1)}
+          ${[{s:S.edu1,d:S.edu1d,y:S.edu1y},{s:S.edu2,d:S.edu2d,y:S.edu2y}].map((e,i,arr)=>`
+          <div style="display:flex;gap:10px">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:3px"></div>
+              ${i<arr.length-1?`<div style="width:2px;flex:1;background:#e8e8e8;margin-top:3px;min-height:12px"></div>`:''}
+            </div>
+            <div style="padding-bottom:${i<arr.length-1?'10':'2'}px">
+              <div style="font-size:13px;font-weight:700;color:#1a1a1a">${e.s}</div>
+              <div style="font-size:11px;color:#666">${e.d} · ${e.y}</div>
+            </div>
+          </div>`).join('')}
         </div>
-        ${sl('Wykształcenie', c1)}
-        ${eduEntry(S.edu1, S.edu1d, S.edu1y)}
+        <div style="padding:16px 14px 24px;overflow:hidden">
+          ${sl('Umiejętności', c1, 0)}
+          ${[S.sk1,S.sk2,S.sk3,S.sk4,S.sk5,S.sk6].map((s,i,arr)=>`
+          <div style="display:flex;gap:8px">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:7px">
+              <div style="width:7px;height:7px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:4px"></div>
+              ${i<arr.length-1?`<div style="width:1.5px;flex:1;background:#e8e8e8;margin-top:2px;min-height:9px"></div>`:''}
+            </div>
+            <div style="font-size:10px;color:#444;padding-bottom:${i<arr.length-1?'5':'1'}px">${s}</div>
+          </div>`).join('')}
+          ${sl('Języki', c1)}
+          ${[{l:S.lang1,lv:S.lang1l},{l:S.lang2,lv:S.lang2l}].map((l,i,arr)=>`
+          <div style="display:flex;gap:8px">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:7px">
+              <div style="width:7px;height:7px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:4px"></div>
+              ${i<arr.length-1?`<div style="width:1.5px;flex:1;background:#e8e8e8;margin-top:2px;min-height:9px"></div>`:''}
+            </div>
+            <div style="font-size:10px;padding-bottom:${i<arr.length-1?'5':'1'}px"><b>${l.l}</b><span style="color:#aaa"> – ${l.lv}</span></div>
+          </div>`).join('')}
+        </div>
       </div>`),
 
     diagonal: `<div style="width:595px;height:842px;overflow:hidden;font-family:Arial,sans-serif;position:relative;background:#fff">
