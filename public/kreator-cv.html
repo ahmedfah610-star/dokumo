@@ -2167,9 +2167,9 @@ async function loadCVDraft() {
     // If user picked a template from wybierz-szablon.html (?template=…), keep it — only restore from draft when no template was explicitly chosen
     var urlTpl = new URLSearchParams(location.search).get('template');
     if (!urlTpl && loaded.__template) cvTemplate = loaded.__template;
-    if (loaded.__color) cvCustomColor = loaded.__color;
-    if (loaded.__customSections) cvCustomSections = loaded.__customSections;
-    if (loaded.__sidebarSections) cvSidebarSections = new Set(loaded.__sidebarSections);
+    if (!urlTpl && loaded.__color) cvCustomColor = loaded.__color;
+    if (!urlTpl && loaded.__customSections) cvCustomSections = loaded.__customSections;
+    if (!urlTpl && loaded.__sidebarSections) cvSidebarSections = new Set(loaded.__sidebarSections);
     delete loaded.__template; delete loaded.__color; delete loaded.__customSections; delete loaded.__sidebarSections;
     Object.assign(cvData, loaded);
     if (typeof renderCVForm === 'function') renderCVForm();
