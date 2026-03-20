@@ -849,65 +849,57 @@ function buildCVHTML(tpl) {
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:12px 0 0;border-top:1px solid #eee;margin-top:6px">${L("consent")}</div>
     </div>`;
 
-  // ── CASCADE (jasna sidebar z kolorem, styl Resume.io) ──────
+  // ── CASCADE (dark sidebar, styl Resume.io) ──────────────────
   if (tpl === 'cascade') return `
-    <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;display:flex;min-height:842px;background:#fff">
-      <div style="width:210px;flex-shrink:0;display:flex;flex-direction:column;min-height:842px">
-        <div style="background:${c1};padding:26px 20px 22px;text-align:center">
-          ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 12px;border:3px solid rgba(255,255,255,0.3)">${photo}</div>`:''}
-          <div style="font-size:15px;font-weight:700;color:#fff;line-height:1.25;letter-spacing:-0.2px;word-break:break-word">${name}</div>
-          ${d.stanowisko?`<div style="font-size:8px;color:rgba(255,255,255,0.65);margin-top:5px;text-transform:uppercase;letter-spacing:1px;word-break:break-word">${d.stanowisko}</div>`:''}
-        </div>
-        <div style="background:${c1}0f;flex:1;padding:16px 18px;border-right:1px solid ${c1}1a">
-          <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${L("contact")}</div>
-          ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:#333;margin-bottom:5px;word-break:break-word;line-height:1.4">${x}</div>`).join('')}
-          ${skills.length?`
-          <div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px">
-            <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${L("skills")}</div>
-            ${skills.map(s=>`<div style="font-size:8.5px;color:#333;margin-bottom:5px;display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px">
-            <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${L("languages")}</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:#333;margin-bottom:5px">${l.jezyk}<span style="color:#888"> – ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px"><div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
-          ${d.zainteresowania?`
-          <div style="border-top:1px solid ${c1}22;padding-top:13px;margin-top:13px">
-            <div style="font-size:7.5px;font-weight:700;color:${c1};text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${L("interests")}</div>
-            <div style="font-size:8.5px;color:#555;line-height:1.65">${d.zainteresowania}</div>
-          </div>`:''}
-        </div>
+    <div style="font-family:Arial,sans-serif;display:flex;min-height:842px;background:#fff">
+      <div style="width:220px;flex-shrink:0;background:${c1};padding:28px 20px 24px;overflow:hidden;display:flex;flex-direction:column;gap:0">
+        ${d.zdjecie?`<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;margin-bottom:14px;border:3px solid rgba(255,255,255,0.25)">${photo}</div>`:`<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:16px"></div>`}
+        <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2;word-break:break-word">${name}</div>
+        ${d.stanowisko?`<div style="font-size:10.5px;color:rgba(255,255,255,0.75);margin-top:5px;word-break:break-word">${d.stanowisko}</div>`:''}
+        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("contact")}</div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).join('<br>')}</div>
+        ${skills.length?`
+        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("skills")}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${skills.map(s=>`<span style="font-size:8px;padding:2px 8px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);border-radius:99px;font-weight:600">${s}</span>`).join('')}</div>`:''}
+        ${d.jezyki.some(l=>l.jezyk)?`
+        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("languages")}</div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${d.jezyki.filter(l=>l.jezyk).map(l=>`${l.jezyk} — ${l.poziom}`).join('<br>')}</div>`:''}
+        ${certGroups.map(({label,items})=>`
+        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${label}</div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${items.join('<br>')}</div>`).join('')}
+        ${d.zainteresowania?`
+        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("interests")}</div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.65">${d.zainteresowania}</div>`:''}
       </div>
-      <div style="flex:1;padding:26px 28px 20px;display:flex;flex-direction:column;min-width:0">
+      <div style="flex:1;padding:28px 24px 20px;display:flex;flex-direction:column;min-width:0">
         ${d.podsumowanie?`
         <div style="margin-bottom:18px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:9px">${L("profile")}</div>
-          <div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div>
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:9px;opacity:0.85">${L("profile")}</div>
+          <div style="font-size:10.5px;line-height:1.75;color:#475569">${d.podsumowanie}</div>
         </div>`:''}
         ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
         <div style="margin-bottom:18px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:12px">${L("experience")}</div>
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:12px;opacity:0.85">${L("experience")}</div>
           ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-          <div style="margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-              <div style="font-size:11px;font-weight:700;color:#1c1c1c">${e.stanowisko||''}</div>
-              <div style="font-size:8.5px;color:#aaa;white-space:nowrap;flex-shrink:0;margin-top:1px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+          <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+              <div style="font-size:11px;font-weight:700;color:#1e293b">${e.firma||''}</div>
+              <div style="font-size:8.5px;color:#94a3b8;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
             </div>
-            <div style="font-size:9.5px;color:${c1};font-weight:600;margin:2px 0 3px">${e.firma||''}</div>
-            ${e.opis?`<div style="font-size:9.5px;color:#555;line-height:1.65">${e.opis}</div>`:''}
+            <div style="font-size:9.5px;color:${c1};font-weight:600;margin-top:2px">${e.stanowisko||''}</div>
+            ${e.opis?`<div style="font-size:9.5px;color:#475569;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
           </div>`).join('')}
         </div>`:''}
         ${d.wyksztalcenie.some(e=>e.szkola)?`
         <div style="margin-bottom:18px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:2px solid ${c1};padding-bottom:4px;margin-bottom:12px">${L("education")}</div>
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:12px;opacity:0.85">${L("education")}</div>
           ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
           <div style="margin-bottom:13px">
             <div style="display:flex;justify-content:space-between;gap:8px">
-              <div style="font-size:11px;font-weight:700;color:#1c1c1c">${e.kierunek||''}</div>
-              <div style="font-size:8.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              <div style="font-size:11px;font-weight:700;color:#1e293b">${e.szkola}</div>
+              <div style="font-size:8.5px;color:#94a3b8;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
             </div>
-            <div style="font-size:9.5px;color:#555">${e.szkola}</div>
+            <div style="font-size:9.5px;color:#64748b;margin-top:2px">${e.kierunek||''}</div>
           </div>`).join('')}
         </div>`:''}${renderCustomSections(c1, c2)}
         <div style="margin-top:auto;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
