@@ -960,26 +960,31 @@ function buildCVHTML(tpl) {
             <div style="font-size:10px;color:#64748b;margin-top:2px">${e.kierunek||''}</div>
           </div>`).join('')}
         </div>`:''}
-        ${(skills.length||d.jezyki.some(l=>l.jezyk)||certGroups.length||d.zainteresowania)?`
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px">
-          ${skills.length?`
-          <div style="margin-bottom:16px">
-            <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${L("skills")}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px">
-              ${skills.map(s=>`<span style="font-size:8.5px;padding:3px 10px;background:rgba(0,0,0,0.06);color:#1e293b;border-radius:99px;font-weight:600">${s}</span>`).join('')}
-            </div>
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:16px">
-            <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${L("languages")}</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk}<span style="color:#94a3b8"> — ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${label}</div>${items.map(c=>`<div style="font-size:9px;margin-bottom:4px;color:#444">${c}</div>`).join('')}</div>`).join('')}
-          ${d.zainteresowania?`
-          <div style="margin-bottom:16px">
-            <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${L("interests")}</div>
-            <div style="font-size:9.5px;color:#64748b;line-height:1.6">${d.zainteresowania}</div>
-          </div>`:''}
+        ${skills.length?`
+        <div style="margin-bottom:16px">
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${L("skills")}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            ${skills.map(s=>`<span style="font-size:8.5px;padding:3px 10px;background:rgba(0,0,0,0.06);color:#1e293b;border-radius:99px;font-weight:600">${s}</span>`).join('')}
+          </div>
+        </div>`:''}
+        ${d.jezyki.some(l=>l.jezyk)?`
+        <div style="margin-bottom:16px">
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${L("languages")}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 24px">
+            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:9.5px;color:#1e293b;font-weight:600">${l.jezyk}<span style="color:#94a3b8;font-weight:400"> — ${l.poziom}</span></span>`).join('')}
+          </div>
+        </div>`:''}
+        ${certGroups.map(({label,items}) => `
+        <div style="margin-bottom:16px">
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${label}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 24px">
+            ${items.map(c=>`<span style="font-size:9px;color:#444">${c}</span>`).join('')}
+          </div>
+        </div>`).join('')}
+        ${d.zainteresowania?`
+        <div style="margin-bottom:16px">
+          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;border-bottom:1.5px solid ${c1};padding-bottom:4px;opacity:0.85">${L("interests")}</div>
+          <div style="font-size:9.5px;color:#64748b;line-height:1.6">${d.zainteresowania}</div>
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
