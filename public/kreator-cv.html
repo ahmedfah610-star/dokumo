@@ -4291,11 +4291,7 @@ async function downloadCV() {
       const err = await resp.json().catch(() => ({}));
       throw new Error(err.error || 'Błąd serwera: ' + resp.status);
     }
-    const { pdf } = await resp.json();
-    const binary = atob(pdf);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
