@@ -80,6 +80,7 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .screen.active { display: block; animation: fadeUp .38s ease both; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes wzShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes popIn { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes shimmer { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
@@ -582,9 +583,43 @@ function goTo(n){
   window.scrollTo(0,0);
 }
 
+function validateStep(){
+  var step=FORMS[selDoc].steps[subStep];
+  var missing=[];
+  step.fields.forEach(function(f){
+    if(f.opt) return;
+    var val=wizVals[f.id]||'';
+    if(!val.trim()) missing.push(f.id);
+  });
+  if(missing.length===0) return true;
+  // highlight missing fields
+  missing.forEach(function(id){
+    var el=document.getElementById('gf_'+id);
+    if(!el) return;
+    el.style.borderColor='#ef4444';
+    el.style.animation='wzShake .35s ease';
+    setTimeout(function(){ el.style.animation=''; }, 400);
+    el.addEventListener('input',function fix(){ el.style.borderColor=''; el.removeEventListener('input',fix); });
+  });
+  // toast
+  var toast=document.getElementById('wzToast');
+  if(!toast){
+    toast=document.createElement('div');
+    toast.id='wzToast';
+    toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 20px;border-radius:10px;font-size:.82rem;font-weight:600;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent='Uzupełnij wymagane pola przed przejściem dalej';
+  toast.style.opacity='1';
+  clearTimeout(toast._t);
+  toast._t=setTimeout(function(){ toast.style.opacity='0'; }, 2800);
+  return false;
+}
+
 function goNext(){
   if(mainStep===1){
     collectVals();
+    if(!validateStep()) return;
     var total=FORMS[selDoc].steps.length;
     if(subStep<total-1){ subStep++; renderForm(); renderBar(); }
     else doGenerate();
