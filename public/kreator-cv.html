@@ -178,7 +178,14 @@ function buildCVHTML(tpl) {
     </div>`;
 
   // ── SIDEBAR ───────────────────────────────────────────────
-  if (tpl === 'sidebar') return `
+  if (tpl === 'sidebar') {
+    const sb = cvSidebarSections;
+    const sbHdr = (lbl) => `<div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${lbl}</div>`;
+    const mnHdr = (lbl) => `<div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:5px;margin-bottom:9px">${lbl}</div>`;
+    const skillsInSb = sb.has('umiejetnosci') && skills.length;
+    const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
+    const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
+    return `
     <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;display:flex;min-height:842px;background:#fff">
       <div style="width:215px;background:${c1};flex-shrink:0;display:flex;flex-direction:column;min-height:842px">
         <div style="padding:28px 20px 22px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.1)">
@@ -188,36 +195,37 @@ function buildCVHTML(tpl) {
         </div>
         <div style="padding:16px 20px 0;flex:1">
           <div style="margin-bottom:15px">
-            <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${L("contact")}</div>
+            ${sbHdr(L("contact"))}
             ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.72);margin-bottom:5px;line-height:1.45;word-break:break-word">${x}</div>`).join('')}
           </div>
-          ${skills.length?`
+          ${skillsInSb?`
           <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">
-            <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">${L("skills")}</div>
+            ${sbHdr(L("skills"))}
             ${skills.map(s=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.78);margin-bottom:5px;display:flex;align-items:flex-start;gap:5px"><span style="color:rgba(255,255,255,0.3);flex-shrink:0;margin-top:2px;font-size:7px">▸</span>${s}</div>`).join('')}
           </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
+          ${jezykiInSb?`
           <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">
-            <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">${L("languages")}</div>
+            ${sbHdr(L("languages"))}
             ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.78);margin-bottom:5px">${l.jezyk} <span style="color:rgba(255,255,255,0.4)">· ${l.poziom}</span></div>`).join('')}
           </div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px"><div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.72);margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
-          ${d.zainteresowania?`
+          ${certGroups.filter(cg=>sb.has(cg.key)).map(({label,items})=>`<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">${sbHdr(label)}${items.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.72);margin-bottom:4px">· ${c}</div>`).join('')}</div>`).join('')}
+          ${intInSb?`
           <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">
-            <div style="font-size:7.5px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${L("interests")}</div>
+            ${sbHdr(L("interests"))}
             <div style="font-size:8.5px;color:rgba(255,255,255,0.65);line-height:1.65">${d.zainteresowania}</div>
           </div>`:''}
+          ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">${sbHdr(s.title||'')}<div style="font-size:8.5px;color:rgba(255,255,255,0.72);line-height:1.65">${s.content}</div></div>`).join('')}
         </div>
       </div>
       <div style="flex:1;padding:28px 28px 20px;display:flex;flex-direction:column;min-width:0">
         ${d.podsumowanie?`
         <div style="margin-bottom:20px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:5px;margin-bottom:9px">${L("profile")}</div>
+          ${mnHdr(L("profile"))}
           <div style="font-size:10px;line-height:1.75;color:#484848">${d.podsumowanie}</div>
         </div>`:''}
         ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
         <div style="margin-bottom:20px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:5px;margin-bottom:14px">${L("experience")}</div>
+          ${mnHdr(L("experience"))}
           ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
           <div style="margin-bottom:18px">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
@@ -230,7 +238,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${d.wyksztalcenie.some(e=>e.szkola)?`
         <div style="margin-bottom:20px">
-          <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:5px;margin-bottom:12px">${L("education")}</div>
+          ${mnHdr(L("education"))}
           ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
           <div style="margin-bottom:14px">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
@@ -239,10 +247,16 @@ function buildCVHTML(tpl) {
             </div>
             <div style="font-size:9.5px;color:#555">${e.szkola}</div>
           </div>`).join('')}
-        </div>`:''}${renderCustomSections(c1, c2)}
+        </div>`:''}
+        ${!skillsInSb&&skills.length?`<div style="margin-bottom:18px">${mnHdr(L("skills"))}<div style="display:flex;flex-wrap:wrap;gap:5px">${skills.map(s=>`<span style="font-size:8.5px;padding:3px 10px;background:rgba(0,0,0,0.06);color:#1e293b;border-radius:99px;font-weight:600">${s}</span>`).join('')}</div></div>`:''}
+        ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:18px">${mnHdr(L("languages"))}<div style="display:flex;flex-wrap:wrap;gap:6px 20px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:9.5px;color:#1c1c1c;font-weight:600">${l.jezyk}<span style="color:#aaa;font-weight:400"> – ${l.poziom}</span></span>`).join('')}</div></div>`:''}
+        ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:18px">${mnHdr(label)}${items.map(c=>`<div style="font-size:9.5px;color:#555;margin-bottom:3px">· ${c}</div>`).join('')}</div>`).join('')}
+        ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:18px">${mnHdr(L("interests"))}<div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
+        ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:18px">${mnHdr(s.title||'')}<div style="font-size:9.5px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
         <div style="margin-top:auto;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
+  }
 
   // ── CREATIVE (fioletowy gradient) ─────────────────────────
   if (tpl === 'creative') return `
