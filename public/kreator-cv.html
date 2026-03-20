@@ -113,12 +113,27 @@ function buildCVHTML(tpl) {
 
   // ── TIMELINE ──────────────────────────────────────────────
   if (tpl === 'timeline') {
-    const sh = (lbl) => `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};padding-bottom:4px;border-bottom:2px solid ${c1};margin-bottom:10px">${lbl}</div>`;
-    const tlDot = (last=false, big=true) => `<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:${big?10:7}px">
-      <div style="width:${big?10:7}px;height:${big?10:7}px;border-radius:50%;background:${c1};flex-shrink:0;margin-top:3px"></div>
-      ${!last?`<div style="width:${big?2:1.5}px;flex:1;background:#e8e8e8;margin-top:3px;min-height:${big?16:9}px"></div>`:''}
-    </div>`;
+    const sb = cvSidebarSections;
+    const skillsInSb = sb.has('umiejetnosci') && skills.length;
+    const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
+    const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
     const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+
+    // Section header — duży węzeł na linii + podkreślenie
+    const sh = (lbl) => `<div style="position:relative;margin-bottom:10px">
+      <div style="position:absolute;left:-25px;top:2px;width:12px;height:12px;border-radius:50%;background:${c1};z-index:1;box-shadow:0 0 0 2px #fff,0 0 0 3.5px ${c1}55"></div>
+      <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};padding-bottom:4px;border-bottom:2px solid ${c1}">${lbl}</div>
+    </div>`;
+    // Mały węzeł dla pozycji (item)
+    const idot = `<div style="position:absolute;left:-23px;top:5px;width:8px;height:8px;border-radius:50%;background:${c2};z-index:1"></div>`;
+
+    // Prawa kolumna — nagłówek i itemy z własną linią (bez absolute)
+    const rsh = (lbl) => `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};padding-bottom:4px;border-bottom:2px solid ${c1};margin-bottom:10px">${lbl}</div>`;
+    const rdot = (last=false) => `<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:7px">
+      <div style="width:7px;height:7px;border-radius:50%;background:${c1};margin-top:4px"></div>
+      ${!last?`<div style="width:1.5px;flex:1;background:#e8e8e8;margin-top:2px;min-height:9px"></div>`:''}
+    </div>`;
+
     return `
     <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px">
       <div style="background:linear-gradient(135deg,${c1},${c2});padding:32px 40px 26px;display:flex;align-items:center;gap:22px">
@@ -130,87 +145,130 @@ function buildCVHTML(tpl) {
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 185px;padding:24px 40px 20px;gap:0;align-items:start">
-        <div style="padding-right:28px;border-right:2px solid #f0f0f0">
+        <!-- LEWA KOLUMNA: ciągła linia pionowa -->
+        <div style="padding-right:28px;border-right:2px solid #f0f0f0;position:relative;padding-left:28px">
+          <!-- Ciągła linia przez całą kolumnę -->
+          <div style="position:absolute;left:8px;top:0;bottom:0;width:2px;background:#e8e8e8;z-index:0"></div>
           ${d.podsumowanie?`
-          <div style="margin-bottom:20px">
+          <div style="position:relative;margin-bottom:20px">
             ${sh(L("profile"))}
-            <div style="display:flex;gap:12px">
-              ${tlDot(true)}
+            <div style="position:relative;padding-left:2px">
+              ${idot}
               <div style="font-size:9.5px;line-height:1.7;color:#555">${d.podsumowanie}</div>
             </div>
           </div>`:''}
           ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:20px">
+          <div style="position:relative;margin-bottom:20px">
             ${sh(L("experience"))}
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map((e,i,arr)=>`
-            <div style="display:flex;gap:12px">
-              ${tlDot(i===arr.length-1)}
-              <div style="padding-bottom:${i<arr.length-1?'14':'2'}px">
-                <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.stanowisko||''}</div>
-                <div style="font-size:10px;color:${c2};font-weight:600">${e.firma||''}</div>
-                <div style="font-size:9px;color:#aaa;margin-bottom:3px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#666;line-height:1.6">${e.opis}</div>`:''}
-              </div>
+            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+            <div style="position:relative;margin-bottom:14px;padding-left:2px">
+              ${idot}
+              <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.stanowisko||''}</div>
+              <div style="font-size:10px;color:${c2};font-weight:600">${e.firma||''}</div>
+              <div style="font-size:9px;color:#aaa;margin-bottom:3px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              ${e.opis?`<div style="font-size:9.5px;color:#666;line-height:1.6">${e.opis}</div>`:''}
             </div>`).join('')}
           </div>`:''}
           ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div style="margin-bottom:20px">
+          <div style="position:relative;margin-bottom:20px">
             ${sh(L("education"))}
-            ${d.wyksztalcenie.filter(e=>e.szkola).map((e,i,arr)=>`
-            <div style="display:flex;gap:12px">
-              ${tlDot(i===arr.length-1)}
-              <div style="padding-bottom:${i<arr.length-1?'12':'2'}px">
-                <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.kierunek||''}</div>
-                <div style="font-size:10px;color:#666">${e.szkola}</div>
-                <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-              </div>
+            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+            <div style="position:relative;margin-bottom:12px;padding-left:2px">
+              ${idot}
+              <div style="font-size:11px;font-weight:700;color:#1a1a1a">${e.kierunek||''}</div>
+              <div style="font-size:10px;color:#666">${e.szkola}</div>
+              <div style="font-size:9px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
             </div>`).join('')}
           </div>`:''}
-          ${customSects.map(s=>`
-          <div style="margin-bottom:18px">
+          ${!skillsInSb&&skills.length?`
+          <div style="position:relative;margin-bottom:20px">
+            ${sh(L("skills"))}
+            ${skills.map(s=>`
+            <div style="position:relative;margin-bottom:6px;padding-left:2px">
+              ${idot}
+              <div style="font-size:9.5px;color:#444">${s}</div>
+            </div>`).join('')}
+          </div>`:''}
+          ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`
+          <div style="position:relative;margin-bottom:20px">
+            ${sh(L("languages"))}
+            ${d.jezyki.filter(l=>l.jezyk).map(l=>`
+            <div style="position:relative;margin-bottom:6px;padding-left:2px">
+              ${idot}
+              <div style="font-size:9.5px;color:#444"><strong>${l.jezyk}</strong><span style="color:#aaa"> – ${l.poziom}</span></div>
+            </div>`).join('')}
+          </div>`:''}
+          ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`
+          <div style="position:relative;margin-bottom:20px">
+            ${sh(label)}
+            ${items.map(c=>`
+            <div style="position:relative;margin-bottom:6px;padding-left:2px">
+              ${idot}
+              <div style="font-size:9.5px;color:#444">${c}</div>
+            </div>`).join('')}
+          </div>`).join('')}
+          ${!intInSb&&d.zainteresowania?`
+          <div style="position:relative;margin-bottom:20px">
+            ${sh(L("interests"))}
+            <div style="position:relative;padding-left:2px">
+              ${idot}
+              <div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div>
+            </div>
+          </div>`:''}
+          ${customSects.filter(s=>!sb.has('custom-'+s.id)).map(s=>`
+          <div style="position:relative;margin-bottom:20px">
             ${sh(s.title||'')}
-            <div style="display:flex;gap:12px">
-              ${tlDot(true)}
+            <div style="position:relative;padding-left:2px">
+              ${idot}
               <div style="font-size:9.5px;color:#555;line-height:1.65">${s.content||''}</div>
             </div>
           </div>`).join('')}
         </div>
+        <!-- PRAWA KOLUMNA: sekcje przeniesione do bocznego -->
         <div style="padding-left:20px">
-          ${skills.length?`
+          ${skillsInSb?`
           <div style="margin-bottom:18px">
-            ${sh(L("skills"))}
+            ${rsh(L("skills"))}
             ${skills.map((s,i,arr)=>`
             <div style="display:flex;gap:9px">
-              ${tlDot(i===arr.length-1,false)}
+              ${rdot(i===arr.length-1)}
               <div style="font-size:9px;color:#444;padding-bottom:${i<arr.length-1?'5':'1'}px">${s}</div>
             </div>`).join('')}
           </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
+          ${jezykiInSb?`
           <div style="margin-bottom:18px">
-            ${sh(L("languages"))}
+            ${rsh(L("languages"))}
             ${d.jezyki.filter(l=>l.jezyk).map((l,i,arr)=>`
             <div style="display:flex;gap:9px">
-              ${tlDot(i===arr.length-1,false)}
+              ${rdot(i===arr.length-1)}
               <div style="font-size:9px;padding-bottom:${i<arr.length-1?'5':'1'}px"><strong>${l.jezyk}</strong><span style="color:#aaa"> – ${l.poziom}</span></div>
             </div>`).join('')}
           </div>`:''}
-          ${certGroups.map(({label,items})=>`
+          ${certGroups.filter(cg=>sb.has(cg.key)).map(({label,items})=>`
           <div style="margin-bottom:18px">
-            ${sh(label)}
+            ${rsh(label)}
             ${items.map((c,i,arr)=>`
             <div style="display:flex;gap:9px">
-              ${tlDot(i===arr.length-1,false)}
+              ${rdot(i===arr.length-1)}
               <div style="font-size:9px;color:#444;padding-bottom:${i<arr.length-1?'5':'1'}px">${c}</div>
             </div>`).join('')}
           </div>`).join('')}
-          ${d.zainteresowania?`
+          ${intInSb?`
           <div>
-            ${sh(L("interests"))}
+            ${rsh(L("interests"))}
             <div style="display:flex;gap:9px">
-              ${tlDot(true,false)}
+              ${rdot(true)}
               <div style="font-size:9px;color:#666;line-height:1.6">${d.zainteresowania}</div>
             </div>
           </div>`:''}
+          ${customSects.filter(s=>sb.has('custom-'+s.id)).map(s=>`
+          <div style="margin-bottom:18px">
+            ${rsh(s.title||'')}
+            <div style="display:flex;gap:9px">
+              ${rdot(true)}
+              <div style="font-size:9px;color:#555;line-height:1.65">${s.content||''}</div>
+            </div>
+          </div>`).join('')}
         </div>
       </div>
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">${L("consent")}</div>
@@ -2623,7 +2681,7 @@ let cvCustomSections = []; // [{id, title, content}]
 const CASCADE_SIDEBAR_DEFAULTS = ['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania'];
 let cvSidebarSections = new Set(CASCADE_SIDEBAR_DEFAULTS);
 const CASCADE_MOVABLE = new Set(['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania']);
-const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens']);
+const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens','timeline']);
 function toggleCascadeSidebar(sec, e) {
   if (e) { e.stopPropagation(); }
   if (cvSidebarSections.has(sec)) cvSidebarSections.delete(sec);
