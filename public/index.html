@@ -376,7 +376,7 @@ body { background:#f5f3ef; }
 
         <!-- CTA button -->
         <div style="text-align:center;margin-top:32px;">
-          <a href="wybierz-szablon.html" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;text-decoration:none;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Przejdź do platformy →</a>
+          <button onclick="wizardModalOpen()" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;border:none;cursor:pointer;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Przejdź do platformy →</button>
         </div>
 
       </div>
@@ -880,6 +880,278 @@ body { background:#f5f3ef; }
 })();
 </script>
 
+
+<!-- WIZARD MODAL -->
+<div id="wm-overlay" onclick="wizardModalClose(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div id="wm-card" onclick="event.stopPropagation()" style="background:#fff;border-radius:22px;box-shadow:0 32px 80px rgba(0,0,0,.22);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;transform:translateY(24px) scale(.97);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;">
+
+    <!-- header -->
+    <div style="padding:24px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;">
+      <!-- step indicators -->
+      <div style="display:flex;align-items:center;gap:0;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div id="wm-s0" style="width:26px;height:26px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;transition:all .3s;">1</div>
+          <span id="wm-sl0" style="font-size:.7rem;font-weight:600;color:#111827;transition:color .3s;">Strefa</span>
+        </div>
+        <div id="wm-ln0" style="width:32px;height:1.5px;background:#e5e7eb;margin:0 6px;transition:background .3s;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div id="wm-s1" style="width:26px;height:26px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;transition:all .3s;">2</div>
+          <span id="wm-sl1" style="font-size:.7rem;font-weight:600;color:#9ca3af;transition:color .3s;">Dokument</span>
+        </div>
+        <div id="wm-ln1" style="width:32px;height:1.5px;background:#e5e7eb;margin:0 6px;transition:background .3s;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div id="wm-s2" style="width:26px;height:26px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;transition:all .3s;">3</div>
+          <span id="wm-sl2" style="font-size:.7rem;font-weight:600;color:#9ca3af;transition:color .3s;">Kreator</span>
+        </div>
+      </div>
+      <!-- close -->
+      <button onclick="wizardModalClose()" style="background:none;border:none;cursor:pointer;padding:4px;color:#9ca3af;line-height:1;flex-shrink:0;margin-left:12px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- body -->
+    <div style="padding:28px 24px;flex:1;position:relative;overflow:hidden;">
+
+      <!-- STEP 1: wybor strefy -->
+      <div id="wm-step1" style="transition:opacity .25s ease,transform .25s ease;">
+        <h2 style="font-size:1.3rem;font-weight:800;color:#111827;margin:0 0 6px;letter-spacing:-.03em;">Czego potrzebujesz?</h2>
+        <p style="font-size:.85rem;color:#9ca3af;margin:0 0 22px;">Wybierz strefę — dopasujemy dokumenty do Twoich potrzeb.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+          <!-- Kariera -->
+          <div class="wm-zone" onclick="wmSelectZone('kariera')" style="border:2px solid #e5e7eb;border-radius:16px;padding:20px;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;">
+            <div style="width:52px;height:52px;background:#111827;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+            <div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">Strefa Kariery</div>
+            <div style="font-size:.78rem;color:#9ca3af;margin-bottom:12px;">Dokumenty dla pracowników i osób szukających pracy</div>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Kreator CV</li>
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>List motywacyjny</li>
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Wypowiedzenie umowy</li>
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Kalkulator wynagrodzeń</li>
+            </ul>
+          </div>
+
+          <!-- Biznes -->
+          <div class="wm-zone" onclick="wmSelectZone('biznes')" style="border:2px solid #e5e7eb;border-radius:16px;padding:20px;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;">
+            <div style="width:52px;height:52px;background:#111827;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h.01M15 9h.01"/></svg>
+            </div>
+            <div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">Strefa Biznesu</div>
+            <div style="font-size:.78rem;color:#9ca3af;margin-bottom:12px;">Umowy i dokumenty dla firm i freelancerów</div>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Regulamin sklepu</li>
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Polityka prywatności RODO</li>
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Umowa B2B / NDA</li>
+              <li style="font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:6px;"><span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;display:inline-block;"></span>Umowa zlecenie</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- STEP 2: lista dokumentów -->
+      <div id="wm-step2" style="display:none;opacity:0;transform:translateX(20px);transition:opacity .25s ease,transform .25s ease;">
+        <h2 id="wm-step2-title" style="font-size:1.3rem;font-weight:800;color:#111827;margin:0 0 6px;letter-spacing:-.03em;"></h2>
+        <p style="font-size:.85rem;color:#9ca3af;margin:0 0 18px;">Wybierz dokument który chcesz wygenerować.</p>
+        <div id="wm-doc-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- STEP 3: potwierdzenie -->
+      <div id="wm-step3" style="display:none;opacity:0;transform:translateX(20px);transition:opacity .25s ease,transform .25s ease;text-align:center;padding:12px 0;">
+        <div id="wm-check" style="width:64px;height:64px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;transform:scale(0);transition:transform .4s cubic-bezier(.34,1.56,.64,1);">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div id="wm-doc-name" style="font-size:1.2rem;font-weight:800;color:#111827;margin-bottom:8px;letter-spacing:-.02em;"></div>
+        <div id="wm-doc-desc" style="font-size:.85rem;color:#9ca3af;margin-bottom:28px;line-height:1.6;"></div>
+        <a id="wm-cta" href="#" style="display:block;padding:14px;background:#111827;color:#fff;border-radius:12px;font-size:.9rem;font-weight:700;text-decoration:none;text-align:center;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Przejdź do kreatora →</a>
+      </div>
+
+    </div>
+
+    <!-- footer nav -->
+    <div id="wm-footer" style="padding:0 24px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <button id="wm-back" onclick="wmBack()" style="display:none;background:none;border:1.5px solid #e5e7eb;border-radius:10px;padding:9px 18px;font-size:.82rem;font-weight:600;color:#6b7280;cursor:pointer;transition:border-color .2s,color .2s;" onmouseover="this.style.borderColor='#9ca3af';this.style.color='#374151'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">← Wróć</button>
+      <div></div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+.wm-zone:hover { border-color:#111827 !important; transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.08); }
+.wm-zone.selected { border-color:#111827 !important; background:#f9fafb; }
+.wm-doc-row { display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;border:1.5px solid #f1f5f9;cursor:pointer;transition:border-color .15s,background .15s; }
+.wm-doc-row:hover { border-color:#e5e7eb; background:#fafafa; }
+.wm-doc-row:hover .wm-doc-arrow { transform:translateX(3px); }
+.wm-doc-row.selected .wm-doc-icon-wrap { background:#111827 !important; }
+.wm-doc-row.selected .wm-doc-icon-wrap svg { stroke:#fff !important; }
+.wm-doc-icon-wrap { width:36px;height:36px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s; }
+.wm-doc-arrow { transition:transform .15s ease; }
+@media(max-width:480px){ #wm-step1 .wm-zone-grid { grid-template-columns:1fr !important; } }
+</style>
+
+<script>
+(function(){
+  const DOCS = {
+    kariera: {
+      title: 'Strefa Kariery',
+      items: [
+        { name:'Kreator CV', desc:'Profesjonalne CV gotowe w kilka minut — dopasowane do branży i stanowiska.', url:'kreator-cv.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' },
+        { name:'List motywacyjny', desc:'Przekonujący list dopasowany do oferty pracy — wyróżnij się spośród kandydatów.', url:'kariera.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' },
+        { name:'Wypowiedzenie umowy', desc:'Poprawne prawnie wypowiedzenie umowy o pracę z zachowaniem terminów.', url:'wypowiedzenia.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>' },
+        { name:'Kalkulator wynagrodzeń', desc:'Sprawdź wynagrodzenie netto, składki ZUS i podatek dla różnych form zatrudnienia.', url:'kalkulator-wynagrodzen.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg>' },
+      ]
+    },
+    biznes: {
+      title: 'Strefa Biznesu',
+      items: [
+        { name:'Regulamin sklepu', desc:'Kompletny regulamin sklepu internetowego zgodny z aktualnymi przepisami.', url:'ecommerce.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>' },
+        { name:'Polityka prywatności RODO', desc:'Polityka prywatności zgodna z RODO dla Twojej strony lub sklepu online.', url:'ecommerce.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M12 11V9a2 2 0 0 1 2-2"/></svg>' },
+        { name:'Umowa B2B', desc:'Profesjonalna umowa współpracy B2B między firmami lub z freelancerem.', url:'hr.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="12" r="3"/><circle cx="16" cy="12" r="3"/><path d="M11 12h2"/></svg>' },
+        { name:'Umowa NDA', desc:'Umowa o zachowaniu poufności chroniąca Twoje informacje biznesowe.', url:'hr.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><rect x="9" y="13" width="6" height="5" rx="1"/><path d="M12 13v-2a2 2 0 0 1 2-2"/></svg>' },
+        { name:'Umowa zlecenie', desc:'Umowa zlecenie z automatycznym wyliczeniem składek ZUS i podatku.', url:'hr.html',
+          icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13l-4 4-2-2"/></svg>' },
+      ]
+    }
+  };
+
+  let wmZone = null, wmStep = 1;
+
+  function wmSetStep(n) {
+    // step indicators
+    [0,1,2].forEach(i => {
+      const dot = document.getElementById('wm-s'+i);
+      const lbl = document.getElementById('wm-sl'+i);
+      const ln  = document.getElementById('wm-ln'+i);
+      if(i < n-1) {
+        dot.style.background='#111827'; dot.style.color='#fff'; dot.textContent='✓';
+        lbl.style.color='#111827';
+        if(ln) ln.style.background='#111827';
+      } else if(i === n-1) {
+        dot.style.background='#111827'; dot.style.color='#fff'; dot.textContent=i+1;
+        lbl.style.color='#111827';
+        if(ln) ln.style.background='#e5e7eb';
+      } else {
+        dot.style.background='#e5e7eb'; dot.style.color='#9ca3af'; dot.textContent=i+1;
+        lbl.style.color='#9ca3af';
+        if(ln) ln.style.background='#e5e7eb';
+      }
+    });
+    document.getElementById('wm-back').style.display = n > 1 ? '' : 'none';
+    wmStep = n;
+  }
+
+  function wmTransition(hideId, showId, dir) {
+    const hide = document.getElementById(hideId);
+    const show = document.getElementById(showId);
+    hide.style.opacity='0';
+    hide.style.transform='translateX('+(dir<0?'20px':'-20px')+')';
+    setTimeout(() => {
+      hide.style.display='none';
+      show.style.display='block';
+      show.style.opacity='0';
+      show.style.transform='translateX('+(dir>0?'20px':'-20px')+')';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          show.style.opacity='1';
+          show.style.transform='translateX(0)';
+        });
+      });
+    }, 250);
+  }
+
+  window.wmSelectZone = function(zone) {
+    wmZone = zone;
+    const data = DOCS[zone];
+    document.getElementById('wm-step2-title').textContent = data.title;
+    const list = document.getElementById('wm-doc-list');
+    list.innerHTML = '';
+    data.items.forEach((doc, idx) => {
+      const row = document.createElement('div');
+      row.className = 'wm-doc-row';
+      row.innerHTML = `
+        <div class="wm-doc-icon-wrap">${doc.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.85rem;font-weight:700;color:#111827;">${doc.name}</div>
+          <div style="font-size:.75rem;color:#9ca3af;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.desc}</div>
+        </div>
+        <svg class="wm-doc-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+      row.onclick = () => wmSelectDoc(doc);
+      list.appendChild(row);
+    });
+    wmTransition('wm-step1','wm-step2',1);
+    wmSetStep(2);
+  };
+
+  window.wmSelectDoc = function(doc) {
+    document.getElementById('wm-doc-name').textContent = doc.name;
+    document.getElementById('wm-doc-desc').textContent = doc.desc;
+    document.getElementById('wm-cta').href = doc.url;
+    wmTransition('wm-step2','wm-step3',1);
+    wmSetStep(3);
+    setTimeout(() => {
+      const chk = document.getElementById('wm-check');
+      chk.style.transform = 'scale(1)';
+    }, 280);
+  };
+
+  window.wmBack = function() {
+    if(wmStep === 2) {
+      wmTransition('wm-step2','wm-step1',-1);
+      wmSetStep(1);
+    } else if(wmStep === 3) {
+      document.getElementById('wm-check').style.transform='scale(0)';
+      wmTransition('wm-step3','wm-step2',-1);
+      wmSetStep(2);
+    }
+  };
+
+  window.wizardModalOpen = function() {
+    const ov = document.getElementById('wm-overlay');
+    const card = document.getElementById('wm-card');
+    ov.style.display='flex';
+    document.body.style.overflow='hidden';
+    // reset to step 1
+    ['wm-step1','wm-step2','wm-step3'].forEach(id => {
+      const el=document.getElementById(id);
+      el.style.display='none'; el.style.opacity='0'; el.style.transform='translateX(0)';
+    });
+    document.getElementById('wm-step1').style.display='block';
+    document.getElementById('wm-step1').style.opacity='1';
+    document.getElementById('wm-check').style.transform='scale(0)';
+    wmSetStep(1);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.style.transform='translateY(0) scale(1)';
+        card.style.opacity='1';
+      });
+    });
+  };
+
+  window.wizardModalClose = function(e) {
+    if(e && e.target !== document.getElementById('wm-overlay')) return;
+    const ov = document.getElementById('wm-overlay');
+    const card = document.getElementById('wm-card');
+    card.style.transform='translateY(24px) scale(.97)';
+    card.style.opacity='0';
+    setTimeout(() => { ov.style.display='none'; document.body.style.overflow=''; }, 300);
+  };
+
+  // ESC key
+  document.addEventListener('keydown', e => { if(e.key==='Escape') { const ov=document.getElementById('wm-overlay'); if(ov.style.display==='flex') wizardModalClose(); }});
+})();
+</script>
 
 <!-- OPINIE -->
 <section style="background:#f9fafb;padding:80px 0;border-top:1px solid #f1f5f9;">
