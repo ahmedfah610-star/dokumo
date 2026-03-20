@@ -600,7 +600,15 @@ body { background:#f5f3ef; }
 @keyframes wRippleAnim { from { transform:scale(0);opacity:.5; } to { transform:scale(4);opacity:0; } }
 @keyframes wFadeIn { from { opacity:0;transform:translateY(4px); } to { opacity:1;transform:none; } }
 .htd-grid { grid-template-columns: 1fr 1fr; }
-@media(max-width:860px){ .htd-grid { grid-template-columns:1fr !important; } #wizardDemo { display:none !important; } }
+@media(max-width:860px){
+  .htd-grid { grid-template-columns:1fr !important; }
+  #wizardDemo { display:block !important; }
+}
+@media(max-width:640px){
+  #wPreviewPanel { display:none !important; }
+  #wFormGrid { grid-template-columns:1fr !important; }
+  #wFormPanel { border-right:none !important; }
+}
 </style>
 
 <script>
