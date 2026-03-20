@@ -435,7 +435,7 @@ body { background:#f5f3ef; }
         <div id="wFormGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;height:100%;">
 
           <!-- left: form -->
-          <div id="wFormPanel" style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;overflow-y:auto;max-height:480px;">
+          <div id="wFormPanel" style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;overflow-y:auto;">
 
             <!-- STEP 1 -->
             <div id="wStep0" style="display:block;">
@@ -575,9 +575,9 @@ body { background:#f5f3ef; }
           </div>
 
           <!-- right: live preview panel -->
-          <div id="wPreviewPanel" style="padding:16px 18px 16px 14px;background:#fafafa;overflow-y:auto;max-height:480px;">
-            <div style="font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:10px;">Umowa zlecenie</div>
-            <div id="wPreview" style="display:flex;flex-direction:column;gap:7px;"></div>
+          <div id="wPreviewPanel" style="padding:12px 14px 12px 12px;background:#fafafa;overflow-y:auto;">
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Umowa zlecenie</div>
+            <div id="wPreview" style="display:flex;flex-direction:column;gap:4px;"></div>
           </div>
 
         </div>
@@ -723,7 +723,7 @@ body { background:#f5f3ef; }
           row = document.createElement('div');
           row.dataset.wpk = srcId;
           row.style.cssText='animation:wFadeIn .3s ease;';
-          row.innerHTML='<div style="font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:1px;">'+label+'</div><div class="wpv-val" style="font-size:.76rem;font-weight:600;color:#111827;line-height:1.3;">'+val+'</div>';
+          row.innerHTML='<div style="font-size:.52rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:0;">'+label+'</div><div class="wpv-val" style="font-size:.68rem;font-weight:600;color:#111827;line-height:1.25;">'+val+'</div>';
           pv.appendChild(row);
         } else {
           const valEl = row.querySelector('.wpv-val');
