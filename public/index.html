@@ -334,34 +334,479 @@ body { background:#f5f3ef; }
       <h2 class="text-[38px] font-[900] text-gray-950 tracking-[-1.5px]">Jak to działa?</h2>
       <p class="mt-3 text-gray-400 text-[15px]">Trzy kroki do gotowego dokumentu</p>
     </div>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
-        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;" class="htd-grid">
+      <!-- LEFT: steps -->
+      <div style="display:flex;flex-direction:column;gap:24px;">
+        <div class="p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
+          <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="text-[44px] font-[900] text-gray-800 leading-none mb-4 select-none tracking-tight">01</div>
+          <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Wybierz dokument</h4>
+          <p class="text-[13.5px] text-gray-400 leading-relaxed">Przeglądaj szablony w Strefie Kariery lub Biznesu.</p>
         </div>
-        <div class="text-[44px] font-[900] text-gray-800 leading-none mb-4 select-none tracking-tight">01</div>
-        <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Wybierz dokument</h4>
-        <p class="text-[13.5px] text-gray-400 leading-relaxed">Przeglądaj szablony w Strefie Kariery lub Biznesu.</p>
-      </div>
-      <div class="p-8 rounded-3xl border border-gray-100 hover:border-green-100 hover:bg-green-50/20 transition-all group">
-        <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-100 transition-colors">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <div class="p-8 rounded-3xl border border-gray-100 hover:border-green-100 hover:bg-green-50/20 transition-all group">
+          <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-100 transition-colors">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div class="text-[44px] font-[900] text-gray-800 leading-none mb-4 select-none tracking-tight">02</div>
+          <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Wypełnij formularz</h4>
+          <p class="text-[13.5px] text-gray-400 leading-relaxed">Prosty kreator krok po kroku. Żadnych zawiłości prawnych.</p>
         </div>
-        <div class="text-[44px] font-[900] text-gray-800 leading-none mb-4 select-none tracking-tight">02</div>
-        <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Wypełnij formularz</h4>
-        <p class="text-[13.5px] text-gray-400 leading-relaxed">Prosty kreator krok po kroku. Żadnych zawiłości prawnych.</p>
-      </div>
-      <div class="p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
-        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div class="p-8 rounded-3xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
+          <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="text-[44px] font-[900] text-gray-800 leading-none mb-4 select-none tracking-tight">03</div>
+          <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Pobierz gotowy plik</h4>
+          <p class="text-[13.5px] text-gray-400 leading-relaxed">PDF lub DOCX — gotowy do użycia, wysłania i podpisania.</p>
         </div>
-        <div class="text-[44px] font-[900] text-gray-800 leading-none mb-4 select-none tracking-tight">03</div>
-        <h4 class="font-[700] text-gray-900 text-[15px] mb-2 tracking-tight">Pobierz gotowy plik</h4>
-        <p class="text-[13.5px] text-gray-400 leading-relaxed">PDF lub DOCX — gotowy do użycia, wysłania i podpisania.</p>
       </div>
+
+      <!-- RIGHT: animated wizard demo -->
+      <div id="wizardDemo" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;min-height:520px;user-select:none;">
+
+        <!-- step bar -->
+        <div style="display:flex;align-items:center;padding:14px 18px 0;gap:0;border-bottom:1px solid #f1f5f9;background:#fafafa;">
+          <div class="wd-step-item" style="display:flex;align-items:center;gap:6px;">
+            <div id="wds0" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">1</div>
+            <span id="wdl0" style="font-size:.72rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zleceniodawca</span>
+          </div>
+          <div style="width:28px;height:1.5px;background:#e5e7eb;margin:0 6px;flex-shrink:0;" id="wdline0"></div>
+          <div class="wd-step-item" style="display:flex;align-items:center;gap:6px;">
+            <div id="wds1" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">2</div>
+            <span id="wdl1" style="font-size:.72rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zleceniobiorca</span>
+          </div>
+          <div style="width:28px;height:1.5px;background:#e5e7eb;margin:0 6px;flex-shrink:0;" id="wdline1"></div>
+          <div class="wd-step-item" style="display:flex;align-items:center;gap:6px;">
+            <div id="wds2" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">3</div>
+            <span id="wdl2" style="font-size:.72rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zakres</span>
+          </div>
+          <div style="width:28px;height:1.5px;background:#e5e7eb;margin:0 6px;flex-shrink:0;" id="wdline2"></div>
+          <div class="wd-step-item" style="display:flex;align-items:center;gap:6px;">
+            <div id="wds3" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">4</div>
+            <span id="wdl3" style="font-size:.72rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Wynagrodzenie</span>
+          </div>
+        </div>
+
+        <!-- progress bars -->
+        <div style="display:flex;gap:4px;padding:10px 18px 0;">
+          <div id="wpb0" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
+          <div id="wpb1" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
+          <div id="wpb2" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
+          <div id="wpb3" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
+        </div>
+
+        <!-- form content area -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;height:100%;">
+
+          <!-- left: form -->
+          <div style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;">
+
+            <!-- STEP 1 -->
+            <div id="wStep0" style="display:block;">
+              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Zleceniodawca</div>
+              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Dane firmy lub osoby zlecającej</div>
+              <div style="margin-bottom:12px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">NIP firmy</label>
+                <input id="wNip" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" placeholder="np. 1234567890" value="">
+                <div id="wNipHint" style="font-size:.7rem;margin-top:4px;min-height:18px;color:#6b7280;display:none;"></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Nazwa firmy</label>
+                <input id="wFirma" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" placeholder="np. ABC Sp. z o.o." value="">
+              </div>
+              <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Adres siedziby</label>
+                <input id="wAdres" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" placeholder="ul. Przykładowa 1, Warszawa" value="">
+              </div>
+              <button id="wBtn0" style="width:100%;padding:9px;background:#111827;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Dalej →</button>
+            </div>
+
+            <!-- STEP 2 -->
+            <div id="wStep1" style="display:none;">
+              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Zleceniobiorca</div>
+              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Dane osoby wykonującej zlecenie</div>
+              <div style="margin-bottom:11px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Imię i nazwisko</label>
+                <input id="wImie" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
+              </div>
+              <div style="margin-bottom:11px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">PESEL</label>
+                <input id="wPesel" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
+              </div>
+              <div style="margin-bottom:11px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Student poniżej 26 lat?</label>
+                <div style="display:flex;gap:6px;">
+                  <button id="wStudentTak" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Tak</button>
+                  <button id="wStudentNie" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Nie</button>
+                </div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Objęty ubezpieczeniem?</label>
+                <div style="display:flex;gap:6px;">
+                  <button id="wUbezpTak" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Tak</button>
+                  <button id="wUbezpNie" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Nie</button>
+                </div>
+              </div>
+              <button id="wBtn1" style="width:100%;padding:9px;background:#111827;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Dalej →</button>
+            </div>
+
+            <!-- STEP 3 -->
+            <div id="wStep2" style="display:none;">
+              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Zakres zlecenia</div>
+              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Co ma być wykonane i kiedy</div>
+              <div style="margin-bottom:11px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Zakres zlecenia</label>
+                <input id="wZakres" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
+              </div>
+              <div style="margin-bottom:11px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Data rozpoczęcia</label>
+                <input id="wDataOd" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
+              </div>
+              <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Data zakończenia</label>
+                <input id="wDataDo" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
+              </div>
+              <button id="wBtn2" style="width:100%;padding:9px;background:#111827;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Dalej →</button>
+            </div>
+
+            <!-- STEP 4 -->
+            <div id="wStep3" style="display:none;">
+              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Wynagrodzenie</div>
+              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Forma i warunki płatności</div>
+              <div style="margin-bottom:11px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Kwota wynagrodzenia</label>
+                <input id="wKwota" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Forma płatności</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button id="wPillRyczalt" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Ryczałt miesięczny</button>
+                  <button id="wPillGodzin" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Stawka godzinowa</button>
+                </div>
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Termin płatności</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button id="wPill14" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">14 dni od rachunku</button>
+                  <button id="wPill7" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">7 dni</button>
+                </div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Ewidencja czasu?</label>
+                <div style="display:flex;gap:6px;">
+                  <button id="wEwidTak" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Tak</button>
+                  <button id="wEwidNie" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Nie</button>
+                </div>
+              </div>
+              <button id="wBtn3" style="width:100%;padding:9px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Generuj dokument ✨</button>
+            </div>
+
+            <!-- GENERATING -->
+            <div id="wStepGen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:280px;text-align:center;">
+              <div id="wSpinner" style="width:44px;height:44px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:wSpin .8s linear infinite;margin-bottom:16px;"></div>
+              <div style="font-size:.9rem;font-weight:700;color:#111827;margin-bottom:4px;">Generowanie dokumentu</div>
+              <div style="font-size:.73rem;color:#9ca3af;">AI przetwarza dane…</div>
+            </div>
+
+            <!-- DONE -->
+            <div id="wStepDone" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:280px;text-align:center;padding:10px;">
+              <div style="width:52px;height:52px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div style="font-size:.95rem;font-weight:800;color:#111827;margin-bottom:3px;">Dokument gotowy!</div>
+              <div style="font-size:.72rem;color:#9ca3af;margin-bottom:14px;">Umowa zlecenie — gotowa do pobrania</div>
+              <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;">
+                <button style="padding:7px 12px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;">Pobierz PDF</button>
+                <button style="padding:7px 12px;background:#fff;color:#111827;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;">Kopiuj</button>
+                <button style="padding:7px 12px;background:#fff;color:#111827;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;">Nowy dokument</button>
+              </div>
+              <div style="background:#f9fafb;border:1px solid #f1f5f9;border-radius:10px;padding:10px 14px;width:100%;box-sizing:border-box;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                  <span style="font-size:.68rem;color:#9ca3af;">Czas generowania</span>
+                  <span style="font-size:.68rem;font-weight:700;color:#111827;">~12s</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                  <span style="font-size:.68rem;color:#9ca3af;">Zgodność z prawem</span>
+                  <span style="font-size:.68rem;font-weight:700;color:#16a34a;">100%</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                  <span style="font-size:.68rem;color:#9ca3af;">Strony dokumentu</span>
+                  <span style="font-size:.68rem;font-weight:700;color:#111827;">4 strony</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- right: live preview panel -->
+          <div style="padding:16px 18px 16px 14px;background:#fafafa;">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:10px;">Umowa zlecenie</div>
+            <div id="wPreview" style="display:flex;flex-direction:column;gap:7px;"></div>
+          </div>
+
+        </div>
+
+        <!-- animated SVG cursor -->
+        <svg id="wCursor" width="20" height="24" viewBox="0 0 20 24" style="position:absolute;top:0;left:0;pointer-events:none;z-index:100;transition:transform .45s cubic-bezier(.4,0,.2,1);display:none;">
+          <path d="M0 0 L0 20 L5 15 L9 23 L12 22 L8 14 L15 14 Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+
+        <!-- ripple container -->
+        <div id="wRipples" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99;overflow:hidden;"></div>
+
+      </div><!-- /wizardDemo -->
     </div>
   </div>
 </section>
+
+<style>
+@keyframes wSpin { to { transform: rotate(360deg); } }
+@keyframes wRippleAnim { from { transform:scale(0);opacity:.5; } to { transform:scale(4);opacity:0; } }
+@keyframes wFadeIn { from { opacity:0;transform:translateY(4px); } to { opacity:1;transform:none; } }
+.htd-grid { grid-template-columns: 1fr 1fr; }
+@media(max-width:860px){ .htd-grid { grid-template-columns:1fr !important; } #wizardDemo { display:none !important; } }
+</style>
+
+<script>
+(function(){
+  const demo = document.getElementById('wizardDemo');
+  if(!demo) return;
+
+  // ── helpers ──────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function pillOn(el){ el.style.background='#111827'; el.style.color='#fff'; el.style.borderColor='#111827'; }
+  function pillOff(el){ el.style.background='#fff'; el.style.color='#6b7280'; el.style.borderColor='#e5e7eb'; }
+
+  function setStep(i){
+    const labels=['Zleceniodawca','Zleceniobiorca','Zakres','Wynagrodzenie'];
+    for(let k=0;k<4;k++){
+      const dot=$('wds'+k), lbl=$('wdl'+k), pb=$('wpb'+k);
+      if(k<i){
+        dot.style.background='#111827'; dot.style.color='#fff'; dot.style.borderColor='#111827';
+        dot.textContent='✓'; lbl.style.color='#111827'; pb.style.background='#111827';
+      } else if(k===i){
+        dot.style.background='#111827'; dot.style.color='#fff'; dot.style.borderColor='#111827';
+        dot.textContent=k+1; lbl.style.color='#111827'; pb.style.background='#2563eb';
+      } else {
+        dot.style.background='#fff'; dot.style.color='#6b7280'; dot.style.borderColor='#d1d5db';
+        dot.textContent=k+1; lbl.style.color='#6b7280'; pb.style.background='#e5e7eb';
+      }
+    }
+  }
+
+  function showStep(i){
+    ['wStep0','wStep1','wStep2','wStep3','wStepGen','wStepDone'].forEach(id=>{
+      const el=$(id); if(el){ el.style.display='none'; el.style.flexDirection=''; }
+    });
+    const el=$('wStep'+i);
+    if(el){ el.style.display='block'; }
+  }
+
+  function showSpecial(id){
+    ['wStep0','wStep1','wStep2','wStep3','wStepGen','wStepDone'].forEach(sid=>{
+      const el=$(sid); if(el){ el.style.display='none'; el.style.flexDirection=''; }
+    });
+    const el=$(id);
+    if(el){ el.style.display='flex'; el.style.flexDirection='column'; }
+  }
+
+  // cursor
+  const cursor = $('wCursor');
+  let curX=60, curY=60;
+
+  function showCursor(){ cursor.style.display='block'; }
+
+  async function moveTo(el, offsetX=0, offsetY=0){
+    const dRect = demo.getBoundingClientRect();
+    const eRect = el.getBoundingClientRect();
+    curX = eRect.left - dRect.left + (offsetX || eRect.width/2);
+    curY = eRect.top  - dRect.top  + (offsetY || eRect.height/2);
+    cursor.style.transform = `translate(${curX}px,${curY}px)`;
+    await sleep(480);
+  }
+
+  async function clickAt(el, offsetX, offsetY){
+    await moveTo(el, offsetX, offsetY);
+    // ripple
+    const rDiv = document.createElement('div');
+    rDiv.style.cssText=`position:absolute;left:${curX}px;top:${curY}px;width:28px;height:28px;border-radius:50%;background:rgba(37,99,235,.3);transform:translate(-50%,-50%) scale(0);animation:wRippleAnim .5s ease-out forwards;pointer-events:none;`;
+    $('wRipples').appendChild(rDiv);
+    setTimeout(()=>rDiv.remove(), 600);
+    await sleep(220);
+  }
+
+  async function typeInto(inputEl, text, delay=38){
+    await moveTo(inputEl);
+    inputEl.style.borderColor='#2563eb';
+    inputEl.value='';
+    for(const ch of text){
+      inputEl.value += ch;
+      updatePreview();
+      await sleep(delay + Math.random()*18);
+    }
+    inputEl.style.borderColor='#e5e7eb';
+    await sleep(180);
+  }
+
+  // preview panel
+  const previewData = {};
+  const previewOrder = [
+    ['NIP','wNip'],['Nazwa firmy','wFirma'],['Adres siedziby','wAdres'],
+    ['Imię i nazwisko','wImie'],['PESEL','wPesel'],['Student <26','wStudentVal'],
+    ['Ubezpieczenie','wUbezpVal'],['Zakres','wZakres'],['Data od','wDataOd'],
+    ['Data do','wDataDo'],['Wynagrodzenie','wKwota'],['Forma płatności','wFormaVal'],
+    ['Termin płatności','wTerminVal'],['Ewidencja czasu','wEwidVal'],
+  ];
+  const previewValues = {};
+
+  function updatePreview(){
+    const pv = $('wPreview');
+    if(!pv) return;
+    const rows = [];
+    previewOrder.forEach(([label, srcId])=>{
+      let val;
+      if(srcId.endsWith('Val')){ val = previewValues[srcId]; }
+      else { const el=$(srcId); val = el ? el.value : ''; }
+      if(val && val.trim()){
+        rows.push({label,val});
+      }
+    });
+    pv.innerHTML='';
+    rows.forEach(({label,val})=>{
+      const row = document.createElement('div');
+      row.style.cssText='animation:wFadeIn .25s ease;';
+      row.innerHTML=`<div style="font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:1px;">${label}</div><div style="font-size:.76rem;font-weight:600;color:#111827;line-height:1.3;">${val}</div>`;
+      pv.appendChild(row);
+    });
+  }
+
+  function setPreviewVal(key, val){
+    previewValues[key]=val;
+    updatePreview();
+  }
+
+  // ── main animation loop ───────────────────────────────────
+  async function resetAll(){
+    ['wNip','wFirma','wAdres','wImie','wPesel','wZakres','wDataOd','wDataDo','wKwota'].forEach(id=>{
+      const el=$(id); if(el) el.value='';
+    });
+    Object.keys(previewValues).forEach(k=>delete previewValues[k]);
+    ['wStudentTak','wStudentNie','wUbezpTak','wUbezpNie','wPillRyczalt','wPillGodzin','wPill14','wPill7','wEwidTak','wEwidNie'].forEach(id=>{
+      const el=$(id); if(el) pillOff(el);
+    });
+    $('wNipHint').style.display='none';
+    $('wNipHint').textContent='';
+    updatePreview();
+  }
+
+  async function runDemo(){
+    await resetAll();
+    showCursor();
+    showStep(0);
+    setStep(0);
+    await sleep(400);
+
+    // ── STEP 1: Zleceniodawca ──
+    const nipEl=$('wNip'), firmaEl=$('wFirma'), adresEl=$('wAdres');
+    await typeInto(nipEl,'5831014898',35);
+    // GUS hint
+    const hint=$('wNipHint');
+    hint.style.display='block';
+    hint.style.color='#9ca3af';
+    hint.textContent='⏳ Pobieranie z GUS…';
+    await sleep(700);
+    hint.textContent='✅ Dane uzupełnione automatycznie';
+    hint.style.color='#16a34a';
+    // auto-fill firma & adres
+    firmaEl.value=''; adresEl.value='';
+    const firmaText='Dokumo Sp. z o.o.';
+    const adresText='ul. Długa 5, 80-828 Gdańsk';
+    for(let i=0;i<Math.max(firmaText.length,adresText.length);i++){
+      if(i<firmaText.length) firmaEl.value+=firmaText[i];
+      if(i<adresText.length) adresEl.value+=adresText[i];
+      updatePreview();
+      await sleep(28);
+    }
+    await sleep(300);
+    await clickAt($('wBtn0'));
+    await sleep(200);
+
+    // ── STEP 2: Zleceniobiorca ──
+    showStep(1); setStep(1); updatePreview();
+    await sleep(300);
+    await typeInto($('wImie'),'Anna Kowalska',38);
+    await typeInto($('wPesel'),'98050512345',32);
+    await clickAt($('wStudentTak'));
+    pillOn($('wStudentTak')); pillOff($('wStudentNie'));
+    setPreviewVal('wStudentVal','Tak');
+    await sleep(200);
+    await clickAt($('wUbezpTak'));
+    pillOn($('wUbezpTak')); pillOff($('wUbezpNie'));
+    setPreviewVal('wUbezpVal','Tak');
+    await sleep(260);
+    await clickAt($('wBtn1'));
+    await sleep(200);
+
+    // ── STEP 3: Zakres ──
+    showStep(2); setStep(2); updatePreview();
+    await sleep(300);
+    await typeInto($('wZakres'),'Obsługa mediów społecznościowych',36);
+    await typeInto($('wDataOd'),'01.04.2026',34);
+    await typeInto($('wDataDo'),'30.06.2026',34);
+    await sleep(200);
+    await clickAt($('wBtn2'));
+    await sleep(200);
+
+    // ── STEP 4: Wynagrodzenie ──
+    showStep(3); setStep(3); updatePreview();
+    await sleep(300);
+    await typeInto($('wKwota'),'4 500 zł brutto',36);
+    await clickAt($('wPillRyczalt'));
+    pillOn($('wPillRyczalt')); pillOff($('wPillGodzin'));
+    setPreviewVal('wFormaVal','Ryczałt miesięczny');
+    await sleep(200);
+    await clickAt($('wPill14'));
+    pillOn($('wPill14')); pillOff($('wPill7'));
+    setPreviewVal('wTerminVal','14 dni od rachunku');
+    await sleep(200);
+    await clickAt($('wEwidNie'));
+    pillOff($('wEwidTak')); pillOn($('wEwidNie'));
+    setPreviewVal('wEwidVal','Nie');
+    await sleep(260);
+    await clickAt($('wBtn3'));
+    await sleep(200);
+
+    // ── GENERATING ──
+    showSpecial('wStepGen');
+    cursor.style.display='none';
+    await sleep(1100);
+
+    // ── DONE ──
+    showSpecial('wStepDone');
+    for(let k=0;k<4;k++){
+      $('wpb'+k).style.background='#16a34a';
+      $('wds'+k).style.background='#16a34a';
+      $('wds'+k).style.borderColor='#16a34a';
+      $('wds'+k).textContent='✓';
+      $('wdl'+k).style.color='#16a34a';
+    }
+    await sleep(1700);
+
+    // restart
+    runDemo();
+  }
+
+  // start when section visible
+  const obs = new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){ obs.disconnect(); runDemo(); }
+  },{threshold:0.3});
+  obs.observe(demo);
+})();
+</script>
 
 
 <!-- FOOTER -->
