@@ -233,6 +233,53 @@ body {
 }
 .d-action-btn.danger:hover { border-color: var(--red); color: var(--red); }
 
+/* ── SELECT MODE ── */
+.d-card { position: relative; }
+.d-card-cb {
+  display: none; position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 20px; height: 20px; border-radius: 6px;
+  border: 2px solid var(--border2); background: var(--surface);
+  cursor: pointer; accent-color: var(--red); transition: border-color .15s;
+}
+.select-mode .d-card-cb { display: block; }
+.select-mode .d-card { cursor: pointer; }
+.select-mode .d-card:hover { border-color: var(--border2); }
+.d-card.selected { border-color: rgba(192,57,43,.4); background: rgba(192,57,43,.04); }
+.d-card.selected .d-card-cb { border-color: var(--red); }
+
+/* ── BULK BAR ── */
+.bulk-bar {
+  display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff;
+  border-radius: 14px; padding: 10px 10px 10px 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  align-items: center; gap: 10px; z-index: 400;
+  font-family: "DM Sans", sans-serif; font-size: .82rem; white-space: nowrap;
+}
+.bulk-bar.open { display: flex; }
+.bulk-bar-count { font-weight: 700; }
+.bulk-bar-cancel {
+  padding: 7px 14px; border-radius: 9px; border: 1.5px solid rgba(255,255,255,.2);
+  background: transparent; color: rgba(255,255,255,.75);
+  font-family: "DM Sans", sans-serif; font-size: .78rem; font-weight: 600;
+  cursor: pointer; transition: all .15s;
+}
+.bulk-bar-cancel:hover { border-color: rgba(255,255,255,.5); color: #fff; }
+.bulk-bar-del {
+  padding: 7px 16px; border-radius: 9px; border: none;
+  background: rgba(192,57,43,.85); color: #fff;
+  font-family: "DM Sans", sans-serif; font-size: .78rem; font-weight: 700;
+  cursor: pointer; transition: background .15s;
+}
+.bulk-bar-del:hover { background: var(--red); }
+.btn-select-all {
+  padding: 8px 16px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface2);
+  font-family: "DM Sans", sans-serif; font-size: .75rem; font-weight: 700;
+  color: var(--ink2); cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn-select-all:hover { border-color: var(--border2); color: var(--ink); }
+
 /* ── EMPTY STATE ── */
 .m-empty {
   text-align: center; padding: 80px 20px;
@@ -386,6 +433,7 @@ body {
       <h1 class="m-title">Moje dokumenty<span class="m-count-badge" id="docCount"></span></h1>
       <p style="font-size:.83rem;color:var(--ink3);margin-top:6px;">Wszystkie Twoje wygenerowane dokumenty w jednym miejscu.</p>
     </div>
+    <button class="btn-select-all" id="btnSelectAll" onclick="toggleSelectMode()">Zaznacz</button>
   </div>
 </div>
 
@@ -444,6 +492,14 @@ body {
   </div>
 </div>
 <div class="m-toast" id="myToast"></div>
+
+<!-- BULK BAR -->
+<div class="bulk-bar" id="bulkBar">
+  <span class="bulk-bar-count" id="bulkCount">0 zaznaczonych</span>
+  <button class="bulk-bar-cancel" onclick="selectAll()" id="bulkSelectAllBtn">Zaznacz wszystkie</button>
+  <button class="bulk-bar-cancel" onclick="exitSelectMode()">Anuluj</button>
+  <button class="bulk-bar-del" id="bulkDelBtn" onclick="askDeleteSelected()" disabled>Usuń zaznaczone</button>
+</div>
 
 <!-- FIREBASE AUTH -->
 <script type="module">
@@ -575,14 +631,16 @@ function filterAndRender() {
     return;
   }
 
-  var html = '<div class="m-grid">';
+  var html = '<div class="m-grid' + (_selectMode ? ' select-mode' : '') + '">';
   docs.forEach(function(doc) {
     var id = doc.id || '';
     var name = (doc.name || 'Dokument').replace(/"/g, '&quot;');
     var icon = doc.icon || '📄';
     var catLabel = doc.catLabel || doc.cat || '';
     var date = formatDate(doc.createdAt);
-    html += '<div class="d-card">';
+    var isSel = _selected[id] ? ' selected' : '';
+    html += '<div class="d-card' + isSel + '" data-id="' + id + '" onclick="if(_selectMode){var cb=this.querySelector(\'.d-card-cb\');toggleCard(\'' + id + '\',this,cb);}">';
+    html += '<input type="checkbox" class="d-card-cb"' + (isSel ? ' checked' : '') + ' onclick="event.stopPropagation();var card=this.closest(\'.d-card\');toggleCard(\'' + id + '\',card,this);">';
     html += '<div class="d-card-top">';
     html += '<div class="d-card-row1">';
     html += '<div class="d-card-icon">' + icon + '</div>';
@@ -787,6 +845,106 @@ async function doDelete(docId) {
   window._allDocs = (window._allDocs || []).filter(function(d) { return d.id !== docId; });
   filterAndRender();
   showToast('Dokument usunięty.');
+}
+
+// ── SELECT MODE ──
+var _selectMode = false;
+var _selected = {};
+
+function toggleSelectMode() {
+  _selectMode ? exitSelectMode() : enterSelectMode();
+}
+
+function enterSelectMode() {
+  _selectMode = true;
+  _selected = {};
+  document.getElementById('myDocGrid').classList.add('select-mode');
+  document.getElementById('bulkBar').classList.add('open');
+  document.getElementById('btnSelectAll').textContent = 'Anuluj';
+  updateBulkBar();
+}
+
+function exitSelectMode() {
+  _selectMode = false;
+  _selected = {};
+  document.getElementById('myDocGrid').classList.remove('select-mode');
+  document.getElementById('bulkBar').classList.remove('open');
+  document.getElementById('btnSelectAll').textContent = 'Zaznacz';
+  document.querySelectorAll('.d-card.selected').forEach(function(c) { c.classList.remove('selected'); });
+  document.querySelectorAll('.d-card-cb').forEach(function(cb) { cb.checked = false; });
+}
+
+function toggleCard(docId, cardEl, cb) {
+  if (!_selectMode) return;
+  if (_selected[docId]) {
+    delete _selected[docId];
+    cardEl.classList.remove('selected');
+    cb.checked = false;
+  } else {
+    _selected[docId] = true;
+    cardEl.classList.add('selected');
+    cb.checked = true;
+  }
+  updateBulkBar();
+}
+
+function selectAll() {
+  var allVisible = document.querySelectorAll('.d-card[data-id]');
+  var allSelected = allVisible.length > 0 && Object.keys(_selected).length === allVisible.length;
+  if (allSelected) {
+    // odznacz wszystkie
+    _selected = {};
+    allVisible.forEach(function(c) {
+      c.classList.remove('selected');
+      var cb = c.querySelector('.d-card-cb'); if (cb) cb.checked = false;
+    });
+  } else {
+    // zaznacz wszystkie
+    allVisible.forEach(function(c) {
+      var id = c.getAttribute('data-id');
+      _selected[id] = true;
+      c.classList.add('selected');
+      var cb = c.querySelector('.d-card-cb'); if (cb) cb.checked = true;
+    });
+  }
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  var count = Object.keys(_selected).length;
+  var allVisible = document.querySelectorAll('.d-card[data-id]').length;
+  document.getElementById('bulkCount').textContent = count + ' zaznaczon' + (count === 1 ? 'y' : 'ych');
+  document.getElementById('bulkDelBtn').disabled = count === 0;
+  document.getElementById('bulkSelectAllBtn').textContent =
+    count === allVisible && allVisible > 0 ? 'Odznacz wszystkie' : 'Zaznacz wszystkie';
+}
+
+function askDeleteSelected() {
+  var count = Object.keys(_selected).length;
+  if (!count) return;
+  document.getElementById('confirmMsg').textContent =
+    'Usunąć ' + count + ' ' + (count === 1 ? 'dokument' : count < 5 ? 'dokumenty' : 'dokumentów') + '? Tej operacji nie można cofnąć.';
+  document.getElementById('confirmDeleteBtn').onclick = doDeleteSelected;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+async function doDeleteSelected() {
+  var ids = Object.keys(_selected);
+  closeConfirm();
+  var token = await getToken();
+  if (!token) { showToast('Błąd autoryzacji.'); return; }
+  showToast('Usuwanie ' + ids.length + ' dokumentów…');
+  await Promise.all(ids.map(function(id) {
+    return fetch('/api/delete-doc', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ docId: id })
+    }).catch(function(){});
+  }));
+  window._allDocs = (window._allDocs || []).filter(function(d) { return !_selected[d.id]; });
+  exitSelectMode();
+  filterAndRender();
+  showToast('Usunięto ' + ids.length + ' dokumentów.');
 }
 
 // ── TOAST ──
