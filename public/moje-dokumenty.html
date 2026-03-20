@@ -672,6 +672,73 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+// ── COVER LETTER HTML BUILDER ──
+function buildCoverLetterHTML(d) {
+  var esc = function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var nl2br = function(s) { return esc(s).replace(/\n/g,'<br>'); };
+  var fullName = [d.firstName, d.lastName].filter(Boolean).join(' ');
+  var today = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
+
+  var senderHtml = '<b>' + esc(fullName || 'Imię Nazwisko') + '</b>';
+  if (d.street) senderHtml += '<br>' + esc(d.street);
+  var zipCity = [d.zip, d.city].filter(Boolean).join(' ');
+  if (zipCity) senderHtml += '<br>' + esc(zipCity);
+  if (d.email) senderHtml += '<br>' + esc(d.email);
+  if (d.phone) senderHtml += '<br>' + esc(d.phone);
+
+  var dateHtml = esc((d.city || 'Miejscowość') + ', ' + today);
+
+  var recipientBlock = '';
+  if (d.rCompany || d.rContact) {
+    var rLines = [];
+    if (d.rCompany) rLines.push('<b>' + esc(d.rCompany) + '</b>');
+    if (d.rContact) rLines.push(esc(d.rContact));
+    if (d.rStreet)  rLines.push(esc(d.rStreet));
+    var rZipCity = [d.rZip, d.rCity].filter(Boolean).join(' ');
+    if (rZipCity) rLines.push(esc(rZipCity));
+    recipientBlock = '<div style="margin-bottom:32px;">' + rLines.join('<br>') + '</div>';
+  }
+
+  var subjectLine = d.position
+    ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(d.position) + '</b>' + (d.company ? ' w firmie <b>' + esc(d.company) + '</b>' : '') + '</div>'
+    : '';
+
+  var salutation = d.rContact
+    ? 'Szanowna Pani/Panie ' + esc((d.rContact.split(' ').slice(-1)[0]) || '') + ','
+    : 'Szanowni Państwo,';
+
+  var bodyHtml = d.body
+    ? '<div style="text-align:justify;">' + nl2br(d.body) + '</div>'
+    : '';
+
+  var inner =
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">' +
+      '<div style="line-height:1.7;">' + senderHtml + '</div>' +
+      '<div style="text-align:right;white-space:nowrap;padding-left:16px;">' + dateHtml + '</div>' +
+    '</div>' +
+    recipientBlock + subjectLine +
+    '<div style="margin-bottom:20px;">' + salutation + '</div>' +
+    '<div style="margin-bottom:40px;">' + bodyHtml + '</div>' +
+    '<div>Z poważaniem,</div>' +
+    '<div style="margin-top:36px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
+
+  return '<div style="background:#fff;padding:52px 56px;font-family:Georgia,\'Times New Roman\',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;box-sizing:border-box;">' + inner + '</div>';
+}
+
+function openLmPdf(paperHtml, fname) {
+  var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
+    '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff;}</style>' +
+    '</head><body>' + paperHtml +
+    '<script>window.onload=function(){' +
+    'html2pdf().set({margin:[18,18,18,18],filename:"' + fname + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}})' +
+    '.from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},1000)});' +
+    '};<\/script></body></html>';
+  var win = window.open('', '_blank');
+  if (win) { win.document.write(fullDoc); win.document.close(); }
+  else { showToast('Zezwól na otwieranie okien dla tej strony.'); }
+}
+
 // ── DOWNLOAD ──
 function downloadDoc(docId, format) {
   var doc = (window._allDocs || []).find(function(d) { return d.id === docId; });
@@ -684,23 +751,21 @@ function downloadDoc(docId, format) {
     triggerDl(URL.createObjectURL(blob), safeName + '.txt');
 
   } else if (format === 'pdf') {
-    if (text.indexOf('__LM_HTML__:') === 0) {
-      var lmHtml = text.slice('__LM_HTML__:'.length);
+    if (doc.typeId === 'cover-letter' || text.indexOf('__LM_HTML__:') === 0) {
       var fname = safeName + '.pdf';
-      var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
-        '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff;}</style>' +
-        '</head><body>' + lmHtml +
-        '<script>window.onload=function(){' +
-        'html2pdf().set({margin:[18,18,18,18],filename:"' + fname + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}})' +
-        '.from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},1000)});' +
-        '};<\/script>' +
-        '</body></html>';
-      var win = window.open('', '_blank');
-      if (win) { win.document.write(fullDoc); win.document.close(); }
-      else { showToast('Zezwól na otwieranie okien dla tej strony.'); }
-      return;
-    } else if (text.indexOf('__CV_HTML__:') === 0) {
+      var paperHtml = null;
+      // Priorytet: covDataJson → pełna rekonstrukcja 1:1 z edytorem
+      if (doc.covDataJson) {
+        try { paperHtml = buildCoverLetterHTML(JSON.parse(doc.covDataJson)); } catch(e) {}
+      }
+      // Fallback: zapisany HTML
+      if (!paperHtml && text.indexOf('__LM_HTML__:') === 0) {
+        paperHtml = text.slice('__LM_HTML__:'.length);
+      }
+      if (paperHtml) { openLmPdf(paperHtml, fname); return; }
+      // Ostateczny fallback: plain text
+    }
+    if (text.indexOf('__CV_HTML__:') === 0) {
       // CV with template — open dedicated window with fonts then pdf2html
       var cvHtml = text.slice('__CV_HTML__:'.length);
       var fname = safeName + '.pdf';

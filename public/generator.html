@@ -244,6 +244,8 @@ function collectCovData() {
 }
 
 async function autoSave() {
+  // Nie zapisuj dopóki edytor nie jest widoczny (czekamy na AI lub dane)
+  if ((document.getElementById('lmBar') || {}).style.display === 'none') return;
   var token = await getAuthToken();
   if (!token) return;
   var d = collectCovData();
