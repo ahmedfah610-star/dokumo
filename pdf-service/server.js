@@ -40,8 +40,11 @@ app.post('/generate-pdf', async (req, res) => {
     await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
+    const bodyHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+
     const buffer = await page.pdf({
-      format: 'A4',
+      width: '794px',
+      height: bodyHeight + 'px',
       printBackground: true,
       margin: { top: '0', right: '0', bottom: '0', left: '0' },
     });
