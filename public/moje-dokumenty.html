@@ -766,22 +766,9 @@ function downloadDoc(docId, format) {
       // Ostateczny fallback: plain text
     }
     if (text.indexOf('__CV_HTML__:') === 0) {
-      // CV with template — open dedicated window with fonts then pdf2html
+      // CV with template — use Railway Puppeteer service (same as kreator-cv.html)
       var cvHtml = text.slice('__CV_HTML__:'.length);
-      var fname = safeName + '.pdf';
-      var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-        '<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">' +
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
-        '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff;width:595px}</style>' +
-        '</head><body>' + cvHtml +
-        '<script>document.fonts.ready.then(function(){' +
-        'html2pdf().set({margin:0,filename:"' + fname + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,allowTaint:true,logging:false},jsPDF:{unit:"px",format:[595,842],orientation:"portrait"}})' +
-        '.from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},1000)});' +
-        '});<\/script>' +
-        '</body></html>';
-      var win = window.open('', '_blank');
-      if (win) { win.document.write(fullDoc); win.document.close(); }
-      else { showToast('Zezwól na otwieranie okien dla tej strony.'); }
+      downloadCvPdf(cvHtml, safeName);
     } else {
       var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       var win = window.open('', '_blank');
@@ -798,6 +785,30 @@ function downloadDoc(docId, format) {
     var rtf = buildRTF(text, doc.name || 'Dokument');
     var blob = new Blob([rtf], { type: 'application/rtf' });
     triggerDl(URL.createObjectURL(blob), safeName + '.rtf');
+  }
+}
+
+async function downloadCvPdf(html, safeName) {
+  showToast('Generowanie PDF…');
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    if (!token) { showToast('Zaloguj się aby pobrać PDF.'); return; }
+    var resp = await fetch('/api/pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ html: html, filename: safeName })
+    });
+    if (!resp.ok) {
+      var err = await resp.json().catch(function() { return {}; });
+      showToast('Błąd PDF: ' + (err.error || resp.status)); return;
+    }
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = safeName + '.pdf'; a.click();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  } catch(e) {
+    showToast('Błąd generowania PDF: ' + e.message);
   }
 }
 

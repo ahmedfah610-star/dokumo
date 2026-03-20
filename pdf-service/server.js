@@ -9,8 +9,30 @@ const PDF_API_KEY = process.env.PDF_API_KEY;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// Persistent browser — launch once, reuse for all requests
+let browser = null;
+async function getBrowser() {
+  if (browser && browser.connected) return browser;
+  browser = await puppeteer.launch({
+    executablePath: '/usr/bin/chromium',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
+    headless: true,
+  });
+  browser.on('disconnected', () => { browser = null; });
+  console.log('[PDF] Browser launched');
+  return browser;
+}
+
+// Pre-warm browser on startup
+getBrowser().catch(err => console.error('[PDF] Warmup error:', err.message));
+
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({ status: 'ok', browserReady: !!(browser && browser.connected) });
 });
 
 app.post('/generate-pdf', async (req, res) => {
@@ -23,24 +45,14 @@ app.post('/generate-pdf', async (req, res) => {
     return res.status(400).json({ error: 'Brak HTML' });
   }
 
-  let browser;
+  let page;
   try {
-    browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-      ],
-      headless: true,
-    });
-
-    const page = await browser.newPage();
+    const b = await getBrowser();
+    page = await b.newPage();
     await page.setViewport({ width: 794, height: 1, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
-    // Strip any remaining min-height and vh heights via JS
+    // Strip remaining min-height and vh heights
     await page.evaluate(() => {
       document.body.style.height = 'auto';
       document.body.style.minHeight = '0';
@@ -53,7 +65,6 @@ app.post('/generate-pdf', async (req, res) => {
       });
     });
 
-    // Wait for layout to settle
     await new Promise(r => setTimeout(r, 300));
 
     const bodyHeight = await page.evaluate(() => document.documentElement.scrollHeight);
@@ -71,7 +82,7 @@ app.post('/generate-pdf', async (req, res) => {
     console.error('PDF error:', err.message);
     return res.status(500).json({ error: err.message || 'Błąd generowania PDF' });
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close();
   }
 });
 
