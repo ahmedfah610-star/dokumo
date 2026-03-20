@@ -420,81 +420,125 @@ var FORMS = {
       {label:"Zleceniodawca",fields:[
         {id:"zlec_nip",label:"NIP firmy",ph:"np. 1234567890",opt:true},
         {id:"zlec_firma",label:"Nazwa firmy",ph:"np. ABC Sp. z o.o."},
-        {id:"zlec_adres",label:"Adres",ph:"np. ul. Kwiatowa 1, Warszawa",opt:true}
+        {id:"zlec_forma",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","S.A.","JDG","Spółka jawna","Spółka komandytowa"]},
+        {id:"zlec_adres",label:"Adres siedziby",ph:"np. ul. Kwiatowa 1, 00-001 Warszawa",opt:true}
       ]},
       {label:"Zleceniobiorca",fields:[
         {id:"wyk_nip",label:"NIP firmy (jeśli firma)",ph:"np. 0987654321",opt:true},
-        {id:"wyk_firma",label:"Nazwa firmy / imię nazwisko",ph:"np. Jan Kowalski / JK Studio"},
-        {id:"wyk_adres",label:"Adres",ph:"np. ul. Różana 2, Kraków",opt:true}
+        {id:"wyk_firma",label:"Nazwa firmy / imię i nazwisko",ph:"np. Jan Kowalski / JK Studio"},
+        {id:"wyk_forma",label:"Forma prawna",type:"pills",opts:["JDG","Sp. z o.o.","Osoba fizyczna prowadząca dz. gosp.","Spółka jawna"]},
+        {id:"wyk_adres",label:"Adres",ph:"np. ul. Różana 2, 30-001 Kraków",opt:true}
       ]},
-      {label:"Warunki",fields:[
-        {id:"zakres",label:"Zakres usług",ph:"np. Tworzenie stron, SEO, marketing"},
-        {id:"wynagrodzenie",label:"Wynagrodzenie",ph:"np. 5 000 zł netto miesięcznie"},
+      {label:"Zakres i wynagrodzenie",fields:[
+        {id:"zakres",label:"Zakres usług",ph:"np. Tworzenie stron www, pozycjonowanie SEO, obsługa social media"},
+        {id:"wynagrodzenie",label:"Wynagrodzenie",ph:"np. 8 000 zł netto miesięcznie"},
+        {id:"waluta",label:"Waluta",type:"pills",opts:["PLN","EUR","USD"]},
         {id:"termin",label:"Termin płatności (dni)",ph:"np. 14",opt:true},
+        {id:"faktura",label:"Podstawa płatności",type:"pills",opts:["Faktura VAT","Rachunek","Faktura bez VAT (zwolnienie)"]}
+      ]},
+      {label:"Czas trwania",fields:[
+        {id:"data_od",label:"Data rozpoczęcia",type:"date"},
         {id:"czas",label:"Czas trwania umowy",type:"pills",opts:["3 miesiące","6 miesięcy","12 miesięcy","Czas nieokreślony"]},
         {id:"wypowiedzenie",label:"Okres wypowiedzenia",type:"pills",opts:["2 tygodnie","1 miesiąc","3 miesiące"]}
+      ]},
+      {label:"Klauzule dodatkowe",fields:[
+        {id:"prawa_ip",label:"Prawa autorskie / IP",type:"pills",opts:["Pełne przeniesienie na zleceniodawcę","Licencja wyłączna","Licencja niewyłączna","Wykonawca zachowuje prawa"]},
+        {id:"zakaz_konk",label:"Klauzula zakazu konkurencji",type:"pills",opts:["Brak","W czasie trwania umowy","W czasie + 6 mies. po zakończeniu","W czasie + 12 mies. po zakończeniu"]},
+        {id:"kara_umowna",label:"Kara umowna za naruszenie zakazu / poufności",ph:"np. 10 000 zł",opt:true}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę o współpracy B2B. Zleceniodawca: "+v.zlec_firma+", NIP: "+(v.zlec_nip||"[brak]")+", adres: "+(v.zlec_adres||"[brak]")+". Zleceniobiorca: "+v.wyk_firma+", NIP: "+(v.wyk_nip||"[brak]")+", adres: "+(v.wyk_adres||"[brak]")+". Zakres: "+v.zakres+". Wynagrodzenie: "+v.wynagrodzenie+". Płatność: "+(v.termin||"14")+" dni. Czas: "+(v.czas||"nieokreślony")+". Wypowiedzenie: "+(v.wypowiedzenie||"1 miesiąc")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz pełną umowę o współpracy B2B (umowę o świadczenie usług) na podstawie art. 750 KC w związku z art. 734 KC.\n\nDANE:\nZleceniodawca: "+v.zlec_firma+" ("+(v.zlec_forma||"Sp. z o.o.")+"), NIP: "+(v.zlec_nip||"[brak]")+", adres: "+(v.zlec_adres||"[brak]")+".\nZleceniobiorca: "+v.wyk_firma+" ("+(v.wyk_forma||"JDG")+"), NIP: "+(v.wyk_nip||"[brak]")+", adres: "+(v.wyk_adres||"[brak]")+".\nZakres usług: "+v.zakres+".\nWynagrodzenie: "+v.wynagrodzenie+" "+(v.waluta||"PLN")+", podstawa: "+(v.faktura||"faktura VAT")+", termin: "+(v.termin||"14")+" dni od doręczenia faktury.\nData rozpoczęcia: "+(v.data_od||"[brak]")+", czas: "+(v.czas||"nieokreślony")+", wypowiedzenie: "+(v.wypowiedzenie||"1 miesiąc")+".\nPrawa IP: "+(v.prawa_ip||"pełne przeniesienie na zleceniodawcę")+".\nZakaz konkurencji: "+(v.zakaz_konk||"brak")+(v.kara_umowna?", kara umowna: "+v.kara_umowna:"")+".\n\nUmowa musi zawierać: §1 Strony, §2 Przedmiot i zakres usług, §3 Wynagrodzenie i fakturowanie, §4 Czas trwania i wypowiedzenie (art. 746 KC), §5 Prawa autorskie i własność intelektualna (art. 41 PrAut jeśli dotyczy), §6 Poufność, §7 Zakaz konkurencji (jeśli wybrany), §8 Odpowiedzialność odszkodowawcza, §9 Postanowienia końcowe (prawo właściwe: prawo polskie, sąd wg siedziby zleceniodawcy). Podpisy obu stron z datą i miejscem."+(v._extra_info?"\nDodatkowo: "+v._extra_info:"");
+    }
   },
   nda: {
     title:"NDA — Poufność", icon:"🔒",
     steps:[
       {label:"Strona ujawniająca",fields:[
-        {id:"str1_nazwa",label:"Nazwa firmy / imię nazwisko",ph:"np. ABC Sp. z o.o."},
-        {id:"str1_adres",label:"Adres",ph:"np. ul. Kwiatowa 1, Warszawa",opt:true}
+        {id:"str1_nazwa",label:"Nazwa firmy / imię i nazwisko",ph:"np. ABC Sp. z o.o."},
+        {id:"str1_nip",label:"NIP",ph:"np. 1234567890",opt:true},
+        {id:"str1_adres",label:"Adres",ph:"np. ul. Kwiatowa 1, 00-001 Warszawa",opt:true},
+        {id:"str1_repr",label:"Reprezentant (jeśli firma)",ph:"np. Jan Kowalski — Prezes Zarządu",opt:true}
       ]},
       {label:"Strona otrzymująca",fields:[
-        {id:"str2_nazwa",label:"Nazwa firmy / imię nazwisko",ph:"np. Jan Kowalski"},
-        {id:"str2_adres",label:"Adres",ph:"np. ul. Różana 2, Kraków",opt:true}
+        {id:"str2_nazwa",label:"Nazwa firmy / imię i nazwisko",ph:"np. Anna Nowak"},
+        {id:"str2_nip",label:"NIP lub PESEL",ph:"np. 90010112345",opt:true},
+        {id:"str2_adres",label:"Adres",ph:"np. ul. Różana 2, 30-001 Kraków",opt:true}
       ]},
-      {label:"Warunki",fields:[
-        {id:"cel",label:"Cel ujawnienia informacji",ph:"np. Współpraca przy projekcie XYZ"},
-        {id:"zakres_info",label:"Rodzaj informacji poufnych",ph:"np. dane techniczne, know-how, lista klientów",opt:true},
+      {label:"Zakres poufności",fields:[
+        {id:"cel",label:"Cel ujawnienia informacji",ph:"np. Ocena możliwości nawiązania współpracy przy projekcie XYZ"},
+        {id:"zakres_info",label:"Kategorie informacji poufnych",ph:"np. dane finansowe, know-how technologiczne, lista klientów, strategie marketingowe"},
+        {id:"wzajemna",label:"Charakter umowy",type:"pills",opts:["Jednostronna (jeden ujawnia)","Wzajemna (obie strony ujawniają)"]}
+      ]},
+      {label:"Warunki i sankcje",fields:[
         {id:"czas",label:"Czas obowiązywania",type:"pills",opts:["1 rok","2 lata","3 lata","5 lat","Bezterminowo"]},
-        {id:"kara",label:"Kara umowna za naruszenie",type:"pills",opts:["10 000 zł","25 000 zł","50 000 zł","100 000 zł"]}
+        {id:"kara",label:"Kara umowna za naruszenie",type:"pills",opts:["10 000 zł","25 000 zł","50 000 zł","100 000 zł"]},
+        {id:"wylaczenia",label:"Wyłączenia spod tajemnicy (standardowe)",type:"pills",opts:["Informacje publicznie dostępne","Informacje znane przed ujawnieniem","Informacje od osób trzecich bez ograniczeń","Wszystkie trzy powyższe"]}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę NDA. Strona ujawniająca: "+v.str1_nazwa+", adres: "+(v.str1_adres||"[brak]")+". Strona otrzymująca: "+v.str2_nazwa+", adres: "+(v.str2_adres||"[brak]")+". Cel: "+v.cel+". Informacje poufne: "+(v.zakres_info||"wszelkie informacje biznesowe")+". Czas: "+(v.czas||"2 lata")+". Kara: "+(v.kara||"50 000 zł")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz umowę o zachowaniu poufności (NDA) zgodną z art. 11 ustawy z dnia 16 kwietnia 1993 r. o zwalczaniu nieuczciwej konkurencji.\n\nDANE:\nStrona ujawniająca: "+v.str1_nazwa+(v.str1_nip?", NIP: "+v.str1_nip:"")+", adres: "+(v.str1_adres||"[brak]")+(v.str1_repr?", repr.: "+v.str1_repr:"")+".\nStrona otrzymująca: "+v.str2_nazwa+(v.str2_nip?", NIP/PESEL: "+v.str2_nip:"")+", adres: "+(v.str2_adres||"[brak]")+".\nCharakter: "+(v.wzajemna||"jednostronna")+".\nCel: "+v.cel+".\nInformacje poufne: "+(v.zakres_info||"wszelkie informacje o charakterze technicznym, handlowym i finansowym")+".\nWyłączenia spod tajemnicy: "+(v.wylaczenia||"informacje publicznie dostępne, znane przed ujawnieniem, otrzymane od osób trzecich bez ograniczeń")+".\nCzas: "+(v.czas||"3 lata")+". Kara umowna: "+(v.kara||"50 000 zł")+".\n\nUmowa musi zawierać: §1 Strony, §2 Definicja informacji poufnych, §3 Zobowiązania do zachowania poufności, §4 Wyłączenia spod obowiązku poufności, §5 Dozwolone ujawnienia (pracownicy, prawnicy pod warunkiem poufności), §6 Czas obowiązywania i skutki po wygaśnięciu, §7 Kara umowna i odpowiedzialność (art. 11 ust. 2 ustawy), §8 Zwrot lub zniszczenie informacji, §9 Postanowienia końcowe. Podpisy obu stron."+(v._extra_info?"\nDodatkowo: "+v._extra_info:"");
+    }
   },
   dzielo: {
     title:"Umowa o dzieło", icon:"✏️",
     steps:[
-      {label:"Strony",fields:[
-        {id:"zamawiajacy",label:"Zamawiający",ph:"np. ABC Sp. z o.o."},
-        {id:"wykonawca",label:"Wykonawca",ph:"np. Jan Kowalski"}
+      {label:"Zamawiający",fields:[
+        {id:"zamawiajacy",label:"Nazwa firmy / imię i nazwisko",ph:"np. ABC Sp. z o.o."},
+        {id:"zam_nip",label:"NIP zamawiającego",ph:"np. 1234567890",opt:true},
+        {id:"zam_adres",label:"Adres",ph:"np. ul. Kwiatowa 1, 00-001 Warszawa",opt:true}
       ]},
-      {label:"Dzieło",fields:[
-        {id:"dzielo",label:"Opis dzieła",ph:"np. Logo i identyfikacja wizualna"},
-        {id:"prawa",label:"Przenieść prawa autorskie?",type:"pills",opts:["Tak","Nie"]}
+      {label:"Wykonawca",fields:[
+        {id:"wykonawca",label:"Imię i nazwisko / nazwa firmy",ph:"np. Jan Kowalski"},
+        {id:"wyk_pesel",label:"PESEL",ph:"np. 85020298765",opt:true},
+        {id:"wyk_adres",label:"Adres",ph:"np. ul. Różana 2, 30-001 Kraków",opt:true}
+      ]},
+      {label:"Opis dzieła",fields:[
+        {id:"dzielo",label:"Opis dzieła",ph:"np. Projekt logo i kompletna identyfikacja wizualna firmy XYZ (5 wariantów, pliki wektorowe)"},
+        {id:"termin_realizacji",label:"Termin realizacji",type:"date"},
+        {id:"odbiór",label:"Sposób odbioru dzieła",type:"pills",opts:["Protokół odbioru podpisany przez obie strony","Akceptacja pisemna / mailowa w ciągu 7 dni","Przyjęcie bez zastrzeżeń po upływie terminu"]},
+        {id:"prawa",label:"Przeniesienie praw autorskich",type:"pills",opts:["Tak — pełne przeniesienie (art. 41 PrAut)","Licencja wyłączna","Licencja niewyłączna","Nie dotyczy"]}
       ]},
       {label:"Płatność",fields:[
-        {id:"wynagrodzenie",label:"Wynagrodzenie",ph:"np. 5 000 zł brutto"},
-        {id:"termin",label:"Termin realizacji",type:"pills",opts:["7 dni","14 dni","30 dni","60 dni"]}
+        {id:"wynagrodzenie",label:"Wynagrodzenie brutto",ph:"np. 5 000 zł brutto"},
+        {id:"zaliczka",label:"Zaliczka",type:"pills",opts:["Brak","25% przy podpisaniu","50% przy podpisaniu","100% z góry"]},
+        {id:"termin_platnosci",label:"Termin płatności pozostałej kwoty",type:"pills",opts:["Po odbiorze dzieła","7 dni od odbioru","14 dni od odbioru","30 dni od odbioru"]}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę o dzieło zgodną z art. 627 KC. Zamawiający: "+v.zamawiajacy+". Wykonawca: "+v.wykonawca+". Dzieło: "+v.dzielo+". Prawa autorskie: "+(v.prawa||"Tak")+". Wynagrodzenie: "+v.wynagrodzenie+". Termin: "+(v.termin||"30 dni")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz umowę o dzieło zgodną z art. 627–646 KC"+(v.prawa&&v.prawa.indexOf("pełne")!==-1?" z przeniesieniem praw autorskich majątkowych na wszystkich polach eksploatacji (art. 41 ust. 1 pkt 1 ustawy z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych)":"")+".\n\nDANE:\nZamawiający: "+v.zamawiajacy+(v.zam_nip?", NIP: "+v.zam_nip:"")+", adres: "+(v.zam_adres||"[brak]")+".\nWykonawca: "+v.wykonawca+(v.wyk_pesel?", PESEL: "+v.wyk_pesel:"")+", adres: "+(v.wyk_adres||"[brak]")+".\nDzieło: "+v.dzielo+".\nTermin realizacji: "+(v.termin_realizacji||"[brak]")+". Odbiór: "+(v.odbiór||"protokół odbioru")+".\nPrawa autorskie: "+(v.prawa||"pełne przeniesienie")+".\nWynagrodzenie: "+v.wynagrodzenie+". Zaliczka: "+(v.zaliczka||"brak")+". Termin płatności: "+(v.termin_platnosci||"14 dni od odbioru")+".\n\nUmowa musi zawierać: §1 Strony, §2 Przedmiot umowy (szczegółowy opis dzieła), §3 Termin wykonania i odbiór (procedura z art. 643 KC, wady dzieła art. 638 KC), §4 Wynagrodzenie i warunki płatności (zaliczka jeśli dotyczy), §5 Prawa autorskie — pola eksploatacji (jeśli dotyczy: internet, druk, nośniki, reklama, modyfikacje), §6 Odpowiedzialność za wady, §7 Postanowienia końcowe. Podpisy obu stron."+(v._extra_info?"\nDodatkowo: "+v._extra_info:"");
+    }
   },
   zlecenie: {
     title:"Umowa zlecenie", icon:"📋",
     steps:[
       {label:"Zleceniodawca",fields:[
         {id:"nip",label:"NIP firmy",ph:"np. 1234567890",opt:true},
-        {id:"zlec",label:"Nazwa firmy",ph:"np. ABC Sp. z o.o."}
+        {id:"zlec",label:"Nazwa firmy",ph:"np. ABC Sp. z o.o."},
+        {id:"adres_zlec",label:"Adres siedziby",ph:"np. ul. Kwiatowa 1, 00-001 Warszawa",opt:true}
       ]},
       {label:"Zleceniobiorca",fields:[
         {id:"wyk",label:"Imię i nazwisko",ph:"np. Jan Kowalski"},
         {id:"pesel",label:"PESEL",ph:"np. 85020298765",opt:true},
-        {id:"student",label:"Czy student poniżej 26 lat?",type:"pills",opts:["Nie","Tak"]}
+        {id:"adres_wyk",label:"Adres zamieszkania",ph:"np. ul. Różana 2, 30-001 Kraków",opt:true},
+        {id:"student",label:"Student poniżej 26 lat?",type:"pills",opts:["Nie","Tak"]},
+        {id:"ubezpieczony",label:"Objęty ubezpieczeniem z innego tytułu?",type:"pills",opts:["Nie","Tak — np. umowa o pracę w innej firmie"]}
       ]},
-      {label:"Warunki",fields:[
-        {id:"zakres",label:"Zakres zlecenia",ph:"np. Obsługa klienta, wsparcie sprzedaży"},
-        {id:"wynagrodzenie",label:"Wynagrodzenie",ph:"np. 3 500 zł brutto"},
-        {id:"termin",label:"Termin wykonania",ph:"np. 30.06.2026",opt:true},
-        {id:"platnosc",label:"Termin płatności",ph:"np. 7 dni od wystawienia rachunku",opt:true}
+      {label:"Zakres zlecenia",fields:[
+        {id:"zakres",label:"Zakres zlecenia",ph:"np. Obsługa klienta, wsparcie sprzedaży, obsługa infolinii"},
+        {id:"data_od",label:"Data rozpoczęcia",type:"date"},
+        {id:"data_do",label:"Data zakończenia",type:"date"}
+      ]},
+      {label:"Wynagrodzenie",fields:[
+        {id:"wynagrodzenie",label:"Wynagrodzenie",ph:"np. 30 zł brutto/godz. lub 3 500 zł brutto miesięcznie"},
+        {id:"stawka_typ",label:"Forma wynagrodzenia",type:"pills",opts:["Stawka godzinowa","Ryczałt miesięczny","Ryczałt za realizację zadania"]},
+        {id:"platnosc",label:"Termin płatności",type:"pills",opts:["7 dni od rachunku","14 dni od rachunku","Do 10. dnia kolejnego miesiąca"]},
+        {id:"rachunek",label:"Ewidencja czasu pracy",type:"pills",opts:["Tak — wymagana lista przepracowanych godzin","Nie — ryczałt bez ewidencji"]}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę zlecenie. Zleceniodawca: "+v.zlec+", NIP: "+(v.nip||"[brak]")+". Zleceniobiorca: "+v.wyk+", PESEL: "+(v.pesel||"[brak]")+", student: "+(v.student||"Nie")+". Zakres: "+v.zakres+". Wynagrodzenie: "+v.wynagrodzenie+". Termin: "+(v.termin||"ustalony")+". Płatność: "+(v.platnosc||"7 dni od rachunku")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz umowę zlecenie zgodną z art. 734–751 KC z uwzględnieniem art. 8a ustawy z dnia 10 października 2002 r. o minimalnym wynagrodzeniu za pracę (minimalna stawka godzinowa).\n\nDANE:\nZleceniodawca: "+v.zlec+(v.nip?", NIP: "+v.nip:"")+", adres: "+(v.adres_zlec||"[brak]")+".\nZleceniobiorca: "+v.wyk+(v.pesel?", PESEL: "+v.pesel:"")+", adres: "+(v.adres_wyk||"[brak]")+". Student poniżej 26 lat: "+(v.student||"Nie")+". Objęty ubezpieczeniem z innego tytułu: "+(v.ubezpieczony||"Nie")+".\nZakres: "+v.zakres+".\nOkres: od "+(v.data_od||"[brak]")+" do "+(v.data_do||"[brak]")+".\nWynagrodzenie: "+v.wynagrodzenie+", forma: "+(v.stawka_typ||"stawka godzinowa")+". Termin płatności: "+(v.platnosc||"14 dni od rachunku")+". Ewidencja godzin: "+(v.rachunek||"Tak — wymagana lista godzin")+".\n\nUmowa musi zawierać: §1 Strony, §2 Przedmiot zlecenia, §3 Czas obowiązywania, §4 Wynagrodzenie (z klauzulą minimalnej stawki godzinowej — na dzień umowy), §5 Ewidencja czasu pracy (jeśli stawka godzinowa), §6 Ubezpieczenia społeczne i zdrowotne (adnotacja o tytule i obowiązkach ZUS), §7 Wypowiedzenie (art. 746 KC — z ważnych powodów w każdym czasie), §8 Postanowienia końcowe. Podpisy obu stron."+(v._extra_info?"\nDodatkowo: "+v._extra_info:"");
+    }
   },
   uop: {
     title:"Umowa o pracę", icon:"👥",
@@ -502,23 +546,32 @@ var FORMS = {
       {label:"Pracodawca",fields:[
         {id:"nip",label:"NIP pracodawcy",ph:"np. 1234567890",opt:true},
         {id:"pracodawca",label:"Nazwa firmy",ph:"np. ABC Sp. z o.o."},
-        {id:"adres_p",label:"Adres",ph:"np. ul. Kwiatowa 1, Warszawa",opt:true}
+        {id:"adres_p",label:"Siedziba / adres",ph:"np. ul. Kwiatowa 1, 00-001 Warszawa",opt:true},
+        {id:"krs",label:"KRS (jeśli spółka)",ph:"np. 0000123456",opt:true}
       ]},
       {label:"Pracownik",fields:[
         {id:"pracownik",label:"Imię i nazwisko",ph:"np. Anna Nowak"},
         {id:"pesel",label:"PESEL",ph:"np. 90010112345",opt:true},
-        {id:"adres_pr",label:"Adres zamieszkania",ph:"np. ul. Różana 2, Kraków",opt:true}
+        {id:"adres_pr",label:"Adres zamieszkania",ph:"np. ul. Różana 2, 30-001 Kraków",opt:true}
       ]},
       {label:"Warunki zatrudnienia",fields:[
         {id:"stanowisko",label:"Stanowisko",ph:"np. Specjalista ds. marketingu"},
-        {id:"wymiar",label:"Wymiar czasu pracy",type:"pills",opts:["Pełny etat","Pół etatu (1/2)","3/4 etatu","1/4 etatu"]},
-        {id:"wynagrodzenie",label:"Wynagrodzenie brutto (zł)",ph:"np. 5 500"},
         {id:"data_start",label:"Data rozpoczęcia",type:"date"},
         {id:"rodzaj",label:"Rodzaj umowy",type:"pills",opts:["Na czas nieokreślony","Na czas określony","Na okres próbny"]},
-        {id:"miejsce",label:"Miejsce pracy",ph:"np. Warszawa / praca zdalna",opt:true}
+        {id:"data_kon",label:"Data zakończenia (jeśli czas określony/próbny)",type:"date"},
+        {id:"wymiar",label:"Wymiar czasu pracy",type:"pills",opts:["Pełny etat (1/1)","3/4 etatu","1/2 etatu","1/4 etatu"]},
+        {id:"miejsce",label:"Miejsce pracy",ph:"np. Warszawa / praca zdalna / tryb hybrydowy",opt:true}
+      ]},
+      {label:"Wynagrodzenie i warunki",fields:[
+        {id:"wynagrodzenie",label:"Wynagrodzenie zasadnicze brutto (zł)",ph:"np. 6 500"},
+        {id:"skladnik",label:"Składniki zmienne wynagrodzenia",ph:"np. premia regulaminowa do 20% wynagrodzenia zasadniczego",opt:true},
+        {id:"urlop",label:"Wymiar urlopu wypoczynkowego",type:"pills",opts:["20 dni (staż < 10 lat)","26 dni (staż ≥ 10 lat)"]},
+        {id:"probny",label:"Poprzedzony okresem próbnym?",type:"pills",opts:["Nie","1 miesiąc","2 miesiące","3 miesiące"]}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę o pracę. Pracodawca: "+v.pracodawca+", NIP: "+(v.nip||"[brak]")+", adres: "+(v.adres_p||"[brak]")+". Pracownik: "+v.pracownik+", PESEL: "+(v.pesel||"[brak]")+", adres: "+(v.adres_pr||"[brak]")+". Stanowisko: "+v.stanowisko+". Wymiar: "+(v.wymiar||"pełny etat")+". Wynagrodzenie: "+v.wynagrodzenie+" zł brutto. Data: "+(v.data_start||"[brak]")+". Rodzaj: "+(v.rodzaj||"czas nieokreślony")+". Miejsce: "+(v.miejsce||"siedziba firmy")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zgodna z Kodeksem Pracy. Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz umowę o pracę zawierającą wszystkie elementy wymagane art. 29 §1 Kodeksu pracy (ustawa z dnia 26 czerwca 1974 r. Dz.U. 2023 poz. 1465 t.j.).\n\nDANE:\nPracodawca: "+v.pracodawca+(v.nip?", NIP: "+v.nip:"")+(v.krs?", KRS: "+v.krs:"")+", adres: "+(v.adres_p||"[brak]")+".\nPracownik: "+v.pracownik+(v.pesel?", PESEL: "+v.pesel:"")+", adres: "+(v.adres_pr||"[brak]")+".\nStanowisko: "+v.stanowisko+".\nRodzaj umowy: "+(v.rodzaj||"na czas nieokreślony")+". Data rozpoczęcia: "+(v.data_start||"[brak]")+(v.data_kon?". Data zakończenia: "+v.data_kon:"")+(v.probny&&v.probny!=="Nie"?". Poprzedzony okresem próbnym: "+v.probny:"")+".\nWymiar czasu pracy: "+(v.wymiar||"pełny etat")+". Miejsce pracy: "+(v.miejsce||"siedziba pracodawcy")+".\nWynagrodzenie zasadnicze: "+v.wynagrodzenie+" zł brutto miesięcznie"+(v.skladnik?". Składniki zmienne: "+v.skladnik:"")+".\nUrlop wypoczynkowy: "+(v.urlop||"20 dni rocznie")+".\n\nUmowa musi zawierać: §1 Strony, §2 Rodzaj umowy i data zawarcia, §3 Warunki pracy i płacy (art. 29 §1 KP: rodzaj pracy, miejsce wykonywania pracy, wynagrodzenie z jego składnikami, wymiar czasu pracy, dzień rozpoczęcia pracy), §4 Czas pracy i przerwy, §5 Urlop wypoczynkowy (art. 154 KP), §6 Okres wypowiedzenia (art. 36 KP — podaj długość wg stażu), §7 Obowiązki pracodawcy i pracownika, §8 Postanowienia końcowe. Podpisy pracodawcy (reprezentanta) i pracownika z datą."+(v._extra_info?"\nDodatkowo: "+v._extra_info:"");
+    }
   }
 };
 
