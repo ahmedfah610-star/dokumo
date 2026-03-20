@@ -2128,12 +2128,18 @@ async function resetCVData() {
 // ── WERSJA ROBOCZA – AUTOSAVE ─────────────────────────────
 var _draftTimer = null;
 
+var _lastDraftSave = 0;
 function triggerDraftSave() {
   if (!window._fbToken) return;
-  var badge = document.getElementById('cvDraftBadge');
-  if (badge) { badge.textContent = '💾 Zapisuję...'; badge.classList.add('visible'); }
   clearTimeout(_draftTimer);
-  _draftTimer = setTimeout(saveCVDraft, 2500);
+  _draftTimer = setTimeout(function() {
+    var now = Date.now();
+    if (now - _lastDraftSave < 60000) return; // max 1 save per minute
+    _lastDraftSave = now;
+    var badge = document.getElementById('cvDraftBadge');
+    if (badge) { badge.textContent = '💾 Zapisuję...'; badge.classList.add('visible'); }
+    saveCVDraft();
+  }, 10000);
 }
 
 async function saveCVDraft() {
