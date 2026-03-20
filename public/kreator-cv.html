@@ -4262,20 +4262,29 @@ async function downloadCV() {
 
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  const btn = window.innerWidth < 768
-    ? document.getElementById('tabPdf')
-    : document.getElementById('cvNavDlBtn');
+  // iOS blocks window.open after async — open tab before fetch
+  const mobileWin = isMobile ? window.open('', '_blank') : null;
+
+  const overlay = document.getElementById('pdfLoadingOverlay');
+  if (overlay) overlay.style.display = 'flex';
+
+  const btn = document.getElementById('tabPdf') || document.getElementById('cvNavDlBtn');
   const origText = btn ? btn.innerHTML : '';
-  if (btn) { btn.innerHTML = '⏳'; btn.disabled = true; }
+  if (btn) btn.disabled = true;
 
   saveCVToMyDocs(fullName);
 
   const el = document.getElementById('cvPreviewInner');
-  if (!el) { if (btn) { btn.innerHTML = origText; btn.disabled = false; } return; }
+  if (!el) {
+    if (overlay) overlay.style.display = 'none';
+    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    if (mobileWin) mobileWin.close();
+    return;
+  }
 
   try {
-    // Wait for Firebase token
     for (let i = 0; i < 30 && !window._fbReady; i++) {
       await new Promise(r => setTimeout(r, 100));
     }
@@ -4293,14 +4302,19 @@ async function downloadCV() {
     }
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = safeName + '.pdf';
-    a.click();
+
+    if (isMobile && mobileWin) {
+      mobileWin.location.href = url;
+    } else {
+      const a = document.createElement('a');
+      a.href = url; a.download = safeName + '.pdf'; a.click();
+    }
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   } catch(e) {
+    if (mobileWin) mobileWin.close();
     alert('Błąd generowania PDF: ' + e.message);
   } finally {
+    if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
   }
 }
@@ -4408,5 +4422,11 @@ async function saveCVToMyDocs(fullName) {
     </div>
   </div>
 </div>
+<!-- PDF loading overlay -->
+<div id="pdfLoadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:18px">
+  <div style="width:52px;height:52px;border:4px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:pdfSpin 0.8s linear infinite"></div>
+  <div style="color:#fff;font-size:15px;font-weight:500;letter-spacing:0.01em">Generowanie PDF…</div>
+</div>
+<style>@keyframes pdfSpin{to{transform:rotate(360deg)}}</style>
 </body>
 </html>
