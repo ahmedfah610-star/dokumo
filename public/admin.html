@@ -427,32 +427,39 @@ var FORMS = {
       {label:"Wynajmujący",fields:[
         {id:"wyn_imie",label:"Imię i nazwisko właściciela",ph:"np. Jan Kowalski"},
         {id:"wyn_pesel",label:"PESEL",ph:"np. 75010112345",opt:true},
-        {id:"wyn_adres",label:"Adres zamieszkania",ph:"np. ul. Kwiatowa 5, 00-001 Warszawa",opt:true}
+        {id:"wyn_adres",label:"Adres zamieszkania",ph:"np. ul. Kwiatowa 5, 00-001 Warszawa",opt:true},
+        {id:"wyn_nip",label:"NIP (jeśli firma)",ph:"np. 1234567890",opt:true}
       ]},
       {label:"Najemca",fields:[
         {id:"naj_imie",label:"Imię i nazwisko najemcy",ph:"np. Anna Nowak"},
         {id:"naj_pesel",label:"PESEL",ph:"np. 90020298765",opt:true},
-        {id:"naj_adres",label:"Adres zameldowania",ph:"np. ul. Różana 10, 00-002 Kraków",opt:true}
+        {id:"naj_adres",label:"Adres zameldowania",ph:"np. ul. Różana 10, 00-002 Kraków",opt:true},
+        {id:"naj_dowod",label:"Seria i nr dowodu osobistego",ph:"np. ABC 123456",opt:true}
       ]},
-      {label:"Mieszkanie",fields:[
+      {label:"Lokal",fields:[
         {id:"m_adres",label:"Adres mieszkania",ph:"np. ul. Słoneczna 3/15, 00-003 Wrocław"},
         {id:"m_metraz",label:"Metraż (m²)",ph:"np. 48",opt:true},
-        {id:"m_pokoje",label:"Liczba pokoi",ph:"np. 2",opt:true}
+        {id:"m_pokoje",label:"Liczba pokoi",ph:"np. 2",opt:true},
+        {id:"m_stan",label:"Stan lokalu",type:"pills",opts:["Bardzo dobry","Dobry","Przeciętny","Wymaga drobnych napraw"]}
       ]},
       {label:"Warunki finansowe",fields:[
         {id:"czynsz",label:"Czynsz miesięczny (zł)",ph:"np. 2500"},
-        {id:"kaucja",label:"Kaucja (zł)",ph:"np. 5000",opt:true},
-        {id:"oplaty",label:"Opłaty dodatkowe",ph:"np. media i internet wg liczników",opt:true}
+        {id:"kaucja",label:"Kaucja (zł, max 3-krotność czynszu)",ph:"np. 5000",opt:true},
+        {id:"oplaty",label:"Opłaty dodatkowe",ph:"np. media i internet wg liczników",opt:true},
+        {id:"termin_platnosci",label:"Termin płatności czynszu",type:"pills",opts:["Do 5. dnia miesiąca","Do 10. dnia miesiąca","Do 15. dnia miesiąca"]}
       ]},
-      {label:"Zasady",fields:[
+      {label:"Zasady najmu",fields:[
         {id:"data_od",label:"Data rozpoczęcia",type:"date"},
         {id:"czas",label:"Czas trwania",type:"pills",opts:["6 miesięcy","12 miesięcy","2 lata","Czas nieokreślony"]},
         {id:"wypowiedzenie",label:"Okres wypowiedzenia",type:"pills",opts:["1 miesiąc","2 miesiące","3 miesiące"]},
         {id:"zwierzeta",label:"Zwierzęta",type:"pills",opts:["Niedozwolone","Dozwolone","Do uzgodnienia"]},
-        {id:"palenie",label:"Palenie",type:"pills",opts:["Zakaz palenia","Dozwolone","Tylko na balkonie"]}
+        {id:"palenie",label:"Palenie",type:"pills",opts:["Zakaz palenia","Dozwolone","Tylko na balkonie"]},
+        {id:"podnajem",label:"Podnajem",type:"pills",opts:["Zabroniony","Wymaga zgody wynajmującego"]}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę najmu mieszkania. Wynajmujący: "+v.wyn_imie+", PESEL: "+(v.wyn_pesel||"[brak]")+", adres: "+(v.wyn_adres||"[brak]")+". Najemca: "+v.naj_imie+", PESEL: "+(v.naj_pesel||"[brak]")+", adres: "+(v.naj_adres||"[brak]")+". Mieszkanie: "+v.m_adres+", "+(v.m_metraz||"[brak]")+" m², "+(v.m_pokoje||"[brak]")+" pokoje. Czynsz: "+v.czynsz+" zł, kaucja: "+(v.kaucja||"[brak]")+" zł, opłaty: "+(v.oplaty||"wg liczników")+". Okres: od "+(v.data_od||"[brak]")+", "+(v.czas||"nieokreślony")+", wypowiedzenie: "+(v.wypowiedzenie||"1 miesiąc")+". Zwierzęta: "+(v.zwierzeta||"niedozwolone")+", palenie: "+(v.palenie||"zakaz")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz umowę najmu mieszkania zgodną z art. 659–692 KC i ustawą z 21 czerwca 2001 r. o ochronie praw lokatorów. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nWynajmujący: "+v.wyn_imie+(v.wyn_nip?", NIP: "+v.wyn_nip:"")+(v.wyn_pesel?", PESEL: "+v.wyn_pesel:"")+", adres: "+(v.wyn_adres||"[brak]")+"\nNajemca: "+v.naj_imie+(v.naj_pesel?", PESEL: "+v.naj_pesel:"")+(v.naj_dowod?", dowód: "+v.naj_dowod:"")+", adres: "+(v.naj_adres||"[brak]")+"\nMieszkanie: "+v.m_adres+", "+(v.m_metraz||"[brak]")+" m², "+(v.m_pokoje||"[brak]")+" pokoje, stan: "+(v.m_stan||"dobry")+"\nCzynsz: "+v.czynsz+" zł, kaucja: "+(v.kaucja||"[brak]")+" zł (art. 6 ustawy o ochronie praw lokatorów — max 3-krotność czynszu), termin płatności: "+(v.termin_platnosci||"do 10. dnia miesiąca")+"\nOpłaty: "+(v.oplaty||"wg liczników")+"\nOkres: od "+(v.data_od||"[brak]")+", "+(v.czas||"nieokreślony")+", wypowiedzenie: "+(v.wypowiedzenie||"1 miesiąc")+"\nZwierzęta: "+(v.zwierzeta||"niedozwolone")+", palenie: "+(v.palenie||"zakaz")+", podnajem: "+(v.podnajem||"zabroniony")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nDokument musi zawierać: §1 Przedmiot najmu, §2 Czas trwania, §3 Czynsz i opłaty, §4 Kaucja, §5 Obowiązki stron, §6 Zakaz podnajmu, §7 Wypowiedzenie, §8 Postanowienia końcowe. Zacznij od treści umowy. Tylko czysty tekst.";
+    }
   },
   protokol: {
     title:"Protokół zdawczo-odbiorczy", icon:"📋",
@@ -468,17 +475,21 @@ var FORMS = {
         {id:"prad",label:"Prąd (kWh)",ph:"np. 12345",opt:true},
         {id:"gaz",label:"Gaz (m³)",ph:"np. 456",opt:true},
         {id:"woda_z",label:"Zimna woda (m³)",ph:"np. 78",opt:true},
-        {id:"woda_c",label:"Ciepła woda (m³)",ph:"np. 34",opt:true}
+        {id:"woda_c",label:"Ciepła woda (m³)",ph:"np. 34",opt:true},
+        {id:"cieplomierz",label:"Ciepłomierz (GJ)",ph:"np. 12.34",opt:true}
       ]},
       {label:"Stan lokalu",fields:[
         {id:"stan",label:"Stan ogólny",type:"pills",opts:["Bardzo dobry","Dobry","Przeciętny","Do remontu"]},
         {id:"uwagi_sciany",label:"Ściany i sufity",ph:"np. bez uszkodzeń",opt:true},
         {id:"uwagi_podlogi",label:"Podłogi",ph:"np. dobry stan",opt:true},
-        {id:"klucze",label:"Klucze",ph:"np. 2 komplety",opt:true},
-        {id:"wyposazenie",label:"Lista wyposażenia",ph:"np. lodówka, pralka, kanapa...",opt:true}
+        {id:"uwagi_okna",label:"Okna i drzwi",ph:"np. szczelne, sprawne zamki",opt:true},
+        {id:"klucze",label:"Liczba kluczy i pilotów",ph:"np. 2 komplety kluczy, 1 pilot bramy",opt:true},
+        {id:"wyposazenie",label:"Lista wyposażenia",ph:"np. lodówka, pralka, kanapa, stół 6-osobowy...",opt:true}
       ]}
     ],
-    prompt:function(v){return "Napisz protokół zdawczo-odbiorczy mieszkania. Wynajmujący: "+v.wyn+", najemca: "+v.naj+". Adres: "+v.adres+", data: "+(v.data||"[brak]")+", rodzaj: "+(v.typ||"przekazanie")+". Liczniki: prąd "+(v.prad||"[brak]")+" kWh, gaz "+(v.gaz||"[brak]")+" m³, woda zimna "+(v.woda_z||"[brak]")+" m³, ciepła "+(v.woda_c||"[brak]")+" m³. Stan: "+(v.stan||"dobry")+", ściany: "+(v.uwagi_sciany||"ok")+", podłogi: "+(v.uwagi_podlogi||"ok")+". Klucze: "+(v.klucze||"[brak]")+". Wyposażenie: "+(v.wyposazenie||"[brak]")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści protokołu. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz protokół zdawczo-odbiorczy mieszkania. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nWynajmujący: "+v.wyn+", najemca: "+v.naj+"\nAdres: "+v.adres+", data: "+(v.data||"[brak]")+", rodzaj: "+(v.typ||"przekazanie")+"\nLiczniki: prąd "+(v.prad||"[brak]")+" kWh, gaz "+(v.gaz||"[brak]")+" m³, woda zimna "+(v.woda_z||"[brak]")+" m³, ciepła "+(v.woda_c||"[brak]")+" m³"+(v.cieplomierz?", ciepłomierz "+v.cieplomierz+" GJ":"")+"\nStan: "+(v.stan||"dobry")+", ściany: "+(v.uwagi_sciany||"ok")+", podłogi: "+(v.uwagi_podlogi||"ok")+(v.uwagi_okna?", okna/drzwi: "+v.uwagi_okna:"")+"\nKlucze: "+(v.klucze||"[brak]")+", wyposażenie: "+(v.wyposazenie||"[brak]")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nProtokół musi zawierać: dane stron, dokładny opis stanu każdego pomieszczenia, stany wszystkich liczników, wykaz wyposażenia z oceną stanu każdego elementu, uwagi, podpisy obu stron z datą. Zacznij od treści protokołu. Tylko czysty tekst.";
+    }
   },
   wypowiedzenie_najmu: {
     title:"Wypowiedzenie umowy najmu", icon:"📝",
@@ -492,13 +503,17 @@ var FORMS = {
         {id:"druga",label:"Imię i nazwisko drugiej strony",ph:"np. Jan Kowalski"},
         {id:"adres_d",label:"Adres drugiej strony",ph:"np. ul. Kwiatowa 5, Warszawa",opt:true}
       ]},
-      {label:"Szczegóły",fields:[
+      {label:"Szczegóły wypowiedzenia",fields:[
         {id:"adres_m",label:"Adres mieszkania",ph:"np. ul. Słoneczna 3/15, Wrocław"},
-        {id:"data_umowy",label:"Data zawarcia umowy",ph:"np. 01.04.2025",opt:true},
-        {id:"okres",label:"Okres wypowiedzenia",type:"pills",opts:["1 miesiąc","2 miesiące","3 miesiące"]}
+        {id:"data_umowy",label:"Data zawarcia umowy najmu",ph:"np. 01.04.2024",opt:true},
+        {id:"okres",label:"Okres wypowiedzenia",type:"pills",opts:["1 miesiąc","2 miesiące","3 miesiące"]},
+        {id:"powod",label:"Podstawa wypowiedzenia",type:"pills",opts:["Wypowiedzenie z zachowaniem okresu (art. 673 KC)","Rozwiązanie za porozumieniem stron","Naruszenie warunków umowy przez najemcę (art. 11 ustawy o ochronie praw lokatorów)"]},
+        {id:"data_wydania",label:"Planowana data zdania kluczy",type:"date",opt:true}
       ]}
     ],
-    prompt:function(v){return "Napisz wypowiedzenie umowy najmu. Składa "+(v.strona||"najemca")+": "+v.skladajacy+", adres: "+(v.adres_s||"[brak]")+". Do: "+v.druga+", adres: "+(v.adres_d||"[brak]")+". Mieszkanie: "+v.adres_m+". Umowa z: "+(v.data_umowy||"[brak]")+". Okres wypowiedzenia: "+(v.okres||"1 miesiąc")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści pisma. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz wypowiedzenie umowy najmu zgodne z KC i ustawą o ochronie praw lokatorów. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nSkładający: "+(v.strona||"najemca")+": "+v.skladajacy+", adres: "+(v.adres_s||"[brak]")+"\nAdresowane do: "+v.druga+", adres: "+(v.adres_d||"[brak]")+"\nMieszkanie: "+v.adres_m+"\nUmowa zawarta: "+(v.data_umowy||"[brak]")+"\nOkres wypowiedzenia: "+(v.okres||"1 miesiąc")+"\nPodstawa: "+(v.powod||"art. 673 KC")+(v.data_wydania?"\nPlanowane wydanie lokalu: "+v.data_wydania:"")+"\n\nPismo musi zawierać: miejscowość i datę, dane stron, podstawę prawną (art. 673 KC lub właściwy artykuł), datę upływu okresu wypowiedzenia, żądanie zwrotu kluczy, podpis. Zacznij od treści pisma. Tylko czysty tekst.";
+    }
   },
   biznesplan: {
     title:"Biznesplan dla banku", icon:"🏦",
@@ -506,24 +521,37 @@ var FORMS = {
       {label:"Firma",fields:[
         {id:"nip",label:"NIP firmy",ph:"np. 1234567890",opt:true},
         {id:"firma",label:"Nazwa firmy",ph:"np. MójBiznes Sp. z o.o."},
+        {id:"forma_prawna",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","Sp. j.","Działalność gospodarcza","Sp. k.","S.A."]},
         {id:"branza",label:"Branża",ph:"np. e-commerce, sprzedaż online"},
-        {id:"adres",label:"Adres",ph:"np. ul. Kwiatowa 1, Warszawa",opt:true}
+        {id:"adres",label:"Adres",ph:"np. ul. Kwiatowa 1, Warszawa",opt:true},
+        {id:"rok_zal",label:"Rok założenia",ph:"np. 2021",opt:true},
+        {id:"pracownicy",label:"Liczba pracowników",ph:"np. 8",opt:true}
       ]},
       {label:"Cel kredytu",fields:[
         {id:"kwota",label:"Kwota kredytu (zł)",ph:"np. 200 000"},
-        {id:"cel",label:"Na co przeznaczony kredyt",ph:"np. zakup magazynu, rozbudowa zaplecza"}
+        {id:"cel",label:"Na co przeznaczony kredyt",ph:"np. zakup magazynu, rozbudowa zaplecza"},
+        {id:"okres_splaty",label:"Wnioskowany okres spłaty",type:"pills",opts:["12 miesięcy","24 miesiące","36 miesięcy","48 miesięcy","60 miesięcy"]},
+        {id:"zabezpieczenie",label:"Proponowane zabezpieczenie",ph:"np. nieruchomość, poręczenie, weksel",opt:true}
       ]},
       {label:"Opis działalności",fields:[
         {id:"opis",label:"Opis firmy i działalności",ph:"np. Prowadzimy sklep online z elektroniką od 3 lat..."},
-        {id:"rynek",label:"Rynek i konkurencja",ph:"np. Allegro, Media Expert, lokalni sprzedawcy",opt:true}
+        {id:"rynek",label:"Rynek i konkurencja",ph:"np. Allegro, Media Expert, lokalni sprzedawcy",opt:true},
+        {id:"przewaga",label:"Przewaga konkurencyjna",ph:"np. wyłączna dystrybucja marki X, niskie koszty operacyjne",opt:true}
       ]},
       {label:"Finanse",fields:[
         {id:"przychod",label:"Obecny przychód roczny (zł)",ph:"np. 1 200 000"},
+        {id:"koszty",label:"Roczne koszty działalności (zł)",ph:"np. 950 000",opt:true},
         {id:"zysk",label:"Zysk netto roczny (zł)",ph:"np. 180 000",opt:true},
-        {id:"prognoza",label:"Prognoza po inwestycji",ph:"np. 1 800 000 zł w roku 1"}
+        {id:"prognoza",label:"Prognoza przychodów po inwestycji",ph:"np. 1 800 000 zł w roku 1"}
+      ]},
+      {label:"Strategia",fields:[
+        {id:"plan_rozw",label:"Plan rozwoju po uzyskaniu kredytu",ph:"np. otwarcie 2 nowych magazynów, zatrudnienie 5 pracowników...",opt:true},
+        {id:"ryzyka",label:"Główne ryzyka i sposoby ich mitygacji",ph:"np. ryzyko walutowe — hedging, ryzyko popytu — dywersyfikacja",opt:true}
       ]}
     ],
-    prompt:function(v){return "Napisz profesjonalny biznesplan dla banku pod kredyt inwestycyjny. Firma: "+v.firma+", NIP: "+(v.nip||"[brak]")+", branża: "+v.branza+", adres: "+(v.adres||"[brak]")+". Kwota kredytu: "+v.kwota+" zł, cel: "+v.cel+". Opis: "+v.opis+". Rynek: "+(v.rynek||"[brak]")+". Przychód: "+v.przychod+" zł, zysk: "+(v.zysk||"[brak]")+" zł, prognoza: "+v.prognoza+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zawrzyj: streszczenie, opis firmy, analizę rynku, plan finansowy, harmonogram spłat. Zacznij od treści.";}
+    prompt:function(v){
+      return "Napisz profesjonalny biznesplan dla banku pod kredyt inwestycyjny. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nFirma: "+v.firma+", forma prawna: "+(v.forma_prawna||"[brak]")+", NIP: "+(v.nip||"[brak]")+", branża: "+v.branza+", adres: "+(v.adres||"[brak]")+", rok założenia: "+(v.rok_zal||"[brak]")+", pracownicy: "+(v.pracownicy||"[brak]")+"\nKredyt: "+v.kwota+" zł, cel: "+v.cel+", okres spłaty: "+(v.okres_splaty||"36 miesięcy")+", zabezpieczenie: "+(v.zabezpieczenie||"do uzgodnienia")+"\nOpis: "+v.opis+"\nRynek: "+(v.rynek||"[brak]")+", przewaga: "+(v.przewaga||"[brak]")+"\nFinanse: przychód "+v.przychod+" zł, koszty "+(v.koszty||"[brak]")+" zł, zysk "+(v.zysk||"[brak]")+" zł, prognoza: "+v.prognoza+"\nPlan rozwoju: "+(v.plan_rozw||"[brak]")+"\nRyzyka: "+(v.ryzyka||"[brak]")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nBiznesplan musi zawierać: 1. Streszczenie zarządcze, 2. Opis firmy i modelu biznesowego, 3. Analiza rynku i konkurencji, 4. Plan inwestycji i harmonogram realizacji, 5. Prognoza finansowa (rachunek wyników na 3 lata, przepływy pieniężne), 6. Harmonogram spłat kredytu, 7. Analiza ryzyka. Zacznij od treści.";
+    }
   },
   swot: {
     title:"Analiza SWOT firmy", icon:"📊",
@@ -531,37 +559,62 @@ var FORMS = {
       {label:"Firma",fields:[
         {id:"firma",label:"Nazwa firmy",ph:"np. MójBiznes Sp. z o.o."},
         {id:"branza",label:"Branża i rodzaj działalności",ph:"np. sklep internetowy z elektroniką"},
-        {id:"opis",label:"Krótki opis firmy",ph:"np. 3 lata na rynku, 5 pracowników, sprzedaż B2C..."}
+        {id:"opis",label:"Krótki opis firmy",ph:"np. 3 lata na rynku, 5 pracowników, sprzedaż B2C..."},
+        {id:"rok_zal",label:"Rok założenia",ph:"np. 2021",opt:true},
+        {id:"pracownicy",label:"Liczba pracowników",ph:"np. 5",opt:true}
       ]},
       {label:"Kontekst analizy",fields:[
         {id:"cel_analizy",label:"Cel analizy",type:"pills",opts:["Planowanie strategii","Wniosek o kredyt/dotację","Szukanie inwestora","Ocena kondycji firmy"]},
+        {id:"horyzont",label:"Horyzont strategiczny",type:"pills",opts:["1 rok","2–3 lata","5 lat"]},
         {id:"rynek",label:"Główni konkurenci i rynek",ph:"np. Allegro, Media Expert, lokalni sprzedawcy",opt:true}
+      ]},
+      {label:"Wskazówki (opcjonalnie)",fields:[
+        {id:"mocne",label:"Mocne strony — wskazówki",ph:"np. silna marka, lojalna baza klientów",opt:true},
+        {id:"slabe",label:"Słabe strony — wskazówki",ph:"np. ograniczony budżet marketingowy",opt:true},
+        {id:"szanse",label:"Szanse — wskazówki",ph:"np. rosnący rynek e-commerce",opt:true},
+        {id:"zagrozenia",label:"Zagrożenia — wskazówki",ph:"np. nowi konkurenci z zagranicy",opt:true}
       ]}
     ],
-    prompt:function(v){return "Napisz szczegółową analizę SWOT dla firmy: "+v.firma+", branża: "+v.branza+", opis: "+v.opis+", cel: "+(v.cel_analizy||"planowanie strategii")+", rynek/konkurencja: "+(v.rynek||"[brak]")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zawrzyj: mocne strony, słabe strony, szanse, zagrożenia, rekomendacje strategiczne. Zacznij od treści analizy.";}
+    prompt:function(v){
+      return "Napisz szczegółową analizę SWOT dla firmy: "+v.firma+", branża: "+v.branza+", opis: "+v.opis+(v.rok_zal?", rok założenia: "+v.rok_zal:"")+", pracownicy: "+(v.pracownicy||"[brak]")+"\nCel: "+(v.cel_analizy||"planowanie strategii")+", horyzont: "+(v.horyzont||"3 lata")+", rynek/konkurencja: "+(v.rynek||"[brak]")+(v.mocne?"\nMocne strony (uwzględnij): "+v.mocne:"")+(v.slabe?"\nSłabe strony (uwzględnij): "+v.slabe:"")+(v.szanse?"\nSzanse (uwzględnij): "+v.szanse:"")+(v.zagrozenia?"\nZagrożenia (uwzględnij): "+v.zagrozenia:"")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nZawrzyj: I. Mocne strony (min. 6 punktów), II. Słabe strony (min. 4 punkty), III. Szanse (min. 5 punktów), IV. Zagrożenia (min. 4 punkty), V. Rekomendacje strategiczne (strategie SO, ST, WO, WT). Zacznij od treści analizy.";
+    }
   },
   spolnikow: {
     title:"Umowa wspólników", icon:"🤝",
     steps:[
       {label:"Spółka",fields:[
         {id:"spolka",label:"Nazwa spółki",ph:"np. FinTech Sp. z o.o."},
-        {id:"branza",label:"Branża i produkt",ph:"np. aplikacja mobilna do oszczędzania"}
+        {id:"forma_prawna",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","Sp. j.","Sp. k.","S.A.","Prosta S.A."]},
+        {id:"branza",label:"Branża i produkt",ph:"np. aplikacja mobilna do oszczędzania"},
+        {id:"kapital",label:"Kapitał zakładowy (zł)",ph:"np. 5000",opt:true}
       ]},
       {label:"Wspólnicy",fields:[
         {id:"w1_imie",label:"Wspólnik 1 — imię i nazwisko",ph:"np. Jan Kowalski"},
-        {id:"w1_udzial",label:"Udział wspólnika 1 (%)",ph:"np. 50"},
+        {id:"w1_pesel",label:"Wspólnik 1 — PESEL",ph:"np. 85010112345",opt:true},
+        {id:"w1_udzial",label:"Udział wspólnika 1 (%)",ph:"np. 60"},
+        {id:"w1_wklad",label:"Wkład wspólnika 1 (zł)",ph:"np. 3000",opt:true},
         {id:"w1_rola",label:"Rola wspólnika 1",ph:"np. CEO, product, sprzedaż"},
         {id:"w2_imie",label:"Wspólnik 2 — imię i nazwisko",ph:"np. Anna Nowak"},
-        {id:"w2_udzial",label:"Udział wspólnika 2 (%)",ph:"np. 50"},
+        {id:"w2_pesel",label:"Wspólnik 2 — PESEL",ph:"np. 90020298765",opt:true},
+        {id:"w2_udzial",label:"Udział wspólnika 2 (%)",ph:"np. 40"},
+        {id:"w2_wklad",label:"Wkład wspólnika 2 (zł)",ph:"np. 2000",opt:true},
         {id:"w2_rola",label:"Rola wspólnika 2",ph:"np. CTO, technologia"}
       ]},
-      {label:"Kluczowe ustalenia",fields:[
+      {label:"Zarządzanie",fields:[
         {id:"vesting",label:"Vesting (opcjonalnie)",ph:"np. 4-letni vesting, 1 rok cliff",opt:true},
         {id:"decyzje",label:"Próg decyzji strategicznych",type:"pills",opts:["Jednomyślność","Większość 51%","Większość 75%"]},
         {id:"wyjscie",label:"Zasady wyjścia ze spółki",ph:"np. prawo pierwokupu dla pozostałych wspólników"}
+      ]},
+      {label:"Klauzule szczególne",fields:[
+        {id:"zakaz_konk",label:"Zakaz konkurencji",type:"pills",opts:["Tak — przez 12 miesięcy po wyjściu","Tak — przez 24 miesiące po wyjściu","Nie"]},
+        {id:"dywidenda",label:"Podział zysku (dywidenda)",type:"pills",opts:["Proporcjonalnie do udziałów","Reinwestycja przez 2 lata","Według uchwały wspólników"]},
+        {id:"smierc",label:"Postanowienia na wypadek śmierci wspólnika",type:"pills",opts:["Udziały przechodzą na spadkobierców","Spółka odkupuje udziały po wartości rynkowej","Wymagana zgoda pozostałych wspólników"]},
+        {id:"arbitraz",label:"Rozwiązywanie sporów",type:"pills",opts:["Sąd powszechny — właściwy dla siedziby spółki","Sąd Arbitrażowy przy KIG","Mediacja przed sądem"]}
       ]}
     ],
-    prompt:function(v){return "Napisz umowę wspólników (co-founders agreement) dla: "+v.spolka+", branża: "+v.branza+". Wspólnik 1: "+v.w1_imie+", "+v.w1_udzial+"%, rola: "+v.w1_rola+". Wspólnik 2: "+v.w2_imie+", "+v.w2_udzial+"%, rola: "+v.w2_rola+". Vesting: "+(v.vesting||"brak")+". Decyzje: "+(v.decyzje||"jednomyślność")+". Wyjście: "+v.wyjscie+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+". Zacznij od treści umowy. Tylko czysty tekst.";}
+    prompt:function(v){
+      return "Napisz umowę wspólników (shareholders agreement) dla: "+v.spolka+", forma prawna: "+(v.forma_prawna||"Sp. z o.o.")+", branża: "+v.branza+", kapitał: "+(v.kapital||"[brak]")+" zł.\nWspólnik 1: "+v.w1_imie+(v.w1_pesel?", PESEL: "+v.w1_pesel:"")+", "+v.w1_udzial+"%, wkład: "+(v.w1_wklad||"[brak]")+" zł, rola: "+v.w1_rola+"\nWspólnik 2: "+v.w2_imie+(v.w2_pesel?", PESEL: "+v.w2_pesel:"")+", "+v.w2_udzial+"%, wkład: "+(v.w2_wklad||"[brak]")+" zł, rola: "+v.w2_rola+"\nVesting: "+(v.vesting||"brak")+", decyzje: "+(v.decyzje||"jednomyślność")+", wyjście: "+v.wyjscie+"\nZakaz konkurencji: "+(v.zakaz_konk||"brak")+", dywidenda: "+(v.dywidenda||"proporcjonalnie")+", śmierć wspólnika: "+(v.smierc||"zgoda pozostałych")+", spory: "+(v.arbitraz||"sąd powszechny")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nUmowa musi zawierać: §1 Strony i przedmiot, §2 Udziały i wkłady, §3 Zarządzanie i reprezentacja, §4 Podejmowanie decyzji, §5 Vesting i retencja, §6 Transfer udziałów i prawo pierwokupu, §7 Zakaz konkurencji, §8 Podział zysku, §9 Rozwiązanie stosunku i wyjście, §10 Postanowienia końcowe. Zacznij od treści umowy. Tylko czysty tekst.";
+    }
   }
 };
 

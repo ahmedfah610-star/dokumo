@@ -406,50 +406,82 @@ var FORMS = {
       {label:"Pracodawca",fields:[
         {id:"w_firma", label:"Nazwa pracodawcy",             ph:"np. ABC Sp. z o.o.",           icon:"🏢"},
         {id:"w_adres_firma",label:"Adres pracodawcy",        ph:"np. ul. Kwiatowa 1, Warszawa", icon:"📍", opt:true},
-        {id:"w_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",            icon:"🏛️", opt:true}
+        {id:"w_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",            icon:"🏛️", opt:true},
+        {id:"w_repr",  label:"Reprezentujący pracodawcę",    ph:"np. Anna Nowak — Prezes Zarządu",icon:"👔", opt:true}
       ]},
       {label:"Tryb wypowiedzenia",fields:[
+        {id:"w_skladajacy",label:"Kto składa wypowiedzenie?",type:"pills",icon:"📋",
+         opts:["Pracownik","Pracodawca"]},
         {id:"w_tryb",  label:"Sposób zakończenia",           type:"pills", icon:"📋",
-         opts:["Za porozumieniem stron","Z zachowaniem okresu wypowiedzenia","Bez zachowania okresu (dyscyplinarne)"]},
+         opts:["Za porozumieniem stron (art. 30 §1 pkt 1 KP)","Z zachowaniem okresu wypowiedzenia (art. 30 §1 pkt 2 KP)","Bez zachowania okresu — dyscyplinarne (art. 52 §1 KP)","Bez zachowania okresu — z winy pracodawcy (art. 55 §1¹ KP)"]},
         {id:"w_kon",   label:"Data zakończenia współpracy",  type:"date",  icon:"🏁"},
         {id:"w_powod", label:"Powód / uzasadnienie",         ph:"np. przyczyny osobiste, rezygnacja z powodów zawodowych...", icon:"📝", opt:true}
+      ]},
+      {label:"Dodatkowe ustalenia",fields:[
+        {id:"w_odprawka",label:"Odprawa (jeśli dotyczy)",   type:"pills",icon:"💰", opt:true,
+         opts:["Nie dotyczy","1-miesięczna (do 2 lat stażu — art. 8 ust. 1 pkt 1)","2-miesięczna (2–8 lat stażu — art. 8 ust. 1 pkt 2)","3-miesięczna (ponad 8 lat stażu — art. 8 ust. 1 pkt 3)"]},
+        {id:"w_urlop_zal",label:"Urlop zaległy do wykorzystania",ph:"np. 5 dni",icon:"🏖️", opt:true},
+        {id:"w_sad",   label:"Właściwy sąd pracy (pouczenie)",ph:"np. Sąd Rejonowy dla Krakowa-Śródmieścia",icon:"⚖️", opt:true}
       ]}
     ],
     prompt:function(v){
-      var tryb=(v.w_tryb||"za porozumieniem stron").toLowerCase();
+      var tryb=(v.w_tryb||"za porozumieniem stron (art. 30 §1 pkt 1 KP)");
+      var skladajacy=(v.w_skladajacy||"pracownik");
       var dz=new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
-      return "Napisz wypowiedzenie umowy o prace "+tryb+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.w_imie||"[imie]")+(v.w_pesel?", PESEL: "+v.w_pesel:"")+(v.w_adres?", adres: "+v.w_adres:"")+"\n- Pracodawca: "+(v.w_firma||"[firma]")+(v.w_nip?", NIP: "+v.w_nip:"")+(v.w_adres_firma?", adres: "+v.w_adres_firma:"")+"\n- Stanowisko: "+(v.w_st||"[stanowisko]")+"\n- Zatrudniony od: "+(v.w_od||"[data]")+"\n- Data zakonczenia: "+(v.w_kon||"[data]")+"\n- Tryb: "+tryb+(v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"")+"\n\nGotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
+      var stazInfo="";
+      if(v.w_od){
+        var ms=new Date()-new Date(v.w_od);
+        var lata=Math.floor(ms/(1000*60*60*24*365.25));
+        if(lata<0.5) stazInfo=" (staż poniżej 6 miesięcy — okres wypowiedzenia 2 tygodnie, art. 36 §1 pkt 1 KP)";
+        else if(lata<3) stazInfo=" (staż "+lata+" lat — okres wypowiedzenia 1 miesiąc, art. 36 §1 pkt 2 KP)";
+        else stazInfo=" (staż "+lata+" lat — okres wypowiedzenia 3 miesiące, art. 36 §1 pkt 3 KP)";
+      }
+      return "Napisz "+tryb.toLowerCase()+" umowy o pracę — składa: "+skladajacy+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporządzenia: "+dz+"\n- Pracownik: "+(v.w_imie||"[imie]")+(v.w_pesel?", PESEL: "+v.w_pesel:"")+(v.w_adres?", adres: "+v.w_adres:"")+"\n- Pracodawca: "+(v.w_firma||"[firma]")+(v.w_nip?", NIP: "+v.w_nip:"")+(v.w_adres_firma?", adres: "+v.w_adres_firma:"")+(v.w_repr?", repr.: "+v.w_repr:"")+"\n- Stanowisko: "+(v.w_st||"[stanowisko]")+"\n- Zatrudniony od: "+(v.w_od||"[data]")+stazInfo+"\n- Data zakończenia: "+(v.w_kon||"[data]")+"\n- Tryb: "+tryb+(v.w_powod?"\n- Uzasadnienie: "+v.w_powod:"")+(v.w_odprawka&&v.w_odprawka!=="Nie dotyczy"?"\n- Odprawa: "+v.w_odprawka:"")+(v.w_urlop_zal?"\n- Urlop zaległy: "+v.w_urlop_zal:"")+(v.w_sad?"\n- Pouczenie o sądzie pracy: "+v.w_sad:"")+"\n\nDokument musi zawierać: miejscowość i datę, dane stron, podstawę prawną (właściwy art. KP), treść wypowiedzenia, datę upływu okresu wypowiedzenia, pouczenie o prawie odwołania do sądu pracy w terminie 21 dni (art. 264 §1 KP), podpisy. Gotowy dokument do wydruku. Zero markdown, zero gwiazdek. Tylko czysty tekst.";
     }
   },
   urlop: {
     title:"Wniosek o urlop", icon:"🏖️",
     steps:[
-      {label:"Dane pracownika i pracodawcy",fields:[
+      {label:"Dane pracownika",fields:[
         {id:"u_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",     icon:"👤"},
+        {id:"u_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. sprzedaży",icon:"💼", opt:true},
+        {id:"u_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",      icon:"🆔", opt:true},
+        {id:"u_wymiar",label:"Wymiar urlopu wypoczynkowego", type:"pills",              icon:"📊", opt:true,
+         opts:["20 dni (staż do 10 lat — art. 154 §1 pkt 1 KP)","26 dni (staż co najmniej 10 lat — art. 154 §1 pkt 2 KP)"]}
+      ]},
+      {label:"Pracodawca",fields:[
         {id:"u_prz",   label:"Imię i nazwisko przełożonego", ph:"np. Anna Nowak",       icon:"👔"},
         {id:"u_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",   icon:"🏢"},
-        {id:"u_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",      icon:"🆔", opt:true},
         {id:"u_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",    icon:"🏛️", opt:true}
       ]},
       {label:"Rodzaj urlopu",fields:[
         {id:"u_typ",   label:"Rodzaj urlopu",                type:"pills", icon:"☀️",
-         opts:["Wypoczynkowy","Na żądanie","Okolicznościowy","Bezpłatny"]},
+         opts:["Wypoczynkowy (art. 152–163 KP)","Na żądanie (art. 167² KP — do 4 dni w roku)","Okolicznościowy (rozp. MRPiPS)","Bezpłatny (art. 174 KP)","Macierzyński (art. 180 KP)","Rodzicielski (art. 182¹a KP)","Ojcowski (art. 182³ KP)"]},
+        {id:"u_zaleg", label:"Charakter urlopu",             type:"pills", icon:"📋", opt:true,
+         opts:["Bieżący (plan urlopowy)","Zaległy z poprzedniego roku"]},
         {id:"u_okol",  label:"Powód urlopu okolicznościowego",type:"pills",icon:"🎉", opt:true,
-         opts:["Własny ślub (2 dni)","Ślub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica (2 dni)","Pogrzeb rodzeństwa (1 dzień)"]},
-        {id:"u_info",  label:"Dodatkowe informacje",          ph:"np. dodatkowe uwagi do wniosku...", icon:"📝", opt:true}
+         opts:["Własny ślub (2 dni)","Ślub dziecka (1 dzień)","Narodziny dziecka (2 dni)","Pogrzeb małżonka/rodzica/dziecka (2 dni)","Pogrzeb siostry/brata (1 dzień)","Pogrzeb teścia/teściowej (1 dzień)"]},
+        {id:"u_info",  label:"Dodatkowe informacje",          ph:"np. zastępstwo zapewnione przez kolegę", icon:"📝", opt:true}
       ]},
       {label:"Daty urlopu",fields:[
         {id:"u_od",    label:"Data od",                      type:"date",  icon:"📅"},
-        {id:"u_do",    label:"Data do",                      type:"date",  icon:"📅"}
+        {id:"u_do",    label:"Data do",                      type:"date",  icon:"📅"},
+        {id:"u_dni",   label:"Liczba dni urlopu",            ph:"np. 10",  icon:"🔢", opt:true}
       ]}
     ],
     prompt:function(v){
       var dz=new Date().toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});
       var odFmt=v.u_od?new Date(v.u_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data od]";
       var doFmt=v.u_do?new Date(v.u_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data do]";
-      var typ=(v.u_typ||"wypoczynkowy").toLowerCase();
-      var okol=(v.u_okol&&v.u_typ==="Okolicznościowy")?" z powodu: "+v.u_okol.toLowerCase():"";
-      return "Napisz formalny wniosek o urlop "+typ+okol+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporzadzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+(v.u_pesel?", PESEL: "+v.u_pesel:"")+"\n- Przelozony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+(v.u_nip?", NIP: "+v.u_nip:"")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+(v.u_info?"\n- Dodatkowe informacje: "+v.u_info:"")+"\n\nKrotki formalny wniosek, gotowy do wydruku. Zero markdown, zero gwiazdek.";
+      var typ=(v.u_typ||"wypoczynkowy (art. 152–163 KP)").toLowerCase();
+      var okol=(v.u_okol&&v.u_typ&&v.u_typ.indexOf("Okolicznościowy")>=0)?" z powodu: "+v.u_okol.toLowerCase():"";
+      var zaleg=(v.u_zaleg&&v.u_zaleg.indexOf("Zaległy")>=0)?" (urlop zaległy z poprzedniego roku)":"";
+      var dniInfo="";
+      if(v.u_od&&v.u_do){
+        var diff=Math.round((new Date(v.u_do)-new Date(v.u_od))/(1000*60*60*24))+1;
+        dniInfo=v.u_dni||diff+" dni";
+      } else { dniInfo=v.u_dni||"[liczba dni]"; }
+      return "Napisz formalny wniosek o urlop "+typ+okol+zaleg+". Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data sporządzenia: "+dz+"\n- Pracownik: "+(v.u_imie||"[imie]")+(v.u_pesel?", PESEL: "+v.u_pesel:"")+(v.u_st?", stanowisko: "+v.u_st:"")+(v.u_wymiar?"\n- Wymiar urlopu: "+v.u_wymiar:"")+"\n- Przełożony: "+(v.u_prz||"[przelozony]")+"\n- Firma: "+(v.u_firma||"[firma]")+(v.u_nip?", NIP: "+v.u_nip:"")+"\n- Okres urlopu: od "+odFmt+" do "+doFmt+" ("+dniInfo+")"+(v.u_info?"\n- Uwagi: "+v.u_info:"")+"\n\nKrótki formalny wniosek zgodny z KP, gotowy do wydruku. Zawrzyj podstawę prawną. Zero markdown, zero gwiazdek.";
     }
   },
   swiadectwo: {
@@ -458,15 +490,18 @@ var FORMS = {
       {label:"Pracownik",fields:[
         {id:"s_imie",  label:"Imię i nazwisko pracownika",   ph:"np. Jan Kowalski",              icon:"👤"},
         {id:"s_ur",    label:"Data urodzenia",               type:"date",                        icon:"🎂", opt:true},
-        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",               icon:"🆔", opt:true}
+        {id:"s_pesel", label:"PESEL pracownika",             ph:"np. 90010112345",               icon:"🆔", opt:true},
+        {id:"s_adres", label:"Adres pracownika",             ph:"np. ul. Różana 2, Kraków",      icon:"🏠", opt:true}
       ]},
       {label:"Pracodawca",fields:[
         {id:"s_firma", label:"Nazwa firmy",                  ph:"np. ABC Sp. z o.o.",             icon:"🏢"},
         {id:"s_siedz", label:"Siedziba firmy",               ph:"np. ul. Kwiatowa 1, Warszawa",   icon:"📍", opt:true},
-        {id:"s_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",             icon:"🏛️", opt:true}
+        {id:"s_nip",   label:"NIP pracodawcy",               ph:"np. 526-025-04-79",             icon:"🏛️", opt:true},
+        {id:"s_repr",  label:"Wystawiający świadectwo",      ph:"np. Anna Nowak — Kierownik HR",  icon:"👔", opt:true}
       ]},
       {label:"Zatrudnienie",fields:[
-        {id:"s_st",    label:"Stanowisko",                   ph:"np. Specjalista ds. marketingu", icon:"💼"},
+        {id:"s_st",    label:"Stanowisko (ostatnie)",        ph:"np. Specjalista ds. marketingu", icon:"💼"},
+        {id:"s_st_hist",label:"Poprzednie stanowiska",       ph:"np. Młodszy specjalista 2020–2022",icon:"📝", opt:true},
         {id:"s_od",    label:"Zatrudniony od",               type:"date",                         icon:"📅"},
         {id:"s_do",    label:"Zatrudniony do",               type:"date",                         icon:"📅"},
         {id:"s_wym",   label:"Wymiar czasu pracy",           type:"pills",                        icon:"⏱️",
@@ -474,9 +509,15 @@ var FORMS = {
       ]},
       {label:"Rozwiązanie umowy",fields:[
         {id:"s_tryb",  label:"Sposób rozwiązania",           type:"pills", icon:"📋",
-         opts:["Za porozumieniem stron","Wypowiedzenie przez pracownika","Wypowiedzenie przez pracodawcę","Wygaśnięcie umowy"]},
-        {id:"s_urlop", label:"Urlop w roku rozwiązania (dni)",ph:"np. 14",  icon:"🏖️", opt:true},
-        {id:"s_ekwi",  label:"Ekwiwalent za urlop (dni)",    ph:"np. 6",   icon:"💵", opt:true}
+         opts:["Za porozumieniem stron (art. 30 §1 pkt 1 KP)","Wypowiedzenie przez pracownika (art. 30 §1 pkt 2 KP)","Wypowiedzenie przez pracodawcę (art. 30 §1 pkt 2 KP)","Rozwiązanie bez wypowiedzenia z winy pracownika (art. 52 §1 KP)","Rozwiązanie bez wypowiedzenia z winy pracodawcy (art. 55 §1¹ KP)","Wygaśnięcie umowy (art. 63–67 KP)"]},
+        {id:"s_urlop", label:"Urlop wypoczynkowy wykorzystany w roku rozwiązania (dni)",ph:"np. 14",  icon:"🏖️", opt:true},
+        {id:"s_urlop_nalez",label:"Urlop należny w roku rozwiązania (ogółem, dni)", ph:"np. 20", icon:"📊", opt:true},
+        {id:"s_ekwi",  label:"Ekwiwalent za urlop — liczba dni",    ph:"np. 6",   icon:"💵", opt:true}
+      ]},
+      {label:"Inne informacje",fields:[
+        {id:"s_zwol_lek",label:"Zasiłek chorobowy w roku rozwiązania",ph:"np. 30 dni",icon:"🏥", opt:true},
+        {id:"s_ochrona",label:"Okresy nieskładkowe",          ph:"np. urlop wychowawczy 2021-01-01 – 2022-06-30",icon:"👶", opt:true},
+        {id:"s_inne",  label:"Inne informacje (art. 97 §2 KP)",ph:"np. zajmował stanowisko kierownicze od 01.2023",icon:"📝", opt:true}
       ]}
     ],
     prompt:function(v){
@@ -484,8 +525,7 @@ var FORMS = {
       var odF=v.s_od?new Date(v.s_od).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data]";
       var doF=v.s_do?new Date(v.s_do).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"[data]";
       var urF=v.s_ur?new Date(v.s_ur).toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"}):"";
-      var tm={"Za porozumieniem stron":"na mocy porozumienia stron (art. 30 par. 1 pkt 1 KP)","Wypowiedzenie przez pracownika":"przez pracownika za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wypowiedzenie przez pracodawcę":"przez pracodawce za wypowiedzeniem (art. 30 par. 1 pkt 2 KP)","Wygaśnięcie umowy":"wskutek uplywy czasu (art. 30 par. 1 pkt 4 KP)"};
-      return "Napisz swiadectwo pracy zgodne z art. 97 Kodeksu Pracy. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: "+dz+"\n- Pracownik: "+(v.s_imie||"[imie]")+(urF?" ur. "+urF:"")+(v.s_pesel?", PESEL: "+v.s_pesel:"")+"\n- Pracodawca: "+(v.s_firma||"[firma]")+(v.s_nip?", NIP: "+v.s_nip:"")+", "+(v.s_siedz||"[siedziba]")+"\n- Okres: od "+odF+" do "+doF+"\n- Stanowisko: "+(v.s_st||"[stanowisko]")+"\n- Wymiar: "+(v.s_wym||"pelny etat")+"\n- Rozwiazanie: "+(tm[v.s_tryb]||v.s_tryb||"za porozumieniem stron")+"\n- Urlop: "+(v.s_urlop||"0")+" dni\n- Ekwiwalent: "+(v.s_ekwi||"0")+" dni\n\nZawrzyj wszystkie obowiazkowe elementy z art. 97 KP. Zero markdown, zero gwiazdek.";
+      return "Napisz świadectwo pracy zgodne z art. 97 §2 KP i rozporządzeniem MRPiPS z dnia 30 grudnia 2016 r. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\n- Data wystawienia: "+dz+"\n- Pracownik: "+(v.s_imie||"[imie]")+(urF?", ur. "+urF:"")+(v.s_pesel?", PESEL: "+v.s_pesel:"")+(v.s_adres?", adres: "+v.s_adres:"")+"\n- Pracodawca: "+(v.s_firma||"[firma]")+(v.s_nip?", NIP: "+v.s_nip:"")+", "+(v.s_siedz||"[siedziba]")+(v.s_repr?"\n- Wystawiający: "+v.s_repr:"")+"\n- Okres zatrudnienia: od "+odF+" do "+doF+"\n- Stanowisko: "+(v.s_st||"[stanowisko]")+(v.s_st_hist?", poprzednio: "+v.s_st_hist:"")+"\n- Wymiar: "+(v.s_wym||"pełny etat")+"\n- Rozwiązanie: "+(v.s_tryb||"za porozumieniem stron (art. 30 §1 pkt 1 KP)")+"\n- Urlop wypoczynkowy: "+(v.s_urlop||"0")+" dni (należny: "+(v.s_urlop_nalez||"[brak]")+" dni)\n- Ekwiwalent za urlop: "+(v.s_ekwi||"0")+" dni"+(v.s_zwol_lek?"\n- Zasiłek chorobowy: "+v.s_zwol_lek:"")+(v.s_ochrona?"\n- Okresy nieskładkowe: "+v.s_ochrona:"")+(v.s_inne?"\n- Inne: "+v.s_inne:"")+"\n\nŚwiadectwo musi zawierać WSZYSTKIE elementy z art. 97 §2 KP: okres i wymiar zatrudnienia, rodzaj wykonywanej pracy, zajmowane stanowiska, tryb rozwiązania, urlop wypoczynkowy, zasiłki chorobowe, zajęcie wynagrodzenia, oraz pouczenie o prawie do sprostowania w terminie 14 dni (art. 97 §2¹ KP). Zero markdown, zero gwiazdek.";
     }
   }
 };
