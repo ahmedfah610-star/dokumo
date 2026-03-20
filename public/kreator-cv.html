@@ -850,36 +850,36 @@ function buildCVHTML(tpl) {
     </div>`;
 
   // ── CASCADE (dark sidebar, styl Resume.io) ──────────────────
-  if (tpl === 'cascade') return `
+  if (tpl === 'cascade') {
+    const sb = cvSidebarSections;
+    const sbHdr = (lbl) => `<div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${lbl}</div>`;
+    const mnHdr = (lbl) => `<div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:10px;opacity:0.85">${lbl}</div>`;
+    const skillsInSb = sb.has('umiejetnosci') && skills.length;
+    const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
+    const certsInSb  = sb.has('certyfikaty') && certGroups.length;
+    const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
+    return `
     <div style="font-family:Arial,sans-serif;display:flex;min-height:842px;background:#fff">
-      <div style="width:220px;flex-shrink:0;background:${c1};padding:28px 20px 24px;overflow:hidden;display:flex;flex-direction:column;gap:0">
+      <div style="width:220px;flex-shrink:0;background:${c1};padding:28px 20px 24px;overflow:hidden;display:flex;flex-direction:column;">
         ${d.zdjecie?`<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;margin-bottom:14px;border:3px solid rgba(255,255,255,0.25)">${photo}</div>`:`<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.2);margin-bottom:16px"></div>`}
         <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2;word-break:break-word">${name}</div>
         ${d.stanowisko?`<div style="font-size:10.5px;color:rgba(255,255,255,0.75);margin-top:5px;word-break:break-word">${d.stanowisko}</div>`:''}
-        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("contact")}</div>
+        ${sbHdr(L("contact"))}
         <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).join('<br>')}</div>
-        ${skills.length?`
-        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("skills")}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px">${skills.map(s=>`<span style="font-size:8px;padding:2px 8px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);border-radius:99px;font-weight:600">${s}</span>`).join('')}</div>`:''}
-        ${d.jezyki.some(l=>l.jezyk)?`
-        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("languages")}</div>
-        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${d.jezyki.filter(l=>l.jezyk).map(l=>`${l.jezyk} — ${l.poziom}`).join('<br>')}</div>`:''}
-        ${certGroups.map(({label,items})=>`
-        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${label}</div>
-        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${items.join('<br>')}</div>`).join('')}
-        ${d.zainteresowania?`
-        <div style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:18px;margin-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,0.55);padding-bottom:3px">${L("interests")}</div>
-        <div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.65">${d.zainteresowania}</div>`:''}
+        ${skillsInSb?`${sbHdr(L("skills"))}<div style="display:flex;flex-wrap:wrap;gap:4px">${skills.map(s=>`<span style="font-size:8px;padding:2px 8px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);border-radius:99px;font-weight:600">${s}</span>`).join('')}</div>`:''}
+        ${jezykiInSb?`${sbHdr(L("languages"))}<div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${d.jezyki.filter(l=>l.jezyk).map(l=>`${l.jezyk} — ${l.poziom}`).join('<br>')}</div>`:''}
+        ${certsInSb?certGroups.map(({label:lbl,items})=>`${sbHdr(lbl)}<div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.7">${items.join('<br>')}</div>`).join(''):''}
+        ${intInSb?`${sbHdr(L("interests"))}<div style="font-size:9.5px;color:rgba(255,255,255,0.9);line-height:1.65">${d.zainteresowania}</div>`:''}
       </div>
       <div style="flex:1;padding:28px 24px 20px;display:flex;flex-direction:column;min-width:0">
         ${d.podsumowanie?`
         <div style="margin-bottom:18px">
-          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:9px;opacity:0.85">${L("profile")}</div>
+          ${mnHdr(L("profile"))}
           <div style="font-size:10.5px;line-height:1.75;color:#475569">${d.podsumowanie}</div>
         </div>`:''}
         ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
         <div style="margin-bottom:18px">
-          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:12px;opacity:0.85">${L("experience")}</div>
+          ${mnHdr(L("experience"))}
           ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
           <div style="margin-bottom:14px">
             <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
@@ -892,7 +892,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${d.wyksztalcenie.some(e=>e.szkola)?`
         <div style="margin-bottom:18px">
-          <div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:12px;opacity:0.85">${L("education")}</div>
+          ${mnHdr(L("education"))}
           ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
           <div style="margin-bottom:13px">
             <div style="display:flex;justify-content:space-between;gap:8px">
@@ -901,10 +901,16 @@ function buildCVHTML(tpl) {
             </div>
             <div style="font-size:9.5px;color:#64748b;margin-top:2px">${e.kierunek||''}</div>
           </div>`).join('')}
-        </div>`:''}${renderCustomSections(c1, c2)}
+        </div>`:''}
+        ${!skillsInSb&&skills.length?`<div style="margin-bottom:16px">${mnHdr(L("skills"))}<div style="display:flex;flex-wrap:wrap;gap:5px">${skills.map(s=>`<span style="font-size:8.5px;padding:3px 10px;background:rgba(0,0,0,0.06);color:#1e293b;border-radius:99px;font-weight:600">${s}</span>`).join('')}</div></div>`:''}
+        ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px">${mnHdr(L("languages"))}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:9.5px;color:#1e293b;font-weight:600">${l.jezyk}<span style="color:#94a3b8;font-weight:400"> — ${l.poziom}</span></span>`).join('')}</div></div>`:''}
+        ${!certsInSb?certGroups.map(({label:lbl,items})=>`<div style="margin-bottom:16px">${mnHdr(lbl)}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${items.map(c=>`<span style="font-size:9px;color:#444">${c}</span>`).join('')}</div></div>`).join(''):''}
+        ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:16px">${mnHdr(L("interests"))}<div style="font-size:9.5px;color:#64748b;line-height:1.6">${d.zainteresowania}</div></div>`:''}
+        ${renderCustomSections(c1, c2)}
         <div style="margin-top:auto;font-size:7.5px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
+  }
 
   // ── NOVA (czysty single-column, resume.io style) ─────────
   if (tpl === 'nova') return `
@@ -2027,7 +2033,7 @@ async function saveCVDraft() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
         text: cvText,
-        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [] }))
+        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))
       })
     });
     if (resp.ok) {
@@ -2055,7 +2061,8 @@ async function loadCVDraft() {
     if (!urlTpl && loaded.__template) cvTemplate = loaded.__template;
     if (loaded.__color) cvCustomColor = loaded.__color;
     if (loaded.__customSections) cvCustomSections = loaded.__customSections;
-    delete loaded.__template; delete loaded.__color; delete loaded.__customSections;
+    if (loaded.__sidebarSections) cvSidebarSections = new Set(loaded.__sidebarSections);
+    delete loaded.__template; delete loaded.__color; delete loaded.__customSections; delete loaded.__sidebarSections;
     Object.assign(cvData, loaded);
     if (typeof renderCVForm === 'function') renderCVForm();
     if (typeof updateCVPreview === 'function') updateCVPreview();
@@ -2561,6 +2568,16 @@ function cvWizardPickTpl(id) {
   renderCVForm();
 }
 let cvCustomSections = []; // [{id, title, content}]
+// Sections shown in sidebar for 2-col layouts (cascade/sidebar); rest go to main column
+const CASCADE_SIDEBAR_DEFAULTS = ['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania'];
+let cvSidebarSections = new Set(CASCADE_SIDEBAR_DEFAULTS);
+const CASCADE_MOVABLE = new Set(['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania']);
+function toggleCascadeSidebar(sec, e) {
+  if (e) { e.stopPropagation(); }
+  if (cvSidebarSections.has(sec)) cvSidebarSections.delete(sec);
+  else cvSidebarSections.add(sec);
+  renderCVForm(); updateCVPreview();
+}
 
 const POLISH_UNIVERSITIES = [
   'Uniwersytet Warszawski','Uniwersytet Jagielloński','Politechnika Warszawska',
@@ -3115,6 +3132,14 @@ function buildSectionFormHTML(sec) {
   const label = SEC_LABELS[sec] || sec;
   const summary = getSectionSummary(sec);
   const body = buildSectionBodyHTML(sec);
+  const showSidebarToggle = (cvTemplate === 'cascade' || cvTemplate === 'sidebar') && CASCADE_MOVABLE.has(sec);
+  const inSidebar = cvSidebarSections.has(sec);
+  const sidebarBtn = showSidebarToggle ? `
+    <button onclick="toggleCascadeSidebar('${sec}',event)" title="${inSidebar?'Przesuń do kolumny głównej':'Przesuń do panelu bocznego'}" style="display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;border:1px solid ${inSidebar?'#d1d5db':'#2563eb'};background:${inSidebar?'#f9fafb':'#eff6ff'};color:${inSidebar?'#6b7280':'#2563eb'};font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">
+      ${inSidebar
+        ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 19l7-7-7-7"/></svg> Boczny`
+        : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Główna`}
+    </button>` : '';
   return `
     <div class="acc-item${isOpen ? ' open' : ''}" data-section="${sec}" draggable="true">
       <div class="acc-row" onclick="toggleAccSection('${sec}')">
@@ -3123,6 +3148,7 @@ function buildSectionFormHTML(sec) {
           <span class="acc-label">${label}</span>
           ${summary ? `<span class="acc-summary">${summary}</span>` : ''}
         </div>
+        ${sidebarBtn}
         <button class="acc-btn" tabindex="-1">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
@@ -4165,7 +4191,7 @@ async function saveCVToMyDocs(fullName) {
         docIcon: '📋',
         docCatLabel: 'Kariera',
         text: cvText,
-        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [] }))
+        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))
       })
     });
   } catch(e) {}
