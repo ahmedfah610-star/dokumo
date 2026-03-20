@@ -528,18 +528,22 @@ function preview(id, c1, c2) {
       <div style="flex:1;padding:0 32px 24px;overflow:hidden;background:#f8fffe">${body(c1)}</div>`, '#f8fffe'),
 
     bold: wrap(`
-      <div style="background:#111;display:flex;align-items:center;padding:10px 28px;flex-shrink:0;gap:12px">
-        <div style="font-size:22px;font-weight:800;color:#fff;flex:1;letter-spacing:-0.02em">${S.name}</div>
-        <div style="height:6px;width:100px;background:${c1};border-radius:2px"></div>
+      <div style="background:#111;padding:18px 28px 14px;flex-shrink:0">
+        <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.02em;text-transform:uppercase">${S.name}</div>
+        <div style="font-size:10px;color:${c1};font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:4px">${S.role}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:8px">${S.email} · ${S.phone}</div>
       </div>
-      <div style="padding:14px 32px 8px">
-        <div style="font-size:14px;font-weight:600;color:${c1}">${S.role}</div>
-        <div style="height:2px;background:${c1};margin:10px 0;border-radius:1px"></div>
-        <div style="font-size:11px;color:${mu}">
-          ${contactRow('', S.email, mu)}${contactRow('', S.phone, mu)}${contactRow('', S.city, mu)}
-        </div>
-      </div>
-      <div style="flex:1;padding:0 32px 24px;overflow:hidden">${body(c1)}</div>`),
+      <div style="flex:1;padding:14px 28px;overflow:hidden">
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#fff;background:${c1};padding:4px 10px;margin-bottom:8px">Doświadczenie</div>
+        ${[{f:S.exp1f,r:S.exp1r,d:S.exp1d},{f:S.exp2f,r:S.exp2r,d:S.exp2d}].map(e=>`
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between"><div style="font-size:11px;font-weight:700;color:#111">${e.r}</div><div style="font-size:9px;color:#999">${e.d}</div></div>
+          <div style="font-size:10px;color:${c1};font-weight:700">${e.f}</div>
+        </div>`).join('')}
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#fff;background:${c1};padding:4px 10px;margin:10px 0 8px">Wykształcenie</div>
+        <div style="font-size:11px;font-weight:700;color:#111">${S.edu1}</div>
+        <div style="font-size:9px;color:#555">${S.edu1d}</div>
+      </div>`),
 
     linen: wrap(`
       <div style="background:#fef9f0;padding:28px 32px 18px;border-bottom:2px solid #fde8b0;flex-shrink:0">
