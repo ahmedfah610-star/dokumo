@@ -1952,7 +1952,9 @@ body { overflow:hidden; }
 .cvw-step-header { margin-bottom:20px; }
 .cvw-step-num { display:none; }
 .cvw-step-title { font-size:1.3rem; font-weight:700; color:#0f172a; letter-spacing:-0.025em; font-family:'Figtree',sans-serif; }
-.cvw-nav { flex-shrink:0; background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid #e5e5e5; padding:12px 20px; padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 8px)); display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; bottom:0; z-index:10; }
+.cvw-nav { flex-shrink:0; background:rgba(255,255,255,0.96); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid #e5e5e5; padding:12px 20px; padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 8px)); display:flex; align-items:center; justify-content:space-between; gap:12px; position:fixed; bottom:0; left:0; right:0; z-index:200; }
+@media(min-width:768px) { .cvw-nav { position:static; } }
+.cvw-content { padding-bottom:max(90px, calc(72px + env(safe-area-inset-bottom))); }
 .cvw-btn { display:inline-flex; align-items:center; gap:7px; padding:10px 22px; border-radius:50px; font-family:'Figtree',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; border:none; outline:none; }
 .cvw-btn-back { background:#f5f5f7; color:#555555; border:1.5px solid #e5e5e5; }
 .cvw-btn-back:hover { background:#ebebed; border-color:#cccccc; color:#111111; }
