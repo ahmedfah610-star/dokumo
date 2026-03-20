@@ -398,10 +398,10 @@ body { background:#f5f3ef; }
       </div>
 
       <!-- RIGHT: animated wizard demo -->
-      <div id="wizardDemo" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;user-select:none;">
+      <div id="wizardDemo" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;user-select:none;height:520px;display:flex;flex-direction:column;">
 
         <!-- step bar -->
-        <div style="display:flex;align-items:center;padding:11px 12px 0;gap:0;border-bottom:1px solid #f1f5f9;background:#fafafa;">
+        <div style="display:flex;align-items:center;padding:11px 12px 0;gap:0;border-bottom:1px solid #f1f5f9;background:#fafafa;flex-shrink:0;">
           <div class="wd-step-item" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
             <div id="wds0" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">1</div>
             <span id="wdl0" style="font-size:.62rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zleceniodawca</span>
@@ -424,7 +424,7 @@ body { background:#f5f3ef; }
         </div>
 
         <!-- progress bars -->
-        <div style="display:flex;gap:4px;padding:10px 18px 0;">
+        <div style="display:flex;gap:4px;padding:10px 18px 0;flex-shrink:0;">
           <div id="wpb0" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
           <div id="wpb1" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
           <div id="wpb2" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
@@ -432,10 +432,10 @@ body { background:#f5f3ef; }
         </div>
 
         <!-- form content area -->
-        <div id="wFormGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;height:100%;">
+        <div id="wFormGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;min-height:0;">
 
           <!-- left: form -->
-          <div id="wFormPanel" style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;overflow-y:auto;">
+          <div id="wFormPanel" style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;overflow-y:auto;min-height:0;">
 
             <!-- STEP 1 -->
             <div id="wStep0" style="display:block;">
@@ -575,7 +575,7 @@ body { background:#f5f3ef; }
           </div>
 
           <!-- right: live preview panel -->
-          <div id="wPreviewPanel" style="padding:12px 14px 12px 12px;background:#fafafa;overflow-y:auto;">
+          <div id="wPreviewPanel" style="padding:12px 14px 12px 12px;background:#fafafa;overflow-y:auto;min-height:0;">
             <div style="font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Umowa zlecenie</div>
             <div id="wPreview" style="display:flex;flex-direction:column;gap:4px;"></div>
           </div>
