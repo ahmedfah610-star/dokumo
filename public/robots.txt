@@ -7,7 +7,6 @@ Disallow: /moje-dokumenty.html
 
 # Strony aplikacji (nie treściowe)
 Disallow: /panel.html
-Disallow: /admin.html
 Disallow: /wybierz-szablon.html
 
 # API
