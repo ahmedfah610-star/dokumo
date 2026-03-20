@@ -45,8 +45,17 @@ export default async function handler(req, res) {
 
   let browser;
   try {
+    const extraArgs = [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+    ];
     browser = await puppeteer.launch({
-      args: chromium.args,
+      args: [...chromium.args, ...extraArgs],
       defaultViewport: { width: 595, height: 842 },
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
