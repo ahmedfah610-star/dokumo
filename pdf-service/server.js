@@ -40,6 +40,14 @@ app.post('/generate-pdf', async (req, res) => {
     await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
+    await page.evaluate(() => {
+      document.querySelectorAll('*').forEach(el => {
+        const s = window.getComputedStyle(el);
+        if (s.minHeight && s.minHeight !== '0px') el.style.minHeight = '0';
+        if (s.height && s.height.includes('vh')) el.style.height = 'auto';
+      });
+    });
+
     const bodyHeight = await page.evaluate(() => document.documentElement.scrollHeight);
 
     const buffer = await page.pdf({
