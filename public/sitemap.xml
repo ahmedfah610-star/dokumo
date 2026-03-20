@@ -18,12 +18,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://dokumoflow.com/dokumenty.html</loc>
-    <lastmod>2026-03-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+
   <url>
     <loc>https://dokumoflow.com/hr.html</loc>
     <lastmod>2026-03-19</lastmod>
