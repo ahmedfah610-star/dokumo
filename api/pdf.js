@@ -30,19 +30,21 @@ export default async function handler(req, res) {
 
   if (!pdfServiceUrl) return res.status(500).json({ error: 'PDF_SERVICE_URL nie ustawiony' });
 
+  // Remove fixed min-height from inline styles (templates use min-height:842px)
+  const cleanHtml = html.replace(/min-height\s*:\s*\d+px/gi, 'min-height:0');
+
   const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=794">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; min-height: 0 !important; }
-  html, body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden; height: auto !important; min-height: 0 !important; }
-  html, body, div, section, article, main, header, footer { height: auto !important; min-height: 0 !important; max-height: none !important; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden; height: auto !important; }
   body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 </style>
 </head>
-<body>${html}</body>
+<body>${cleanHtml}</body>
 </html>`;
 
   try {

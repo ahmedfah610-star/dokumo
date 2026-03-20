@@ -40,7 +40,12 @@ app.post('/generate-pdf', async (req, res) => {
     await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
+    // Strip any remaining min-height and vh heights via JS
     await page.evaluate(() => {
+      document.body.style.height = 'auto';
+      document.body.style.minHeight = '0';
+      document.documentElement.style.height = 'auto';
+      document.documentElement.style.minHeight = '0';
       document.querySelectorAll('*').forEach(el => {
         const s = window.getComputedStyle(el);
         if (s.minHeight && s.minHeight !== '0px') el.style.minHeight = '0';
@@ -48,7 +53,11 @@ app.post('/generate-pdf', async (req, res) => {
       });
     });
 
+    // Wait for layout to settle
+    await new Promise(r => setTimeout(r, 300));
+
     const bodyHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+    console.log(`[PDF] scrollHeight = ${bodyHeight}px`);
 
     const buffer = await page.pdf({
       width: '794px',
