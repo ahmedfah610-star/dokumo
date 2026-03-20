@@ -63,7 +63,8 @@ export default async function handler(req, res) {
     const buffer = Buffer.from(pdf, 'base64');
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${(filename || 'CV').replace(/"/g, '')}.pdf"`);
+    const safeFn = (filename || 'CV').replace(/"/g, '').replace(/[^\x20-\x7E]/g, '_');
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFn}.pdf"; filename*=UTF-8''${encodeURIComponent((filename || 'CV') + '.pdf')}`);
     res.setHeader('Content-Length', buffer.length);
     return res.status(200).send(buffer);
   } catch (err) {
