@@ -4019,7 +4019,9 @@ let cvCustomColor = null; // null = use template default
   sessionStorage.removeItem('dokumo_editCvData');
   try {
     var loaded = JSON.parse(saved);
-    if (loaded.__template) cvTemplate = loaded.__template;
+    // Jeśli użytkownik wybrał szablon przez picker (?template=…), nie nadpisuj go
+    var urlTpl = new URLSearchParams(window.location.search).get('template');
+    if (loaded.__template && !urlTpl) cvTemplate = loaded.__template;
     if (loaded.__color) cvCustomColor = loaded.__color;
     delete loaded.__template;
     delete loaded.__color;
