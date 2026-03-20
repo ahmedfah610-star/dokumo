@@ -1073,81 +1073,78 @@ function buildCVHTML(tpl) {
     </div>`;
 
   // ── ATHENS ────────────────────────────────────────────────
-  if (tpl === 'athens') return `
-    <div style="font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#fff;min-height:842px">
-      <div style="background:${c1};padding:30px 36px 26px;position:relative">
-        <div style="display:flex;align-items:center;gap:18px">
-          ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,0.3)">${photo}</div>`:''}
+  if (tpl === 'athens') {
+    const sb = cvSidebarSections;
+    const sbHdr = (lbl) => `<div style="font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:#64748b;border-bottom:1.5px solid #64748b;padding-bottom:3px;opacity:0.85;margin-bottom:6px;margin-top:16px">${lbl}</div>`;
+    const mnHdr = (lbl) => `<div style="font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;opacity:0.85;margin-bottom:10px">${lbl}</div>`;
+    const skillsInSb = sb.has('umiejetnosci') && skills.length;
+    const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
+    const intInSb = sb.has('zainteresowania') && d.zainteresowania;
+    return `
+    <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px;display:flex;flex-direction:column">
+      <div style="background:${c1};padding:26px 32px 22px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:16px">
+          ${d.zdjecie?`<div style="width:68px;height:68px;border-radius:50%;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,0.25)">${photo}</div>`:''}
           <div style="flex:1;min-width:0">
-            <div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.4px;line-height:1.1">${name}</div>
-            ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.75);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-            <div style="display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:8px">
-              ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<span style="font-size:8.5px;color:rgba(255,255,255,0.65)">${x}</span>`).join('')}
+            <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1.1">${name}</div>
+            ${d.stanowisko?`<div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:5px">${d.stanowisko}</div>`:''}
+            <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.6)">
+              ${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).map(x=>`<span style="margin-right:14px">${x}</span>`).join('')}
             </div>
           </div>
         </div>
-        <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,${c2},rgba(255,255,255,0.3))"></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 168px">
-        <div style="padding:20px 26px 24px;border-right:1px solid #f0f0f0">
+      <div style="display:flex;flex:1">
+        <div style="width:34%;background:#eff6ff;padding:16px 18px 24px;flex-shrink:0;overflow:hidden">
+          <div style="font-size:9px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:#64748b;border-bottom:1.5px solid #64748b;padding-bottom:3px;opacity:0.85;margin-bottom:6px">${L("contact")}</div>
+          <div style="font-size:9.5px;color:#1e293b;line-height:1.7">${[d.email,d.tel,d.adres,d.linkedin].filter(Boolean).join('<br>')}</div>
+          ${skillsInSb?`${sbHdr(L("skills"))}<div style="display:flex;flex-wrap:wrap;gap:4px">${skills.map(s=>`<span style="font-size:8px;padding:2px 8px;background:rgba(0,0,0,0.07);color:#1e293b;border-radius:99px;font-weight:600">${s}</span>`).join('')}</div>`:''}
+          ${jezykiInSb?`${sbHdr(L("languages"))}<div style="font-size:9.5px;color:#1e293b;line-height:1.7">${d.jezyki.filter(l=>l.jezyk).map(l=>`${l.jezyk} — ${l.poziom}`).join('<br>')}</div>`:''}
+          ${certGroups.filter(cg=>sb.has(cg.key)).map(({label:lbl,items})=>`${sbHdr(lbl)}<div style="font-size:9.5px;color:#1e293b;line-height:1.7">${items.join('<br>')}</div>`).join('')}
+          ${intInSb?`${sbHdr(L("interests"))}<div style="font-size:9.5px;color:#1e293b;line-height:1.65">${d.zainteresowania}</div>`:''}
+          ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`${sbHdr(s.title||'')}<div style="font-size:9.5px;color:#1e293b;line-height:1.65">${s.content}</div>`).join('')}
+        </div>
+        <div style="flex:1;padding:20px 22px 24px;min-width:0">
           ${d.podsumowanie?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:7px;padding-bottom:4px;border-bottom:2px solid ${c1}">${L("profile")}</div>
-            <div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div>
+          <div style="margin-bottom:16px">
+            ${mnHdr(L("summary"))}
+            <div style="font-size:10.5px;line-height:1.75;color:#475569">${d.podsumowanie}</div>
           </div>`:''}
           ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid ${c1}">${L("experience")}</div>
+          <div style="margin-bottom:16px">
+            ${mnHdr(L("experience"))}
             ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-            <div style="margin-bottom:15px;display:flex;gap:10px">
-              <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:3px">
-                <div style="width:8px;height:8px;border-radius:50%;background:${c1}"></div>
-                <div style="width:1px;flex:1;background:#e0e0e0;margin-top:3px"></div>
+            <div style="margin-bottom:13px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <div style="font-size:11.5px;font-weight:700;color:#1e293b">${e.firma||''}</div>
+                <div style="font-size:9px;color:#94a3b8;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
               </div>
-              <div style="padding-bottom:10px;flex:1">
-                <div style="font-size:11px;font-weight:700;color:#111">${e.stanowisko||''}</div>
-                <div style="font-size:9.5px;color:${c2};font-weight:600">${e.firma||''}</div>
-                <div style="font-size:8.5px;color:#aaa;margin-bottom:3px">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#555;line-height:1.65">${e.opis}</div>`:''}
-              </div>
+              <div style="font-size:10px;color:${c1};font-weight:600;margin-top:2px">${e.stanowisko||''}</div>
+              ${e.opis?`<div style="font-size:9.5px;color:#475569;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
             </div>`).join('')}
           </div>`:''}
           ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid ${c1}">${L("education")}</div>
+          <div style="margin-bottom:16px">
+            ${mnHdr(L("education"))}
             ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-            <div style="margin-bottom:12px">
-              <div style="font-size:10.5px;font-weight:700;color:#111">${e.kierunek||''}</div>
-              <div style="font-size:9.5px;color:#555">${e.szkola}</div>
-              <div style="font-size:8.5px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-            </div>`).join('')}
-          </div>`:''}${renderCustomSections(c1, c2)}
-        </div>
-        <div style="padding:20px 18px;background:#fafafa">
-          ${skills.length?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px">${L("skills")}</div>
-            ${skills.map(s=>`
-            <div style="margin-bottom:7px">
-              <div style="font-size:9px;color:#333;margin-bottom:3px">${s}</div>
-              <div style="height:3px;background:#e8e8e8;border-radius:2px"><div style="height:3px;background:${c1};border-radius:2px;width:75%"></div></div>
+            <div style="margin-bottom:11px">
+              <div style="display:flex;justify-content:space-between;gap:8px">
+                <div style="font-size:11.5px;font-weight:700;color:#1e293b">${e.szkola}</div>
+                <div style="font-size:9px;color:#94a3b8;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>
+              <div style="font-size:10px;color:#64748b;margin-top:2px">${e.kierunek||''}</div>
             </div>`).join('')}
           </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:10px">${L("languages")}</div>
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:5px"><strong>${l.jezyk}</strong><div style="font-size:8px;color:#999">${l.poziom}</div></div>`).join('')}
-          </div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="margin-bottom:18px"><div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:9px">${label}</div>${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;padding:3px 6px;background:#fff;border-left:2px solid ${c1}">${c}</div>`).join('')}</div>`).join('')}
-          ${d.zainteresowania?`
-          <div>
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div>
-            <div style="font-size:8.5px;color:#555;line-height:1.65">${d.zainteresowania}</div>
-          </div>`:''}
+          ${!skillsInSb&&skills.length?`<div style="margin-bottom:14px">${mnHdr(L("skills"))}<div style="display:flex;flex-wrap:wrap;gap:4px">${skills.map(s=>`<span style="font-size:8.5px;padding:3px 10px;background:rgba(0,0,0,0.06);color:#1e293b;border-radius:99px;font-weight:600">${s}</span>`).join('')}</div></div>`:''}
+          ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:14px">${mnHdr(L("languages"))}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:9.5px;color:#1e293b;font-weight:600">${l.jezyk}<span style="color:#94a3b8;font-weight:400"> — ${l.poziom}</span></span>`).join('')}</div></div>`:''}
+          ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label:lbl,items})=>`<div style="margin-bottom:14px">${mnHdr(lbl)}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${items.map(c=>`<span style="font-size:9px;color:#444">${c}</span>`).join('')}</div></div>`).join('')}
+          ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:14px">${mnHdr(L("interests"))}<div style="font-size:9.5px;color:#64748b;line-height:1.6">${d.zainteresowania}</div></div>`:''}
+          ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:14px">${mnHdr(s.title||'')}<div style="font-size:9.5px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
         </div>
       </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
+  }
 
   // ── MATRIX ────────────────────────────────────────────────
   if (tpl === 'matrix') return `
@@ -2571,6 +2568,7 @@ let cvCustomSections = []; // [{id, title, content}]
 const CASCADE_SIDEBAR_DEFAULTS = ['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania'];
 let cvSidebarSections = new Set(CASCADE_SIDEBAR_DEFAULTS);
 const CASCADE_MOVABLE = new Set(['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania']);
+const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens']);
 function toggleCascadeSidebar(sec, e) {
   if (e) { e.stopPropagation(); }
   if (cvSidebarSections.has(sec)) cvSidebarSections.delete(sec);
@@ -3131,7 +3129,7 @@ function buildSectionFormHTML(sec) {
   const label = SEC_LABELS[sec] || sec;
   const summary = getSectionSummary(sec);
   const body = buildSectionBodyHTML(sec);
-  const showSidebarToggle = (cvTemplate === 'cascade' || cvTemplate === 'sidebar') && CASCADE_MOVABLE.has(sec);
+  const showSidebarToggle = SIDEBAR_TPLS.has(cvTemplate) && CASCADE_MOVABLE.has(sec);
   const inSidebar = cvSidebarSections.has(sec);
   const sidebarBtn = showSidebarToggle ? `
     <button onclick="toggleCascadeSidebar('${sec}',event)" title="${inSidebar?'Przesuń do kolumny głównej':'Przesuń do panelu bocznego'}" style="display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;border:1px solid ${inSidebar?'#2563eb':'#d1d5db'};background:${inSidebar?'#eff6ff':'#f9fafb'};color:${inSidebar?'#2563eb':'#6b7280'};font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">
@@ -3477,7 +3475,7 @@ function removeStaz(i) {
 // ── SEKCJE NIESTANDARDOWE ─────────────────────────────────
 function buildCustomSectionHTML(sec) {
   const isOpen = cvOpenSections.has('custom-' + sec.id);
-  const showSidebarToggle = cvTemplate === 'cascade' || cvTemplate === 'sidebar';
+  const showSidebarToggle = SIDEBAR_TPLS.has(cvTemplate);
   const key = 'custom-' + sec.id;
   const inSidebar = cvSidebarSections.has(key);
   const sidebarBtn = showSidebarToggle ? `
