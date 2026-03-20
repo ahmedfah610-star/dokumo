@@ -51,7 +51,8 @@
       "Bash(node:*)",
       "Bash(ls C:/Users/asus/Desktop/dokumo/public/*.html)",
       "Bash(python3:*)",
-      "Bash(grep -rn \"docCat\\\\|/api/generate\" /c/Users/asus/Desktop/dokumo/public/*.html)"
+      "Bash(grep -rn \"docCat\\\\|/api/generate\" /c/Users/asus/Desktop/dokumo/public/*.html)",
+      "Bash(git rm:*)"
     ]
   },
   "hooks": {
