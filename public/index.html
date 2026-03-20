@@ -364,7 +364,7 @@ body { background:#f5f3ef; }
       </div>
 
       <!-- RIGHT: animated wizard demo -->
-      <div id="wizardDemo" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;min-height:520px;user-select:none;">
+      <div id="wizardDemo" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;user-select:none;">
 
         <!-- step bar -->
         <div style="display:flex;align-items:center;padding:14px 18px 0;gap:0;border-bottom:1px solid #f1f5f9;background:#fafafa;">
@@ -398,10 +398,10 @@ body { background:#f5f3ef; }
         </div>
 
         <!-- form content area -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;height:100%;">
+        <div id="wFormGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;height:100%;">
 
           <!-- left: form -->
-          <div style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;">
+          <div id="wFormPanel" style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;overflow-y:auto;max-height:480px;">
 
             <!-- STEP 1 -->
             <div id="wStep0" style="display:block;">
@@ -541,7 +541,7 @@ body { background:#f5f3ef; }
           </div>
 
           <!-- right: live preview panel -->
-          <div style="padding:16px 18px 16px 14px;background:#fafafa;">
+          <div id="wPreviewPanel" style="padding:16px 18px 16px 14px;background:#fafafa;overflow-y:auto;max-height:480px;">
             <div style="font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:10px;">Umowa zlecenie</div>
             <div id="wPreview" style="display:flex;flex-direction:column;gap:7px;"></div>
           </div>
@@ -604,6 +604,7 @@ body { background:#f5f3ef; }
     });
     const el=$('wStep'+i);
     if(el){ el.style.display='block'; }
+    restoreFormGrid();
   }
 
   function showSpecial(id){
@@ -612,6 +613,18 @@ body { background:#f5f3ef; }
     });
     const el=$(id);
     if(el){ el.style.display='flex'; el.style.flexDirection='column'; }
+    // full-width: hide preview panel, expand form panel
+    const pp=$('wPreviewPanel'), fp=$('wFormPanel'), fg=$('wFormGrid');
+    if(pp) pp.style.display='none';
+    if(fp) fp.style.borderRight='none';
+    if(fg) fg.style.gridTemplateColumns='1fr';
+  }
+
+  function restoreFormGrid(){
+    const pp=$('wPreviewPanel'), fp=$('wFormPanel'), fg=$('wFormGrid');
+    if(pp) pp.style.display='';
+    if(fp) fp.style.borderRight='1px solid #f1f5f9';
+    if(fg) fg.style.gridTemplateColumns='1fr 1fr';
   }
 
   // cursor
@@ -666,21 +679,25 @@ body { background:#f5f3ef; }
   function updatePreview(){
     const pv = $('wPreview');
     if(!pv) return;
-    const rows = [];
     previewOrder.forEach(([label, srcId])=>{
       let val;
-      if(srcId.endsWith('Val')){ val = previewValues[srcId]; }
+      if(srcId.endsWith('Val')){ val = previewValues[srcId]||''; }
       else { const el=$(srcId); val = el ? el.value : ''; }
+      let row = pv.querySelector('[data-wpk="'+srcId+'"]');
       if(val && val.trim()){
-        rows.push({label,val});
+        if(!row){
+          row = document.createElement('div');
+          row.dataset.wpk = srcId;
+          row.style.cssText='animation:wFadeIn .3s ease;';
+          row.innerHTML='<div style="font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:1px;">'+label+'</div><div class="wpv-val" style="font-size:.76rem;font-weight:600;color:#111827;line-height:1.3;">'+val+'</div>';
+          pv.appendChild(row);
+        } else {
+          const valEl = row.querySelector('.wpv-val');
+          if(valEl && valEl.textContent !== val) valEl.textContent = val;
+        }
+      } else {
+        if(row) row.remove();
       }
-    });
-    pv.innerHTML='';
-    rows.forEach(({label,val})=>{
-      const row = document.createElement('div');
-      row.style.cssText='animation:wFadeIn .25s ease;';
-      row.innerHTML=`<div style="font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:1px;">${label}</div><div style="font-size:.76rem;font-weight:600;color:#111827;line-height:1.3;">${val}</div>`;
-      pv.appendChild(row);
     });
   }
 
@@ -700,7 +717,8 @@ body { background:#f5f3ef; }
     });
     $('wNipHint').style.display='none';
     $('wNipHint').textContent='';
-    updatePreview();
+    const pv=$('wPreview'); if(pv) pv.innerHTML='';
+    restoreFormGrid();
   }
 
   async function runDemo(){
