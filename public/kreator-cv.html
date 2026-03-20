@@ -42,8 +42,6 @@
 body { font-family: 'Figtree', -apple-system, sans-serif; background: #ffffff; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 .cvf-struct-entry { background: #f9f9f9; border: 1px solid #ebebeb; border-radius: 10px; padding: 12px 14px 8px; margin-bottom: 10px; }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 // cv-templates.js – szablony CV
@@ -3927,13 +3925,6 @@ function updateCVPreview() {
 
 // buildCVHTML → cv-templates.js
 
-function downloadCV() {
-  if (!window.checkPlanAccess(['kariera','promax','pro'])) return;
-  const el = document.getElementById('cvPreviewInner');
-  const name = 'CV_' + (cvData.imie||'') + '_' + (cvData.nazwisko||'');
-  _renderCVtoPDF(el, name);
-}
-
 function confirmAndDownload() {
   downloadCV();
 }
@@ -4125,33 +4116,6 @@ renderCVForm();
 updateCVPreview();
 
 
-async function _renderCVtoPDF(el, safeName) {
-  // Clone element off-screen at exactly 595px, no transforms
-  const clone = el.cloneNode(true);
-  clone.style.cssText = 'position:absolute;left:-9999px;top:0;width:595px;margin:0;padding:0;transform:none;zoom:1;box-shadow:none;border-radius:0;overflow:visible';
-  document.body.appendChild(clone);
-  await new Promise(r => setTimeout(r, 120));
-
-  try {
-    const canvas = await html2canvas(clone, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      width: 595,
-      height: clone.scrollHeight
-    });
-    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    // Page: 210mm × 297mm, image fills exactly full A4
-    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-    pdf.save((safeName || 'CV') + '.pdf');
-  } finally {
-    document.body.removeChild(clone);
-  }
-}
-
 async function downloadCV() {
   if (!window.checkPlanAccess(['kariera','promax','pro'])) return;
 
@@ -4170,7 +4134,30 @@ async function downloadCV() {
   if (!el) { if (btn) { btn.innerHTML = origText; btn.disabled = false; } return; }
 
   try {
-    await _renderCVtoPDF(el, safeName);
+    // Wait for Firebase token
+    for (let i = 0; i < 30 && !window._fbReady; i++) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+    const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
+    if (!token) throw new Error('Brak autoryzacji – zaloguj się');
+
+    // Send CV HTML to server-side Puppeteer (generates real text-based PDF)
+    const resp = await fetch('/api/pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ html: el.innerHTML, filename: safeName })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Błąd serwera: ' + resp.status);
+    }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = safeName + '.pdf';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   } catch(e) {
     alert('Błąd generowania PDF: ' + e.message);
   } finally {
