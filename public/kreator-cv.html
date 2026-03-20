@@ -1932,7 +1932,7 @@ body { overflow:hidden; }
 /* ═══════════════════════════════════════════════════
    WIZARD STEP-BY-STEP UI
    ═══════════════════════════════════════════════════ */
-.cv-form-col { display:flex !important; flex-direction:column !important; overflow:hidden !important; padding:0 !important; }
+.cv-form-col { display:flex !important; flex-direction:column !important; overflow:hidden !important; padding:0 !important; height:100% !important; flex-shrink:0 !important; }
 .cvw-header { background:#fff; padding:12px 20px 14px; border-bottom:1px solid rgba(15,14,12,0.08); flex-shrink:0; }
 .cvw-progress-wrap { height:4px; background:#e5e7eb; border-radius:99px; overflow:hidden; margin-bottom:0; }
 .cvw-progress-bar { height:100%; background:#111111; border-radius:99px; transition:width 0.45s cubic-bezier(0.4,0,0.2,1); }
@@ -1952,7 +1952,7 @@ body { overflow:hidden; }
 .cvw-step-header { margin-bottom:20px; }
 .cvw-step-num { display:none; }
 .cvw-step-title { font-size:1.3rem; font-weight:700; color:#0f172a; letter-spacing:-0.025em; font-family:'Figtree',sans-serif; }
-.cvw-nav { flex-shrink:0; background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid #e5e5e5; padding:12px 20px; padding-bottom:max(16px, env(safe-area-inset-bottom)); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.cvw-nav { flex-shrink:0; background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid #e5e5e5; padding:12px 20px; padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 8px)); display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; bottom:0; z-index:10; }
 .cvw-btn { display:inline-flex; align-items:center; gap:7px; padding:10px 22px; border-radius:50px; font-family:'Figtree',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; border:none; outline:none; }
 .cvw-btn-back { background:#f5f5f7; color:#555555; border:1.5px solid #e5e5e5; }
 .cvw-btn-back:hover { background:#ebebed; border-color:#cccccc; color:#111111; }
