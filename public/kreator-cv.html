@@ -1734,6 +1734,7 @@ body { overflow:hidden; }
 /* 3. PREVIEW COLUMN */
 .cv-preview-col { background: #e8e8ea !important; }
 .cv-preview-label { background: rgba(232,232,234,0.95) !important; color: rgba(17,17,17,0.4) !important; }
+.cv-qcolor-dot,.cv-qcolor-reset { background: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.12) !important; }
 #cvZoomLevel { color: rgba(30,41,59,0.4) !important; }
 .cv-zoom-btn { background: rgba(255,255,255,0.8) !important; border-color: rgba(0,0,0,0.12) !important; color: rgba(30,41,59,0.5) !important; }
 
@@ -2152,6 +2153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="cv-preview-col" id="cvPreviewCol">
       <div class="cv-preview-label">
         <span>Podgląd na żywo · A4</span>
+        <div id="cvQuickColors" style="display:flex;align-items:center;gap:5px;flex:1;justify-content:center;flex-wrap:wrap"></div>
         <div class="cv-zoom-bar">
           <button class="cv-zoom-btn" onclick="cvZoomStep(-1)" title="Pomniejsz">−</button>
           <span id="cvZoomLevel">100%</span>
@@ -3923,6 +3925,7 @@ function updateCVPreview() {
   }
   if (typeof triggerDraftSave === 'function') triggerDraftSave();
   if (typeof applyCvZoom === 'function') applyCvZoom();
+  renderQuickColorPicker();
 }
 
 // buildCVHTML → cv-templates.js
@@ -3971,6 +3974,26 @@ let cvCustomColor = null; // null = use template default
   } catch(e) {}
 })();
 
+function renderQuickColorPicker() {
+  const el = document.getElementById('cvQuickColors');
+  if (!el) return;
+  const currentTpl = CV_TEMPLATES.find(t => t.id === cvTemplate);
+  const defaultC1 = currentTpl ? currentTpl.color1 : '#1a3a2e';
+  el.innerHTML = COLOR_THEMES.map(theme => {
+    const isActive = cvCustomColor ? cvCustomColor.c1 === theme.c1 : theme.c1 === defaultC1;
+    return `<button title="${theme.name}" onclick="setColorTheme('${theme.c1}','${theme.c2}')"
+      style="width:20px;height:20px;border-radius:50%;background:${theme.c1};
+      border:${isActive ? '2.5px solid #fff' : '2px solid transparent'};
+      box-shadow:${isActive ? '0 0 0 2px ' + theme.c1 + ',0 1px 4px rgba(0,0,0,0.35)' : '0 1px 3px rgba(0,0,0,0.2)'};
+      cursor:pointer;flex-shrink:0;transition:all 0.15s"></button>`;
+  }).join('') +
+  `<button title="Domyślny kolor szablonu" onclick="resetColorTheme()"
+    style="width:20px;height:20px;border-radius:50%;background:transparent;
+    border:2px dashed ${cvCustomColor ? '#bbb' : '#444'};cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:11px;
+    color:${cvCustomColor ? '#bbb' : '#444'};flex-shrink:0;transition:all 0.15s;line-height:1">↺</button>`;
+}
+
 function renderColorPicker() {
   const el = document.getElementById('colorThemePicker');
   if (!el) return;
@@ -3997,6 +4020,7 @@ function setColorTheme(c1, c2) {
   updateCVPreview();
   renderColorPicker();
   renderTplGrid();
+  renderQuickColorPicker();
   document.getElementById('tplDot').style.background = c1;
 }
 
@@ -4007,6 +4031,7 @@ function resetColorTheme() {
   updateCVPreview();
   renderColorPicker();
   renderTplGrid();
+  renderQuickColorPicker();
 }
 
 function getTplPreviewHTML(t) {
