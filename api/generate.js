@@ -11,7 +11,7 @@ const auth = getAuth();
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel } = req.body;
+  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, systemPrompt } = req.body;
 
   // ── Tryb pobierania URL (fetch-url wbudowany) ──
   if (url) {
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     const r = await fetch(
       'https://api.anthropic.com/v1/messages',
       { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:3500, system:'Piszesz wyłącznie po polsku. Nigdy nie używaj innych języków ani obcojęzycznych zwrotów. Przestrzegaj polskiej interpunkcji i ortografii: stawiaj przecinki przed zdaniami podrzędnymi i imiesłowowymi, stosuj myślnik zamiast pauzy w dialogach, nie pomijaj znaków diakrytycznych (ą, ę, ś, ć, ó, ź, ż, ń, ł). Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.', messages:[{role:'user',content:prompt}] }),
+        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:3500, system: systemPrompt || 'Piszesz wyłącznie po polsku. Nigdy nie używaj innych języków ani obcojęzycznych zwrotów. Przestrzegaj polskiej interpunkcji i ortografii: stawiaj przecinki przed zdaniami podrzędnymi i imiesłowowymi, stosuj myślnik zamiast pauzy w dialogach, nie pomijaj znaków diakrytycznych (ą, ę, ś, ć, ó, ź, ż, ń, ł). Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.', messages:[{role:'user',content:prompt}] }),
         signal: AbortSignal.timeout(55000) }
     );
     const data = await r.json();
