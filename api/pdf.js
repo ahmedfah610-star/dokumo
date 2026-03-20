@@ -40,6 +40,9 @@ export default async function handler(req, res) {
 <body>${html}</body>
 </html>`;
 
+  chromium.setHeadlessMode = true;
+  chromium.setGraphicsMode = false;
+
   let browser;
   try {
     browser = await puppeteer.launch({
@@ -50,11 +53,10 @@ export default async function handler(req, res) {
     });
 
     const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 10000 });
+    await page.setContent(fullHtml, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
     const pdf = await page.pdf({
-      width: '595px',
-      height: '842px',
+      format: 'A4',
       printBackground: true,
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     });
