@@ -3934,7 +3934,7 @@ function downloadCV() {
     filename: 'CV_' + (cvData.imie||'') + '_' + (cvData.nazwisko||'') + '.pdf',
     image: { type:'jpeg', quality:0.98 },
     html2canvas: { scale:2, useCORS:true },
-    jsPDF: { unit:'px', format:[595,842], orientation:'portrait' }
+    jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
   };
   html2pdf().set(opt).from(el).save();
 }
@@ -4160,7 +4160,7 @@ async function downloadCV() {
       filename: safeName + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
-      jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     await html2pdf().set(opt).from(el).save();
   } catch(e) {
