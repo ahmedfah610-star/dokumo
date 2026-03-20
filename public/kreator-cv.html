@@ -2047,7 +2047,7 @@ async function saveCVDraft() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
         text: cvText,
-        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null }))
+        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [] }))
       })
     });
     if (resp.ok) {
@@ -2074,7 +2074,8 @@ async function loadCVDraft() {
     var urlTpl = new URLSearchParams(location.search).get('template');
     if (!urlTpl && loaded.__template) cvTemplate = loaded.__template;
     if (loaded.__color) cvCustomColor = loaded.__color;
-    delete loaded.__template; delete loaded.__color;
+    if (loaded.__customSections) cvCustomSections = loaded.__customSections;
+    delete loaded.__template; delete loaded.__color; delete loaded.__customSections;
     Object.assign(cvData, loaded);
     if (typeof renderCVForm === 'function') renderCVForm();
     if (typeof updateCVPreview === 'function') updateCVPreview();
@@ -4184,7 +4185,7 @@ async function saveCVToMyDocs(fullName) {
         docIcon: '📋',
         docCatLabel: 'Kariera',
         text: cvText,
-        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null }))
+        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [] }))
       })
     });
   } catch(e) {}
