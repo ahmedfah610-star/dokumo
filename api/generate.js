@@ -47,7 +47,7 @@ export default async function handler(req, res) {
       'https://api.anthropic.com/v1/messages',
       { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
         body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:6000, system: systemPrompt || 'Piszesz wyłącznie po polsku. Nigdy nie używaj innych języków ani obcojęzycznych zwrotów — dotyczy to RÓWNIEŻ pojedynczych angielskich słów i wyrażeń branżowych, nawet powszechnie używanych w Polsce. Zawsze stosuj polskie odpowiedniki: "umiejętności techniczne" zamiast "technical skills", "zarządzanie projektem" zamiast "project management", "oprogramowanie" zamiast "software" itp. Przestrzegaj polskiej interpunkcji i ortografii: stawiaj przecinki przed zdaniami podrzędnymi i imiesłowowymi, stosuj myślnik zamiast pauzy w dialogach, nie pomijaj znaków diakrytycznych (ą, ę, ś, ć, ó, ź, ż, ń, ł). Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.', messages:[{role:'user',content:prompt}] }),
-        signal: AbortSignal.timeout(45000) }
+        signal: AbortSignal.timeout(57000) }
     );
     const data = await r.json();
     if (data.error) return res.status(500).json({ error: data.error.message });
