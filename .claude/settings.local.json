@@ -59,7 +59,8 @@
       "WebFetch(domain:www.infakt.pl)",
       "WebFetch(domain:poradnikprzedsiebiorcy.pl)",
       "Bash(grep:*)",
-      "Bash(python fix_nav.py)"
+      "Bash(python fix_nav.py)",
+      "Bash(ls -1 /c/Users/asus/Desktop/dokumo/public/*.html)"
     ]
   },
   "hooks": {
