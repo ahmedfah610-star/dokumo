@@ -302,7 +302,7 @@ body { background:#f5f3ef; }
   <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-10">
       <p style="font-size:2rem;font-weight:900;color:#0f172a;letter-spacing:-.04em;margin-bottom:20px;">Trzy kroki do gotowego dokumentu</p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <div id="trustBadges" style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
         <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;color:#374151;">
           <span style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block;animation:pulse 2s ease-in-out infinite;flex-shrink:0;"></span>
           12 000+ wygenerowanych dokumentów
@@ -583,8 +583,16 @@ body { background:#f5f3ef; }
 @keyframes wFadeIn { from { opacity:0;transform:translateY(4px); } to { opacity:1;transform:none; } }
 .htd-grid { grid-template-columns: 1fr 1fr; }
 @media(max-width:860px){
-  .htd-grid { grid-template-columns:1fr !important; }
-  #wizardDemo { display:block !important; }
+  .htd-grid { grid-template-columns:1fr !important; gap:0 !important; }
+  #wizardDemo {
+    display:block !important;
+    order:-1;
+    transform:scale(0.62) !important;
+    transform-origin:top center !important;
+    margin-bottom:-198px !important;
+  }
+  #htdTimeline { padding-top:0 !important; padding-bottom:12px !important; }
+  .tl-text p { display:none !important; }
   .opinie-grid { grid-template-columns:1fr !important; }
   .htd-cta-desktop { display:none !important; }
   .htd-cta-mobile { display:block !important; }
@@ -593,6 +601,13 @@ body { background:#f5f3ef; }
   #wPreviewPanel { display:none !important; }
   #wFormGrid { grid-template-columns:1fr !important; }
   #wFormPanel { border-right:none !important; }
+}
+@media(max-width:390px){
+  #wizardDemo {
+    transform:scale(0.52) !important;
+    margin-bottom:-250px !important;
+  }
+  #trustBadges { display:none !important; }
 }
 </style>
 
