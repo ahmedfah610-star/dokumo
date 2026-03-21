@@ -15,6 +15,7 @@
     { "source": "/kalkulator.html", "destination": "/kalkulator-wynagrodzen.html", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/api/check-sub", "destination": "/api/sub" },
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ],

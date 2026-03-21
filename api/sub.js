@@ -11,6 +11,21 @@ const auth = getAuth();
 const VALID_PLANS = ['kariera', 'biznes', 'promax'];
 
 export default async function handler(req, res) {
+  // GET — sprawdź subskrypcję (dawniej /api/check-sub)
+  if (req.method === 'GET') {
+    const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
+    if (!token) return res.status(200).json({ active: false });
+    let uid;
+    try { ({ uid } = await auth.verifyIdToken(token)); }
+    catch { return res.status(200).json({ active: false }); }
+    const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
+    if (!snap.exists) return res.status(200).json({ active: false });
+    const data = snap.data();
+    const expiresAt = data.expiresAt?.toDate?.();
+    const active = expiresAt && expiresAt > new Date();
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false });
+  }
+
   if (req.method !== 'POST') return res.status(405).end();
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
