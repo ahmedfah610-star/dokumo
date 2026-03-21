@@ -74,20 +74,21 @@ body { background:#f9fafb; margin:0; padding:0; }
 
 /* Featured card */
 .article-featured {
-  background:linear-gradient(145deg,#0f172a 0%,#1e3a8a 50%,#1d4ed8 100%);
-  border-radius:24px;
+  background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+  border-radius:20px;
   padding:52px 56px;
   position:relative;
   overflow:hidden;
   text-decoration:none;
   display:block;
   transition:transform 0.2s, box-shadow 0.2s;
-  box-shadow:0 8px 40px rgba(37,99,235,.22);
+  box-shadow:0 4px 24px rgba(0,0,0,.12);
   margin-bottom:32px;
+  border:1px solid rgba(255,255,255,.04);
 }
 .article-featured:hover {
   transform:translateY(-2px);
-  box-shadow:0 16px 56px rgba(37,99,235,.3);
+  box-shadow:0 12px 40px rgba(0,0,0,.18);
 }
 .article-featured::before {
   content:'';
@@ -95,44 +96,35 @@ body { background:#f9fafb; margin:0; padding:0; }
   top:-80px; right:-80px;
   width:320px; height:320px;
   border-radius:50%;
-  background:rgba(255,255,255,.05);
-  pointer-events:none;
-}
-.article-featured::after {
-  content:'';
-  position:absolute;
-  bottom:-60px; left:-40px;
-  width:200px; height:200px;
-  border-radius:50%;
   background:rgba(255,255,255,.03);
   pointer-events:none;
 }
 .af-badge {
   display:inline-block;
-  background:rgba(255,255,255,.15);
-  color:#93c5fd;
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.55);
   font-size:11px;
-  font-weight:700;
-  letter-spacing:0.12em;
+  font-weight:600;
+  letter-spacing:0.1em;
   text-transform:uppercase;
   padding:4px 12px;
   border-radius:999px;
   margin-bottom:20px;
-  border:1px solid rgba(147,197,253,.2);
+  border:1px solid rgba(255,255,255,.1);
 }
 .af-title {
   font-size:1.9rem;
-  font-weight:900;
-  color:#fff;
+  font-weight:800;
+  color:#f8fafc;
   line-height:1.2;
   letter-spacing:-0.02em;
   margin:0 0 16px;
   max-width:640px;
 }
 .af-excerpt {
-  font-size:0.98rem;
-  color:rgba(255,255,255,.65);
-  line-height:1.65;
+  font-size:0.95rem;
+  color:rgba(255,255,255,.5);
+  line-height:1.7;
   max-width:580px;
   margin:0 0 28px;
 }
@@ -140,25 +132,26 @@ body { background:#f9fafb; margin:0; padding:0; }
   display:flex;
   align-items:center;
   gap:16px;
-  font-size:0.82rem;
-  color:rgba(255,255,255,.45);
+  font-size:0.8rem;
+  color:rgba(255,255,255,.3);
   font-weight:500;
 }
-.af-meta-dot { width:3px; height:3px; border-radius:50%; background:rgba(255,255,255,.3); }
+.af-meta-dot { width:3px; height:3px; border-radius:50%; background:rgba(255,255,255,.2); }
 .af-cta {
   display:inline-flex;
   align-items:center;
   gap:8px;
-  background:#fff;
-  color:#1e3a8a;
-  font-size:13.5px;
-  font-weight:700;
-  padding:11px 22px;
-  border-radius:12px;
+  background:rgba(255,255,255,.1);
+  color:rgba(255,255,255,.85);
+  font-size:13px;
+  font-weight:600;
+  padding:10px 20px;
+  border-radius:10px;
   margin-top:28px;
-  transition:box-shadow 0.2s;
+  border:1px solid rgba(255,255,255,.12);
+  transition:background 0.2s, border-color 0.2s;
 }
-.af-cta:hover { box-shadow:0 4px 20px rgba(0,0,0,.15); }
+.af-cta:hover { background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.2); }
 
 /* Grid */
 .articles-grid {
@@ -453,7 +446,7 @@ body { background:#f9fafb; margin:0; padding:0; }
     <!-- GRID -->
     <div class="articles-grid">
       <a href="zawody-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1d4ed8;">Kariera</span>
+        <span class="ap-badge" style="background:#f1f5f9;color:#475569;">Kariera</span>
         <h3 class="ac-title">Najbardziej pożądane zawody i miejsca pracy w 2026 roku</h3>
         <p class="ac-excerpt">IT, AI, zielona energia i zdrowie — sprawdź, które zawody dominują rynek pracy i gdzie w Polsce zarabia się najlepiej.</p>
         <div class="ac-meta">
@@ -463,7 +456,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="prawo-pracy-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#fff7ed;color:#c2410c;">Prawo pracy</span>
+        <span class="ap-badge" style="background:#f1f5f9;color:#475569;">Prawo pracy</span>
         <h3 class="ac-title">Prawo pracy w Polsce 2026 – wszystko, co musisz wiedzieć</h3>
         <p class="ac-excerpt">Umowy, urlopy, wypowiedzenia, ochrona przed zwolnieniem i mobbing. Kompletny przewodnik bez prawniczego żargonu.</p>
         <div class="ac-meta">
@@ -473,7 +466,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="koszty-dzialalnosci-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#fef3c7;color:#92400e;">Biznes</span>
+        <span class="ap-badge" style="background:#f1f5f9;color:#475569;">Biznes</span>
         <h3 class="ac-title">Koszty prowadzenia działalności w 2026 – ile naprawdę kosztuje własna firma?</h3>
         <p class="ac-excerpt">ZUS, podatki, księgowość, VAT i ukryte koszty. Kompletny przewodnik, zanim złożysz wniosek w CEIDG.</p>
         <div class="ac-meta">
