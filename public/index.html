@@ -916,7 +916,12 @@ body { background:#f5f3ef; }
         <div id="wm-step-sep" style="width:24px;height:2px;background:#e5e7eb;border-radius:2px;display:none;"></div>
         <div id="wm-step2-ind" style="display:none;align-items:center;gap:6px;">
           <div style="width:24px;height:24px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;">2</div>
-          <span id="wm-step2-label" style="font-size:.7rem;font-weight:600;color:#111827;">Dokument</span>
+          <span id="wm-step2-label" style="font-size:.7rem;font-weight:600;color:#111827;">Kategoria</span>
+        </div>
+        <div id="wm-step-sep2" style="width:24px;height:2px;background:#e5e7eb;border-radius:2px;display:none;"></div>
+        <div id="wm-step3-ind" style="display:none;align-items:center;gap:6px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;">3</div>
+          <span style="font-size:.7rem;font-weight:600;color:#111827;">Dokument</span>
         </div>
       </div>
       <!-- close -->
@@ -947,6 +952,52 @@ body { background:#f5f3ef; }
           </div>
           <div style="font-size:.92rem;font-weight:700;color:#111827;margin-bottom:4px;">Strefa Biznesu</div>
           <div style="font-size:.74rem;color:#9ca3af;">Umowy, regulaminy, dokumenty firmowe</div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- STEP 2b: biznes sub-categories -->
+    <div id="wm-step2b" style="display:none;padding:14px 20px 20px;">
+      <button onclick="wmGoBack()" class="wm-back-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Wróć
+      </button>
+      <h2 style="font-size:1.15rem;font-weight:800;color:#111827;margin:0 0 4px;letter-spacing:-.03em;">Strefa Biznesu</h2>
+      <p style="font-size:.8rem;color:#9ca3af;margin:0 0 16px;">Wybierz kategorię dokumentów</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <button onclick="wmSelectBiznesCat('ecommerce')" class="wm-biz-cat">
+          <div class="wm-biz-cat-icon" style="background:#eff6ff;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <div style="flex:1;text-align:left;">
+            <div class="wm-biz-cat-name">E-commerce</div>
+            <div class="wm-biz-cat-desc">Regulamin sklepu, polityka RODO, dokumenty dla sklepów online</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.3" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
+        <button onclick="wmSelectBiznesCat('hr')" class="wm-biz-cat">
+          <div class="wm-biz-cat-icon" style="background:#fef9c3;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11l-5-5-5 5"/><path d="M17 19l-5-5-5 5"/></svg>
+          </div>
+          <div style="flex:1;text-align:left;">
+            <div class="wm-biz-cat-name">HR i umowy</div>
+            <div class="wm-biz-cat-desc">Umowy B2B, NDA, o dzieło i zlecenie dla firm i freelancerów</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.3" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
+        <button onclick="wmSelectBiznesCat('admin')" class="wm-biz-cat">
+          <div class="wm-biz-cat-icon" style="background:#f0fdf4;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div style="flex:1;text-align:left;">
+            <div class="wm-biz-cat-name">Administracja i majątek</div>
+            <div class="wm-biz-cat-desc">Najem, umowa wspólników, biznesplan, protokół zdawczo-odbiorczy</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.3" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
 
       </div>
@@ -1028,6 +1079,11 @@ body { background:#f5f3ef; }
 <style>
 .wm-zone:hover { border-color:#111827 !important; transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.08); }
 @media(max-width:480px){ #wm-zones { grid-template-columns:1fr !important; } }
+.wm-biz-cat { display:flex;align-items:center;gap:12px;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:14px;background:#fff;cursor:pointer;transition:border-color .15s,background .15s,transform .15s;width:100%; }
+.wm-biz-cat:hover { border-color:#111827;background:#f9fafb;transform:translateX(3px); }
+.wm-biz-cat-icon { width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.wm-biz-cat-name { font-size:.88rem;font-weight:700;color:#111827;margin-bottom:2px; }
+.wm-biz-cat-desc { font-size:.72rem;color:#9ca3af;line-height:1.4; }
 .wm-tool-item { display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:12px;text-decoration:none;color:inherit;transition:border-color .15s,background .15s,transform .15s;width:100%;background:#fff;text-align:left;cursor:pointer; }
 .wm-tool-item:hover { border-color:#111827;background:#f9fafb;transform:translateX(3px); }
 .wm-tool-icon { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
@@ -1083,13 +1139,23 @@ var _wmTools = {
     { name:'Wypowiedzenie umowy o pracę',  desc:'Wypowiedzenie — krok po kroku',       href:'wypowiedzenia.html?doc=wypowiedzenie', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
     { name:'Wniosek o świadectwo pracy',   desc:'Dokument potwierdzający zatrudnienie', href:'wypowiedzenia.html?doc=swiadectwo', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' }
   ],
-  biznes: [
-    { name:'Regulamin sklepu internetowego', desc:'Zgodny z prawem konsumenckim',     href:'ecommerce.html?doc=regulamin',   bg:'#eff6ff', stroke:'#2563eb', icon:'shop' },
-    { name:'Polityka prywatności RODO',      desc:'Dokumentacja ochrony danych',      href:'ecommerce.html?doc=rodo',        bg:'#ecfdf5', stroke:'#059669', icon:'shield' },
-    { name:'Umowa B2B',                      desc:'Umowa współpracy z firmą',         href:'hr.html?doc=b2b',                bg:'#fef9c3', stroke:'#ca8a04', icon:'handshake' },
-    { name:'Umowa NDA (poufność)',           desc:'Ochrona informacji poufnych',      href:'hr.html?doc=nda',                bg:'#fdf4ff', stroke:'#a855f7', icon:'shield' },
-    { name:'Umowa o dzieło / zlecenie',      desc:'Dla freelancerów i kontraktorów', href:'hr.html?doc=dzielo',             bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' },
-    { name:'Umowa najmu lokalu',             desc:'Najem mieszkania lub biura',       href:'admin.html?doc=najmu',           bg:'#f0fdf4', stroke:'#16a34a', icon:'house' }
+  biznes_ecommerce: [
+    { name:'Regulamin sklepu internetowego', desc:'Zgodny z prawem konsumenckim',  href:'ecommerce.html?doc=regulamin', bg:'#eff6ff', stroke:'#2563eb', icon:'shop' },
+    { name:'Polityka prywatności RODO',      desc:'Dokumentacja ochrony danych',   href:'ecommerce.html?doc=rodo',      bg:'#ecfdf5', stroke:'#059669', icon:'shield' }
+  ],
+  biznes_hr: [
+    { name:'Umowa B2B',               desc:'Umowa współpracy między firmami',     href:'hr.html?doc=b2b',    bg:'#fef9c3', stroke:'#ca8a04', icon:'handshake' },
+    { name:'Umowa NDA (poufność)',    desc:'Ochrona informacji poufnych',         href:'hr.html?doc=nda',    bg:'#fdf4ff', stroke:'#a855f7', icon:'shield' },
+    { name:'Umowa o dzieło',          desc:'Jednorazowe zlecenie twórcze',        href:'hr.html?doc=dzielo', bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' },
+    { name:'Umowa zlecenie',          desc:'Współpraca na zasadach zlecenia',     href:'hr.html?doc=zlecenie', bg:'#fef3c7', stroke:'#d97706', icon:'doc' }
+  ],
+  biznes_admin: [
+    { name:'Umowa najmu mieszkania',       desc:'Najem na czas określony lub nieokreślony', href:'admin.html?doc=najmu',              bg:'#f0fdf4', stroke:'#16a34a', icon:'house' },
+    { name:'Protokół zdawczo-odbiorczy',   desc:'Przy przekazaniu lub zwrocie lokalu',      href:'admin.html?doc=protokol',           bg:'#eff6ff', stroke:'#2563eb', icon:'badge' },
+    { name:'Wypowiedzenie umowy najmu',    desc:'Dla najemcy i wynajmującego',              href:'admin.html?doc=wypowiedzenie_najmu', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
+    { name:'Umowa wspólników',             desc:'Regulamin współpracy w spółce',           href:'admin.html?doc=spolnikow',           bg:'#fdf4ff', stroke:'#a855f7', icon:'handshake' },
+    { name:'Biznesplan dla banku',         desc:'Profesjonalny plan finansowy firmy',      href:'admin.html?doc=biznesplan',          bg:'#f8fafc', stroke:'#475569', icon:'calc' },
+    { name:'Analiza SWOT firmy',           desc:'Strategiczna analiza mocnych stron',      href:'admin.html?doc=swot',               bg:'#fff7ed', stroke:'#ea580c', icon:'file' }
   ]
 };
 
@@ -1111,39 +1177,72 @@ function _wmIcon(type, stroke, bg) {
   return '<div class="wm-tool-icon" style="background:'+bg+'">'+( icons[type]||icons.file )+'</div>';
 }
 
-window.wmSelectZone = function(zone) {
-  var s1 = document.getElementById('wm-step1');
-  var s2 = document.getElementById('wm-step2');
-  var sep = document.getElementById('wm-step-sep');
-  var s2ind = document.getElementById('wm-step2-ind');
-  var title = document.getElementById('wm-tools-title');
-  var grid = document.getElementById('wm-tools-grid');
+var _wmNav = { zone: null, fromBiznesCat: false };
 
-  title.textContent = zone === 'kariera' ? 'Strefa Kariery — wybierz narzędzie' : 'Strefa Biznesu — wybierz narzędzie';
+function _wmHideAllSteps() {
+  ['wm-step1','wm-step2','wm-step2b','wm-step3-cv','wm-step3-letter','wm-step3-match'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('wm-step-sep').style.display  = 'none';
+  document.getElementById('wm-step-sep2').style.display = 'none';
+  document.getElementById('wm-step2-ind').style.display = 'none';
+  document.getElementById('wm-step3-ind').style.display = 'none';
+}
 
-  var tools = _wmTools[zone] || [];
-  grid.innerHTML = tools.map(function(t) {
+function _wmShowToolList(toolKey, title) {
+  var tools = _wmTools[toolKey] || [];
+  document.getElementById('wm-tools-title').textContent = title;
+  document.getElementById('wm-tools-grid').innerHTML = tools.map(function(t) {
     var inner = _wmIcon(t.icon, t.stroke, t.bg)+'<div><div class="wm-tool-name">'+t.name+'</div><div class="wm-tool-desc">'+t.desc+'</div></div>';
-    if (t.action) {
-      return '<button onclick="wmOpenSubWizard(\''+t.action+'\')" class="wm-tool-item">'+inner+'</button>';
-    }
+    if (t.action) return '<button onclick="wmOpenSubWizard(\''+t.action+'\')" class="wm-tool-item">'+inner+'</button>';
     return '<a href="'+t.href+'" class="wm-tool-item">'+inner+'</a>';
   }).join('');
+  document.getElementById('wm-step2').style.display = 'block';
+}
 
-  s1.style.display = 'none';
-  s2.style.display = 'block';
-  sep.style.display = 'block';
-  s2ind.style.display = 'flex';
-  document.getElementById('wm-step2-label').textContent = zone === 'kariera' ? 'Kariera' : 'Biznes';
+window.wmSelectZone = function(zone) {
+  _wmNav.zone = zone;
+  _wmNav.fromBiznesCat = false;
+  _wmHideAllSteps();
+
+  if (zone === 'kariera') {
+    // Kariera: od razu lista narzędzi (krok 2)
+    document.getElementById('wm-step2-label').textContent = 'Kariera';
+    document.getElementById('wm-step-sep').style.display = 'block';
+    document.getElementById('wm-step2-ind').style.display = 'flex';
+    _wmShowToolList('kariera', 'Strefa Kariery — wybierz narzędzie');
+  } else {
+    // Biznes: najpierw sub-kategorie (krok 2)
+    document.getElementById('wm-step2-label').textContent = 'Kategoria';
+    document.getElementById('wm-step-sep').style.display = 'block';
+    document.getElementById('wm-step2-ind').style.display = 'flex';
+    document.getElementById('wm-step2b').style.display = 'block';
+  }
+};
+
+window.wmSelectBiznesCat = function(cat) {
+  _wmNav.fromBiznesCat = true;
+  var catTitles = { ecommerce: 'E-commerce — wybierz dokument', hr: 'HR i umowy — wybierz dokument', admin: 'Administracja i majątek — wybierz dokument' };
+  document.getElementById('wm-step2b').style.display = 'none';
+  document.getElementById('wm-step-sep2').style.display = 'block';
+  document.getElementById('wm-step3-ind').style.display = 'flex';
+  _wmShowToolList('biznes_' + cat, catTitles[cat] || 'Wybierz dokument');
 };
 
 window.wmGoBack = function() {
-  document.getElementById('wm-step1').style.display = 'block';
-  document.getElementById('wm-step2').style.display = 'none';
-  document.getElementById('wm-step3-cv').style.display = 'none';
-  document.getElementById('wm-step3-letter').style.display = 'none';
-  document.getElementById('wm-step-sep').style.display = 'none';
-  document.getElementById('wm-step2-ind').style.display = 'none';
+  _wmHideAllSteps();
+  if (_wmNav.fromBiznesCat) {
+    // Z listy dokumentów biznes → wróć do sub-kategorii
+    _wmNav.fromBiznesCat = false;
+    document.getElementById('wm-step2b').style.display = 'block';
+    document.getElementById('wm-step-sep').style.display = 'block';
+    document.getElementById('wm-step2-ind').style.display = 'flex';
+  } else {
+    // Z step2 lub step2b → wróć do step1
+    _wmNav.zone = null;
+    document.getElementById('wm-step1').style.display = 'block';
+  }
 };
 
 window.wmGoBackToTools = function() {
@@ -1430,13 +1529,9 @@ window.wizardModalOpen = function() {
   var ov = document.getElementById('wm-overlay');
   var card = document.getElementById('wm-card');
   // reset to step 1
+  _wmNav.zone = null; _wmNav.fromBiznesCat = false;
+  _wmHideAllSteps();
   document.getElementById('wm-step1').style.display = 'block';
-  document.getElementById('wm-step2').style.display = 'none';
-  document.getElementById('wm-step3-cv').style.display = 'none';
-  document.getElementById('wm-step3-letter').style.display = 'none';
-  document.getElementById('wm-step3-match').style.display = 'none';
-  document.getElementById('wm-step-sep').style.display = 'none';
-  document.getElementById('wm-step2-ind').style.display = 'none';
   ov.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
