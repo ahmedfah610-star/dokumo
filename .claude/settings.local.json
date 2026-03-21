@@ -63,7 +63,8 @@
       "Bash(ls -1 /c/Users/asus/Desktop/dokumo/public/*.html)",
       "Bash(\"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\style.css\")",
       "Bash(sed -i 's/<span class=\"\"nav-badge free\"\" id=\"\"navBadge\"\">Free<\\\\/span>//g' admin.html ecommerce.html hr.html kalkulator-wynagrodzen.html wypowiedzenia.html)",
-      "Bash(sed -i 's/<span class=\"\"u-nav-badge free\"\" id=\"\"uNavBadge\"\">Free<\\\\/span>//g' biznes.html kariera.html subskrypcja.html)"
+      "Bash(sed -i 's/<span class=\"\"u-nav-badge free\"\" id=\"\"uNavBadge\"\">Free<\\\\/span>//g' biznes.html kariera.html subskrypcja.html)",
+      "Bash(git restore:*)"
     ]
   },
   "hooks": {
