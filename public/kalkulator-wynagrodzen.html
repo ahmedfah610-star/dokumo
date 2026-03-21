@@ -44,19 +44,10 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .nav-badge{font-size:.6rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;}
 .nav-badge.pro{background:rgba(52,199,89,.12);color:#1a8a3e;border:1px solid rgba(52,199,89,.25);}
 .nav-badge.free{background:var(--surface);color:var(--ink3);border:1px solid var(--border);}
-.nav-avatar{width:30px;height:30px;border-radius:50%;background:var(--surface);color:var(--ink);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--border);flex-shrink:0;overflow:hidden;}
-.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.nav-profile{display:none;align-items:center;gap:8px;position:relative;}
-.nav-profile.show{display:flex;}
-.nav-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.12);padding:8px;min-width:200px;z-index:300;display:none;}
-.nav-dropdown.show{display:block;}
-.nav-dd-email{font-size:.72rem;color:var(--ink3);padding:8px 10px 10px;border-bottom:1px solid var(--border);margin-bottom:4px;}
-.nav-dd-name{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:2px;}
-.nav-dd-link{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:.8rem;font-weight:500;color:var(--ink2);text-decoration:none;transition:background .15s;}
-.nav-dd-link:hover{background:var(--surface);color:var(--ink);}
-.nav-dd-sep{height:1px;background:var(--border);margin:4px 0;}
-.nav-dd-logout{width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:.8rem;font-weight:500;color:#c00;transition:background .15s;font-family:'Figtree',sans-serif;}
-.nav-dd-logout:hover{background:rgba(200,0,0,.06);}
+.nav-profile-email,.nav-profile-link,.nav-logout-btn,.nav-avatar{font-family:'Inter',sans-serif !important;}
+.nav-profile-email{font-size:12.5px !important;color:#6b7280 !important;font-weight:500 !important;letter-spacing:0 !important;}
+.nav-profile-link{font-size:13.5px !important;color:#374151 !important;font-weight:500 !important;letter-spacing:0 !important;}
+.nav-profile-dropdown{border-radius:14px !important;background:#fff !important;}
 
 /* HERO */
 .hero{max-width:680px;margin:72px auto 0;padding:0 2rem;text-align:center;}
@@ -189,25 +180,24 @@ onAuthStateChanged(getAuth(app),async u=>{
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">
-    <img src="logo2.png" style="height:26px;width:auto;display:block;">
-    Dokumo
+  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+    <span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Inter',sans-serif;">Dokumo</span>
   </a>
   <div class="nav-right">
-    <a href="konto.html" class="nav-link" id="navLogin">Zaloguj się</a>
-    <div class="nav-profile" id="navProfile">
-      
-      <div class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)">?</div>
-      <div class="nav-dropdown" id="navDrop">
-        <div class="nav-dd-email">
-          <div class="nav-dd-name" id="navName"></div>
-          <div id="navEmail" style="font-size:.72rem;color:var(--ink3);"></div>
+    <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
+      <a href="konto.html" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(37,99,235,.3);" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
+      <div class="nav-profile" id="navProfile" style="display:none">
+        <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+        <div class="nav-profile-dropdown" id="navDropdown">
+          <div class="nav-profile-email" id="navProfileEmail"></div>
+          <a href="konto.html" class="nav-profile-link">Moje konto</a>
+          <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+          <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
+          <div class="nav-profile-sep" style="height:1px;background:#f3f4f6;margin:4px 0;"></div>
+          <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
         </div>
-        <a href="konto.html" class="nav-dd-link">👤 Moje konto</a>
-        <a href="moje-dokumenty.html" class="nav-dd-link">📁 Moje dokumenty</a>
-        <a href="subskrypcja.html" class="nav-dd-link">⭐ Subskrypcja</a>
-        <div class="nav-dd-sep"></div>
-        <button class="nav-dd-logout" onclick="navLogout()">← Wyloguj się</button>
       </div>
     </div>
   </div>
@@ -353,29 +343,32 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <script>
 /* AUTH NAV */
-(function(){
-  function getUser(){try{return JSON.parse(localStorage.getItem("dokumo_user"));}catch(e){return null;}}
-  function getSub(){try{return JSON.parse(localStorage.getItem("dokumo_sub"));}catch(e){return null;}}
-  function renderNav(){
-    var u=getUser(),s=getSub();
-    var login=document.getElementById("navLogin"),profile=document.getElementById("navProfile");
-    var avatar=document.getElementById("navAvatar");
-    if(!login)return;
-    if(u){
-      login.style.display="none";profile.classList.add("show");
-      document.getElementById("navName").textContent=u.name||u.email||"";
-      document.getElementById("navEmail").textContent=u.email||"";
-      if(u.photo)avatar.innerHTML='<img src="'+u.photo+'" alt="">';
-      else avatar.textContent=(u.name||u.email||"?")[0].toUpperCase();
-      var active=s&&s.expiresAt&&new Date(s.expiresAt)>new Date();
-      var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
-    }else{login.style.display="";profile.classList.remove("show");}
+function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
+function updateNavAuth(){
+  var user=getUser();
+  var loginBtn=document.getElementById('navLoginBtn');
+  var registerBtn=document.getElementById('navRegisterBtn');
+  var profile=document.getElementById('navProfile');
+  var avatar=document.getElementById('navAvatar');
+  var emailEl=document.getElementById('navProfileEmail');
+  if(!loginBtn)return;
+  if(user){
+    loginBtn.style.display='none';
+    registerBtn.style.display='none';
+    profile.style.display='flex';
+    if(emailEl)emailEl.textContent=user.email||'';
+    if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    else avatar.textContent=(user.email||'U')[0].toUpperCase();
+  }else{
+    loginBtn.style.display='';
+    registerBtn.style.display='';
+    profile.style.display='none';
   }
-  window.toggleDrop=function(e){e.stopPropagation();document.getElementById("navDrop").classList.toggle("show");};
-  window.navLogout=function(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href="index.html";});};
-  document.addEventListener("click",function(){var d=document.getElementById("navDrop");if(d)d.classList.remove("show");});
-  renderNav();window._renderNav=renderNav;
-})();
+}
+function toggleNavDropdown(e){e.stopPropagation();var dd=document.getElementById('navDropdown');if(dd)dd.classList.toggle('open');}
+function logoutUser(){localStorage.removeItem('dokumo_user');localStorage.removeItem('dokumo_sub');(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href='index.html';});}
+document.addEventListener('click',function(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');});
+updateNavAuth();window._renderNav=updateNavAuth;
 
 /* ── KALKULATOR ── */
 var mode     = 'brutto';
