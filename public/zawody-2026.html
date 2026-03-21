@@ -112,15 +112,15 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
 .toc-list a:hover, .toc-list a.active { background:#eff6ff; color:#2563eb; }
 
 /* CTA */
-.article-cta { background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%); border-radius:20px; padding:44px 48px; text-align:center; margin-bottom:48px; box-shadow:0 8px 32px rgba(37,99,235,.2); }
-.article-cta h3 { font-size:1.6rem; font-weight:900; color:#fff; margin:0 0 12px; letter-spacing:-0.02em; }
-.article-cta p { font-size:0.95rem; color:rgba(255,255,255,.7); margin:0 0 28px; line-height:1.65; }
+.article-cta { background:#fff; border:1.5px solid #e5e7eb; border-radius:18px; padding:44px 48px; text-align:center; margin-bottom:48px; }
+.article-cta h3 { font-size:1.45rem; font-weight:800; color:#111827; margin:0 0 12px; letter-spacing:-0.02em; }
+.article-cta p { font-size:0.92rem; color:#6b7280; margin:0 0 24px; line-height:1.7; max-width:560px; margin-left:auto; margin-right:auto; }
 .cta-buttons { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-.cta-btn-white { display:inline-flex; align-items:center; gap:8px; background:#fff; color:#1e3a8a; font-size:15px; font-weight:700; padding:14px 28px; border-radius:12px; text-decoration:none; transition:box-shadow 0.15s,transform 0.15s; box-shadow:0 2px 12px rgba(0,0,0,.15); }
-.cta-btn-white:hover { box-shadow:0 4px 24px rgba(0,0,0,.2); transform:translateY(-1px); }
-.cta-btn-outline { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.12); color:#fff; font-size:14px; font-weight:600; padding:14px 24px; border-radius:12px; text-decoration:none; border:1px solid rgba(255,255,255,.25); transition:background 0.15s; }
-.cta-btn-outline:hover { background:rgba(255,255,255,.2); }
-@media (max-width:700px) { .article-cta { padding:28px 20px; } .article-cta h3 { font-size:1.3rem; } }
+.article-cta a, .cta-btn-primary, .cta-btn-white { display:inline-flex; align-items:center; gap:8px; background:#111827; color:#fff; font-size:14px; font-weight:700; padding:13px 26px; border-radius:11px; text-decoration:none; transition:background 0.15s; box-shadow:none; }
+.article-cta a:hover, .cta-btn-primary:hover, .cta-btn-white:hover { background:#1e2a3a; box-shadow:none; }
+.cta-btn-secondary, .cta-btn-outline { display:inline-flex; align-items:center; gap:8px; background:#f9fafb; color:#374151; font-size:14px; font-weight:600; padding:13px 24px; border-radius:11px; text-decoration:none; border:1.5px solid #e5e7eb; transition:background 0.15s,border-color 0.15s; }
+.cta-btn-secondary:hover, .cta-btn-outline:hover { background:#f3f4f6; border-color:#d1d5db; }
+@media (max-width:700px) { .article-cta { padding:28px 20px; } .article-cta h3 { font-size:1.2rem; } }
 
 /* Footer */
 
@@ -496,7 +496,7 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Stwórz CV teraz
           </a>
-          <a href="kariera.html?modal=letter" class="cta-btn-outline">
+          <a href="index.html" class="cta-btn-outline">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             List motywacyjny z AI
           </a>
