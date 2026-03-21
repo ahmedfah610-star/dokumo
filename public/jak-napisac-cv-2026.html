@@ -309,6 +309,23 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
 }
 .site-footer a { color:#9ca3af; text-decoration:none; }
 .site-footer a:hover { color:#374151; }
+
+/* Hamburger + mobile menu */
+.nav-hamburger { display:none; align-items:center; justify-content:center; width:36px; height:36px; border:none; background:none; cursor:pointer; border-radius:8px; padding:0; flex-shrink:0; }
+.nav-hamburger:hover { background:#f3f4f6; }
+@media (max-width:768px) { .nav-hamburger { display:flex; } }
+.mobile-menu { display:none; position:fixed; top:61px; left:0; right:0; z-index:49; }
+.mobile-menu.open { display:block; }
+.mobile-menu-overlay { position:fixed; inset:0; top:61px; background:rgba(0,0,0,.25); }
+.mobile-menu-panel { position:relative; background:#fff; padding:12px 12px 20px; box-shadow:0 8px 32px rgba(0,0,0,.15); border-bottom:1px solid #f3f4f6; }
+.mobile-menu-section { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#9ca3af; padding:6px 8px 6px; }
+.mobile-menu-link { display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:10px; text-decoration:none; }
+.mobile-menu-link:hover { background:#f9fafb; }
+.mobile-menu-link-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.mobile-menu-link-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Inter',sans-serif; }
+.mobile-menu-link-desc { font-size:11px; color:#6b7280; font-family:'Inter',sans-serif; }
+.mobile-menu-articles-btn { display:flex; align-items:center; gap:10px; padding:12px 10px; margin-top:8px; background:#eff6ff; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; color:#2563eb; font-family:'Inter',sans-serif; }
+.mobile-menu-articles-btn:hover { background:#dbeafe; }
 </style>
 
 <script type="module">
@@ -392,9 +409,46 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
           <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
         </div>
       </div>
+      <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu-panel">
+    <div class="mobile-menu-section">Narzędzia</div>
+    <a href="wybierz-szablon.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+      <span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz profesjonalne CV z AI</div></span>
+    </a>
+    <a href="kariera.html?modal=letter" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+      <span><div class="mobile-menu-link-name">List motywacyjny</div><div class="mobile-menu-link-desc">Napisz przekonujący list z AI</div></span>
+    </a>
+    <a href="kalkulator-wynagrodzen.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
+      <span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div><div class="mobile-menu-link-desc">Brutto / netto / UoP / B2B</div></span>
+    </a>
+    <a href="wypowiedzenia.html?doc=wypowiedzenie" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></span>
+      <span><div class="mobile-menu-link-name">Generator wypowiedzenia</div><div class="mobile-menu-link-desc">Wypowiedzenie umowy w 60 sek</div></span>
+    </a>
+    <a href="wypowiedzenia.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <span><div class="mobile-menu-link-name">Wnioski pracownicze</div><div class="mobile-menu-link-desc">Urlop, L4, wnioski do pracodawcy</div></span>
+    </a>
+    <div style="height:1px;background:#f3f4f6;margin:8px 4px;"></div>
+    <a href="artykuly.html" class="mobile-menu-articles-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Artykuły i poradniki
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:auto;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
 
 <main>
 
@@ -798,6 +852,16 @@ document.addEventListener('click', () => {
   const chevron = document.getElementById('toolsChevron');
   if (chevron) chevron.style.transform = '';
 });
+
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  if (!menu) return;
+  const open = menu.classList.toggle('open');
+  const ham = document.getElementById('navHamburger');
+  if (ham) ham.innerHTML = open
+    ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+}
 
 function logoutUser() {
   clearUser();
