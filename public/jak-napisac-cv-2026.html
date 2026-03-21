@@ -396,43 +396,26 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
                 <span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span>
               </a>
               <div style="height:1px;background:#f3f4f6;margin:4px 4px;"></div>
-              <div class="nav-tool-item nav-cat-item" id="cat-pracownicze" onclick="openNavSubcat('pracownicze')">
+              <a href="wypowiedzenia.html" class="nav-tool-item" style="text-decoration:none;">
                 <span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
                 <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty pracownicze</span><span class="nav-tool-desc">Urlop, wypowiedzenie, świadectwo</span></span>
-                <svg class="cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="nav-tool-item nav-cat-item" id="cat-ecommerce" onclick="openNavSubcat('ecommerce')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="ecommerce.html" class="nav-tool-item" style="text-decoration:none;">
                 <span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
                 <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty ecommerce</span><span class="nav-tool-desc">Regulamin, RODO, zwroty</span></span>
-                <svg class="cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-              <div class="nav-tool-item nav-cat-item" id="cat-hr" onclick="openNavSubcat('hr')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="hr.html" class="nav-tool-item" style="text-decoration:none;">
                 <span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
                 <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty HR i Biznes</span><span class="nav-tool-desc">B2B, NDA, zlecenie, umowa o pracę</span></span>
-                <svg class="cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </div>
-            <div id="navSubPanel" style="display:none;border-left:1px solid #f3f4f6;padding:8px;min-width:200px;">
-              <div id="subcat-pracownicze" class="nav-subcat" style="display:none;">
-                <div class="nav-subcat-title">Pracownicze</div>
-                <a href="wypowiedzenia.html?doc=urlop" class="nav-subitem">Wniosek o urlop</a>
-                <a href="wypowiedzenia.html?doc=wypowiedzenie" class="nav-subitem">Wypowiedzenie umowy</a>
-                <a href="wypowiedzenia.html?doc=swiadectwo" class="nav-subitem">Świadectwo pracy</a>
-              </div>
-              <div id="subcat-ecommerce" class="nav-subcat" style="display:none;">
-                <div class="nav-subcat-title">E-commerce</div>
-                <a href="ecommerce.html?doc=regulamin" class="nav-subitem">Regulamin sklepu</a>
-                <a href="ecommerce.html?doc=rodo" class="nav-subitem">Polityka RODO</a>
-                <a href="ecommerce.html?doc=zwroty" class="nav-subitem">Polityka zwrotów</a>
-              </div>
-              <div id="subcat-hr" class="nav-subcat" style="display:none;">
-                <div class="nav-subcat-title">HR i Biznes</div>
-                <a href="hr.html?doc=b2b" class="nav-subitem">Umowa B2B</a>
-                <a href="hr.html?doc=nda" class="nav-subitem">NDA — Poufność</a>
-                <a href="hr.html?doc=dzielo" class="nav-subitem">Umowa o dzieło</a>
-                <a href="hr.html?doc=zlecenie" class="nav-subitem">Umowa zlecenie</a>
-                <a href="hr.html?doc=uop" class="nav-subitem">Umowa o pracę</a>
-              </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="admin.html" class="nav-tool-item" style="text-decoration:none;">
+                <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty administracyjne</span><span class="nav-tool-desc">Najem, biznesplan, SWOT</span></span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
             </div>
           </div>
         </div>
@@ -480,44 +463,22 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
       <span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div><div class="mobile-menu-link-desc">Brutto / netto / UoP / B2B</div></span>
     </a>
     <div style="height:1px;background:#f3f4f6;margin:4px 4px;"></div>
-    <div class="mob-cat-btn" id="mob-cat-pracownicze" onclick="toggleMobileSubcat('pracownicze')">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-        <div class="mobile-menu-link-name">Dokumenty pracownicze</div>
-      </div>
-      <svg class="mob-cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-    <div id="mob-subcat-pracownicze" class="mob-subcat" style="display:none;">
-      <a href="wypowiedzenia.html?doc=urlop" class="mob-subitem">Wniosek o urlop</a>
-      <a href="wypowiedzenia.html?doc=wypowiedzenie" class="mob-subitem">Wypowiedzenie umowy</a>
-      <a href="wypowiedzenia.html?doc=swiadectwo" class="mob-subitem">Świadectwo pracy</a>
-    </div>
-    <div class="mob-cat-btn" id="mob-cat-ecommerce" onclick="toggleMobileSubcat('ecommerce')">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="mobile-menu-link-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
-        <div class="mobile-menu-link-name">Dokumenty ecommerce</div>
-      </div>
-      <svg class="mob-cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-    <div id="mob-subcat-ecommerce" class="mob-subcat" style="display:none;">
-      <a href="ecommerce.html?doc=regulamin" class="mob-subitem">Regulamin sklepu</a>
-      <a href="ecommerce.html?doc=rodo" class="mob-subitem">Polityka RODO</a>
-      <a href="ecommerce.html?doc=zwroty" class="mob-subitem">Polityka zwrotów</a>
-    </div>
-    <div class="mob-cat-btn" id="mob-cat-hr" onclick="toggleMobileSubcat('hr')">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
-        <div class="mobile-menu-link-name">Dokumenty HR i Biznes</div>
-      </div>
-      <svg class="mob-cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-    <div id="mob-subcat-hr" class="mob-subcat" style="display:none;">
-      <a href="hr.html?doc=b2b" class="mob-subitem">Umowa B2B</a>
-      <a href="hr.html?doc=nda" class="mob-subitem">NDA — Poufność</a>
-      <a href="hr.html?doc=dzielo" class="mob-subitem">Umowa o dzieło</a>
-      <a href="hr.html?doc=zlecenie" class="mob-subitem">Umowa zlecenie</a>
-      <a href="hr.html?doc=uop" class="mob-subitem">Umowa o pracę</a>
-    </div>
+    <a href="wypowiedzenia.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty pracownicze</div><div class="mobile-menu-link-desc">Urlop, wypowiedzenie, świadectwo</div></span>
+    </a>
+    <a href="ecommerce.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty ecommerce</div><div class="mobile-menu-link-desc">Regulamin, RODO, zwroty</div></span>
+    </a>
+    <a href="hr.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty HR i Biznes</div><div class="mobile-menu-link-desc">B2B, NDA, zlecenie, umowa o pracę</div></span>
+    </a>
+    <a href="admin.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty administracyjne</div><div class="mobile-menu-link-desc">Najem, biznesplan, SWOT</div></span>
+    </a>
     <div style="height:1px;background:#f3f4f6;margin:8px 4px;"></div>
     <a href="artykuly.html" class="mobile-menu-articles-btn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
