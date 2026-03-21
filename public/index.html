@@ -891,7 +891,7 @@ body { background:#f5f3ef; }
 
 <!-- WIZARD MODAL -->
 <div id="wm-overlay" onclick="wizardModalClose(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
-  <div id="wm-card" onclick="event.stopPropagation()" style="background:#fff;border-radius:22px;box-shadow:0 32px 80px rgba(0,0,0,.22);width:100%;max-width:540px;display:flex;flex-direction:column;transform:translateY(24px) scale(.97);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;overflow:hidden;">
+  <div id="wm-card" onclick="event.stopPropagation()" style="background:#fff;border-radius:22px;box-shadow:0 32px 80px rgba(0,0,0,.22);width:100%;max-width:540px;display:flex;flex-direction:column;transform:translateY(24px) scale(.97);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;overflow-y:auto;max-height:90vh;">
 
     <!-- header -->
     <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
@@ -942,7 +942,6 @@ body { background:#f5f3ef; }
 
     <!-- STEP 2: lista narzędzi -->
     <div id="wm-step2" style="display:none;padding:20px 20px 24px;">
-      <!-- back button -->
       <button onclick="wmGoBack()" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:#6b7280;font-size:.78rem;font-weight:600;padding:0;margin-bottom:14px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         Wróć
@@ -951,28 +950,114 @@ body { background:#f5f3ef; }
       <div id="wm-tools-grid" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
 
+    <!-- STEP 3a: Kreator CV -->
+    <div id="wm-step3-cv" style="display:none;padding:20px 20px 24px;">
+      <button onclick="wmGoBackToTools()" class="wm-back-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Wróć
+      </button>
+      <div style="font-size:1.05rem;font-weight:800;color:#111827;margin:0 0 4px;letter-spacing:-.03em;">Kreator CV</div>
+      <div style="font-size:.78rem;color:#9ca3af;margin-bottom:16px;">Jak chcesz zacząć?</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+
+        <button onclick="window.location.href='wybierz-szablon.html'" class="wm-path recommended">
+          <div class="wm-path-left">
+            <div class="wm-path-icon wm-icon-blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+            </div>
+            <div>
+              <div class="wm-path-title">Zbuduj CV od zera z pomocą AI <span class="wm-badge">Polecane</span></div>
+              <div class="wm-path-desc">Kreator krok po kroku — AI podpowie treść i układ</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <button onclick="document.getElementById('wmCvFileInput').click()" class="wm-path">
+          <div class="wm-path-left">
+            <div class="wm-path-icon wm-icon-slate">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div>
+              <div class="wm-path-title">Wgraj istniejące CV (PDF)</div>
+              <div class="wm-path-desc">Importuj dane ze swojego pliku i edytuj w kreatorze</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+      </div>
+      <input type="file" id="wmCvFileInput" accept=".pdf" style="display:none" onchange="wmHandleCvUpload(this)">
+    </div>
+
+    <!-- STEP 3b: List motywacyjny wizard -->
+    <div id="wm-step3-letter" style="display:none;padding:20px 20px 24px;">
+      <button onclick="wmGoBackToTools()" class="wm-back-btn" id="wm-letter-back-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Wróć
+      </button>
+      <div id="wm-letter-wizard"></div>
+    </div>
+
   </div>
 </div>
 
 <style>
 .wm-zone:hover { border-color:#111827 !important; transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.08); }
 @media(max-width:480px){ #wm-zones { grid-template-columns:1fr !important; } }
-.wm-tool-item { display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:12px;text-decoration:none;color:inherit;transition:border-color .15s,background .15s,transform .15s; }
+.wm-tool-item { display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:12px;text-decoration:none;color:inherit;transition:border-color .15s,background .15s,transform .15s;width:100%;background:#fff;text-align:left;cursor:pointer; }
 .wm-tool-item:hover { border-color:#111827;background:#f9fafb;transform:translateX(3px); }
 .wm-tool-icon { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
 .wm-tool-name { font-size:.85rem;font-weight:700;color:#111827; }
 .wm-tool-desc { font-size:.72rem;color:#9ca3af;margin-top:1px; }
+
+/* Back button */
+.wm-back-btn { display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:600;color:#6b7280;background:none;border:none;cursor:pointer;padding:0;margin-bottom:12px;transition:color .15s; }
+.wm-back-btn:hover { color:#111827; }
+
+/* CV wizard paths */
+.wm-path { display:flex;align-items:center;justify-content:space-between;padding:14px 15px;width:100%;text-align:left;background:#fafafa;border:1.5px solid rgba(0,0,0,.08);border-radius:13px;cursor:pointer;transition:border-color .2s,background .2s,transform .15s; }
+.wm-path:hover { border-color:rgba(0,0,0,.18);background:#f3f3f3;transform:translateY(-1px); }
+.wm-path.recommended { border-color:#111827;background:#f6f8fc; }
+.wm-path.recommended:hover { background:#edf1f9; }
+.wm-path-left { display:flex;align-items:flex-start;gap:11px;flex:1;min-width:0; }
+.wm-path-icon { width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.wm-path-title { font-size:.84rem;font-weight:700;color:#111827;display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+.wm-path-desc { font-size:.72rem;color:#9ca3af;margin-top:2px; }
+.wm-badge { font-size:.58rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;background:#111827;color:#fff;padding:2px 7px;border-radius:999px; }
+.wm-icon-blue  { background:#eff6ff;color:#2563eb; }
+.wm-icon-slate { background:#f1f5f9;color:#475569; }
+
+/* Letter wizard */
+@keyframes wmIn   { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+@keyframes wmSpin { to{transform:rotate(360deg)} }
+.wm-wiz-progress { display:flex;gap:4px;margin-bottom:16px; }
+.wm-wdot { height:3px;border-radius:99px;flex:1;background:rgba(0,0,0,.1);transition:background .3s; }
+.wm-wdot.done   { background:#111827; }
+.wm-wdot.active { background:#111827;opacity:.4; }
+.wm-wiz-q    { font-size:1rem;font-weight:800;color:#111827;line-height:1.35;letter-spacing:-.01em; }
+.wm-wiz-hint { font-size:.73rem;color:#9ca3af;margin-top:4px;margin-bottom:13px; }
+.wm-wiz-input { width:100%;padding:12px 13px;border:1.5px solid rgba(0,0,0,.11);border-radius:11px;font-family:inherit;font-size:.88rem;color:#111827;background:#fafafa;outline:none;resize:none;transition:border-color .2s,background .2s; }
+.wm-wiz-input:focus { border-color:#111827;background:#fff; }
+.wm-wiz-next { width:100%;padding:12px;margin-top:8px;background:#111827;color:#fff;border:none;border-radius:11px;font-family:inherit;font-size:.87rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .2s,transform .1s; }
+.wm-wiz-next:hover { background:#1e2a3a; }
+.wm-wiz-next:active { transform:scale(.98); }
+.wm-wiz-next:disabled { opacity:.35;cursor:not-allowed;transform:none; }
+.wm-generating { display:flex;flex-direction:column;align-items:center;padding:24px 0 12px;gap:13px;text-align:center; }
+.wm-gen-spinner { width:42px;height:42px;border-radius:50%;border:3px solid rgba(0,0,0,.08);border-top-color:#111827;animation:wmSpin .75s linear infinite; }
+.wm-gen-title { font-size:.95rem;font-weight:800;color:#111827; }
+.wm-gen-sub { font-size:.74rem;color:#9ca3af; }
 </style>
 
 <script>
 var _wmTools = {
   kariera: [
-    { name:'Oblicz wynagrodzenie',         desc:'Kalkulator netto / brutto',           href:'kalkulator-wynagrodzen.html',     bg:'#eff6ff', stroke:'#2563eb', icon:'calc' },
-    { name:'Wniosek o urlop',              desc:'Gotowy wniosek zgodny z KP',          href:'wypowiedzenia.html?doc=urlop',    bg:'#ecfdf5', stroke:'#059669', icon:'sun' },
+    { name:'Oblicz wynagrodzenie',         desc:'Kalkulator netto / brutto',           href:'kalkulator-wynagrodzen.html',        bg:'#eff6ff', stroke:'#2563eb', icon:'calc' },
+    { name:'Wniosek o urlop',              desc:'Gotowy wniosek zgodny z KP',          href:'wypowiedzenia.html?doc=urlop',       bg:'#ecfdf5', stroke:'#059669', icon:'sun' },
     { name:'Wypowiedzenie umowy o pracę',  desc:'Wypowiedzenie — krok po kroku',       href:'wypowiedzenia.html?doc=wypowiedzenie', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
     { name:'Wniosek o świadectwo pracy',   desc:'Dokument potwierdzający zatrudnienie', href:'wypowiedzenia.html?doc=swiadectwo', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' },
-    { name:'Kreator CV',                   desc:'10 profesjonalnych szablonów',        href:'wybierz-szablon.html',            bg:'#111827', stroke:'#fff',     icon:'cv' },
-    { name:'Kreator listu motywacyjnego',  desc:'List dopasowany do oferty pracy',     href:'kariera.html?modal=letter',       bg:'#fff1f2', stroke:'#f43f5e', icon:'letter' }
+    { name:'Kreator CV',                   desc:'10 profesjonalnych szablonów',        action:'cv-wizard',                       bg:'#111827', stroke:'#fff',     icon:'cv' },
+    { name:'Kreator listu motywacyjnego',  desc:'List dopasowany do oferty pracy',     action:'letter-wizard',                   bg:'#fff1f2', stroke:'#f43f5e', icon:'letter' }
   ],
   biznes: [
     { name:'Regulamin sklepu internetowego', desc:'Zgodny z prawem konsumenckim',     href:'ecommerce.html?doc=regulamin',   bg:'#eff6ff', stroke:'#2563eb', icon:'shop' },
@@ -1013,7 +1098,11 @@ window.wmSelectZone = function(zone) {
 
   var tools = _wmTools[zone] || [];
   grid.innerHTML = tools.map(function(t) {
-    return '<a href="'+t.href+'" class="wm-tool-item">'+_wmIcon(t.icon, t.stroke, t.bg)+'<div><div class="wm-tool-name">'+t.name+'</div><div class="wm-tool-desc">'+t.desc+'</div></div></a>';
+    var inner = _wmIcon(t.icon, t.stroke, t.bg)+'<div><div class="wm-tool-name">'+t.name+'</div><div class="wm-tool-desc">'+t.desc+'</div></div>';
+    if (t.action) {
+      return '<button onclick="wmOpenSubWizard(\''+t.action+'\')" class="wm-tool-item">'+inner+'</button>';
+    }
+    return '<a href="'+t.href+'" class="wm-tool-item">'+inner+'</a>';
   }).join('');
 
   s1.style.display = 'none';
@@ -1026,8 +1115,116 @@ window.wmSelectZone = function(zone) {
 window.wmGoBack = function() {
   document.getElementById('wm-step1').style.display = 'block';
   document.getElementById('wm-step2').style.display = 'none';
+  document.getElementById('wm-step3-cv').style.display = 'none';
+  document.getElementById('wm-step3-letter').style.display = 'none';
   document.getElementById('wm-step-sep').style.display = 'none';
   document.getElementById('wm-step2-ind').style.display = 'none';
+};
+
+window.wmGoBackToTools = function() {
+  document.getElementById('wm-step2').style.display = 'block';
+  document.getElementById('wm-step3-cv').style.display = 'none';
+  document.getElementById('wm-step3-letter').style.display = 'none';
+};
+
+window.wmOpenSubWizard = function(action) {
+  document.getElementById('wm-step2').style.display = 'none';
+  if (action === 'cv-wizard') {
+    document.getElementById('wm-step3-cv').style.display = 'block';
+  } else if (action === 'letter-wizard') {
+    document.getElementById('wm-step3-letter').style.display = 'block';
+    _wmLetter.q = 0; _wmLetter.answers = {};
+    document.getElementById('wm-letter-back-btn').style.display = 'inline-flex';
+    _wmRenderLetter();
+  }
+};
+
+// ── CV upload ──
+window.wmHandleCvUpload = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (file.type !== 'application/pdf') { alert('Proszę wybrać plik PDF.'); return; }
+  if (file.size > 10 * 1024 * 1024) { alert('Plik jest za duży (maks. 10 MB).'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      sessionStorage.setItem('dokumo_import_cv_pdf', e.target.result);
+      window.location.href = 'kreator-cv.html?mode=import';
+    } catch(err) { alert('Plik jest za duży do przekazania. Spróbuj mniejszego pliku.'); }
+  };
+  reader.readAsDataURL(file);
+};
+
+// ── Letter wizard ──
+var _wmLetter = { q: 0, answers: {} };
+var _wmLetterQuestions = [
+  { q:'Na jakie stanowisko aplikujesz?',       hint:'Np. „Specjalista ds. marketingu", „Frontend Developer"', key:'position', type:'input',    placeholder:'Wpisz nazwę stanowiska…' },
+  { q:'Jak nazywa się firma?',                  hint:'Podaj pełną nazwę firmy, do której aplikujesz',          key:'company',  type:'input',    placeholder:'Np. Allegro, mBank, startup XYZ…' },
+  { q:'Opisz 2–3 kluczowe osiągnięcia zawodowe', hint:'Konkretne liczby i efekty przekonują rekruterów bardziej niż ogólne stwierdzenia', key:'achievements', type:'textarea', rows:3, placeholder:'Np. „Zwiększyłem sprzedaż o 30% w 6 miesięcy"…' },
+  { q:'Dlaczego chcesz pracować właśnie tutaj?', hint:'Pokaż, że znasz firmę — to wyróżni Cię spośród innych kandydatów', key:'motivation', type:'textarea', rows:3, placeholder:'Co Cię przyciąga do tej firmy lub tego stanowiska?…' }
+];
+
+function _wmRenderLetter() {
+  var container = document.getElementById('wm-letter-wizard');
+  var qs = _wmLetterQuestions;
+  var qi = _wmLetter.q;
+
+  if (qi >= qs.length) {
+    document.getElementById('wm-letter-back-btn').style.display = 'none';
+    container.innerHTML =
+      '<div class="wm-generating">' +
+        '<div class="wm-gen-spinner"></div>' +
+        '<div class="wm-gen-title">AI tworzy Twój list motywacyjny…</div>' +
+        '<div class="wm-gen-sub">Przygotowujemy spersonalizowaną treść.</div>' +
+      '</div>';
+    setTimeout(function() {
+      window.location.href = 'generator.html?type=cover-letter&' + new URLSearchParams(_wmLetter.answers).toString();
+    }, 2000);
+    return;
+  }
+
+  var q = qs[qi];
+  var prog = '<div class="wm-wiz-progress">' +
+    qs.map(function(_,i){ return '<div class="wm-wdot'+(i<qi?' done':i===qi?' active':'')+'" ></div>'; }).join('') +
+    '</div>';
+
+  var inputHtml = q.type === 'textarea'
+    ? '<textarea class="wm-wiz-input" id="wmLetterInput" rows="'+(q.rows||3)+'" placeholder="'+q.placeholder+'"></textarea>'
+    : '<input type="text" class="wm-wiz-input" id="wmLetterInput" placeholder="'+q.placeholder+'">';
+
+  var isLast = qi === qs.length - 1;
+  var btnLabel = isLast
+    ? 'Generuj list motywacyjny <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+    : 'Dalej <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+  container.innerHTML = prog +
+    '<div class="wm-wiz-q">'+q.q+'</div>' +
+    '<div class="wm-wiz-hint">'+q.hint+'</div>' +
+    inputHtml +
+    '<button class="wm-wiz-next" id="wmLetterNext" disabled onclick="wmLetterAdvance()">'+btnLabel+'</button>';
+
+  container.style.animation = 'none'; container.offsetHeight;
+  container.style.animation = 'wmIn .25s ease both';
+
+  setTimeout(function() {
+    var inp = document.getElementById('wmLetterInput');
+    if (!inp) return;
+    inp.focus();
+    inp.addEventListener('input', function() {
+      document.getElementById('wmLetterNext').disabled = inp.value.trim().length < 2;
+    });
+    if (q.type !== 'textarea') {
+      inp.addEventListener('keydown', function(e) { if(e.key==='Enter') wmLetterAdvance(); });
+    }
+  }, 40);
+}
+
+window.wmLetterAdvance = function() {
+  var inp = document.getElementById('wmLetterInput');
+  if (!inp || inp.value.trim().length < 2) return;
+  _wmLetter.answers[_wmLetterQuestions[_wmLetter.q].key] = inp.value.trim();
+  _wmLetter.q++;
+  _wmRenderLetter();
 };
 
 window.wizardModalOpen = function() {
@@ -1036,6 +1233,8 @@ window.wizardModalOpen = function() {
   // reset to step 1
   document.getElementById('wm-step1').style.display = 'block';
   document.getElementById('wm-step2').style.display = 'none';
+  document.getElementById('wm-step3-cv').style.display = 'none';
+  document.getElementById('wm-step3-letter').style.display = 'none';
   document.getElementById('wm-step-sep').style.display = 'none';
   document.getElementById('wm-step2-ind').style.display = 'none';
   ov.style.display = 'flex';
