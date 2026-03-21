@@ -51,6 +51,15 @@ body { background:#f5f3ef; }
 
 /* Nav center links */
 .nav-center-btn:hover { background:#f3f4f6 !important; }
+
+/* Profile dropdown — force Inter font (override style.css Syne/DM Mono) */
+.nav-profile-email,
+.nav-profile-link,
+.nav-logout-btn,
+.nav-avatar { font-family:'Inter',sans-serif !important; }
+.nav-profile-email { font-size:12.5px !important; color:#6b7280 !important; font-weight:500 !important; letter-spacing:0 !important; }
+.nav-profile-link { font-size:13.5px !important; color:#374151 !important; font-weight:500 !important; letter-spacing:0 !important; }
+.nav-profile-dropdown { border-radius:14px !important; background:#fff !important; }
 .nav-tool-item {
   display:flex; align-items:center; gap:12px; padding:10px 12px;
   text-decoration:none; border-radius:10px; transition:background 0.15s;
@@ -134,7 +143,7 @@ body { background:#f5f3ef; }
     </a>
 
     <!-- CENTER NAV -->
-    <nav class="nav-center-links" style="display:flex;align-items:center;gap:4px;">
+    <div class="nav-center-links" style="display:flex;align-items:center;gap:4px;">
       <!-- Narzędzia dropdown -->
       <div class="nav-tools-wrap" style="position:relative;">
         <button class="nav-center-btn" onclick="toggleToolsDropdown(event)" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;">
@@ -199,7 +208,7 @@ body { background:#f5f3ef; }
         </div>
       </div>
       <a href="artykuly.html" class="nav-center-btn" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;">Artykuły</a>
-    </nav>
+    </div>
 
     <!-- RIGHT AUTH -->
     <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
