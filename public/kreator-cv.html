@@ -1983,8 +1983,6 @@ function updateChip(){
   if(!chip)return;
   const active=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
   const names={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
-  chip.textContent=active?(names[sub.plan]||'PRO'):'Free';
-  chip.className='cv-nav-badge '+(active?'pro':'free');
 }
 updateChip(); // od razu z localStorage
 
@@ -2229,7 +2227,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
         ↺ <span class="cv-btn-label">Zacznij od nowa</span>
       </button>
-      <span class="cv-nav-badge free" id="uPlanChip"></span>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
       <div class="cv-nav-profile" id="cvNavProfile" style="display:none">
         <div class="cv-nav-avatar" id="cvNavAvatar" onclick="toggleCVNavDropdown(event)">?</div>

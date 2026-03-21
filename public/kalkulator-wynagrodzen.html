@@ -360,7 +360,7 @@ onAuthStateChanged(getAuth(app),async u=>{
   function renderNav(){
     var u=getUser(),s=getSub();
     var login=document.getElementById("navLogin"),profile=document.getElementById("navProfile");
-    var badge=document.getElementById("navBadge"),avatar=document.getElementById("navAvatar");
+    var avatar=document.getElementById("navAvatar");
     if(!login)return;
     if(u){
       login.style.display="none";profile.classList.add("show");
@@ -370,8 +370,6 @@ onAuthStateChanged(getAuth(app),async u=>{
       else avatar.textContent=(u.name||u.email||"?")[0].toUpperCase();
       var active=s&&s.expiresAt&&new Date(s.expiresAt)>new Date();
       var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
-      badge.textContent=active?(names[s.plan]||"PRO"):"Free";
-      badge.className="nav-badge "+(active?"pro":"free");
     }else{login.style.display="";profile.classList.remove("show");}
   }
   window.toggleDrop=function(e){e.stopPropagation();document.getElementById("navDrop").classList.toggle("show");};

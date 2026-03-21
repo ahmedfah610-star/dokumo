@@ -763,7 +763,6 @@ body {
     const login=document.getElementById('uNavLogin');
     const register=document.getElementById('uNavRegister');
     const profile=document.getElementById('uNavProfile');
-    const badge=document.getElementById('uNavBadge');
     const avatar=document.getElementById('uNavAvatar');
     const nameEl=document.getElementById('uNavName');
     const emailEl=document.getElementById('uNavEmail');
@@ -778,8 +777,6 @@ body {
       else{avatar.textContent=(user.name||user.email||'?')[0].toUpperCase();}
       const isActive=sub&&sub.expiresAt&&new Date(sub.expiresAt)>new Date();
       const planNames={kariera:'Kariera',biznes:'Biznes',promax:'Pro Max',pro:'PRO'};
-      badge.textContent=isActive?(planNames[sub.plan]||'PRO'):'Free';
-      badge.className='u-nav-badge '+(isActive?'pro':'free');
     } else {
       login.style.display='';
       if(register) register.style.display='';
