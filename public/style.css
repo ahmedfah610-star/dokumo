@@ -743,3 +743,5 @@ textarea.cvf-input { resize:vertical; min-height:54px; line-height:1.5; }
 .nav-profile-link:hover { background:var(--bg); color:var(--accent2); }
 .nav-logout-btn { color:#e05c5c !important; font-weight:500 !important; font-family:'Inter',sans-serif !important; }
 .nav-logout-btn:hover { background:#fff5f5 !important; }
+
+#navBadge, #uNavBadge { display:none !important; }
