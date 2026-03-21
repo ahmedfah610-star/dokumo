@@ -58,7 +58,8 @@
       "WebFetch(domain:www.podatnik.info)",
       "WebFetch(domain:www.infakt.pl)",
       "WebFetch(domain:poradnikprzedsiebiorcy.pl)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(python fix_nav.py)"
     ]
   },
   "hooks": {
