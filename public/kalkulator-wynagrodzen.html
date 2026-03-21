@@ -44,10 +44,15 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .nav-badge{font-size:.6rem;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:999px;text-transform:uppercase;}
 .nav-badge.pro{background:rgba(52,199,89,.12);color:#1a8a3e;border:1px solid rgba(52,199,89,.25);}
 .nav-badge.free{background:var(--surface);color:var(--ink3);border:1px solid var(--border);}
-.nav-profile-email,.nav-profile-link,.nav-logout-btn,.nav-avatar{font-family:'Inter',sans-serif !important;}
-.nav-profile-email{font-size:12.5px !important;color:#6b7280 !important;font-weight:500 !important;letter-spacing:0 !important;}
-.nav-profile-link{font-size:13.5px !important;color:#374151 !important;font-weight:500 !important;letter-spacing:0 !important;}
-.nav-profile-dropdown{border-radius:14px !important;background:#fff !important;}
+.nav-profile{position:relative;display:flex;align-items:center;}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;overflow:hidden;flex-shrink:0;}
+.nav-profile-dropdown{display:none;position:absolute;top:calc(100% + 12px);right:0;background:#fff;border:1px solid #e5e7eb;min-width:220px;z-index:999;padding:8px 0;box-shadow:0 12px 40px rgba(0,0,0,0.13);border-radius:14px;}
+.nav-profile-dropdown.open{display:block !important;}
+.nav-profile-email{display:block;padding:10px 16px;font-family:'Inter',sans-serif;font-size:12.5px;color:#6b7280;font-weight:500;letter-spacing:0;}
+.nav-profile-link{display:block;padding:9px 16px;font-family:'Inter',sans-serif;font-size:13.5px;color:#374151;text-decoration:none;font-weight:500;background:none;border:none;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;}
+.nav-profile-link:hover{background:#f9fafb;color:#111827;}
+.nav-logout-btn{color:#e05c5c !important;}
+.nav-logout-btn:hover{background:#fff5f5 !important;}
 
 /* HERO */
 .hero{max-width:680px;margin:72px auto 0;padding:0 2rem;text-align:center;}
