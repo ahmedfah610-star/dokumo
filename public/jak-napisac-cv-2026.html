@@ -326,6 +326,22 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
 .mobile-menu-link-desc { font-size:11px; color:#6b7280; font-family:'Inter',sans-serif; }
 .mobile-menu-articles-btn { display:flex; align-items:center; gap:10px; padding:12px 10px; margin-top:8px; background:#eff6ff; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; color:#2563eb; font-family:'Inter',sans-serif; }
 .mobile-menu-articles-btn:hover { background:#dbeafe; }
+/* Subcat nav styles */
+.nav-cat-item { cursor:pointer; }
+.nav-cat-item:hover, .nav-cat-item.active { background:#f3f4f6; }
+.nav-cat-item .cat-arrow { transition:transform 0.15s; flex-shrink:0; }
+.nav-cat-item.active .cat-arrow { transform:rotate(90deg); }
+.nav-subcat-title { font-size:10.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#9ca3af; padding:6px 10px 8px; }
+.nav-subitem { display:flex; align-items:center; padding:8px 10px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:500; color:#374151; font-family:'Inter',sans-serif; transition:background 0.12s; }
+.nav-subitem:hover { background:#f3f4f6; }
+.mob-cat-btn { display:flex; align-items:center; justify-content:space-between; padding:9px 10px; border-radius:10px; cursor:pointer; }
+.mob-cat-btn:hover { background:#f9fafb; }
+.mob-cat-btn.active { background:#f3f4f6; }
+.mob-cat-btn .mob-cat-arrow { transition:transform 0.15s; flex-shrink:0; }
+.mob-cat-btn.active .mob-cat-arrow { transform:rotate(180deg); }
+.mob-subcat { padding:0 4px 4px 12px; }
+.mob-subitem { display:block; padding:7px 10px; font-size:13px; font-weight:500; color:#374151; text-decoration:none; font-family:'Inter',sans-serif; border-radius:8px; }
+.mob-subitem:hover { background:#f3f4f6; }
 </style>
 
 <script type="module">
@@ -364,31 +380,61 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
           Narzędzia
           <svg id="toolsChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div id="toolsDropdown" style="display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid #f3f4f6;min-width:300px;padding:8px;z-index:200;">
-          <a href="wybierz-szablon.html" class="nav-tool-item">
-            <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
-            <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
-          </a>
-          <a href="kariera.html?modal=letter" class="nav-tool-item">
-            <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <span class="nav-tool-text"><span class="nav-tool-name">List motywacyjny</span><span class="nav-tool-desc">Napisz przekonujący list z AI</span></span>
-          </a>
-          <a href="kariera.html?modal=cv" class="nav-tool-item">
-            <span class="nav-tool-icon" style="background:#faf5ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-            <span class="nav-tool-text"><span class="nav-tool-name">Sprawdź CV z AI</span><span class="nav-tool-desc">Analiza i ocena Twojego CV</span></span>
-          </a>
-          <a href="kalkulator-wynagrodzen.html" class="nav-tool-item">
-            <span class="nav-tool-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
-            <span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span>
-          </a>
-          <a href="wypowiedzenia.html?doc=wypowiedzenie" class="nav-tool-item">
-            <span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></span>
-            <span class="nav-tool-text"><span class="nav-tool-name">Generator wypowiedzenia</span><span class="nav-tool-desc">Wypowiedzenie umowy w 60 sek</span></span>
-          </a>
-          <a href="wypowiedzenia.html" class="nav-tool-item">
-            <span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-            <span class="nav-tool-text"><span class="nav-tool-name">Wnioski pracownicze</span><span class="nav-tool-desc">Urlop, L4, wnioski do pracodawcy</span></span>
-          </a>
+        <div id="toolsDropdown" class="nav-tools-dropdown" style="display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid #f3f4f6;z-index:200;overflow:hidden;">
+          <div style="display:flex;">
+            <div style="padding:8px;min-width:260px;">
+              <a href="wybierz-szablon.html" class="nav-tool-item">
+                <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
+              </a>
+              <a href="kariera.html?modal=letter" class="nav-tool-item">
+                <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">List motywacyjny</span><span class="nav-tool-desc">Napisz przekonujący list z AI</span></span>
+              </a>
+              <a href="kalkulator-wynagrodzen.html" class="nav-tool-item">
+                <span class="nav-tool-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span>
+              </a>
+              <div style="height:1px;background:#f3f4f6;margin:4px 4px;"></div>
+              <div class="nav-tool-item nav-cat-item" id="cat-pracownicze" onclick="openNavSubcat('pracownicze')">
+                <span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty pracownicze</span><span class="nav-tool-desc">Urlop, wypowiedzenie, świadectwo</span></span>
+                <svg class="cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="nav-tool-item nav-cat-item" id="cat-ecommerce" onclick="openNavSubcat('ecommerce')">
+                <span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty ecommerce</span><span class="nav-tool-desc">Regulamin, RODO, zwroty</span></span>
+                <svg class="cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="nav-tool-item nav-cat-item" id="cat-hr" onclick="openNavSubcat('hr')">
+                <span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty HR i Biznes</span><span class="nav-tool-desc">B2B, NDA, zlecenie, umowa o pracę</span></span>
+                <svg class="cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+            <div id="navSubPanel" style="display:none;border-left:1px solid #f3f4f6;padding:8px;min-width:200px;">
+              <div id="subcat-pracownicze" class="nav-subcat" style="display:none;">
+                <div class="nav-subcat-title">Pracownicze</div>
+                <a href="wypowiedzenia.html?doc=urlop" class="nav-subitem">Wniosek o urlop</a>
+                <a href="wypowiedzenia.html?doc=wypowiedzenie" class="nav-subitem">Wypowiedzenie umowy</a>
+                <a href="wypowiedzenia.html?doc=swiadectwo" class="nav-subitem">Świadectwo pracy</a>
+              </div>
+              <div id="subcat-ecommerce" class="nav-subcat" style="display:none;">
+                <div class="nav-subcat-title">E-commerce</div>
+                <a href="ecommerce.html?doc=regulamin" class="nav-subitem">Regulamin sklepu</a>
+                <a href="ecommerce.html?doc=rodo" class="nav-subitem">Polityka RODO</a>
+                <a href="ecommerce.html?doc=zwroty" class="nav-subitem">Polityka zwrotów</a>
+              </div>
+              <div id="subcat-hr" class="nav-subcat" style="display:none;">
+                <div class="nav-subcat-title">HR i Biznes</div>
+                <a href="hr.html?doc=b2b" class="nav-subitem">Umowa B2B</a>
+                <a href="hr.html?doc=nda" class="nav-subitem">NDA — Poufność</a>
+                <a href="hr.html?doc=dzielo" class="nav-subitem">Umowa o dzieło</a>
+                <a href="hr.html?doc=zlecenie" class="nav-subitem">Umowa zlecenie</a>
+                <a href="hr.html?doc=uop" class="nav-subitem">Umowa o pracę</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <a href="artykuly.html" class="nav-center-btn" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Inter',sans-serif;">Artykuły</a>
@@ -433,14 +479,45 @@ body { background:#f5f3ef; margin:0; padding:0; color:#374151; }
       <span class="mobile-menu-link-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
       <span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div><div class="mobile-menu-link-desc">Brutto / netto / UoP / B2B</div></span>
     </a>
-    <a href="wypowiedzenia.html?doc=wypowiedzenie" class="mobile-menu-link">
-      <span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></span>
-      <span><div class="mobile-menu-link-name">Generator wypowiedzenia</div><div class="mobile-menu-link-desc">Wypowiedzenie umowy w 60 sek</div></span>
-    </a>
-    <a href="wypowiedzenia.html" class="mobile-menu-link">
-      <span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-      <span><div class="mobile-menu-link-name">Wnioski pracownicze</div><div class="mobile-menu-link-desc">Urlop, L4, wnioski do pracodawcy</div></span>
-    </a>
+    <div style="height:1px;background:#f3f4f6;margin:4px 4px;"></div>
+    <div class="mob-cat-btn" id="mob-cat-pracownicze" onclick="toggleMobileSubcat('pracownicze')">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <div class="mobile-menu-link-name">Dokumenty pracownicze</div>
+      </div>
+      <svg class="mob-cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="mob-subcat-pracownicze" class="mob-subcat" style="display:none;">
+      <a href="wypowiedzenia.html?doc=urlop" class="mob-subitem">Wniosek o urlop</a>
+      <a href="wypowiedzenia.html?doc=wypowiedzenie" class="mob-subitem">Wypowiedzenie umowy</a>
+      <a href="wypowiedzenia.html?doc=swiadectwo" class="mob-subitem">Świadectwo pracy</a>
+    </div>
+    <div class="mob-cat-btn" id="mob-cat-ecommerce" onclick="toggleMobileSubcat('ecommerce')">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="mobile-menu-link-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+        <div class="mobile-menu-link-name">Dokumenty ecommerce</div>
+      </div>
+      <svg class="mob-cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="mob-subcat-ecommerce" class="mob-subcat" style="display:none;">
+      <a href="ecommerce.html?doc=regulamin" class="mob-subitem">Regulamin sklepu</a>
+      <a href="ecommerce.html?doc=rodo" class="mob-subitem">Polityka RODO</a>
+      <a href="ecommerce.html?doc=zwroty" class="mob-subitem">Polityka zwrotów</a>
+    </div>
+    <div class="mob-cat-btn" id="mob-cat-hr" onclick="toggleMobileSubcat('hr')">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+        <div class="mobile-menu-link-name">Dokumenty HR i Biznes</div>
+      </div>
+      <svg class="mob-cat-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="mob-subcat-hr" class="mob-subcat" style="display:none;">
+      <a href="hr.html?doc=b2b" class="mob-subitem">Umowa B2B</a>
+      <a href="hr.html?doc=nda" class="mob-subitem">NDA — Poufność</a>
+      <a href="hr.html?doc=dzielo" class="mob-subitem">Umowa o dzieło</a>
+      <a href="hr.html?doc=zlecenie" class="mob-subitem">Umowa zlecenie</a>
+      <a href="hr.html?doc=uop" class="mob-subitem">Umowa o pracę</a>
+    </div>
     <div style="height:1px;background:#f3f4f6;margin:8px 4px;"></div>
     <a href="artykuly.html" class="mobile-menu-articles-btn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -851,6 +928,8 @@ document.addEventListener('click', () => {
   if (tdd) tdd.style.display = 'none';
   const chevron = document.getElementById('toolsChevron');
   if (chevron) chevron.style.transform = '';
+  var sp = document.getElementById('navSubPanel');
+  if (sp) { sp.style.display = 'none'; document.querySelectorAll('.nav-subcat').forEach(function(e){e.style.display='none';}); document.querySelectorAll('.nav-cat-item').forEach(function(e){e.classList.remove('active');}); }
 });
 
 function toggleMobileMenu() {
@@ -861,6 +940,34 @@ function toggleMobileMenu() {
   if (ham) ham.innerHTML = open
     ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
     : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+}
+
+function openNavSubcat(cat) {
+  var panel = document.getElementById('navSubPanel');
+  if (!panel) return;
+  var allSubs = document.querySelectorAll('.nav-subcat');
+  var allCats = document.querySelectorAll('.nav-cat-item');
+  if (panel.style.display === 'block' && document.getElementById('subcat-' + cat) && document.getElementById('subcat-' + cat).style.display === 'block') {
+    panel.style.display = 'none';
+    allSubs.forEach(function(e) { e.style.display = 'none'; });
+    allCats.forEach(function(e) { e.classList.remove('active'); });
+    return;
+  }
+  allSubs.forEach(function(e) { e.style.display = 'none'; });
+  allCats.forEach(function(e) { e.classList.remove('active'); });
+  var sub = document.getElementById('subcat-' + cat);
+  var catEl = document.getElementById('cat-' + cat);
+  if (sub) { sub.style.display = 'block'; panel.style.display = 'block'; }
+  if (catEl) catEl.classList.add('active');
+}
+
+function toggleMobileSubcat(cat) {
+  var el = document.getElementById('mob-subcat-' + cat);
+  var btn = document.getElementById('mob-cat-' + cat);
+  if (!el || !btn) return;
+  var open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  btn.classList.toggle('active', !open);
 }
 
 function logoutUser() {
