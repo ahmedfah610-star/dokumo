@@ -67,12 +67,12 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .nav-profile.show { display: flex; }
 .nav-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.12); padding: 8px; min-width: 200px; z-index: 300; display: none; }
 .nav-dropdown.show { display: block; }
-.nav-dd-email { font-size: .72rem; color: var(--ink3); padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.nav-dd-email { font-size: 12.5px; color: #6b7280; padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; font-weight: 500; letter-spacing: 0; font-family: 'Inter', sans-serif; }
 .nav-dd-name { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
-.nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: background .15s; }
-.nav-dd-link:hover { background: var(--surface); color: var(--ink); }
+.nav-dd-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: #374151; text-decoration: none; transition: background .15s; letter-spacing: 0; font-family: 'Inter', sans-serif; }
+.nav-dd-link:hover { background: #f3f4f6; color: #111827; }
 .nav-dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
-.nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .8rem; font-weight: 500; color: #c00; transition: background .15s; font-family: 'Figtree', sans-serif; }
+.nav-dd-logout { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: #c00; transition: background .15s; font-family: 'Inter', sans-serif; letter-spacing: 0; }
 .nav-dd-logout:hover { background: rgba(200,0,0,.06); }
 
 /* ── SCREENS ── */
@@ -240,7 +240,7 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="nav-dropdown" id="navDrop">
         <div class="nav-dd-email">
           <div class="nav-dd-name" id="navName"></div>
-          <div id="navEmail" style="font-size:.72rem;color:var(--ink3);"></div>
+          <div id="navEmail" style="font-size:12.5px;color:#6b7280;font-family:'Inter',sans-serif;"></div>
         </div>
         <a href="konto.html" class="nav-dd-link">👤 Moje konto</a>
         <a href="moje-dokumenty.html" class="nav-dd-link">📁 Moje dokumenty</a>
