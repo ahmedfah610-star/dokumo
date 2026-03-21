@@ -1549,6 +1549,16 @@ function updateNavAuth() {
 
 
 
+
+// Auto-open modal from URL param (?modal=letter or ?modal=cv)
+(function(){
+  var modal = new URLSearchParams(window.location.search).get('modal');
+  if(modal === 'letter') {
+    window.addEventListener('load', function(){ openJobModal(); setTimeout(function(){ jmChooseLetter(); }, 80); });
+  } else if(modal === 'cv') {
+    window.addEventListener('load', function(){ openJobModal(); setTimeout(function(){ jmChooseCV(); }, 80); });
+  }
+})();
 </script>
 
 <!-- FAQ -->

@@ -812,6 +812,10 @@ function downloadAs(fmt){
 /* ── INIT ── */
 renderNavSteps();
 renderBar();
+(function(){
+  var doc = new URLSearchParams(window.location.search).get('doc');
+  if(doc && FORMS[doc]) selectDoc(doc);
+})();
 </script>
 
 <script src="plan-guard.js"></script>
