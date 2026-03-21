@@ -327,57 +327,6 @@ body { background:#f5f3ef; }
 </section>
 
 
-<!-- QUICK NAV STRIP -->
-<section style="max-width:1100px;margin:0 auto;padding:0 24px 56px;">
-  <div class="qnav-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
-
-    <a href="#opinie" class="qnav-card" onclick="qnavScroll(event,'opinie')" style="text-decoration:none;display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid #f0f0f0;border-radius:18px;padding:18px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;">
-      <div style="width:44px;height:44px;border-radius:12px;background:#fef9c3;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </div>
-      <div>
-        <div style="font-size:.88rem;font-weight:700;color:#111827;letter-spacing:-.02em;">Opinie</div>
-        <div style="font-size:.73rem;color:#9ca3af;margin-top:2px;">Co mówią nasi użytkownicy</div>
-      </div>
-      <svg style="margin-left:auto;flex-shrink:0;color:#d1d5db;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <a href="#bezpieczenstwo" class="qnav-card" onclick="qnavScroll(event,'bezpieczenstwo')" style="text-decoration:none;display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid #f0f0f0;border-radius:18px;padding:18px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;">
-      <div style="width:44px;height:44px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <div>
-        <div style="font-size:.88rem;font-weight:700;color:#111827;letter-spacing:-.02em;">Bezpieczeństwo</div>
-        <div style="font-size:.73rem;color:#9ca3af;margin-top:2px;">RODO · SSL · Prywatność</div>
-      </div>
-      <svg style="margin-left:auto;flex-shrink:0;color:#d1d5db;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <a href="#kontakt" class="qnav-card" onclick="qnavScroll(event,'kontakt')" style="text-decoration:none;display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid #f0f0f0;border-radius:18px;padding:18px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;">
-      <div style="width:44px;height:44px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      </div>
-      <div>
-        <div style="font-size:.88rem;font-weight:700;color:#111827;letter-spacing:-.02em;">Kontakt</div>
-        <div style="font-size:.73rem;color:#9ca3af;margin-top:2px;">Masz pytanie? Napisz do nas</div>
-      </div>
-      <svg style="margin-left:auto;flex-shrink:0;color:#d1d5db;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-  </div>
-</section>
-<style>
-.qnav-card:hover { transform:translateY(-3px) !important; box-shadow:0 8px 24px rgba(0,0,0,.09) !important; border-color:#e5e7eb !important; }
-@media(max-width:720px){ .qnav-grid { grid-template-columns:1fr !important; gap:10px !important; } }
-</style>
-<script>
-function qnavScroll(e, id) {
-  e.preventDefault();
-  var el = document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-}
-</script>
-
 <!-- JAK TO DZIAŁA -->
 <section class="bg-white py-20 border-t border-gray-100">
   <div class="max-w-6xl mx-auto px-6">
