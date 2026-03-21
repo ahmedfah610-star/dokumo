@@ -645,8 +645,9 @@ body { background:#f5f3ef; }
   async function moveTo(el, offsetX=0, offsetY=0){
     const dRect = demo.getBoundingClientRect();
     const eRect = el.getBoundingClientRect();
-    curX = eRect.left - dRect.left + (offsetX || eRect.width/2);
-    curY = eRect.top  - dRect.top  + (offsetY || eRect.height/2);
+    const scale = parseFloat(demo.style.transform.replace(/.*scale\(([^)]+)\).*/, '$1')) || 1;
+    curX = (eRect.left - dRect.left + (offsetX || eRect.width/2)) / scale;
+    curY = (eRect.top  - dRect.top  + (offsetY || eRect.height/2)) / scale;
     cursor.style.transform = `translate(${curX}px,${curY}px)`;
     await sleep(480);
   }
