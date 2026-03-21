@@ -66,7 +66,6 @@ function renderCustomSections(c1, c2) {
     bold:      `font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#111;border-bottom:2px solid ${c1};padding-bottom:3px;margin-bottom:8px`,
     nordic:    `font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:8px`,
     rose:      `font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px`,
-    slate:     `font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px`,
     teal:      `font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px`,
     creative:  `font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px`,
     timeline:  `font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};padding-bottom:4px;border-bottom:2px solid ${c1};margin-bottom:10px`,
@@ -539,46 +538,61 @@ function buildCVHTML(tpl) {
     </div>`;
 
   // ── MIDNIGHT ──────────────────────────────────────────────
+  const midSH = (label) => `<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};border-bottom:1.5px solid ${c2};padding-bottom:4px;margin-bottom:10px">${label}</div>`;
   if (tpl === 'midnight') return `
     <div style="font-family:Arial,sans-serif;background:#fff;min-height:842px">
       <div style="background:#0f172a;padding:32px 40px;display:flex;gap:24px;align-items:center">
         ${d.zdjecie?`<div style="width:84px;height:84px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.15)">${photo}</div>`:''}
-        <div>
+        <div style="flex:1">
           <div style="font-size:24px;font-weight:700;color:#f8fafc;letter-spacing:-0.3px">${name}</div>
           ${d.stanowisko?`<div style="font-size:10px;color:#94a3b8;margin-top:5px;letter-spacing:2px;text-transform:uppercase">${d.stanowisko}</div>`:''}
           <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<span style="font-size:9px;color:#94a3b8">${x}</span>`).join(' · ')}</div>
         </div>
       </div>
       <div style="height:3px;background:linear-gradient(90deg,${c1},${c2},transparent)"></div>
-      <div style="display:grid;grid-template-columns:1fr 185px;padding:24px 40px;gap:24px">
-        <div>
-          ${d.podsumowanie?`<div style="margin-bottom:18px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:7px">${L("profile")}</div><div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div></div>`:''}
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:18px">
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:10px">${L("experience")}</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:15px;padding:10px;background:#f8fafc;border-radius:4px">
-                <div style="display:flex;justify-content:space-between"><div style="font-size:11px;font-weight:700;color:#1e293b">${e.stanowisko||''}</div><div style="font-size:8.5px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-                <div style="font-size:9.5px;color:${c2};font-weight:600;margin-top:1px">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#555;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:10px">${L("education")}</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:12px;padding:10px;background:#f8fafc;border-radius:4px">
-                <div style="font-size:11px;font-weight:700;color:#1e293b">${e.kierunek||''}</div>
-                <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:8.5px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
-              </div>`).join('')}
-          </div>`:''}${renderCustomSections(c1, c2)}
-        </div>
-        <div>
-          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9px;padding:4px 8px;background:#f1f5f9;margin-bottom:3px;border-radius:3px;color:#334155">${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;margin-bottom:4px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c2};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
-          ${d.zainteresowania?`<div><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c2};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        </div>
+      <div style="padding:20px 40px 24px">
+        ${d.podsumowanie?`<div style="margin-bottom:18px">${midSH(L("profile"))}<div style="font-size:10px;line-height:1.75;color:#444">${d.podsumowanie}</div></div>`:''}
+        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+        <div style="margin-bottom:18px">${midSH(L("experience"))}
+          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+            <div style="margin-bottom:12px;padding:10px 14px;background:#f8fafc;border-radius:4px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <div style="font-size:11px;font-weight:700;color:#1e293b">${e.stanowisko||''}</div>
+                <div style="font-size:8.5px;color:#94a3b8;white-space:nowrap">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>
+              <div style="font-size:9.5px;color:${c2};font-weight:600;margin-top:1px">${e.firma||''}</div>
+              ${e.opis?`<div style="font-size:9.5px;color:#555;margin-top:4px;line-height:1.6">${e.opis}</div>`:''}
+            </div>`).join('')}
+        </div>`:''}
+        ${d.wyksztalcenie.some(e=>e.szkola)?`
+        <div style="margin-bottom:18px">${midSH(L("education"))}
+          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+            <div style="margin-bottom:10px;padding:10px 14px;background:#f8fafc;border-radius:4px">
+              <div style="font-size:11px;font-weight:700;color:#1e293b">${e.kierunek||''}</div>
+              <div style="display:flex;justify-content:space-between"><div style="font-size:9.5px;color:#555">${e.szkola}</div><div style="font-size:8.5px;color:#94a3b8">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
+            </div>`).join('')}
+        </div>`:''}
+        ${skills.length?`
+        <div style="margin-bottom:18px">${midSH(L("skills"))}
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            ${skills.map(s=>`<span style="font-size:9px;padding:4px 10px;background:#f1f5f9;border-radius:3px;color:#334155">${s}</span>`).join('')}
+          </div>
+        </div>`:''}
+        ${d.jezyki.some(l=>l.jezyk)?`
+        <div style="margin-bottom:18px">${midSH(L("languages"))}
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:9.5px;color:#334155">${l.jezyk} <span style="color:#94a3b8">– ${l.poziom}</span></span>`).join('')}
+          </div>
+        </div>`:''}
+        ${certGroups.map(({label,items})=>items.length?`
+        <div style="margin-bottom:18px">${midSH(label)}
+          ${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px;color:#334155"><span style="width:5px;height:5px;border-radius:50%;background:${c2};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}
+        </div>`:'').join('')}
+        ${d.zainteresowania?`
+        <div style="margin-bottom:18px">${midSH(L("interests"))}
+          <div style="font-size:9.5px;color:#555;line-height:1.6">${d.zainteresowania}</div>
+        </div>`:''}
+        ${renderCustomSections(c1,c2)}
       </div>
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
@@ -674,58 +688,6 @@ function buildCVHTML(tpl) {
       <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
 
-  // ── SLATE ─────────────────────────────────────────────────
-  if (tpl === 'slate') return `
-    <div style="font-family:Georgia,serif;background:#fff;min-height:842px">
-      <div style="border-top:6px solid ${c1};padding:32px 44px 24px">
-        <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px">
-          ${d.zdjecie?`<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid ${c1}">${photo}</div>`:''}
-          <div>
-            <div style="font-size:26px;font-weight:700;color:${c1};line-height:1;letter-spacing:-0.5px">${name}</div>
-            ${d.stanowisko?`<div style="font-size:11px;color:${c2};font-style:italic;margin-top:5px">${d.stanowisko}</div>`:''}
-          </div>
-          <div style="flex:1;text-align:right">${[d.email,d.tel,d.adres].filter(Boolean).map(x=>`<div style="font-size:9px;color:#666;margin-bottom:3px">${x}</div>`).join('')}</div>
-        </div>
-        <div style="height:1px;background:${c1};margin-bottom:20px"></div>
-        ${d.podsumowanie?`<div style="margin-bottom:20px;font-size:10px;color:#555;line-height:1.8;font-style:italic">"${d.podsumowanie}"</div>`:''}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 180px;padding:0 44px 28px;gap:28px">
-        <div>
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:20px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:12px">${L("experience")}</div>
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-              <div style="margin-bottom:16px">
-                <div style="display:flex;justify-content:space-between;align-items:baseline">
-                  <div style="font-size:11px;font-weight:700;color:#222">${e.stanowisko||''}</div>
-                  <div style="font-size:9px;color:#999;font-style:italic">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c2};font-style:italic">${e.firma||''}</div>
-                ${e.opis?`<div style="font-size:9.5px;color:#555;margin-top:4px;line-height:1.65">${e.opis}</div>`:''}
-              </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:12px">${L("education")}</div>
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-              <div style="margin-bottom:14px">
-                <div style="display:flex;justify-content:space-between">
-                  <div style="font-size:11px;font-weight:700;color:#222">${e.kierunek||''}</div>
-                  <div style="font-size:9px;color:#999;font-style:italic">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
-                </div>
-                <div style="font-size:10px;color:${c2};font-style:italic">${e.szkola}</div>
-              </div>`).join('')}
-          </div>`:''}${renderCustomSections(c1, c2)}
-        </div>
-        <div>
-          ${skills.length?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("skills")}</div>${skills.map(s=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px;padding-left:8px;border-left:2px solid ${c1}">  ${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("languages")}</div>${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px">${l.jezyk} <span style="color:#999">– ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certGroups.map(({label,items}) => `<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:9.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${c1};flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
-          ${d.zainteresowania?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:9.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:7.5px;color:#ccc;padding:8px;border-top:1px solid #eee">${L("consent")}</div>
-    </div>`;
 
   // ── OCEAN ─────────────────────────────────────────────────
   if (tpl === 'ocean') return `
@@ -2603,7 +2565,6 @@ const CV_TEMPLATES = [
   { id:'midnight',     name:'Midnight',     color1:'#0f172a', color2:'#334155',  thumb:'linear-gradient(135deg,#0f172a,#334155)' },
   { id:'coral',        name:'Coral',        color1:'#c2410c', color2:'#fb923c',  thumb:'linear-gradient(135deg,#c2410c,#fb923c)' },
   { id:'rose',         name:'Rose',         color1:'#9d174d', color2:'#ec4899',  thumb:'linear-gradient(135deg,#9d174d,#ec4899)' },
-  { id:'slate',        name:'Slate',        color1:'#334155', color2:'#64748b',  thumb:'linear-gradient(135deg,#334155,#64748b)' },
   { id:'ocean',        name:'Ocean',        color1:'#1e40af', color2:'#38bdf8',  thumb:'linear-gradient(135deg,#1e40af,#38bdf8)' },
   { id:'shield',       name:'Shield',       color1:'#1a2744', color2:'#e8e4dc',  thumb:'linear-gradient(160deg,#1a2744 55%,#e8e4dc 55%)' },
   { id:'executive',    name:'Executive',    color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#111 55%,#92400e 100%)' },
@@ -2623,7 +2584,7 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   const tpl = p.get('template');
   const mode = p.get('mode');
   const from = p.get('from');
-  const known = ['nova','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','slate','ocean','shield','executive','athens','matrix','prism','linen'];
+  const known = ['nova','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen'];
   if (tpl && known.includes(tpl)) {
     cvTemplate = tpl; // Template chosen on picker page — continue to wizard
   } else if (mode === 'import' || from === 'translate') {
@@ -4200,7 +4161,7 @@ function renderTplGrid() {
     { label: 'Premium',      ids: ['nova', 'nordic', 'cascade', 'metro'] },
     { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen'] },
     { label: 'Klasyczne',    ids: ['sidebar', 'timeline', 'bold', 'midnight'] },
-    { label: 'Nowoczesne',   ids: ['teal', 'slate', 'ocean'] },
+    { label: 'Nowoczesne',   ids: ['teal', 'ocean'] },
     { label: 'Kreatywne',    ids: ['creative', 'coral', 'rose'] },
     { label: 'Wyraziste',    ids: ['shield'] },
   ];
