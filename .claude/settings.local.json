@@ -60,7 +60,8 @@
       "WebFetch(domain:poradnikprzedsiebiorcy.pl)",
       "Bash(grep:*)",
       "Bash(python fix_nav.py)",
-      "Bash(ls -1 /c/Users/asus/Desktop/dokumo/public/*.html)"
+      "Bash(ls -1 /c/Users/asus/Desktop/dokumo/public/*.html)",
+      "Bash(\"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\\\\style.css\")"
     ]
   },
   "hooks": {
