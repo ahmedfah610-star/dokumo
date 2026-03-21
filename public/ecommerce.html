@@ -722,9 +722,24 @@ async function doGenerate(){
     if(token) document.getElementById('checkSaved').style.display='flex';
     goTo(3);
   } catch(e){
-    goTo(1); renderForm();
-    alert(e.message||'Błąd połączenia. Spróbuj ponownie.');
+    showGenError(e.message||'Błąd połączenia. Spróbuj ponownie.');
   }
+}
+
+function showGenError(msg){
+  var wrap=document.querySelector('#screen2 .gen-wrap');
+  if(wrap){
+    wrap.innerHTML='<div style="font-size:2.2rem;margin-bottom:16px">⚠️</div>'
+      +'<div class="gen-title" style="font-size:1.15rem;color:#c00">Nie udało się wygenerować</div>'
+      +'<div class="gen-sub" style="margin:8px 0 24px">'+msg+'</div>'
+      +'<button onclick="retryGenerate()" style="padding:11px 28px;background:#111;color:#fff;border:none;border-radius:50px;font-family:Figtree,sans-serif;font-size:.9rem;font-weight:700;cursor:pointer">← Spróbuj ponownie</button>';
+  }
+}
+
+function retryGenerate(){
+  var wrap=document.querySelector('#screen2 .gen-wrap');
+  if(wrap) wrap.innerHTML='<div class="gen-spinner"></div><div class="gen-title">Generowanie przez AI\u2026</div><div class="gen-sub">Tworzymy Tw\xf3j dokument zgodnie z polskim prawem. To zwykle zajmuje kilka sekund.</div>';
+  goTo(1); renderForm();
 }
 
 /* ── DOWNLOAD / COPY ── */
