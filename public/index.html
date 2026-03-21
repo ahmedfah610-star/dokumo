@@ -327,6 +327,57 @@ body { background:#f5f3ef; }
 </section>
 
 
+<!-- QUICK NAV STRIP -->
+<section style="max-width:1100px;margin:0 auto;padding:0 24px 56px;">
+  <div class="qnav-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+
+    <a href="#opinie" class="qnav-card" onclick="qnavScroll(event,'opinie')" style="text-decoration:none;display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid #f0f0f0;border-radius:18px;padding:18px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;">
+      <div style="width:44px;height:44px;border-radius:12px;background:#fef9c3;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div style="font-size:.88rem;font-weight:700;color:#111827;letter-spacing:-.02em;">Opinie</div>
+        <div style="font-size:.73rem;color:#9ca3af;margin-top:2px;">Co mówią nasi użytkownicy</div>
+      </div>
+      <svg style="margin-left:auto;flex-shrink:0;color:#d1d5db;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <a href="#bezpieczenstwo" class="qnav-card" onclick="qnavScroll(event,'bezpieczenstwo')" style="text-decoration:none;display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid #f0f0f0;border-radius:18px;padding:18px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;">
+      <div style="width:44px;height:44px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div style="font-size:.88rem;font-weight:700;color:#111827;letter-spacing:-.02em;">Bezpieczeństwo</div>
+        <div style="font-size:.73rem;color:#9ca3af;margin-top:2px;">RODO · SSL · Prywatność</div>
+      </div>
+      <svg style="margin-left:auto;flex-shrink:0;color:#d1d5db;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <a href="#kontakt" class="qnav-card" onclick="qnavScroll(event,'kontakt')" style="text-decoration:none;display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid #f0f0f0;border-radius:18px;padding:18px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;">
+      <div style="width:44px;height:44px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <div>
+        <div style="font-size:.88rem;font-weight:700;color:#111827;letter-spacing:-.02em;">Kontakt</div>
+        <div style="font-size:.73rem;color:#9ca3af;margin-top:2px;">Masz pytanie? Napisz do nas</div>
+      </div>
+      <svg style="margin-left:auto;flex-shrink:0;color:#d1d5db;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+  </div>
+</section>
+<style>
+.qnav-card:hover { transform:translateY(-3px) !important; box-shadow:0 8px 24px rgba(0,0,0,.09) !important; border-color:#e5e7eb !important; }
+@media(max-width:720px){ .qnav-grid { grid-template-columns:1fr !important; gap:10px !important; } }
+</style>
+<script>
+function qnavScroll(e, id) {
+  e.preventDefault();
+  var el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+
 <!-- JAK TO DZIAŁA -->
 <section class="bg-white py-20 border-t border-gray-100">
   <div class="max-w-6xl mx-auto px-6">
@@ -974,8 +1025,47 @@ window.wizardModalClose = function(e) {
 document.addEventListener('keydown', e => { if(e.key==='Escape'){ const ov=document.getElementById('wm-overlay'); if(ov.style.display==='flex') wizardModalClose(); }});
 </script>
 
+<!-- BEZPIECZEŃSTWO -->
+<section id="bezpieczenstwo" style="background:#fff;padding:80px 0;border-top:1px solid #f1f5f9;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 24px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div style="display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#2563eb;margin-bottom:10px;">Bezpieczeństwo</div>
+      <h2 style="font-size:2rem;font-weight:900;color:#0f172a;letter-spacing:-.04em;margin:0;">Twoje dane są u nas bezpieczne</h2>
+      <p style="color:#9ca3af;font-size:.9rem;margin:12px 0 0;">Projektujemy Dokumo z myślą o prywatności od samego początku.</p>
+    </div>
+    <div class="bezp-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+      <div style="background:#f9fafb;border:1px solid #ececec;border-radius:14px;padding:24px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div style="font-size:.9rem;font-weight:700;color:#111827;margin-bottom:6px;">Szyfrowanie SSL</div>
+        <p style="font-size:.8rem;color:#6b7280;line-height:1.6;margin:0;">Cała komunikacja z platformą odbywa się przez szyfrowane połączenie HTTPS. Twoje dane są chronione w każdym momencie.</p>
+      </div>
+
+      <div style="background:#f9fafb;border:1px solid #ececec;border-radius:14px;padding:24px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div style="font-size:.9rem;font-weight:700;color:#111827;margin-bottom:6px;">Zgodność z RODO</div>
+        <p style="font-size:.8rem;color:#6b7280;line-height:1.6;margin:0;">Przetwarzamy dane zgodnie z unijnym rozporządzeniem RODO. Masz pełną kontrolę nad swoimi danymi — możesz je usunąć w każdej chwili.</p>
+      </div>
+
+      <div style="background:#f9fafb;border:1px solid #ececec;border-radius:14px;padding:24px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:#fef9c3;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div style="font-size:.9rem;font-weight:700;color:#111827;margin-bottom:6px;">Dane nie są udostępniane</div>
+        <p style="font-size:.8rem;color:#6b7280;line-height:1.6;margin:0;">Nie sprzedajemy ani nie udostępniamy Twoich danych osobowych stronom trzecim. Generowane dokumenty należą wyłącznie do Ciebie.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+<style>@media(max-width:720px){ .bezp-grid { grid-template-columns:1fr !important; } }</style>
+
 <!-- OPINIE -->
-<section style="background:#f9fafb;padding:80px 0;border-top:1px solid #f1f5f9;">
+<section id="opinie" style="background:#f9fafb;padding:80px 0;border-top:1px solid #f1f5f9;">
   <div style="max-width:1100px;margin:0 auto;padding:0 24px;">
     <div style="text-align:center;margin-bottom:48px;">
       <div style="display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#2563eb;margin-bottom:10px;">Opinie</div>
@@ -1023,6 +1113,19 @@ document.addEventListener('keydown', e => { if(e.key==='Escape'){ const ov=docum
       </div>
 
     </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section id="kontakt" style="background:#fff;padding:80px 0;border-top:1px solid #f1f5f9;">
+  <div style="max-width:680px;margin:0 auto;padding:0 24px;text-align:center;">
+    <div style="display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#16a34a;margin-bottom:10px;">Kontakt</div>
+    <h2 style="font-size:2rem;font-weight:900;color:#0f172a;letter-spacing:-.04em;margin:0 0 12px;">Masz pytanie?</h2>
+    <p style="color:#9ca3af;font-size:.9rem;margin:0 0 32px;line-height:1.7;">Napisz do nas — postaramy się odpowiedzieć w ciągu jednego dnia roboczego. Chętnie pomożemy w kwestiach technicznych, subskrypcji lub treści dokumentów.</p>
+    <a href="mailto:AHMEDFAH610@GMAIL.COM" style="display:inline-flex;align-items:center;gap:10px;background:#111827;color:#fff;text-decoration:none;font-size:.9rem;font-weight:700;padding:14px 28px;border-radius:14px;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Napisz do nas
+    </a>
   </div>
 </section>
 
