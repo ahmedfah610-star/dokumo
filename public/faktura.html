@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generator Faktur — Dokumo</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="logo2.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#111827; --ink2:#374151; --ink3:#6b7280;
+  --border:#e5e7eb; --surface:#f9fafb; --white:#fff;
+  --accent:#2563eb; --red:#e05c5c;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Figtree',sans-serif;background:#f3f4f6;color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:200;height:60px;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 2rem;gap:1rem;}
+.nav-right{flex:1;display:flex;justify-content:flex-end;align-items:center;gap:8px;}
+.nav-profile{position:relative;display:flex;align-items:center;}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;overflow:hidden;flex-shrink:0;}
+.nav-profile-dropdown{display:none;position:absolute;top:calc(100% + 12px);right:0;background:#fff;border:1px solid #e5e7eb;min-width:220px;z-index:999;padding:8px 0;box-shadow:0 12px 40px rgba(0,0,0,0.13);border-radius:14px;}
+.nav-profile-dropdown.open{display:block !important;}
+.nav-profile-email{display:block;padding:10px 16px;font-family:'Inter',sans-serif;font-size:12.5px;color:#6b7280;font-weight:500;letter-spacing:0;}
+.nav-profile-link{display:block;padding:9px 16px;font-family:'Inter',sans-serif;font-size:13.5px;color:#374151;text-decoration:none;font-weight:500;background:none;border:none;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;}
+.nav-profile-link:hover{background:#f9fafb;color:#111827;}
+.nav-logout-btn{color:#e05c5c !important;}
+.nav-logout-btn:hover{background:#fff5f5 !important;}
+
+/* ── LAYOUT ── */
+.fak-wrap{max-width:1280px;margin:0 auto;padding:24px;display:grid;grid-template-columns:500px 1fr;gap:24px;align-items:start;}
+@media(max-width:1024px){.fak-wrap{grid-template-columns:1fr;}}
+
+/* ── FORM ── */
+.fak-form{display:flex;flex-direction:column;gap:14px;}
+.fak-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px;}
+.fak-card-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.fak-card-title span{font-size:16px;}
+.fak-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fak-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.fak-col-full{grid-column:1/-1;}
+.fak-field{display:flex;flex-direction:column;gap:4px;}
+.fak-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);}
+.fak-label .req{color:#ef4444;}
+.fak-input,.fak-select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Figtree',sans-serif;font-size:14px;color:var(--ink);background:#fff;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+.fak-input:focus,.fak-select:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(17,23,39,0.07);}
+.fak-input::placeholder{color:#9ca3af;}
+select.fak-select{cursor:pointer;}
+
+/* ── LINE ITEMS ── */
+.fak-item{background:#f9fafb;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.fak-item-row{display:grid;grid-template-columns:1fr 64px 60px 100px 72px 36px;gap:8px;align-items:end;}
+.fak-item-brutto{text-align:right;font-size:12px;font-weight:600;color:var(--ink3);margin-top:8px;}
+.fak-item-brutto strong{color:var(--ink);}
+.fak-remove-btn{width:34px;height:34px;border:1.5px solid #fecaca;background:#fef2f2;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;padding:0;}
+.fak-remove-btn:hover{background:#fee2e2;border-color:#fca5a5;}
+.fak-add-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;background:#fff;border:1.5px solid var(--border);border-radius:10px;font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all 0.15s;margin-top:4px;}
+.fak-add-btn:hover{border-color:var(--ink);color:var(--ink);background:#f9fafb;}
+.fak-totals{background:#f9fafb;border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:4px;}
+.fak-totals-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink2);padding:3px 0;}
+.fak-totals-row.gross{font-size:15px;font-weight:800;color:var(--ink);border-top:1.5px solid var(--border);margin-top:6px;padding-top:8px;}
+
+/* ── PAYMENT ── */
+.fak-pay-opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.fak-pay-btn{padding:8px 16px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all 0.15s;}
+.fak-pay-btn:hover{border-color:#9ca3af;}
+.fak-pay-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+textarea.fak-input{resize:vertical;min-height:68px;line-height:1.5;}
+
+/* ── GENERATE BTN ── */
+.fak-generate-btn{width:100%;padding:14px;background:#111827;color:#fff;border:none;border-radius:12px;font-family:'Figtree',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.15s;letter-spacing:-0.01em;}
+.fak-generate-btn:hover{opacity:.85;}
+
+/* ── PREVIEW PANEL ── */
+.fak-preview-panel{position:sticky;top:80px;}
+.fak-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.fak-preview-title{font-size:13px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;}
+.fak-print-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;background:#111827;color:#fff;border:none;border-radius:10px;font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
+.fak-print-btn:hover{opacity:.85;}
+.fak-preview-wrap{background:#e8e8ea;border-radius:16px;padding:20px;overflow-x:auto;}
+#fakPreviewDoc{
+  background:#fff;
+  width:595px;
+  min-height:842px;
+  box-shadow:0 4px 40px rgba(0,0,0,.18);
+  font-family:'Inter',sans-serif;
+  font-size:10px;
+  color:#1a1a1a;
+  padding:40px 44px;
+  zoom:0.88;
+  transform-origin:top left;
+}
+@media(max-width:700px){
+  #fakPreviewDoc{zoom:0.55;}
+}
+
+/* ── INVOICE STYLES (inside preview) ── */
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+.inv-logo{font-size:20px;font-weight:800;color:#111;letter-spacing:-0.03em;}
+.inv-logo-sub{font-size:9px;color:#9ca3af;margin-top:2px;font-weight:500;}
+.inv-title{text-align:right;}
+.inv-title-main{font-size:22px;font-weight:800;color:#111;letter-spacing:-0.04em;}
+.inv-title-num{font-size:11px;color:#6b7280;margin-top:3px;font-weight:500;}
+.inv-divider{height:1.5px;background:#f0f0f0;margin-bottom:20px;}
+.inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px;}
+.inv-party-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;margin-bottom:7px;}
+.inv-party-name{font-size:12px;font-weight:700;color:#111;margin-bottom:3px;}
+.inv-party-line{font-size:9.5px;color:#555;margin-bottom:2px;line-height:1.5;}
+.inv-meta{background:#f9fafb;border-radius:10px;padding:12px 16px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.inv-meta-item{}
+.inv-meta-label{font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#9ca3af;margin-bottom:3px;}
+.inv-meta-value{font-size:10.5px;font-weight:600;color:#111;}
+.inv-table{width:100%;border-collapse:collapse;margin-bottom:18px;}
+.inv-table th{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;padding:8px 10px;text-align:left;border-bottom:1.5px solid #f0f0f0;}
+.inv-table th.num{text-align:center;}
+.inv-table th.right{text-align:right;}
+.inv-table td{font-size:10px;padding:9px 10px;border-bottom:1px solid #f7f7f7;color:#222;vertical-align:top;}
+.inv-table td.center{text-align:center;}
+.inv-table td.right{text-align:right;}
+.inv-table tr:last-child td{border-bottom:none;}
+.inv-table tr:nth-child(even) td{background:#fafafa;}
+.inv-totals{display:flex;justify-content:flex-end;}
+.inv-totals-box{width:220px;}
+.inv-totals-row{display:flex;justify-content:space-between;font-size:10px;color:#555;padding:3px 0;}
+.inv-totals-row.gross{font-size:13px;font-weight:800;color:#111;border-top:1.5px solid #e5e7eb;margin-top:6px;padding-top:8px;}
+.inv-payment{margin-top:20px;background:#f9fafb;border-radius:10px;padding:12px 16px;}
+.inv-payment-title{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#9ca3af;margin-bottom:8px;}
+.inv-payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.inv-payment-item{}
+.inv-payment-label{font-size:8px;color:#9ca3af;font-weight:600;margin-bottom:2px;}
+.inv-payment-value{font-size:10.5px;font-weight:600;color:#111;}
+.inv-footer{margin-top:28px;border-top:1px solid #f0f0f0;padding-top:14px;display:flex;justify-content:space-between;align-items:flex-end;}
+.inv-sign{text-align:center;width:140px;}
+.inv-sign-line{border-top:1px solid #d1d5db;margin-bottom:5px;}
+.inv-sign-label{font-size:8px;color:#9ca3af;}
+.inv-notes{font-size:9px;color:#9ca3af;line-height:1.6;flex:1;margin-right:20px;}
+
+/* ── PRINT STYLES ── */
+@media print{
+  body>*{display:none !important;}
+  #fakPrintArea{display:block !important;}
+  #fakPrintArea{position:fixed;top:0;left:0;width:100%;height:100%;}
+  #fakPreviewDoc{zoom:1 !important;box-shadow:none !important;width:100% !important;min-height:auto !important;}
+}
+#fakPrintArea{display:none;}
+</style>
+</head>
+<body>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+const app = initializeApp({apiKey:"AIzaSyBQ0sdqjgS5xNflEz3m5m1dOe0RTAU71yg",authDomain:"dokumo-f9e99.firebaseapp.com",projectId:"dokumo-f9e99"});
+const auth = getAuth(app);
+window._fbSignOut = () => auth.signOut();
+onAuthStateChanged(auth, async u => {
+  if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));}
+  else{localStorage.removeItem("dokumo_user");}
+  if(window._renderNav) window._renderNav();
+});
+</script>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+    <span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Inter',sans-serif;">Dokumo</span>
+  </a>
+  <div class="nav-right">
+    <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
+      <a href="konto.html" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(37,99,235,.3);" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
+      <div class="nav-profile" id="navProfile" style="display:none">
+        <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+        <div class="nav-profile-dropdown" id="navDropdown">
+          <div class="nav-profile-email" id="navProfileEmail"></div>
+          <a href="konto.html" class="nav-profile-link">Moje konto</a>
+          <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+          <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
+          <div style="height:1px;background:#f3f4f6;margin:4px 0;"></div>
+          <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="fak-wrap">
+
+  <!-- ── FORM ── -->
+  <div class="fak-form">
+
+    <!-- KROK 1: Dane rachunku -->
+    <div class="fak-card">
+      <div class="fak-card-title"><span>📋</span> Krok 1 — Dane faktury</div>
+      <div class="fak-grid">
+        <div class="fak-field">
+          <label class="fak-label">Numer faktury <span class="req">*</span></label>
+          <input class="fak-input" id="fNumer" value="FV/2026/001" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Waluta <span class="req">*</span></label>
+          <select class="fak-select" id="fWaluta" onchange="renderPreview()">
+            <option value="PLN">PLN (zł)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="USD">USD ($)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="CHF">CHF</option>
+          </select>
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Data wystawienia <span class="req">*</span></label>
+          <input class="fak-input" id="fDataWyst" type="date" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Data sprzedaży <span class="req">*</span></label>
+          <input class="fak-input" id="fDataSprzed" type="date" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Termin płatności (dni)</label>
+          <input class="fak-input" id="fTermin" type="number" value="14" min="0" max="365" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Miejsce wystawienia</label>
+          <input class="fak-input" id="fMiejsce" placeholder="np. Warszawa" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Wystawił/a</label>
+          <input class="fak-input" id="fWystawil" placeholder="Imię i nazwisko" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Odebrał/a</label>
+          <input class="fak-input" id="fOdebral" placeholder="Imię i nazwisko" oninput="renderPreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- KROK 2A: Sprzedawca -->
+    <div class="fak-card">
+      <div class="fak-card-title"><span>🏢</span> Krok 2 — Sprzedawca</div>
+      <div class="fak-grid">
+        <div class="fak-field fak-col-full">
+          <label class="fak-label">Nazwa firmy / Imię i nazwisko <span class="req">*</span></label>
+          <input class="fak-input" id="sNazwa" placeholder="np. Jan Kowalski" oninput="renderPreview()">
+        </div>
+        <div class="fak-field fak-col-full">
+          <label class="fak-label">Adres <span class="req">*</span></label>
+          <input class="fak-input" id="sAdres" placeholder="ul. Kwiatowa 1, 00-001 Warszawa" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">NIP</label>
+          <input class="fak-input" id="sNip" placeholder="000-000-00-00" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Telefon</label>
+          <input class="fak-input" id="sTel" placeholder="+48 000 000 000" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Email</label>
+          <input class="fak-input" id="sEmail" placeholder="email@firma.pl" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Numer konta bankowego</label>
+          <input class="fak-input" id="sKonto" placeholder="00 0000 0000 0000 0000 0000 0000" oninput="renderPreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- KROK 2B: Nabywca -->
+    <div class="fak-card">
+      <div class="fak-card-title"><span>👤</span> Krok 2 — Nabywca</div>
+      <div class="fak-grid">
+        <div class="fak-field fak-col-full">
+          <label class="fak-label">Nazwa firmy / Imię i nazwisko <span class="req">*</span></label>
+          <input class="fak-input" id="nNazwa" placeholder="np. ABC Sp. z o.o." oninput="renderPreview()">
+        </div>
+        <div class="fak-field fak-col-full">
+          <label class="fak-label">Adres <span class="req">*</span></label>
+          <input class="fak-input" id="nAdres" placeholder="ul. Przykładowa 5, 00-002 Kraków" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">NIP</label>
+          <input class="fak-input" id="nNip" placeholder="000-000-00-00" oninput="renderPreview()">
+        </div>
+        <div class="fak-field">
+          <label class="fak-label">Telefon</label>
+          <input class="fak-input" id="nTel" placeholder="+48 000 000 000" oninput="renderPreview()">
+        </div>
+        <div class="fak-field fak-col-full">
+          <label class="fak-label">Email</label>
+          <input class="fak-input" id="nEmail" placeholder="kontakt@firma.pl" oninput="renderPreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- KROK 3: Pozycje -->
+    <div class="fak-card">
+      <div class="fak-card-title"><span>🧾</span> Krok 3 — Pozycje faktury</div>
+      <div id="fakItems"></div>
+      <button class="fak-add-btn" onclick="addItem()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Dodaj pozycję
+      </button>
+      <div class="fak-totals" id="fakTotals" style="margin-top:14px;">
+        <div class="fak-totals-row"><span>Razem netto:</span><span id="tNetto">0,00 zł</span></div>
+        <div class="fak-totals-row"><span>Razem VAT:</span><span id="tVat">0,00 zł</span></div>
+        <div class="fak-totals-row gross"><span>Razem brutto:</span><span id="tBrutto">0,00 zł</span></div>
+      </div>
+    </div>
+
+    <!-- KROK 4: Płatność -->
+    <div class="fak-card">
+      <div class="fak-card-title"><span>💳</span> Krok 4 — Sposób płatności</div>
+      <div class="fak-pay-opts">
+        <button class="fak-pay-btn active" data-pay="przelew" onclick="selectPay(this)">Przelew bankowy</button>
+        <button class="fak-pay-btn" data-pay="gotowka" onclick="selectPay(this)">Gotówka</button>
+        <button class="fak-pay-btn" data-pay="karta" onclick="selectPay(this)">Karta</button>
+        <button class="fak-pay-btn" data-pay="blik" onclick="selectPay(this)">BLIK</button>
+      </div>
+      <div class="fak-field" style="margin-bottom:10px;">
+        <label class="fak-label">Uwagi / Dodatkowe informacje</label>
+        <textarea class="fak-input" id="fUwagi" placeholder="np. Dziękujemy za współpracę." oninput="renderPreview()"></textarea>
+      </div>
+    </div>
+
+    <button class="fak-generate-btn" onclick="printInvoice()">
+      ⬇ Pobierz / Wydrukuj fakturę
+    </button>
+  </div>
+
+  <!-- ── PREVIEW ── -->
+  <div class="fak-preview-panel">
+    <div class="fak-preview-header">
+      <div class="fak-preview-title">Podgląd faktury</div>
+      <button class="fak-print-btn" onclick="printInvoice()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Drukuj / PDF
+      </button>
+    </div>
+    <div class="fak-preview-wrap">
+      <div id="fakPreviewDoc"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRINT AREA -->
+<div id="fakPrintArea"></div>
+
+<script>
+/* ── AUTH NAV ── */
+function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
+function updateNavAuth(){
+  var user=getUser();
+  var loginBtn=document.getElementById('navLoginBtn');
+  var registerBtn=document.getElementById('navRegisterBtn');
+  var profile=document.getElementById('navProfile');
+  var avatar=document.getElementById('navAvatar');
+  var emailEl=document.getElementById('navProfileEmail');
+  if(!loginBtn)return;
+  if(user){
+    loginBtn.style.display='none';registerBtn.style.display='none';profile.style.display='flex';
+    if(emailEl)emailEl.textContent=user.email||'';
+    if(user.photo)avatar.innerHTML='<img src="'+user.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    else avatar.textContent=(user.email||'U')[0].toUpperCase();
+  }else{loginBtn.style.display='';registerBtn.style.display='';profile.style.display='none';}
+}
+function toggleNavDropdown(e){e.stopPropagation();var dd=document.getElementById('navDropdown');if(dd)dd.classList.toggle('open');}
+function logoutUser(){localStorage.removeItem('dokumo_user');localStorage.removeItem('dokumo_sub');(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href='index.html';});}
+document.addEventListener('click',function(){var dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');});
+updateNavAuth();window._renderNav=updateNavAuth;
+
+/* ── DEFAULTS ── */
+(function(){
+  var today = new Date();
+  var fmt = function(d){return d.toISOString().slice(0,10);};
+  document.getElementById('fDataWyst').value = fmt(today);
+  document.getElementById('fDataSprzed').value = fmt(today);
+})();
+
+/* ── ITEMS ── */
+var fakItems = [];
+var _itemId = 0;
+
+var VAT_RATES = ['zw.','0%','5%','8%','23%'];
+var UNITS = ['szt.','godz.','usł.','kg','m','m²','m³','l','komplet','pakiet'];
+var _payMethod = 'przelew';
+
+function addItem(){
+  var id = ++_itemId;
+  fakItems.push({id:id, nazwa:'', ilosc:1, jm:'szt.', cenaNetto:0, vat:'23%'});
+  renderItems();
+  renderPreview();
+}
+
+function removeItem(id){
+  fakItems = fakItems.filter(function(i){return i.id!==id;});
+  renderItems();
+  renderPreview();
+}
+
+function updateItem(id, field, val){
+  var item = fakItems.find(function(i){return i.id===id;});
+  if(!item) return;
+  if(field==='ilosc'||field==='cenaNetto') val = parseFloat(val)||0;
+  item[field] = val;
+  renderItemBrutto(id);
+  renderTotals();
+  renderPreview();
+}
+
+function renderItemBrutto(id){
+  var item = fakItems.find(function(i){return i.id===id;});
+  if(!item) return;
+  var brutto = calcBrutto(item);
+  var el = document.getElementById('brutto-'+id);
+  if(el) el.innerHTML = 'Wartość brutto: <strong>'+fmtMoney(brutto)+'</strong>';
+}
+
+function calcBrutto(item){
+  var netto = item.ilosc * item.cenaNetto;
+  var vatRate = parseVat(item.vat);
+  return netto * (1 + vatRate);
+}
+
+function parseVat(v){
+  if(v==='zw.') return 0;
+  return parseFloat(v)/100||0;
+}
+
+function renderItems(){
+  var html = '';
+  fakItems.forEach(function(item){
+    html += '<div class="fak-item" id="item-'+item.id+'">';
+    html += '<div class="fak-item-row">';
+    // Nazwa
+    html += '<div class="fak-field"><label class="fak-label">Nazwa <span class="req">*</span></label>';
+    html += '<input class="fak-input" placeholder="Usługa / Produkt" value="'+esc(item.nazwa)+'" oninput="updateItem('+item.id+',\'nazwa\',this.value)"></div>';
+    // Ilość
+    html += '<div class="fak-field"><label class="fak-label">Ilość</label>';
+    html += '<input class="fak-input" type="number" min="0.01" step="0.01" value="'+item.ilosc+'" oninput="updateItem('+item.id+',\'ilosc\',this.value)"></div>';
+    // Jednostka
+    html += '<div class="fak-field"><label class="fak-label">Jedn.</label>';
+    html += '<select class="fak-select" onchange="updateItem('+item.id+',\'jm\',this.value)">';
+    UNITS.forEach(function(u){ html += '<option'+(item.jm===u?' selected':'')+'>'+u+'</option>'; });
+    html += '</select></div>';
+    // Cena netto
+    html += '<div class="fak-field"><label class="fak-label">Cena netto</label>';
+    html += '<input class="fak-input" type="number" min="0" step="0.01" value="'+item.cenaNetto+'" oninput="updateItem('+item.id+',\'cenaNetto\',this.value)"></div>';
+    // VAT
+    html += '<div class="fak-field"><label class="fak-label">VAT %</label>';
+    html += '<select class="fak-select" onchange="updateItem('+item.id+',\'vat\',this.value)">';
+    VAT_RATES.forEach(function(v){ html += '<option'+(item.vat===v?' selected':'')+'>'+v+'</option>'; });
+    html += '</select></div>';
+    // Usuń
+    html += '<div class="fak-field"><label class="fak-label" style="visibility:hidden">X</label>';
+    html += '<button class="fak-remove-btn" onclick="removeItem('+item.id+')" title="Usuń">';
+    html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+    html += '</button></div>';
+    html += '</div>';
+    html += '<div class="fak-item-brutto" id="brutto-'+item.id+'">Wartość brutto: <strong>'+fmtMoney(calcBrutto(item))+'</strong></div>';
+    html += '</div>';
+  });
+  document.getElementById('fakItems').innerHTML = html;
+  renderTotals();
+}
+
+function renderTotals(){
+  var cur = getCurSymbol();
+  var netto=0, vat=0;
+  fakItems.forEach(function(item){
+    var n = item.ilosc * item.cenaNetto;
+    netto += n;
+    vat += n * parseVat(item.vat);
+  });
+  var brutto = netto + vat;
+  document.getElementById('tNetto').textContent = fmtMoney(netto, cur);
+  document.getElementById('tVat').textContent = fmtMoney(vat, cur);
+  document.getElementById('tBrutto').textContent = fmtMoney(brutto, cur);
+}
+
+function getCurSymbol(){
+  var w = (document.getElementById('fWaluta')||{}).value||'PLN';
+  var map={PLN:'zł',EUR:'€',USD:'$',GBP:'£',CHF:'CHF'};
+  return map[w]||w;
+}
+
+function fmtMoney(n, cur){
+  cur = cur || getCurSymbol();
+  return n.toFixed(2).replace('.',',') + ' ' + cur;
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function selectPay(btn){
+  document.querySelectorAll('.fak-pay-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  _payMethod = btn.dataset.pay;
+  renderPreview();
+}
+
+/* ── DATE HELPERS ── */
+function fmtDate(iso){
+  if(!iso) return '—';
+  var p=iso.split('-');
+  if(p.length<3) return iso;
+  return p[2]+'.'+p[1]+'.'+p[0];
+}
+
+function addDays(iso, days){
+  if(!iso) return '—';
+  var d = new Date(iso);
+  d.setDate(d.getDate()+(parseInt(days)||0));
+  return fmtDate(d.toISOString().slice(0,10));
+}
+
+function getPayLabel(){
+  var map={przelew:'Przelew bankowy', gotowka:'Gotówka', karta:'Karta płatnicza', blik:'BLIK'};
+  return map[_payMethod]||_payMethod;
+}
+
+/* ── RENDER PREVIEW ── */
+function renderPreview(){
+  var numer = (document.getElementById('fNumer')||{}).value||'—';
+  var dataWyst = (document.getElementById('fDataWyst')||{}).value||'';
+  var dataSprzed = (document.getElementById('fDataSprzed')||{}).value||'';
+  var termin = (document.getElementById('fTermin')||{}).value||'14';
+  var miejsce = (document.getElementById('fMiejsce')||{}).value||'';
+  var wystawil = (document.getElementById('fWystawil')||{}).value||'';
+  var odebral = (document.getElementById('fOdebral')||{}).value||'';
+
+  var sNazwa = (document.getElementById('sNazwa')||{}).value||'';
+  var sAdres = (document.getElementById('sAdres')||{}).value||'';
+  var sNip = (document.getElementById('sNip')||{}).value||'';
+  var sTel = (document.getElementById('sTel')||{}).value||'';
+  var sEmail = (document.getElementById('sEmail')||{}).value||'';
+  var sKonto = (document.getElementById('sKonto')||{}).value||'';
+
+  var nNazwa = (document.getElementById('nNazwa')||{}).value||'';
+  var nAdres = (document.getElementById('nAdres')||{}).value||'';
+  var nNip = (document.getElementById('nNip')||{}).value||'';
+  var nTel = (document.getElementById('nTel')||{}).value||'';
+  var nEmail = (document.getElementById('nEmail')||{}).value||'';
+  var uwagi = (document.getElementById('fUwagi')||{}).value||'';
+  var cur = getCurSymbol();
+  var terminDate = addDays(dataWyst, termin);
+
+  // Table rows
+  var tableRows = '';
+  var netto=0, vatSum=0;
+  fakItems.forEach(function(item, idx){
+    var n = item.ilosc * item.cenaNetto;
+    var v = n * parseVat(item.vat);
+    netto += n; vatSum += v;
+    tableRows += '<tr>';
+    tableRows += '<td class="center">'+(idx+1)+'</td>';
+    tableRows += '<td>'+esc(item.nazwa||'—')+'</td>';
+    tableRows += '<td class="center">'+item.ilosc+'</td>';
+    tableRows += '<td class="center">'+esc(item.jm)+'</td>';
+    tableRows += '<td class="right">'+fmtMoney(item.cenaNetto, cur)+'</td>';
+    tableRows += '<td class="center">'+esc(item.vat)+'</td>';
+    tableRows += '<td class="right">'+fmtMoney(n, cur)+'</td>';
+    tableRows += '<td class="right">'+fmtMoney(v, cur)+'</td>';
+    tableRows += '<td class="right"><strong>'+fmtMoney(n+v, cur)+'</strong></td>';
+    tableRows += '</tr>';
+  });
+  if(!tableRows) tableRows = '<tr><td colspan="9" style="text-align:center;color:#9ca3af;padding:16px 0">Brak pozycji</td></tr>';
+  var brutto = netto + vatSum;
+
+  var html = '';
+  html += '<div class="inv-header">';
+  html += '<div><div class="inv-logo">'+(sNazwa?esc(sNazwa):'Twoja Firma')+'</div>';
+  if(sAdres) html += '<div class="inv-logo-sub">'+esc(sAdres)+'</div>';
+  html += '</div>';
+  html += '<div class="inv-title"><div class="inv-title-main">FAKTURA VAT</div>';
+  html += '<div class="inv-title-num">'+esc(numer)+'</div></div>';
+  html += '</div>';
+
+  html += '<div class="inv-divider"></div>';
+
+  // Meta bar
+  html += '<div class="inv-meta">';
+  html += '<div class="inv-meta-item"><div class="inv-meta-label">Data wystawienia</div><div class="inv-meta-value">'+fmtDate(dataWyst)+'</div></div>';
+  html += '<div class="inv-meta-item"><div class="inv-meta-label">Data sprzedaży</div><div class="inv-meta-value">'+fmtDate(dataSprzed)+'</div></div>';
+  html += '<div class="inv-meta-item"><div class="inv-meta-label">Termin płatności</div><div class="inv-meta-value">'+terminDate+'</div></div>';
+  html += '<div class="inv-meta-item"><div class="inv-meta-label">Sposób płatności</div><div class="inv-meta-value">'+getPayLabel()+'</div></div>';
+  html += '</div>';
+
+  // Parties
+  html += '<div class="inv-parties">';
+  html += '<div><div class="inv-party-label">Sprzedawca</div>';
+  html += '<div class="inv-party-name">'+(sNazwa?esc(sNazwa):'—')+'</div>';
+  if(sAdres) html += '<div class="inv-party-line">'+esc(sAdres)+'</div>';
+  if(sNip)   html += '<div class="inv-party-line">NIP: '+esc(sNip)+'</div>';
+  if(sTel)   html += '<div class="inv-party-line">Tel: '+esc(sTel)+'</div>';
+  if(sEmail) html += '<div class="inv-party-line">'+esc(sEmail)+'</div>';
+  if(sKonto) html += '<div class="inv-party-line">Konto: '+esc(sKonto)+'</div>';
+  html += '</div>';
+  html += '<div><div class="inv-party-label">Nabywca</div>';
+  html += '<div class="inv-party-name">'+(nNazwa?esc(nNazwa):'—')+'</div>';
+  if(nAdres) html += '<div class="inv-party-line">'+esc(nAdres)+'</div>';
+  if(nNip)   html += '<div class="inv-party-line">NIP: '+esc(nNip)+'</div>';
+  if(nTel)   html += '<div class="inv-party-line">Tel: '+esc(nTel)+'</div>';
+  if(nEmail) html += '<div class="inv-party-line">'+esc(nEmail)+'</div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Table
+  html += '<table class="inv-table">';
+  html += '<thead><tr>';
+  html += '<th class="num">#</th><th>Nazwa / Opis</th><th class="num">Ilość</th><th class="num">Jedn.</th>';
+  html += '<th class="right">Cena netto</th><th class="num">VAT</th>';
+  html += '<th class="right">Wartość netto</th><th class="right">VAT kwota</th><th class="right">Brutto</th>';
+  html += '</tr></thead><tbody>'+tableRows+'</tbody></table>';
+
+  // Totals
+  html += '<div class="inv-totals"><div class="inv-totals-box">';
+  html += '<div class="inv-totals-row"><span>Razem netto:</span><span>'+fmtMoney(netto, cur)+'</span></div>';
+  html += '<div class="inv-totals-row"><span>Razem VAT:</span><span>'+fmtMoney(vatSum, cur)+'</span></div>';
+  html += '<div class="inv-totals-row gross"><span>Do zapłaty:</span><span>'+fmtMoney(brutto, cur)+'</span></div>';
+  html += '</div></div>';
+
+  // Payment block
+  if(sKonto && _payMethod==='przelew'){
+    html += '<div class="inv-payment">';
+    html += '<div class="inv-payment-title">Dane do przelewu</div>';
+    html += '<div class="inv-payment-grid">';
+    html += '<div class="inv-payment-item"><div class="inv-payment-label">Odbiorca</div><div class="inv-payment-value">'+esc(sNazwa||'—')+'</div></div>';
+    html += '<div class="inv-payment-item"><div class="inv-payment-label">Numer konta</div><div class="inv-payment-value">'+esc(sKonto)+'</div></div>';
+    html += '<div class="inv-payment-item"><div class="inv-payment-label">Kwota</div><div class="inv-payment-value">'+fmtMoney(brutto, cur)+'</div></div>';
+    html += '<div class="inv-payment-item"><div class="inv-payment-label">Tytuł przelewu</div><div class="inv-payment-value">'+esc(numer)+'</div></div>';
+    html += '</div></div>';
+  }
+
+  // Notes + signatures
+  html += '<div class="inv-footer">';
+  html += '<div class="inv-notes">';
+  if(uwagi) html += esc(uwagi)+'<br><br>';
+  html += 'Dokument wystawiony komputerowo.';
+  if(miejsce) html += ' Miejsce wystawienia: '+esc(miejsce)+'.';
+  html += '</div>';
+  html += '<div style="display:flex;gap:24px;">';
+  if(wystawil){
+    html += '<div class="inv-sign"><div style="height:28px;"></div><div class="inv-sign-line"></div><div class="inv-sign-label">Wystawił/a: '+esc(wystawil)+'</div></div>';
+  }
+  if(odebral){
+    html += '<div class="inv-sign"><div style="height:28px;"></div><div class="inv-sign-line"></div><div class="inv-sign-label">Odebrał/a: '+esc(odebral)+'</div></div>';
+  }
+  html += '</div></div>';
+
+  document.getElementById('fakPreviewDoc').innerHTML = html;
+  renderTotals();
+}
+
+/* ── PRINT ── */
+function printInvoice(){
+  var pa = document.getElementById('fakPrintArea');
+  var preview = document.getElementById('fakPreviewDoc').innerHTML;
+  pa.innerHTML = '<div style="font-family:Inter,sans-serif;font-size:10px;color:#1a1a1a;padding:30px 36px;width:595px;min-height:842px;">'+preview+'</div>';
+  window.print();
+}
+
+/* ── INIT ── */
+addItem();
+renderPreview();
+</script>
+</body>
+</html>
