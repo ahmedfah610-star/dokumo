@@ -32,6 +32,7 @@ body{font-family:'Figtree',sans-serif;background:#f3f4f6;color:var(--ink);-webki
 /* ── LAYOUT ── */
 .fak-wrap{max-width:1280px;margin:0 auto;padding:24px;display:grid;grid-template-columns:500px 1fr;gap:24px;align-items:start;}
 @media(max-width:1024px){.fak-wrap{grid-template-columns:1fr;}}
+@media(max-width:600px){.fak-wrap{padding:12px;gap:16px;}}
 
 /* ── FORM ── */
 .fak-form{display:flex;flex-direction:column;gap:14px;}
@@ -40,6 +41,12 @@ body{font-family:'Figtree',sans-serif;background:#f3f4f6;color:var(--ink);-webki
 .fak-card-title span{font-size:16px;}
 .fak-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .fak-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:600px){
+  .fak-grid{grid-template-columns:1fr;}
+  .fak-grid-3{grid-template-columns:1fr 1fr;}
+  .fak-col-full{grid-column:1/-1;}
+  .fak-card{padding:14px;}
+}
 .fak-col-full{grid-column:1/-1;}
 .fak-field{display:flex;flex-direction:column;gap:4px;}
 .fak-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);}
@@ -52,6 +59,15 @@ select.fak-select{cursor:pointer;}
 /* ── LINE ITEMS ── */
 .fak-item{background:#f9fafb;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
 .fak-item-row{display:grid;grid-template-columns:1fr 64px 60px 100px 72px 36px;gap:8px;align-items:end;}
+@media(max-width:600px){
+  .fak-item-row{grid-template-columns:1fr 1fr 36px;row-gap:8px;}
+  .fak-item-row .fak-field:nth-child(1){grid-column:1/3;}
+  .fak-item-row .fak-field:nth-child(2){grid-column:1/2;}
+  .fak-item-row .fak-field:nth-child(3){grid-column:2/3;}
+  .fak-item-row .fak-remove-btn{grid-column:3/4;grid-row:1/2;align-self:start;margin-top:18px;}
+  .fak-item-row .fak-field:nth-child(4){grid-column:1/2;}
+  .fak-item-row .fak-field:nth-child(5){grid-column:2/4;}
+}
 .fak-item-brutto{text-align:right;font-size:12px;font-weight:600;color:var(--ink3);margin-top:8px;}
 .fak-item-brutto strong{color:var(--ink);}
 .fak-remove-btn{width:34px;height:34px;border:1.5px solid #fecaca;background:#fef2f2;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;padding:0;}
@@ -75,11 +91,12 @@ textarea.fak-input{resize:vertical;min-height:68px;line-height:1.5;}
 
 /* ── PREVIEW PANEL ── */
 .fak-preview-panel{position:sticky;top:80px;}
+@media(max-width:1024px){.fak-preview-panel{position:static;}}
 .fak-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .fak-preview-title{font-size:13px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;}
 .fak-print-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;background:#111827;color:#fff;border:none;border-radius:10px;font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
 .fak-print-btn:hover{opacity:.85;}
-.fak-preview-wrap{background:#e8e8ea;border-radius:16px;padding:20px;overflow-x:auto;}
+.fak-preview-wrap{background:#e8e8ea;border-radius:16px;padding:20px;overflow:hidden;}
 #fakPreviewDoc{
   background:#fff;
   width:595px;
@@ -91,9 +108,6 @@ textarea.fak-input{resize:vertical;min-height:68px;line-height:1.5;}
   padding:40px 44px;
   zoom:0.88;
   transform-origin:top left;
-}
-@media(max-width:700px){
-  #fakPreviewDoc{zoom:0.55;}
 }
 
 /* ── INVOICE STYLES (inside preview) ── */
@@ -665,9 +679,24 @@ function printInvoice(){
   window.print();
 }
 
+/* ── RESPONSIVE PREVIEW ZOOM ── */
+function setPreviewZoom(){
+  var wrap = document.querySelector('.fak-preview-wrap');
+  if(!wrap) return;
+  var available = wrap.clientWidth - 40; // 20px padding each side
+  var naturalW = 595;
+  var zoom = Math.min(0.88, available / naturalW);
+  var doc = document.getElementById('fakPreviewDoc');
+  doc.style.zoom = zoom;
+  // set wrap height to match scaled doc
+  doc.style.minHeight = '';
+}
+window.addEventListener('resize', setPreviewZoom);
+
 /* ── INIT ── */
 addItem();
 renderPreview();
+setPreviewZoom();
 </script>
 </body>
 </html>
