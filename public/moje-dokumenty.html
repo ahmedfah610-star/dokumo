@@ -760,6 +760,16 @@ function downloadDoc(docId, format) {
     triggerDl(URL.createObjectURL(blob), safeName + '.txt');
 
   } else if (format === 'pdf') {
+    if (doc.typeId === 'faktura' || text.indexOf('__FAK_JSON__:') === 0) {
+      var fakJson = doc.fakDataJson || (text.indexOf('__FAK_JSON__:') === 0 ? text.slice('__FAK_JSON__:'.length) : null);
+      if (!fakJson) { showToast('Brak danych faktury.'); return; }
+      sessionStorage.setItem('dokumo_editFakData', fakJson);
+      sessionStorage.setItem('dokumo_editFakDocId', doc.id);
+      var ftype = 'vat';
+      try { ftype = JSON.parse(fakJson).type || 'vat'; } catch(e) {}
+      window.open('faktura.html?type=' + ftype + '&autodownload=1', '_blank');
+      return;
+    }
     if (doc.typeId === 'cover-letter' || text.indexOf('__LM_HTML__:') === 0) {
       var fname = safeName + '.pdf';
       var paperHtml = null;
@@ -862,6 +872,16 @@ function editDoc(docId) {
     }
     sessionStorage.setItem('dokumo_editLmDocId', docId);
     window.location.href = 'generator.html';
+    return;
+  }
+  // Faktura → redirect to faktura generator
+  if (doc.typeId === 'faktura' || (doc.text && doc.text.indexOf('__FAK_JSON__:') === 0)) {
+    var fakJson = doc.fakDataJson || (doc.text && doc.text.indexOf('__FAK_JSON__:') === 0 ? doc.text.slice('__FAK_JSON__:'.length) : null);
+    if (fakJson) sessionStorage.setItem('dokumo_editFakData', fakJson);
+    sessionStorage.setItem('dokumo_editFakDocId', docId);
+    var ftype = 'vat';
+    try { ftype = JSON.parse(fakJson || '{}').type || 'vat'; } catch(e) {}
+    window.location.href = 'faktura.html?type=' + ftype;
     return;
   }
   // CV → redirect to kreator

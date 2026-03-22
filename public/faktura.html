@@ -191,6 +191,7 @@ window._fbSignOut = () => signOut(auth);
 onAuthStateChanged(auth, async u => {
   if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));}
   else{localStorage.removeItem("dokumo_user");}
+  window._fbToken = u ? () => u.getIdToken(true) : null;
   if(window._renderNav) window._renderNav();
 });
 </script>
@@ -720,6 +721,7 @@ function renderPreview(){
   document.getElementById('fakPreviewDoc').innerHTML = html;
   renderTotals();
   setTimeout(setPreviewZoom, 0);
+  scheduleAutoSave();
 }
 
 /* ── DOWNLOAD PDF ── */
@@ -779,6 +781,74 @@ function downloadFakturaPDF(){
 
   var win = window.open('', '_blank');
   if(win){ win.document.write(fullDoc); win.document.close(); }
+}
+
+/* ── AUTO-SAVE ── */
+var _saveDocId = null;
+var _autoSaveTimer = null;
+
+function collectFakData(){
+  return {
+    type: _fakType,
+    numer: (document.getElementById('fNumer')||{}).value||'',
+    waluta: (document.getElementById('fWaluta')||{}).value||'PLN',
+    dataWyst: (document.getElementById('fDataWyst')||{}).value||'',
+    dataSprzed: (document.getElementById('fDataSprzed')||{}).value||'',
+    termin: (document.getElementById('fTermin')||{}).value||'14',
+    miejsce: (document.getElementById('fMiejsce')||{}).value||'',
+    wystawil: (document.getElementById('fWystawil')||{}).value||'',
+    odebral: (document.getElementById('fOdebral')||{}).value||'',
+    nrZam: (document.getElementById('fNrZam')||{}).value||'',
+    zalPct: (document.getElementById('fZalPct')||{}).value||'30',
+    sNazwa: (document.getElementById('sNazwa')||{}).value||'',
+    sAdres: (document.getElementById('sAdres')||{}).value||'',
+    sNip: (document.getElementById('sNip')||{}).value||'',
+    sTel: (document.getElementById('sTel')||{}).value||'',
+    sEmail: (document.getElementById('sEmail')||{}).value||'',
+    sKonto: (document.getElementById('sKonto')||{}).value||'',
+    nNazwa: (document.getElementById('nNazwa')||{}).value||'',
+    nAdres: (document.getElementById('nAdres')||{}).value||'',
+    nNip: (document.getElementById('nNip')||{}).value||'',
+    nTel: (document.getElementById('nTel')||{}).value||'',
+    nEmail: (document.getElementById('nEmail')||{}).value||'',
+    uwagi: (document.getElementById('fUwagi')||{}).value||'',
+    payMethod: _payMethod,
+    items: fakItems
+  };
+}
+
+async function getAuthToken(){
+  if(typeof window._fbToken === 'function') return await window._fbToken();
+  return null;
+}
+
+function scheduleAutoSave(){ clearTimeout(_autoSaveTimer); _autoSaveTimer = setTimeout(autoSave, 1500); }
+
+async function autoSave(){
+  var token = await getAuthToken();
+  if(!token) return;
+  var data = collectFakData();
+  var cfg = _FAK_CFG[_fakType] || _FAK_CFG.vat;
+  var docName = cfg.label + (data.numer ? ' ' + data.numer : '');
+  var body = {
+    typeId: 'faktura',
+    docCat: 'biznes',
+    docCatLabel: 'Biznes',
+    docIcon: '🧾',
+    name: docName,
+    fakDataJson: JSON.stringify(data),
+    text: '__FAK_JSON__:' + JSON.stringify(data)
+  };
+  try {
+    if(!_saveDocId){
+      var res = await fetch('/api/save-doc', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(body)});
+      var json = await res.json();
+      if(json.id) _saveDocId = json.id;
+    } else {
+      body.docId = _saveDocId;
+      await fetch('/api/update-doc', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(body)});
+    }
+  } catch(e){}
 }
 
 /* ── PRINT ── */
@@ -871,9 +941,55 @@ var _FAK_CFG = {
 })();
 
 /* ── INIT ── */
-addItem();
-renderPreview();
-setPreviewZoom();
+(function loadEditData(){
+  try {
+    var ed = sessionStorage.getItem('dokumo_editFakData');
+    var autodl = _gp('autodownload') === '1';
+    if(!ed){ addItem(); renderPreview(); setPreviewZoom(); return; }
+    var data = JSON.parse(ed);
+    sessionStorage.removeItem('dokumo_editFakData');
+    var eid = sessionStorage.getItem('dokumo_editFakDocId');
+    if(eid){ _saveDocId = eid; sessionStorage.removeItem('dokumo_editFakDocId'); }
+    // Restore fields
+    function sv(id, val){ var el = document.getElementById(id); if(el) el.value = val||''; }
+    sv('fNumer', data.numer);
+    sv('fWaluta', data.waluta);
+    sv('fDataWyst', data.dataWyst);
+    sv('fDataSprzed', data.dataSprzed);
+    sv('fTermin', data.termin);
+    sv('fMiejsce', data.miejsce);
+    sv('fWystawil', data.wystawil);
+    sv('fOdebral', data.odebral);
+    sv('fNrZam', data.nrZam);
+    sv('fZalPct', data.zalPct);
+    sv('sNazwa', data.sNazwa);
+    sv('sAdres', data.sAdres);
+    sv('sNip', data.sNip);
+    sv('sTel', data.sTel);
+    sv('sEmail', data.sEmail);
+    sv('sKonto', data.sKonto);
+    sv('nNazwa', data.nNazwa);
+    sv('nAdres', data.nAdres);
+    sv('nNip', data.nNip);
+    sv('nTel', data.nTel);
+    sv('nEmail', data.nEmail);
+    sv('fUwagi', data.uwagi);
+    if(data.payMethod){
+      _payMethod = data.payMethod;
+      document.querySelectorAll('.fak-pay-btn').forEach(function(b){
+        b.classList.toggle('active', b.dataset.pay === _payMethod);
+      });
+    }
+    if(data.items && data.items.length){
+      fakItems = data.items;
+      _itemId = data.items.reduce(function(m,i){ return Math.max(m, i.id||0); }, 0);
+      renderItems();
+    } else { addItem(); }
+    renderPreview();
+    setPreviewZoom();
+    if(autodl){ setTimeout(downloadFakturaPDF, 800); }
+  } catch(e){ addItem(); renderPreview(); setPreviewZoom(); }
+})();
 </script>
 </body>
 </html>
