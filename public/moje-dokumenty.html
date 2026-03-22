@@ -146,6 +146,7 @@ body {
   max-width: 960px; margin: 0 auto;
   padding: 0 24px 14px;
   font-size: .72rem; color: var(--ink3);
+  display: flex; align-items: center; justify-content: space-between;
 }
 
 /* ── CONTENT ── */
@@ -433,7 +434,6 @@ body {
       <h1 class="m-title">Moje dokumenty<span class="m-count-badge" id="docCount"></span></h1>
       <p style="font-size:.83rem;color:var(--ink3);margin-top:6px;">Wszystkie Twoje wygenerowane dokumenty w jednym miejscu.</p>
     </div>
-    <button class="btn-select-all" id="btnSelectAll" onclick="toggleSelectMode()">Zaznacz</button>
   </div>
 </div>
 
@@ -461,6 +461,7 @@ body {
 <!-- RESULTS LABEL -->
 <div class="m-results-bar">
   <span id="resultsLabel"></span>
+  <button class="btn-select-all" id="btnSelectAll" onclick="toggleSelectMode()">Zaznacz</button>
 </div>
 
 <!-- CONTENT -->
@@ -602,6 +603,14 @@ function filterAndRender() {
   var docs = [].concat(window._allDocs || []);
   var q = (document.getElementById('mySearch').value || '').toLowerCase().trim();
   var sort = document.getElementById('mySort').value;
+
+  // Ukryj listy motywacyjne bez danych (nie można wygenerować PDF)
+  docs = docs.filter(function(d) {
+    if (d.typeId === 'cover-letter' || (d.text && d.text.indexOf('__LM_HTML__:') === 0)) {
+      return d.covDataJson || (d.text && d.text.indexOf('__LM_HTML__:') === 0);
+    }
+    return true;
+  });
 
   if (activeFilter === 'kariera') docs = docs.filter(function(d) { return d.cat === 'kariera'; });
   else if (activeFilter === 'biznes') docs = docs.filter(function(d) { return d.cat === 'biznes'; });
