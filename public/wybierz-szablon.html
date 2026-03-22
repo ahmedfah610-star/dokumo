@@ -862,14 +862,14 @@ function preview(id, c1, c2) {
           <div style="font-size:8.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.07em">Kursy i szkolenia</div>
         </div>
         <div style="height:1.5px;background:#dde3ed;margin-bottom:7px"></div>
-        <div style="font-size:8.5px;color:#444;margin-bottom:9px">${[S.kurs1,S.kurs2].map(k=>`<div style="padding-left:8px;border-left:2px solid ${c2};margin-bottom:4px">${k}</div>`).join('')}</div>
+        <div style="font-size:8.5px;color:#444;margin-bottom:9px">${[S.kurs1,S.kurs2].map(k=>`<div style="display:grid;grid-template-columns:52px 1fr;gap:0 9px;margin-bottom:4px"><div></div><div style="border-left:2px solid ${c2};padding-left:8px">${k}</div></div>`).join('')}</div>
         <!-- Zainteresowania -->
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
           <div style="width:16px;height:16px;border-radius:50%;background:${c1};flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           <div style="font-size:8.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.07em">Zainteresowania</div>
         </div>
         <div style="height:1.5px;background:#dde3ed;margin-bottom:7px"></div>
-        <div style="font-size:8.5px;color:#555;line-height:1.6;padding-left:8px;border-left:2px solid ${c2}">${S.int}</div>
+        <div style="display:grid;grid-template-columns:52px 1fr;gap:0 9px"><div></div><div style="border-left:2px solid ${c2};padding-left:8px;font-size:8.5px;color:#555;line-height:1.6">${S.int}</div></div>
       </div>
     </div>`,
 
