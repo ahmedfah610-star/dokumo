@@ -113,8 +113,18 @@ textarea.fak-input{resize:vertical;min-height:68px;line-height:1.5;}
   font-size:10px;
   color:#1a1a1a;
   padding:40px 44px;
-  zoom:0.88;
   transform-origin:top left;
+}
+
+/* ── MOBILE TABS ── */
+.fak-mob-tabs{display:none;max-width:1280px;margin:0 auto;padding:12px 12px 0;gap:8px;}
+.fak-mob-tab{flex:1;padding:10px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-family:'Figtree',sans-serif;font-size:14px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all 0.15s;}
+.fak-mob-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+@media(max-width:768px){
+  .fak-mob-tabs{display:flex;}
+  .fak-preview-panel{display:none;}
+  .fak-preview-panel.mob-show{display:block;}
+  .fak-form.mob-hide{display:none;}
 }
 
 /* ── INVOICE STYLES (inside preview) ── */
@@ -209,6 +219,12 @@ onAuthStateChanged(auth, async u => {
     </div>
   </div>
 </nav>
+
+<!-- MOBILE TABS -->
+<div class="fak-mob-tabs">
+  <button class="fak-mob-tab active" onclick="switchFakTab('form',this)">✏️ Formularz</button>
+  <button class="fak-mob-tab" onclick="switchFakTab('preview',this)">👁 Podgląd</button>
+</div>
 
 <!-- MAIN -->
 <div class="fak-wrap">
@@ -676,6 +692,7 @@ function renderPreview(){
 
   document.getElementById('fakPreviewDoc').innerHTML = html;
   renderTotals();
+  setTimeout(setPreviewZoom, 0);
 }
 
 /* ── PRINT ── */
@@ -686,17 +703,34 @@ function printInvoice(){
   window.print();
 }
 
+/* ── MOBILE TAB SWITCH ── */
+function switchFakTab(tab, btn){
+  document.querySelectorAll('.fak-mob-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var form = document.querySelector('.fak-form');
+  var preview = document.querySelector('.fak-preview-panel');
+  if(tab === 'form'){
+    form.classList.remove('mob-hide');
+    preview.classList.remove('mob-show');
+  } else {
+    form.classList.add('mob-hide');
+    preview.classList.add('mob-show');
+    setTimeout(setPreviewZoom, 50);
+  }
+}
+
 /* ── RESPONSIVE PREVIEW ZOOM ── */
 function setPreviewZoom(){
   var wrap = document.querySelector('.fak-preview-wrap');
-  if(!wrap) return;
+  if(!wrap || !wrap.clientWidth) return;
   var available = wrap.clientWidth - 40; // 20px padding each side
+  if(available <= 0) return;
   var naturalW = 595;
-  var zoom = Math.min(0.88, available / naturalW);
+  var scale = Math.min(0.88, available / naturalW);
   var doc = document.getElementById('fakPreviewDoc');
-  doc.style.zoom = zoom;
-  // set wrap height to match scaled doc
-  doc.style.minHeight = '';
+  doc.style.transform = 'scale(' + scale + ')';
+  doc.style.transformOrigin = 'top left';
+  wrap.style.height = (doc.offsetHeight * scale + 40) + 'px';
 }
 window.addEventListener('resize', setPreviewZoom);
 
