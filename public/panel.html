@@ -122,7 +122,7 @@ onAuthStateChanged(auth, async user => {
 
 async function loadStats(token) {
   try {
-    const res = await fetch('/api/analytics', { headers: { 'Authorization': 'Bearer ' + token } });
+    const res = await fetch('/api/admin', { headers: { 'Authorization': 'Bearer ' + token } });
     if (res.status === 403) {
       document.getElementById('loginWall').style.display = 'block';
       document.getElementById('loginWall').querySelector('p').textContent = 'Twoje konto nie ma uprawnień administratora.';
@@ -163,10 +163,10 @@ async function grantSub() {
   btn.disabled = true; btn.textContent = 'Zapisywanie…';
   try {
     const token = await window._getAdminToken();
-    const r = await fetch('/api/admin-grant', {
+    const r = await fetch('/api/admin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ email, plan, days })
+      body: JSON.stringify({ action: 'grant', email, plan, days })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Błąd ' + r.status);
