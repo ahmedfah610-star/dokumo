@@ -999,6 +999,17 @@ body { background:#f5f3ef; }
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.3" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
 
+        <button onclick="wmSelectBiznesCat('faktury')" class="wm-biz-cat">
+          <div class="wm-biz-cat-icon" style="background:#fff7ed;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><path d="M8 14h4M8 17h8"/></svg>
+          </div>
+          <div style="flex:1;text-align:left;">
+            <div class="wm-biz-cat-name">Faktury</div>
+            <div class="wm-biz-cat-desc">Generator faktur VAT, proforma, zaliczkowych</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.3" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
       </div>
     </div>
 
@@ -1157,6 +1168,11 @@ var _wmTools = {
     { name:'Umowa wspólników',             desc:'Regulamin współpracy w spółce',           href:'admin.html?doc=spolnikow',           bg:'#fdf4ff', stroke:'#a855f7', icon:'handshake' },
     { name:'Biznesplan dla banku',         desc:'Profesjonalny plan finansowy firmy',      href:'admin.html?doc=biznesplan',          bg:'#f8fafc', stroke:'#475569', icon:'calc' },
     { name:'Analiza SWOT firmy',           desc:'Strategiczna analiza mocnych stron',      href:'admin.html?doc=swot',               bg:'#fff7ed', stroke:'#ea580c', icon:'file' }
+  ],
+  biznes_faktury: [
+    { name:'Faktura VAT',      desc:'Generator faktur z pozycjami i VAT',   href:'faktura.html', bg:'#fff7ed', stroke:'#ea580c', icon:'doc' },
+    { name:'Faktura proforma', desc:'Wstępna faktura przed realizacją',     href:'faktura.html', bg:'#eff6ff', stroke:'#2563eb', icon:'doc' },
+    { name:'Faktura zaliczkowa', desc:'Faktura na podstawie wpłaconej zaliczki', href:'faktura.html', bg:'#f0fdf4', stroke:'#16a34a', icon:'doc' }
   ]
 };
 
@@ -1224,7 +1240,7 @@ window.wmSelectZone = function(zone) {
 
 window.wmSelectBiznesCat = function(cat) {
   _wmNav.fromBiznesCat = true;
-  var catTitles = { ecommerce: 'E-commerce — wybierz dokument', hr: 'HR i umowy — wybierz dokument', admin: 'Administracja i majątek — wybierz dokument' };
+  var catTitles = { ecommerce: 'E-commerce — wybierz dokument', hr: 'HR i umowy — wybierz dokument', admin: 'Administracja i majątek — wybierz dokument', faktury: 'Faktury — wybierz dokument' };
   document.getElementById('wm-step2b').style.display = 'none';
   document.getElementById('wm-step-sep2').style.display = 'block';
   document.getElementById('wm-step3-ind').style.display = 'flex';
