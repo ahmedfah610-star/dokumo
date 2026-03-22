@@ -4044,6 +4044,9 @@ function openCropModal(src) {
   const slider = document.getElementById('cvCropSlider');
   const pct = document.getElementById('cvCropPct');
   slider.value = 100; pct.textContent = '100%';
+  // Square crop for biznes (photo is a square in template), circle for all others
+  const wrap = document.getElementById('cvCropCircleWrap');
+  if (wrap) wrap.style.borderRadius = (cvTemplate === 'biznes') ? '6px' : '50%';
   document.getElementById('cvCropOverlay').classList.add('open');
   _cropImg = new Image();
   _cropImg.onload = () => { clampCropOffset(); renderCropCanvas(); };
