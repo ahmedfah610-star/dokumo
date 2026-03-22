@@ -730,7 +730,7 @@ function openLmPdf(paperHtml, fname) {
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
     '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff;}</style>' +
     '</head><body>' + paperHtml +
-    '<script>window.onload=function(){' +
+    '<script>var _lmDone=false;window.onload=function(){if(_lmDone)return;_lmDone=true;' +
     'html2pdf().set({margin:[18,18,18,18],filename:"' + fname + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}})' +
     '.from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},1000)});' +
     '};<\/script></body></html>';
@@ -762,8 +762,8 @@ function downloadDoc(docId, format) {
       if (!paperHtml && text.indexOf('__LM_HTML__:') === 0) {
         paperHtml = text.slice('__LM_HTML__:'.length);
       }
-      if (paperHtml) { openLmPdf(paperHtml, fname); return; }
-      // Ostateczny fallback: plain text
+      if (paperHtml) { openLmPdf(paperHtml, fname); } else { showToast('Brak danych do wygenerowania PDF.'); }
+      return;
     }
     if (text.indexOf('__CV_HTML__:') === 0) {
       // CV with template — use Railway Puppeteer service (same as kreator-cv.html)
