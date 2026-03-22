@@ -476,6 +476,14 @@ onAuthStateChanged(auth, async user => {
     localStorage.setItem('dokumo_user', JSON.stringify({
       name: user.displayName, email: user.email, photo: user.photoURL
     }));
+    // Pobierz subskrypcję (aktywuje też pending sub nadaną przez admina)
+    try {
+      const token = await user.getIdToken();
+      const r = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + token } });
+      const d = await r.json();
+      if (d.expiresAt) localStorage.setItem('dokumo_sub', JSON.stringify({ plan: d.plan, expiresAt: d.expiresAt, cancelled: d.cancelled || false }));
+      else localStorage.removeItem('dokumo_sub');
+    } catch(e) {}
     showProfile(user);
     // Wczytaj z Firestore
     try {
