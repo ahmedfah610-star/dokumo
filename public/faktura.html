@@ -615,7 +615,8 @@ function renderPreview(){
   html += '<div><div class="inv-logo">'+(sNazwa?esc(sNazwa):'Twoja Firma')+'</div>';
   if(sAdres) html += '<div class="inv-logo-sub">'+esc(sAdres)+'</div>';
   html += '</div>';
-  html += '<div class="inv-title"><div class="inv-title-main">FAKTURA VAT</div>';
+  var _tc = _FAK_CFG[_fakType] || _FAK_CFG.vat;
+  html += '<div class="inv-title"><div class="inv-title-main" style="color:'+_tc.color+'">'+_tc.label+'</div>';
   html += '<div class="inv-title-num">'+esc(numer)+'</div></div>';
   html += '</div>';
 
@@ -690,6 +691,11 @@ function renderPreview(){
     html += '<div class="inv-sign"><div style="height:28px;"></div><div class="inv-sign-line"></div><div class="inv-sign-label">Odebrał/a: '+esc(odebral)+'</div></div>';
   }
   html += '</div></div>';
+
+  // Notka dla proforma i zaliczkowej
+  if(_tc.note){
+    html += '<div style="margin-top:16px;padding:10px 14px;background:#f9fafb;border-radius:8px;font-size:8.5px;color:#6b7280;line-height:1.6;border:1px solid #f0f0f0;">'+esc(_tc.note)+'</div>';
+  }
 
   document.getElementById('fakPreviewDoc').innerHTML = html;
   renderTotals();
@@ -793,6 +799,26 @@ function setPreviewZoom(){
   wrap.style.height = (doc.offsetHeight * scale + 40) + 'px';
 }
 window.addEventListener('resize', setPreviewZoom);
+
+/* ── INVOICE TYPE ── */
+function _gp(k){var m=location.search.match(new RegExp('[?&]'+k+'=([^&]*)'));return m?decodeURIComponent(m[1]):'';}
+var _fakType = _gp('type') || 'vat';
+var _FAK_CFG = {
+  vat:       { label:'FAKTURA VAT',        color:'#ea580c', prefix:'FV',  pageTitle:'Generator Faktury VAT',        note:'' },
+  proforma:  { label:'FAKTURA PROFORMA',   color:'#2563eb', prefix:'PRO', pageTitle:'Generator Faktury Proforma',   note:'Dokument pro forma – nie stanowi faktury VAT w rozumieniu ustawy o podatku od towarów i usług i nie jest podstawą do odliczenia podatku VAT.' },
+  zaliczkowa:{ label:'FAKTURA ZALICZKOWA', color:'#16a34a', prefix:'FZ',  pageTitle:'Generator Faktury Zaliczkowej',note:'Faktura zaliczkowa wystawiona na poczet otrzymanej zaliczki zgodnie z art. 106b ust. 1 pkt 4 ustawy o VAT.' }
+};
+(function initFakType(){
+  var cfg = _FAK_CFG[_fakType] || _FAK_CFG.vat;
+  document.title = cfg.pageTitle + ' — Dokumo';
+  // Ustaw domyślny numer
+  var year = new Date().getFullYear();
+  var nEl = document.getElementById('fNumer');
+  if(nEl && nEl.value === 'FV/2026/001') nEl.value = cfg.prefix + '/' + year + '/001';
+  // Ustaw tytuł formularza
+  var ct = document.querySelector('.fak-card-title');
+  if(ct) ct.innerHTML = '<span>📋</span> ' + cfg.pageTitle;
+})();
 
 /* ── INIT ── */
 addItem();
