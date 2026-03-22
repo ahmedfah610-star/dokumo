@@ -4328,10 +4328,10 @@ function _fixBiznesOverflow(root) {
 
   // Measure natural content height by temporarily removing height constraint
   function naturalH(el) {
-    const h = el.style.height, ov = el.style.overflow, mh = el.style.maxHeight;
-    el.style.height = 'auto'; el.style.overflow = 'visible'; el.style.maxHeight = 'none';
+    const h = el.style.height, ov = el.style.overflow, mh = el.style.maxHeight, minh = el.style.minHeight;
+    el.style.height = 'auto'; el.style.overflow = 'visible'; el.style.maxHeight = 'none'; el.style.minHeight = '0';
     const sh = el.scrollHeight;
-    el.style.height = h; el.style.overflow = ov; el.style.maxHeight = mh;
+    el.style.height = h; el.style.overflow = ov; el.style.maxHeight = mh; el.style.minHeight = minh;
     return sh;
   }
 
