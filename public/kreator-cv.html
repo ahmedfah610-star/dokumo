@@ -1566,7 +1566,7 @@ function buildCVHTML(tpl) {
     const SVG_STAR   = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
     const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
     return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px;max-height:842px;overflow:hidden;display:flex;width:595px;box-sizing:border-box">
+    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:842px;min-height:842px;max-height:842px;overflow:hidden;display:flex;width:595px;box-sizing:border-box">
       <!-- LEFT SIDEBAR 34% — percentage width so it scales correctly when PDF renders at 794px -->
       <div data-biz-sidebar style="width:34%;flex-shrink:0;background:#f5f7fa;border-right:1.5px solid #dde3ed;padding:24px 16px 20px;overflow:hidden;display:flex;flex-direction:column">
         <!-- Photo — width:100% fills sidebar regardless of sidebar width (px or %) -->
