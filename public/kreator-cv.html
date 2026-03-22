@@ -4270,26 +4270,29 @@ function applyAIDuties(i) {
 
 function _fixCVFullHeight(root) {
   if (!root) return;
-  // Ensure full A4 height — background fills the entire page
-  root.style.minHeight = '842px';
-  root.style.height = '842px';
 
-  // Detect sidebar/horizontal-flex layouts (outer div already has display:flex = row)
+  // Detect sidebar/horizontal-flex layouts BEFORE modifying root styles
   const rootStyleStr = root.getAttribute('style') || '';
   const isHorizFlex = rootStyleStr.includes('display:flex') && !rootStyleStr.includes('flex-direction:column');
 
+  // Ensure full A4 page: height + overflow:hidden so background fills the entire page
+  root.style.minHeight = '842px';
+  root.style.maxHeight = '842px';
+  root.style.height    = '842px';
+  root.style.overflow  = 'hidden';
+
   if (isHorizFlex) {
-    // Sidebar templates: find the main content column (flex:1 without explicit width)
-    // and ensure it is display:flex flex-direction:column so margin-top:auto works
+    // Sidebar templates: force every direct child (sidebar + main) to fill the full height
     for (const child of root.children) {
+      child.style.minHeight = '842px';
+      child.style.overflow  = 'hidden';
       const cs = child.getAttribute('style') || '';
       if ((cs.includes('flex:1') || cs.includes('flex: 1')) && !cs.match(/width:\s*\d/)) {
+        // Main column: make it a flex column so margin-top:auto (consent) pins to bottom
         child.style.display = 'flex';
         child.style.flexDirection = 'column';
-        // Pin last child (consent) to bottom
         const last = child.lastElementChild;
         if (last) last.style.marginTop = 'auto';
-        break;
       }
     }
   } else {
@@ -4299,12 +4302,9 @@ function _fixCVFullHeight(root) {
     // Pin the last direct child (consent div) to the bottom
     const last = root.lastElementChild;
     if (last) last.style.marginTop = 'auto';
-    // Give the main content area flex:1 so it expands between header and consent
-    // The main content div is typically the second-to-last or third-to-last child
+    // Give the main content area flex:1 so it expands to fill space
     const children = Array.from(root.children);
     if (children.length >= 2) {
-      // Find the first big content div (grid layout or padded content area)
-      // that is NOT the header (first child) and NOT the consent (last child)
       for (let i = 1; i < children.length - 1; i++) {
         const cs = children[i].getAttribute('style') || '';
         if (cs.includes('display:grid') || cs.includes('padding:') || cs.includes('flex:1')) {
