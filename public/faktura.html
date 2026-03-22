@@ -234,7 +234,7 @@ onAuthStateChanged(auth, async u => {
 
     <!-- KROK 1: Dane rachunku -->
     <div class="fak-card">
-      <div class="fak-card-title"><span>📋</span> Krok 1 — Dane faktury</div>
+      <div class="fak-card-title" id="fldKrok1Title"><span>📋</span> Krok 1 — Dane faktury</div>
       <div class="fak-grid">
         <div class="fak-field">
           <label class="fak-label">Numer faktury <span class="req">*</span></label>
@@ -254,12 +254,12 @@ onAuthStateChanged(auth, async u => {
           <label class="fak-label">Data wystawienia <span class="req">*</span></label>
           <input class="fak-input" id="fDataWyst" type="date" oninput="renderPreview()">
         </div>
-        <div class="fak-field">
-          <label class="fak-label">Data sprzedaży <span class="req">*</span></label>
+        <div class="fak-field" id="fldDataSprzed">
+          <label class="fak-label" id="lblDataSprzed">Data sprzedaży <span class="req">*</span></label>
           <input class="fak-input" id="fDataSprzed" type="date" oninput="renderPreview()">
         </div>
-        <div class="fak-field">
-          <label class="fak-label">Termin płatności (dni)</label>
+        <div class="fak-field" id="fldTermin">
+          <label class="fak-label" id="lblTermin">Termin płatności (dni)</label>
           <input class="fak-input" id="fTermin" type="number" value="14" min="0" max="365" oninput="renderPreview()">
         </div>
         <div class="fak-field">
@@ -270,9 +270,17 @@ onAuthStateChanged(auth, async u => {
           <label class="fak-label">Wystawił/a</label>
           <input class="fak-input" id="fWystawil" placeholder="Imię i nazwisko" oninput="renderPreview()">
         </div>
-        <div class="fak-field">
+        <div class="fak-field" id="fldOdebral">
           <label class="fak-label">Odebrał/a</label>
           <input class="fak-input" id="fOdebral" placeholder="Imię i nazwisko" oninput="renderPreview()">
+        </div>
+        <div class="fak-field" id="fldNrZam" style="display:none">
+          <label class="fak-label">Nr zamówienia / umowy</label>
+          <input class="fak-input" id="fNrZam" placeholder="np. ZAM/2026/001" oninput="renderPreview()">
+        </div>
+        <div class="fak-field" id="fldZalPct" style="display:none">
+          <label class="fak-label">Procent zaliczki (%)</label>
+          <input class="fak-input" id="fZalPct" type="number" value="30" min="1" max="100" oninput="renderPreview()">
         </div>
       </div>
     </div>
@@ -337,7 +345,7 @@ onAuthStateChanged(auth, async u => {
 
     <!-- KROK 3: Pozycje -->
     <div class="fak-card">
-      <div class="fak-card-title"><span>🧾</span> Krok 3 — Pozycje faktury</div>
+      <div class="fak-card-title" id="fldKrok3Title"><span>🧾</span> Krok 3 — Pozycje faktury</div>
       <div id="fakItems"></div>
       <button class="fak-add-btn" onclick="addItem()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -352,7 +360,7 @@ onAuthStateChanged(auth, async u => {
 
     <!-- KROK 4: Płatność -->
     <div class="fak-card">
-      <div class="fak-card-title"><span>💳</span> Krok 4 — Sposób płatności</div>
+      <div class="fak-card-title" id="fldKrok4Title"><span>💳</span> Krok 4 — Sposób płatności</div>
       <div class="fak-pay-opts">
         <button class="fak-pay-btn active" data-pay="przelew" onclick="selectPay(this)">Przelew bankowy</button>
         <button class="fak-pay-btn" data-pay="gotowka" onclick="selectPay(this)">Gotówka</button>
@@ -622,12 +630,24 @@ function renderPreview(){
 
   html += '<div class="inv-divider"></div>';
 
-  // Meta bar
+  // Meta bar — różna zależnie od typu
   html += '<div class="inv-meta">';
   html += '<div class="inv-meta-item"><div class="inv-meta-label">Data wystawienia</div><div class="inv-meta-value">'+fmtDate(dataWyst)+'</div></div>';
-  html += '<div class="inv-meta-item"><div class="inv-meta-label">Data sprzedaży</div><div class="inv-meta-value">'+fmtDate(dataSprzed)+'</div></div>';
-  html += '<div class="inv-meta-item"><div class="inv-meta-label">Termin płatności</div><div class="inv-meta-value">'+terminDate+'</div></div>';
-  html += '<div class="inv-meta-item"><div class="inv-meta-label">Sposób płatności</div><div class="inv-meta-value">'+getPayLabel()+'</div></div>';
+  if(_fakType === 'proforma'){
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Ważna do</div><div class="inv-meta-value">'+fmtDate(dataSprzed)+'</div></div>';
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Termin realizacji</div><div class="inv-meta-value">'+terminDate+'</div></div>';
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Forma rozliczenia</div><div class="inv-meta-value">'+getPayLabel()+'</div></div>';
+  } else if(_fakType === 'zaliczkowa'){
+    var nrZam = ((document.getElementById('fNrZam')||{}).value||'').trim() || '—';
+    var zalPct = ((document.getElementById('fZalPct')||{}).value||'30').trim();
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Data wpłaty</div><div class="inv-meta-value">'+fmtDate(dataSprzed)+'</div></div>';
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Nr zamówienia</div><div class="inv-meta-value">'+esc(nrZam)+'</div></div>';
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Zaliczka</div><div class="inv-meta-value">'+esc(zalPct)+'%</div></div>';
+  } else {
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Data sprzedaży</div><div class="inv-meta-value">'+fmtDate(dataSprzed)+'</div></div>';
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Termin płatności</div><div class="inv-meta-value">'+terminDate+'</div></div>';
+    html += '<div class="inv-meta-item"><div class="inv-meta-label">Sposób płatności</div><div class="inv-meta-value">'+getPayLabel()+'</div></div>';
+  }
   html += '</div>';
 
   // Parties
@@ -687,7 +707,7 @@ function renderPreview(){
   if(wystawil){
     html += '<div class="inv-sign"><div style="height:28px;"></div><div class="inv-sign-line"></div><div class="inv-sign-label">Wystawił/a: '+esc(wystawil)+'</div></div>';
   }
-  if(odebral){
+  if(odebral && _fakType !== 'proforma'){
     html += '<div class="inv-sign"><div style="height:28px;"></div><div class="inv-sign-line"></div><div class="inv-sign-label">Odebrał/a: '+esc(odebral)+'</div></div>';
   }
   html += '</div></div>';
@@ -811,13 +831,43 @@ var _FAK_CFG = {
 (function initFakType(){
   var cfg = _FAK_CFG[_fakType] || _FAK_CFG.vat;
   document.title = cfg.pageTitle + ' — Dokumo';
-  // Ustaw domyślny numer
+
+  // Domyślny numer faktury
   var year = new Date().getFullYear();
   var nEl = document.getElementById('fNumer');
   if(nEl && nEl.value === 'FV/2026/001') nEl.value = cfg.prefix + '/' + year + '/001';
-  // Ustaw tytuł formularza
-  var ct = document.querySelector('.fak-card-title');
-  if(ct) ct.innerHTML = '<span>📋</span> ' + cfg.pageTitle;
+
+  // Tytuł Krok 1
+  var t1 = document.getElementById('fldKrok1Title');
+  if(t1) t1.innerHTML = '<span>📋</span> ' + cfg.pageTitle;
+
+  if(_fakType === 'proforma'){
+    // Data sprzedaży → Termin ważności
+    var lbl = document.getElementById('lblDataSprzed');
+    if(lbl) lbl.textContent = 'Termin ważności proformy';
+    // Termin płatności → Termin realizacji
+    var lt = document.getElementById('lblTermin');
+    if(lt) lt.textContent = 'Termin realizacji (dni)';
+    // Ukryj pole Odebrał/a
+    var fo = document.getElementById('fldOdebral');
+    if(fo) fo.style.display = 'none';
+    // Krok 4 → Forma rozliczenia
+    var k4 = document.getElementById('fldKrok4Title');
+    if(k4) k4.innerHTML = '<span>💳</span> Krok 4 — Forma rozliczenia';
+
+  } else if(_fakType === 'zaliczkowa'){
+    // Data sprzedaży → Data wpłaty zaliczki
+    var lbl2 = document.getElementById('lblDataSprzed');
+    if(lbl2) lbl2.textContent = 'Data wpłaty zaliczki';
+    // Pokaż pola zaliczkowe
+    var fnz = document.getElementById('fldNrZam');
+    if(fnz) fnz.style.display = '';
+    var fzp = document.getElementById('fldZalPct');
+    if(fzp) fzp.style.display = '';
+    // Krok 3 → Przedmiot zaliczki
+    var k3 = document.getElementById('fldKrok3Title');
+    if(k3) k3.innerHTML = '<span>🧾</span> Krok 3 — Przedmiot zaliczki';
+  }
 })();
 
 /* ── INIT ── */
