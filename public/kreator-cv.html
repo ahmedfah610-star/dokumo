@@ -1431,6 +1431,97 @@ function buildCVHTML(tpl) {
     </div>`;
   }
 
+  // ── PRESTIGE ──────────────────────────────────────────────
+  if (tpl === 'prestige') {
+    const sh = (lbl) => `<div style="font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${c2};margin-bottom:10px;padding-bottom:4px;border-bottom:1.5px solid ${c2}55">${lbl}</div>`;
+    return `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px;display:flex;flex-direction:column;width:595px;box-sizing:border-box">
+      <!-- HEADER -->
+      <div style="background:${c1};padding:26px 34px 20px;display:flex;align-items:center;gap:18px;flex-shrink:0">
+        ${d.zdjecie?`<div style="width:70px;height:70px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid ${c2}">${photo}</div>`:''}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1.05">${name}</div>
+          ${d.stanowisko?`<div style="font-size:12.5px;color:${c2};font-weight:600;margin-top:5px;letter-spacing:0.4px">${d.stanowisko}</div>`:''}
+          <div style="display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.12)">
+            ${d.email?`<span style="font-size:9.5px;color:rgba(255,255,255,0.75)">✉ ${d.email}</span>`:''}
+            ${d.tel?`<span style="font-size:9.5px;color:rgba(255,255,255,0.75)">📞 ${d.tel}</span>`:''}
+            ${d.adres?`<span style="font-size:9.5px;color:rgba(255,255,255,0.75)">📍 ${d.adres}</span>`:''}
+            ${d.linkedin?`<span style="font-size:9.5px;color:rgba(255,255,255,0.75)">🔗 ${d.linkedin}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <!-- GOLD ACCENT BAR -->
+      <div style="height:3px;background:${c2};flex-shrink:0"></div>
+      <!-- BODY: left main + right sidebar -->
+      <div style="display:flex;flex:1;min-height:0">
+        <!-- MAIN CONTENT (63%) -->
+        <div style="flex:0 0 375px;padding:22px 22px 22px 34px;border-right:1px solid #ede9e2;overflow:hidden">
+          ${d.podsumowanie?`
+          <div style="margin-bottom:18px">
+            ${sh(L("summary"))}
+            <div style="font-size:11px;line-height:1.75;color:#444">${d.podsumowanie}</div>
+          </div>`:''}
+          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+          <div style="margin-bottom:18px">
+            ${sh(L("experience"))}
+            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <div style="font-size:11.5px;font-weight:700;color:#0d1b2a">${e.firma||''}</div>
+                <div style="font-size:9.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>
+              <div style="font-size:10.5px;color:${c2};font-weight:600;margin-top:2px">${e.stanowisko||''}</div>
+              ${e.opis?`<div style="font-size:10.5px;color:#555;line-height:1.6;margin-top:4px">${e.opis}</div>`:''}
+            </div>`).join('')}
+          </div>`:''}
+          ${d.wyksztalcenie.some(e=>e.szkola)?`
+          <div style="margin-bottom:18px">
+            ${sh(L("education"))}
+            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;gap:8px">
+                <div style="font-size:11.5px;font-weight:700;color:#0d1b2a">${e.szkola}</div>
+                <div style="font-size:9.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+              </div>
+              <div style="font-size:10px;color:#666;margin-top:2px">${e.kierunek||''}</div>
+            </div>`).join('')}
+          </div>`:''}
+          ${renderCustomSections(c1, c2)}
+        </div>
+        <!-- SIDEBAR (37%) -->
+        <div style="flex:1;background:#f5f3ef;padding:22px 20px 22px 18px;overflow:hidden">
+          ${skills.length?`
+          <div style="margin-bottom:18px">
+            ${sh(L("skills"))}
+            <div style="display:flex;flex-wrap:wrap;gap:5px">
+              ${skills.map(s=>`<span style="font-size:9.5px;padding:3px 9px;background:#fff;border:1px solid ${c2}55;color:#222;border-radius:99px;font-weight:500">${s}</span>`).join('')}
+            </div>
+          </div>`:''}
+          ${d.jezyki.some(l=>l.jezyk)?`
+          <div style="margin-bottom:18px">
+            ${sh(L("languages"))}
+            ${d.jezyki.filter(l=>l.jezyk).map(l=>`
+            <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline">
+              <span style="font-size:10.5px;font-weight:700;color:#0d1b2a">${l.jezyk}</span>
+              <span style="font-size:9px;color:#888">${l.poziom}</span>
+            </div>`).join('')}
+          </div>`:''}
+          ${certGroups.length?certGroups.map(({label,items})=>`
+          <div style="margin-bottom:18px">
+            ${sh(label)}
+            ${items.map(c=>`<div style="font-size:9.5px;color:#444;margin-bottom:6px;padding-left:8px;border-left:2px solid ${c2}">${c}</div>`).join('')}
+          </div>`).join(''):''}
+          ${d.zainteresowania?`
+          <div style="margin-bottom:18px">
+            ${sh(L("interests"))}
+            <div style="font-size:10px;color:#555;line-height:1.65">${d.zainteresowania}</div>
+          </div>`:''}
+        </div>
+      </div>
+      <div style="text-align:center;font-size:9px;color:#ccc;padding:7px;border-top:1px solid #ede9e2;background:#fff;flex-shrink:0">${L("consent")}</div>
+    </div>`;
+  }
+
   return '';
 }
 
@@ -2564,6 +2655,7 @@ let cvTemplate = 'nova';
 
 const CV_TEMPLATES = [
   { id:'nova',         name:'Nova',         color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(135deg,#1a3a2e 0%,#1a3a2e 30%,#f8f8f8 30%)' },
+  { id:'prestige',     name:'Prestige',     color1:'#0d1b2a', color2:'#c9a84c',  thumb:'linear-gradient(180deg,#0d1b2a 30%,#c9a84c 30%,#c9a84c 32.5%,#f5f3ef 32.5%)' },
   { id:'nordic',       name:'Nordic',       color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(180deg,#fff 0%,#fff 30%,#f8f8f8 30%)' },
   { id:'cascade',      name:'Cascade',      color1:'#0f766e', color2:'#14b8a6',  thumb:'linear-gradient(90deg,#0f766e 36%,#f0faf9 36%)' },
   { id:'metro',        name:'Metro',        color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(180deg,#1a1a1a 25%,#f6f6f6 25%)' },
@@ -2594,7 +2686,7 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   const tpl = p.get('template');
   const mode = p.get('mode');
   const from = p.get('from');
-  const known = ['nova','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen'];
+  const known = ['nova','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen'];
   if (tpl && known.includes(tpl)) {
     cvTemplate = tpl; // Template chosen on picker page — continue to wizard
   } else if (mode === 'import' || from === 'translate') {
