@@ -30,8 +30,10 @@ export default async function handler(req, res) {
 
   if (!pdfServiceUrl) return res.status(500).json({ error: 'PDF_SERVICE_URL nie ustawiony' });
 
-  // Remove fixed min-height from inline styles (templates use min-height:842px)
-  const cleanHtml = html.replace(/min-height\s*:\s*\d+px/gi, 'min-height:0');
+  // Remove fixed min-height; expand hardcoded 595px width to fill A4 (PDF renders at 794px)
+  const cleanHtml = html
+    .replace(/min-height\s*:\s*\d+px/gi, 'min-height:0')
+    .replace(/\bwidth\s*:\s*595px/gi, 'width:100%');
 
   const fullHtml = `<!DOCTYPE html>
 <html>
