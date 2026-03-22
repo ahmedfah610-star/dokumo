@@ -2894,7 +2894,7 @@ let cvTemplate = 'nova';
 
 const CV_TEMPLATES = [
   { id:'nova',         name:'Nova',         color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(135deg,#1a3a2e 0%,#1a3a2e 30%,#f8f8f8 30%)' },
-  { id:'oxford',       name:'Oxford',       color1:'#11355c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#11355c 28%,#f8f8f8 28%)' },
+  { id:'maroon',       name:'Maroon',       color1:'#1a1a2e', color2:'#6b7280',  thumb:'linear-gradient(90deg,#fff 63%,#f8f8f8 63%)' },
   { id:'biznes',       name:'Biznes',       color1:'#1a3a5c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#f5f7fa 34%,#fff 34%)' },
   { id:'prestige',     name:'Prestige',     color1:'#0d1b2a', color2:'#c9a84c',  thumb:'linear-gradient(180deg,#0d1b2a 30%,#c9a84c 30%,#c9a84c 32.5%,#f5f3ef 32.5%)' },
   { id:'nordic',       name:'Nordic',       color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(180deg,#fff 0%,#fff 30%,#f8f8f8 30%)' },
@@ -2914,8 +2914,8 @@ const CV_TEMPLATES = [
   { id:'athens',       name:'Athens',       color1:'#1e3a5f', color2:'#2563eb',  thumb:'linear-gradient(135deg,#1e3a5f,#2563eb)' },
   { id:'matrix',       name:'Matrix',       color1:'#00ff88', color2:'#00cc6a',  thumb:'linear-gradient(135deg,#0d1117 60%,#00ff88 100%)' },
   { id:'prism',        name:'Prism',        color1:'#7c3aed', color2:'#ec4899',  thumb:'linear-gradient(135deg,#7c3aed,#ec4899)' },
+  { id:'oxford',       name:'Oxford',       color1:'#11355c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#11355c 28%,#f8f8f8 28%)' },
   { id:'linen',        name:'Linen',        color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#fef3c7,#fed7aa)' },
-  { id:'maroon',       name:'Maroon',       color1:'#1a1a2e', color2:'#6b7280',  thumb:'linear-gradient(90deg,#fff 63%,#f8f8f8 63%)' },
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
@@ -4550,9 +4550,9 @@ function renderTplGrid() {
   renderColorPicker();
 
   const groups = [
-    { label: 'Premium',      ids: ['nova', 'oxford', 'biznes', 'nordic', 'cascade', 'metro'] },
-    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen', 'maroon'] },
-    { label: 'Klasyczne',    ids: ['sidebar', 'timeline', 'bold', 'midnight'] },
+    { label: 'Premium',      ids: ['nova', 'maroon', 'biznes', 'nordic', 'cascade', 'metro'] },
+    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen'] },
+    { label: 'Klasyczne',    ids: ['oxford', 'sidebar', 'timeline', 'bold', 'midnight'] },
     { label: 'Nowoczesne',   ids: ['teal', 'ocean'] },
     { label: 'Kreatywne',    ids: ['creative', 'coral', 'rose'] },
     { label: 'Wyraziste',    ids: ['shield'] },

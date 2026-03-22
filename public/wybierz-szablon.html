@@ -218,7 +218,7 @@ body{
 // ── Templates ────────────────────────────────────────────────
 const T = [
   { id:'nova',      name:'Nova',       c1:'#1a3a2e', c2:'#2d6b52' },
-  { id:'oxford',    name:'Oxford',     c1:'#11355c', c2:'#2980b9' },
+  { id:'maroon',    name:'Maroon',     c1:'#1a1a2e', c2:'#6b7280' },
   { id:'biznes',    name:'Biznes',     c1:'#1a3a5c', c2:'#2980b9' },
   { id:'cascade',   name:'Cascade',    c1:'#0f766e', c2:'#14b8a6' },
   { id:'metro',     name:'Metro',      c1:'#1a3a2e', c2:'#2d6b52' },
@@ -227,7 +227,7 @@ const T = [
   { id:'matrix',    name:'Matrix',     c1:'#00ff88', c2:'#00cc6a' },
   { id:'prism',     name:'Prism',      c1:'#7c3aed', c2:'#ec4899' },
   { id:'linen',     name:'Linen',      c1:'#92400e', c2:'#d97706' },
-  { id:'maroon',    name:'Maroon',     c1:'#1a1a2e', c2:'#6b7280' },
+  { id:'oxford',    name:'Oxford',     c1:'#11355c', c2:'#2980b9' },
   { id:'sidebar',   name:'Sidebar',    c1:'#1a2744', c2:'#2c4a8a' },
   { id:'timeline',  name:'Timeline',   c1:'#1a3a2e', c2:'#2d6b52' },
   { id:'bold',      name:'Bold',       c1:'#c0392b', c2:'#e74c3c' },
@@ -909,7 +909,11 @@ function preview(id, c1, c2) {
           ${mHs('Certyfikaty')}
           <div style="margin-bottom:13px">${[S.cert1,S.cert2,S.cert3].map(cE).join('')}</div>
           ${mHs('Kursy i szkolenia')}
-          <div>${[S.kurs1,S.kurs2].map(cE).join('')}</div>
+          <div style="margin-bottom:13px">${[S.kurs1,S.kurs2].map(cE).join('')}</div>
+          ${mHs('Staże zawodowe')}
+          <div style="margin-bottom:13px">${[{f:S.staz1f,r:S.staz1r,d:S.staz1d},{f:S.staz2f,r:S.staz2r,d:S.staz2d}].map(x=>`<div style="margin-bottom:7px"><div style="font-size:9px;font-weight:600;color:#111">${x.f}</div><div style="font-size:8.5px;color:#555">${x.r}</div><div style="font-size:8px;color:#9ca3af">${x.d}</div></div>`).join('')}</div>
+          ${mHs('Zainteresowania')}
+          <div style="font-size:9px;color:#555;line-height:1.6">${S.int}</div>
         </div>
       </div>`;
     })(),
