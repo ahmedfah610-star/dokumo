@@ -710,11 +710,11 @@ function downloadFakturaPDF(){
   var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
     '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">' +
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
-    '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff;}' + pageStyles + '</style>' +
+    '<style>*{box-sizing:border-box}html,body{margin:0;padding:0;width:595px;overflow:hidden;background:#fff;}' + pageStyles + '</style>' +
     '</head><body>' +
-    '<div id="inv" style="width:595px;min-height:842px;background:#fff;font-family:Inter,sans-serif;font-size:10px;color:#1a1a1a;padding:40px 44px;box-sizing:border-box;">' + content + '</div>' +
+    '<div id="inv" style="width:595px;background:#fff;font-family:Inter,sans-serif;font-size:10px;color:#1a1a1a;padding:40px 44px;">' + content + '</div>' +
     '<script>var _done=false;window.onload=function(){if(_done)return;_done=true;' +
-    'html2pdf().set({margin:0,filename:"' + filename + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}})' +
+    'html2pdf().set({margin:0,filename:"' + filename + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false,width:595,windowWidth:595},jsPDF:{unit:"pt",format:[595,842],orientation:"portrait"}})' +
     '.from(document.getElementById("inv")).save().then(function(){setTimeout(function(){window.close()},1000)});' +
     '};<\/script></body></html>';
 
