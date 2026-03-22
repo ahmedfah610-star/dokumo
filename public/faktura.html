@@ -698,33 +698,28 @@ function renderPreview(){
 
 /* ── DOWNLOAD PDF ── */
 function downloadFakturaPDF(){
-  var genBtn = document.querySelector('.fak-generate-btn');
-  var prtBtn = document.querySelector('.fak-print-btn');
-  var genOrig = genBtn ? genBtn.innerHTML : '';
-  var prtOrig = prtBtn ? prtBtn.innerHTML : '';
-  if(genBtn){ genBtn.disabled=true; genBtn.textContent='Generowanie…'; }
-  if(prtBtn){ prtBtn.disabled=true; }
-
   var numer = (document.getElementById('fNumer')||{}).value || 'faktura';
   var filename = 'faktura-' + numer.replace(/[\s\/\\:*?"<>|]+/g,'-').toLowerCase() + '.pdf';
 
-  // Klon podglądu w naturalnym rozmiarze A4 (bez transform)
-  var container = document.createElement('div');
-  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;min-height:842px;background:#fff;font-family:Inter,sans-serif;font-size:10px;color:#1a1a1a;padding:40px 44px;box-sizing:border-box;';
-  container.innerHTML = document.getElementById('fakPreviewDoc').innerHTML;
-  document.body.appendChild(container);
+  var content = document.getElementById('fakPreviewDoc').innerHTML;
 
-  html2pdf().set({
-    margin: 0,
-    filename: filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).from(container).save().then(function(){
-    document.body.removeChild(container);
-    if(genBtn){ genBtn.disabled=false; genBtn.innerHTML=genOrig; }
-    if(prtBtn){ prtBtn.disabled=false; prtBtn.innerHTML=prtOrig; }
-  });
+  // Zbierz style CSS ze strony (zawierają .inv-* klasy)
+  var pageStyles = '';
+  document.querySelectorAll('style').forEach(function(s){ pageStyles += s.innerHTML; });
+
+  var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">' +
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
+    '<style>*{box-sizing:border-box}body{margin:0;padding:0;background:#fff;}' + pageStyles + '</style>' +
+    '</head><body>' +
+    '<div id="inv" style="width:595px;min-height:842px;background:#fff;font-family:Inter,sans-serif;font-size:10px;color:#1a1a1a;padding:40px 44px;box-sizing:border-box;">' + content + '</div>' +
+    '<script>var _done=false;window.onload=function(){if(_done)return;_done=true;' +
+    'html2pdf().set({margin:0,filename:"' + filename + '",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}})' +
+    '.from(document.getElementById("inv")).save().then(function(){setTimeout(function(){window.close()},1000)});' +
+    '};<\/script></body></html>';
+
+  var win = window.open('', '_blank');
+  if(win){ win.document.write(fullDoc); win.document.close(); }
 }
 
 /* ── PRINT ── */
