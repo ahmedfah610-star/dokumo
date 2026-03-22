@@ -151,11 +151,12 @@ textarea.fak-input{resize:vertical;min-height:68px;line-height:1.5;}
 
 <!-- FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-const app = initializeApp({apiKey:"AIzaSyBQ0sdqjgS5xNflEz3m5m1dOe0RTAU71yg",authDomain:"dokumo-f9e99.firebaseapp.com",projectId:"dokumo-f9e99"});
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
+const app=getApps().length?getApps()[0]:initializeApp(__c);
 const auth = getAuth(app);
-window._fbSignOut = () => auth.signOut();
+window._fbSignOut = () => signOut(auth);
 onAuthStateChanged(auth, async u => {
   if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));}
   else{localStorage.removeItem("dokumo_user");}
