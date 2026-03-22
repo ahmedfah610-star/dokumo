@@ -1431,6 +1431,86 @@ function buildCVHTML(tpl) {
     </div>`;
   }
 
+  // ── OXFORD ────────────────────────────────────────────────
+  if (tpl === 'oxford') {
+    const sh = (lbl) => `<div style="font-size:8.5px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${c1};padding-left:9px;border-left:3px solid ${c1};margin-bottom:10px">${lbl}</div>`;
+    const sbLabel = (lbl) => `<div style="font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.18em;color:rgba(255,255,255,0.45);margin-bottom:7px">${lbl}</div>`;
+    return `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px;display:flex;width:595px;box-sizing:border-box">
+      <!-- SIDEBAR 28% -->
+      <div style="width:168px;flex-shrink:0;background:${c1};padding:26px 16px 24px;display:flex;flex-direction:column">
+        <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto 13px;background:rgba(255,255,255,0.12);flex-shrink:0;border:2.5px solid rgba(255,255,255,0.2)">
+          ${d.zdjecie?`<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover">`:
+          `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
+        </div>
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:13.5px;font-weight:800;color:#fff;line-height:1.2;word-break:break-word">${name}</div>
+          ${d.stanowisko?`<div style="font-size:9.5px;color:${c2};margin-top:5px;font-weight:600">${d.stanowisko}</div>`:''}
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,0.12);margin-bottom:14px;flex-shrink:0"></div>
+        ${sbLabel('Kontakt')}
+        <div style="margin-bottom:16px">
+          ${d.email?`<div style="font-size:8.5px;color:rgba(255,255,255,0.82);margin-bottom:5px;word-break:break-all">✉ ${d.email}</div>`:''}
+          ${d.tel?`<div style="font-size:8.5px;color:rgba(255,255,255,0.82);margin-bottom:5px">📞 ${d.tel}</div>`:''}
+          ${d.adres?`<div style="font-size:8.5px;color:rgba(255,255,255,0.82);margin-bottom:5px">📍 ${d.adres}</div>`:''}
+          ${d.linkedin?`<div style="font-size:8.5px;color:rgba(255,255,255,0.82);word-break:break-all">🔗 ${d.linkedin}</div>`:''}
+        </div>
+        ${skills.length?`
+        ${sbLabel(L("skills"))}
+        <div style="margin-bottom:16px">
+          ${skills.map(s=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><div style="width:4px;height:4px;border-radius:50%;background:${c2};flex-shrink:0"></div><div style="font-size:9px;color:rgba(255,255,255,0.88)">${s}</div></div>`).join('')}
+        </div>`:''}
+        ${d.jezyki.some(l=>l.jezyk)?`
+        ${sbLabel(L("languages"))}
+        <div style="margin-bottom:16px">
+          ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="margin-bottom:7px"><div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.9)">${l.jezyk}</div><div style="font-size:8px;color:rgba(255,255,255,0.5)">${l.poziom}</div></div>`).join('')}
+        </div>`:''}
+        ${certGroups.length?certGroups.map(({label,items})=>`
+        ${sbLabel(label)}
+        <div style="margin-bottom:14px">
+          ${items.map(c=>`<div style="font-size:8.5px;color:rgba(255,255,255,0.8);margin-bottom:5px;line-height:1.4">${c}</div>`).join('')}
+        </div>`).join(''):''}
+        ${d.zainteresowania?`
+        ${sbLabel(L("interests"))}
+        <div style="font-size:8.5px;color:rgba(255,255,255,0.75);line-height:1.55">${d.zainteresowania}</div>`:''}
+      </div>
+      <!-- MAIN 72% -->
+      <div style="flex:1;padding:26px 26px 24px 22px;min-width:0">
+        ${d.podsumowanie?`
+        <div style="margin-bottom:18px">
+          ${sh(L("summary"))}
+          <div style="font-size:11px;line-height:1.75;color:#444">${d.podsumowanie}</div>
+        </div>`:''}
+        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+        <div style="margin-bottom:18px">
+          ${sh(L("experience"))}
+          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+          <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+              <div style="font-size:11.5px;font-weight:700;color:#111">${e.firma||''}</div>
+              <div style="font-size:9.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+            </div>
+            <div style="font-size:10.5px;color:${c2};font-weight:600;margin-top:2px">${e.stanowisko||''}</div>
+            ${e.opis?`<div style="font-size:10.5px;color:#555;line-height:1.6;margin-top:4px">${e.opis}</div>`:''}
+          </div>`).join('')}
+        </div>`:''}
+        ${d.wyksztalcenie.some(e=>e.szkola)?`
+        <div style="margin-bottom:18px">
+          ${sh(L("education"))}
+          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;gap:8px">
+              <div style="font-size:11.5px;font-weight:700;color:#111">${e.szkola}</div>
+              <div style="font-size:9.5px;color:#aaa;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')}</div>
+            </div>
+            <div style="font-size:10px;color:#666;margin-top:2px">${e.kierunek||''}</div>
+          </div>`).join('')}
+        </div>`:''}
+        ${renderCustomSections(c1, c2)}
+      </div>
+    </div>`;
+  }
+
   // ── PRESTIGE ──────────────────────────────────────────────
   if (tpl === 'prestige') {
     const sh = (lbl) => `<div style="font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${c2};margin-bottom:10px;padding-bottom:4px;border-bottom:1.5px solid ${c2}55">${lbl}</div>`;
@@ -2655,6 +2735,7 @@ let cvTemplate = 'nova';
 
 const CV_TEMPLATES = [
   { id:'nova',         name:'Nova',         color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(135deg,#1a3a2e 0%,#1a3a2e 30%,#f8f8f8 30%)' },
+  { id:'oxford',       name:'Oxford',       color1:'#11355c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#11355c 28%,#f8f8f8 28%)' },
   { id:'prestige',     name:'Prestige',     color1:'#0d1b2a', color2:'#c9a84c',  thumb:'linear-gradient(180deg,#0d1b2a 30%,#c9a84c 30%,#c9a84c 32.5%,#f5f3ef 32.5%)' },
   { id:'nordic',       name:'Nordic',       color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(180deg,#fff 0%,#fff 30%,#f8f8f8 30%)' },
   { id:'cascade',      name:'Cascade',      color1:'#0f766e', color2:'#14b8a6',  thumb:'linear-gradient(90deg,#0f766e 36%,#f0faf9 36%)' },
@@ -2686,7 +2767,7 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   const tpl = p.get('template');
   const mode = p.get('mode');
   const from = p.get('from');
-  const known = ['nova','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen'];
+  const known = ['nova','oxford','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen'];
   if (tpl && known.includes(tpl)) {
     cvTemplate = tpl; // Template chosen on picker page — continue to wizard
   } else if (mode === 'import' || from === 'translate') {
