@@ -4360,7 +4360,11 @@ function updateCVPreview() {
   try {
     el.innerHTML = buildCVHTML(cvTemplate);
     _fixCVFullHeight(el.firstElementChild);
-    if (cvTemplate === 'biznes') _fixBiznesOverflow(el.firstElementChild);
+    if (cvTemplate === 'biznes') {
+      // Double rAF: ensure browser computes layout before scrollHeight is read
+      const _bizRoot = el.firstElementChild;
+      requestAnimationFrame(() => requestAnimationFrame(() => _fixBiznesOverflow(_bizRoot)));
+    }
   } catch(e) {
     console.error('buildCVHTML error:', e);
     el.innerHTML = '<div style="padding:20px;color:red;font-size:12px">Błąd szablonu: ' + e.message + '</div>';
@@ -4611,6 +4615,8 @@ async function downloadCV() {
   saveCVToMyDocs(fullName);
 
   const el = document.getElementById('cvPreviewInner');
+  // Ensure biznes rebalancing is applied before reading innerHTML for PDF
+  if (cvTemplate === 'biznes' && el && el.firstElementChild) _fixBiznesOverflow(el.firstElementChild);
   if (!el) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
