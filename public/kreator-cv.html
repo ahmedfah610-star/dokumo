@@ -2873,6 +2873,7 @@ let cvTemplate = 'nova';
 const CV_TEMPLATES = [
   { id:'nova',         name:'Nova',         color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(135deg,#1a3a2e 0%,#1a3a2e 30%,#f8f8f8 30%)' },
   { id:'oxford',       name:'Oxford',       color1:'#11355c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#11355c 28%,#f8f8f8 28%)' },
+  { id:'biznes',       name:'Biznes',       color1:'#1a3a5c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#f5f7fa 34%,#fff 34%)' },
   { id:'prestige',     name:'Prestige',     color1:'#0d1b2a', color2:'#c9a84c',  thumb:'linear-gradient(180deg,#0d1b2a 30%,#c9a84c 30%,#c9a84c 32.5%,#f5f3ef 32.5%)' },
   { id:'nordic',       name:'Nordic',       color1:'#1a3a2e', color2:'#2d6b52',  thumb:'linear-gradient(180deg,#fff 0%,#fff 30%,#f8f8f8 30%)' },
   { id:'cascade',      name:'Cascade',      color1:'#0f766e', color2:'#14b8a6',  thumb:'linear-gradient(90deg,#0f766e 36%,#f0faf9 36%)' },
@@ -2892,7 +2893,6 @@ const CV_TEMPLATES = [
   { id:'matrix',       name:'Matrix',       color1:'#00ff88', color2:'#00cc6a',  thumb:'linear-gradient(135deg,#0d1117 60%,#00ff88 100%)' },
   { id:'prism',        name:'Prism',        color1:'#7c3aed', color2:'#ec4899',  thumb:'linear-gradient(135deg,#7c3aed,#ec4899)' },
   { id:'linen',        name:'Linen',        color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#fef3c7,#fed7aa)' },
-  { id:'biznes',       name:'Biznes',       color1:'#1a3a5c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#f5f7fa 34%,#fff 34%)' },
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
@@ -4270,8 +4270,9 @@ function applyAIDuties(i) {
 
 function _fixCVFullHeight(root) {
   if (!root) return;
-  // Ensure full A4 min-height
+  // Ensure full A4 height — background fills the entire page
   root.style.minHeight = '842px';
+  root.style.height = '842px';
 
   // Detect sidebar/horizontal-flex layouts (outer div already has display:flex = row)
   const rootStyleStr = root.getAttribute('style') || '';
@@ -4325,22 +4326,27 @@ function _fixBiznesOverflow(root) {
 
   const PAGE_H = 842;
 
+  // Measure natural content height by temporarily removing height constraint
+  function naturalH(el) {
+    const h = el.style.height, ov = el.style.overflow, mh = el.style.maxHeight;
+    el.style.height = 'auto'; el.style.overflow = 'visible'; el.style.maxHeight = 'none';
+    const sh = el.scrollHeight;
+    el.style.height = h; el.style.overflow = ov; el.style.maxHeight = mh;
+    return sh;
+  }
+
   // Step 1: sidebar overflow → move last [data-biz-s] sections to main extra
-  {
-    const sections = Array.from(sidebar.querySelectorAll('[data-biz-s]'));
-    for (let i = sections.length - 1; i >= 0; i--) {
-      if (sidebar.scrollHeight <= PAGE_H) break;
-      extra.appendChild(sections[i]);
-    }
+  const sideSections = Array.from(sidebar.querySelectorAll('[data-biz-s]'));
+  for (let i = sideSections.length - 1; i >= 0; i--) {
+    if (naturalH(sidebar) <= PAGE_H) break;
+    extra.appendChild(sideSections[i]);
   }
 
   // Step 2: main overflow → move last [data-biz-m] sections to sidebar bottom
-  {
-    const sections = Array.from(main.querySelectorAll('[data-biz-m]'));
-    for (let i = sections.length - 1; i >= 0; i--) {
-      if (main.scrollHeight <= PAGE_H) break;
-      sidebar.appendChild(sections[i]);
-    }
+  const mainSections = Array.from(main.querySelectorAll('[data-biz-m]'));
+  for (let i = mainSections.length - 1; i >= 0; i--) {
+    if (naturalH(main) <= PAGE_H) break;
+    sidebar.appendChild(mainSections[i]);
   }
 }
 
@@ -4509,8 +4515,8 @@ function renderTplGrid() {
   renderColorPicker();
 
   const groups = [
-    { label: 'Premium',      ids: ['nova', 'nordic', 'cascade', 'metro'] },
-    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen', 'biznes'] },
+    { label: 'Premium',      ids: ['nova', 'oxford', 'biznes', 'nordic', 'cascade', 'metro'] },
+    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen'] },
     { label: 'Klasyczne',    ids: ['sidebar', 'timeline', 'bold', 'midnight'] },
     { label: 'Nowoczesne',   ids: ['teal', 'ocean'] },
     { label: 'Kreatywne',    ids: ['creative', 'coral', 'rose'] },
