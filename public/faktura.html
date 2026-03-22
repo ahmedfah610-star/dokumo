@@ -42,14 +42,16 @@ body{font-family:'Figtree',sans-serif;background:#f3f4f6;color:var(--ink);-webki
 .fak-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .fak-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 @media(max-width:600px){
-  .fak-grid{grid-template-columns:1fr;}
-  .fak-grid-3{grid-template-columns:1fr 1fr;}
+  .fak-grid{grid-template-columns:1fr 1fr;}
+  .fak-grid-3{grid-template-columns:1fr 1fr 1fr;}
   .fak-col-full{grid-column:1/-1;}
-  .fak-card{padding:12px;}
-  .fak-card-title{font-size:12px;margin-bottom:12px;}
-  .fak-label{font-size:9px;}
-  .fak-input,.fak-select{font-size:11px;padding:5px 8px;border-radius:7px;}
+  .fak-card{padding:10px;border-radius:10px;}
+  .fak-card-title{font-size:11px;margin-bottom:10px;}
+  .fak-label{font-size:8.5px;letter-spacing:0.04em;}
+  .fak-input,.fak-select{font-size:11px;padding:4px 7px;border-radius:6px;height:30px;}
+  textarea.fak-input{height:auto;min-height:48px;}
   .fak-field{gap:2px;}
+  .fak-form{gap:10px;}
   .fak-grid,.fak-grid-3{gap:6px;}
 }
 .fak-col-full{grid-column:1/-1;}
