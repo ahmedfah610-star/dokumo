@@ -1553,9 +1553,14 @@ function buildCVHTML(tpl) {
 
   // ── BIZNES (foto + dane w sidebarze, doświadczenie po prawej) ──
   if (tpl === 'biznes') {
-    // Section header helper: small filled circle icon + uppercase label + underline
+    const sb = cvSidebarSections;
+    const skillsInSb = sb.has('umiejetnosci') && skills.length;
+    const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
+    const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
+    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
     const bIcon = (svgPath) => `<div style="width:18px;height:18px;border-radius:50%;background:${c1};flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></div>`;
     const bHdr = (lbl, svgPath) => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">${bIcon(svgPath)}<div style="font-size:9.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.09em">${lbl}</div></div><div style="height:1.5px;background:#dde3ed;margin-bottom:9px"></div>`;
+    const bHdrSb = (lbl, svgPath) => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">${bIcon(svgPath)}<div style="font-size:9.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.09em">${lbl}</div></div><div style="height:1.5px;background:#dde3ed;margin-bottom:9px"></div>`;
     const SVG_PERSON = '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>';
     const SVG_SHARE  = '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>';
     const SVG_KEY    = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
@@ -1564,85 +1569,40 @@ function buildCVHTML(tpl) {
     const SVG_GRAD   = '<path d="M22 10v6M2 10l10 5 10-5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>';
     const SVG_BOOK   = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>';
     const SVG_STAR   = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    const certItemsSb = (items) => items.map(c=>{const p=c.split(' | ');const hasDt=p.length>1;const dt=hasDt?p[0]:'';const body=hasDt?p.slice(1).join(' | '):c;return `<div style="font-size:9px;color:#444;margin-bottom:5px;padding-left:8px;border-left:2px solid ${c2}"><span style="font-size:8px;color:#9ca3af">${dt}</span>${dt?'<br>':''}${body}</div>`;}).join('');
+    const certItemsMn = (items) => items.map(c=>{const p=c.split(' | ');const hasDt=p.length>1;const dt=hasDt?p[0]:'';const body=hasDt?p.slice(1).join(' | '):c;return `<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:8px"><div style="padding-top:1px;text-align:right;font-size:8.5px;color:#9ca3af;line-height:1.6">${dt.replace(' – ','<br>')}</div><div style="border-left:2px solid ${c2};padding-left:10px"><div style="font-size:9.5px;color:#333;line-height:1.5">${body}</div></div></div>`;}).join('');
     return `
     <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:842px;min-height:842px;max-height:842px;overflow:hidden;display:flex;width:595px;box-sizing:border-box">
-      <!-- LEFT SIDEBAR 34% — percentage width so it scales correctly when PDF renders at 794px -->
-      <div data-biz-sidebar style="width:34%;flex-shrink:0;background:#f5f7fa;border-right:1.5px solid #dde3ed;padding:24px 16px 20px;overflow:hidden;display:flex;flex-direction:column">
-        <!-- Photo — square, fills sidebar width -->
+      <!-- LEFT SIDEBAR 34% -->
+      <div style="width:34%;flex-shrink:0;background:#f5f7fa;border-right:1.5px solid #dde3ed;padding:24px 16px 20px;overflow:hidden;display:flex;flex-direction:column">
         <div style="width:100%;aspect-ratio:1/1;margin-bottom:18px;flex-shrink:0;overflow:hidden">
-          ${d.zdjecie
-            ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block">`
-            : `<div style="width:100%;height:100%;background:#d8dde8;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#9ba4b8" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
+          ${d.zdjecie?`<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block">`:`<div style="width:100%;height:100%;background:#d8dde8;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#9ba4b8" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
         </div>
-        ${bHdr(L("contact"), SVG_PERSON)}
+        ${bHdrSb(L("contact"), SVG_PERSON)}
         <div style="margin-bottom:14px;font-size:9.5px;color:#333;line-height:1.7">
           ${d.adres?`<div><b style="color:${c1}">Adres: </b>${d.adres}</div>`:''}
           ${d.tel?`<div><b style="color:${c1}">Telefon: </b>${d.tel}</div>`:''}
           ${d.email?`<div style="word-break:break-all"><b style="color:${c1}">E-mail: </b>${d.email}</div>`:''}
         </div>
-        ${d.linkedin?`<div data-biz-s>
-        ${bHdr('Social Media', SVG_SHARE)}
-        <div style="margin-bottom:14px;font-size:9.5px;color:#333"><b style="color:${c1}">LinkedIn: </b><span style="word-break:break-all">${d.linkedin}</span></div></div>`:''}
-        ${skills.length?`<div data-biz-s>
-        ${bHdr(L("skills"), SVG_KEY)}
-        <div style="margin-bottom:14px">
-          ${skills.map(s=>`<div style="font-size:9.5px;color:#333;margin-bottom:4px;padding-left:8px;border-left:2.5px solid ${c2}">${s}</div>`).join('')}
-        </div></div>`:''}
-        ${d.jezyki.some(l=>l.jezyk)?`<div data-biz-s>
-        ${bHdr(L("languages"), SVG_GLOBE)}
-        <div style="margin-bottom:14px">
-          ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="margin-bottom:7px;padding-left:8px;border-left:2px solid ${c2}"><div style="font-size:9.5px;font-weight:600;color:#222">${l.jezyk}</div><div style="font-size:8.5px;color:#888;margin-top:1px">${l.poziom}</div></div>`).join('')}
-        </div></div>`:''}
-        ${certGroups.map(({label,items})=>`<div data-biz-s>
-        ${bHdr(label, SVG_BOOK)}
-        <div style="margin-bottom:14px">${items.map(c=>{const p=c.split(' | ');const hasDt=p.length>1;const dt=hasDt?p[0]:'';const body=hasDt?p.slice(1).join(' | '):c;return `<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:8px"><div style="padding-top:1px;text-align:right;font-size:8.5px;color:#9ca3af;line-height:1.6">${dt.replace(' – ','<br>')}</div><div style="border-left:2px solid ${c2};padding-left:10px"><div style="font-size:9.5px;color:#333;line-height:1.5">${body}</div></div></div>`;}).join('')}</div></div>`).join('')}
+        ${d.linkedin?`${bHdrSb('Social Media', SVG_SHARE)}<div style="margin-bottom:14px;font-size:9.5px;color:#333"><b style="color:${c1}">LinkedIn: </b><span style="word-break:break-all">${d.linkedin}</span></div>`:''}
+        ${skillsInSb?`${bHdrSb(L("skills"), SVG_KEY)}<div style="margin-bottom:14px">${skills.map(s=>`<div style="font-size:9.5px;color:#333;margin-bottom:4px;padding-left:8px;border-left:2.5px solid ${c2}">${s}</div>`).join('')}</div>`:''}
+        ${jezykiInSb?`${bHdrSb(L("languages"), SVG_GLOBE)}<div style="margin-bottom:14px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="margin-bottom:7px;padding-left:8px;border-left:2px solid ${c2}"><div style="font-size:9.5px;font-weight:600;color:#222">${l.jezyk}</div><div style="font-size:8.5px;color:#888;margin-top:1px">${l.poziom}</div></div>`).join('')}</div>`:''}
+        ${certGroups.filter(cg=>sb.has(cg.key)).map(({label,items})=>`${bHdrSb(label, SVG_BOOK)}<div style="margin-bottom:14px">${certItemsSb(items)}</div>`).join('')}
+        ${intInSb?`${bHdrSb(L("interests"), SVG_STAR)}<div style="font-size:9.5px;color:#555;line-height:1.6;margin-bottom:14px;padding-left:8px;border-left:2px solid ${c2}">${d.zainteresowania}</div>`:''}
+        ${customSects.filter(s=>sb.has('custom-'+s.id)).map(s=>`${bHdrSb(s.title||'', SVG_BOOK)}<div style="font-size:9.5px;color:#555;line-height:1.6;margin-bottom:14px;padding-left:8px;border-left:2px solid ${c2}">${s.content||''}</div>`).join('')}
       </div>
       <!-- RIGHT MAIN 66% -->
-      <div data-biz-main style="flex:1;padding:24px 22px 18px 20px;min-width:0;overflow:hidden">
+      <div style="flex:1;padding:24px 22px 18px 20px;min-width:0;overflow:hidden;display:flex;flex-direction:column">
         <div style="font-size:24px;font-weight:800;color:${c1};letter-spacing:-0.3px;line-height:1.1;margin-bottom:4px">${name}</div>
         ${d.stanowisko?`<div style="font-size:11px;color:#6b7280;margin-bottom:10px;font-weight:500">${d.stanowisko}</div>`:''}
         ${d.podsumowanie?`<div style="font-size:10.5px;color:#555;line-height:1.72;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #e0e7ef">${d.podsumowanie}</div>`:''}
-        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-        <div style="margin-bottom:16px">
-          ${bHdr(L("experience"), SVG_BRIEF)}
-          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-          <div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:12px">
-            <div style="padding-top:1px;text-align:right">
-              <div style="font-size:8.5px;color:#9ca3af;line-height:1.6">${[e.od,e.do].filter(Boolean).join('<br>')}</div>
-            </div>
-            <div style="border-left:2px solid ${c2};padding-left:10px">
-              <div style="font-size:11.5px;font-weight:700;color:#111">${e.firma||''}</div>
-              <div style="font-size:10px;color:${c2};font-weight:600;margin-top:1px">${e.stanowisko||''}</div>
-              ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.62;margin-top:3px">${e.opis}</div>`:''}
-            </div>
-          </div>`).join('')}
-        </div>`:''}
-        ${d.wyksztalcenie.some(e=>e.szkola)?`
-        <div style="margin-bottom:16px">
-          ${bHdr(L("education"), SVG_GRAD)}
-          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-          <div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:11px">
-            <div style="padding-top:1px;text-align:right">
-              <div style="font-size:8.5px;color:#9ca3af;line-height:1.6">${[e.od,e.do].filter(Boolean).join('<br>')}</div>
-            </div>
-            <div style="border-left:2px solid ${c2};padding-left:10px">
-              <div style="font-size:11px;font-weight:700;color:#111">${e.szkola}</div>
-              <div style="font-size:10px;color:#555;margin-top:1px">${e.kierunek||''}</div>
-            </div>
-          </div>`).join('')}
-        </div>`:''}
-        ${d.zainteresowania?`<div data-biz-m>
-        <div style="margin-bottom:16px">
-          ${bHdr(L("interests"), SVG_STAR)}
-          <div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px;font-size:10.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>
-        </div></div>`:''}
-        ${customSects.map(s=>`<div data-biz-m>
-        <div style="margin-bottom:16px">
-          ${bHdr(s.title||'', SVG_BOOK)}
-          <div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px;font-size:10.5px;color:#555;line-height:1.65">${s.content||''}</div></div>
-        </div></div>`).join('')}
-        <div data-biz-extra></div>
+        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`<div style="margin-bottom:16px">${bHdr(L("experience"), SVG_BRIEF)}${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:12px"><div style="padding-top:1px;text-align:right"><div style="font-size:8.5px;color:#9ca3af;line-height:1.6">${[e.od,e.do].filter(Boolean).join('<br>')}</div></div><div style="border-left:2px solid ${c2};padding-left:10px"><div style="font-size:11.5px;font-weight:700;color:#111">${e.firma||''}</div><div style="font-size:10px;color:${c2};font-weight:600;margin-top:1px">${e.stanowisko||''}</div>${e.opis?`<div style="font-size:10px;color:#555;line-height:1.62;margin-top:3px">${e.opis}</div>`:''}</div></div>`).join('')}</div>`:''}
+        ${d.wyksztalcenie.some(e=>e.szkola)?`<div style="margin-bottom:16px">${bHdr(L("education"), SVG_GRAD)}${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:11px"><div style="padding-top:1px;text-align:right"><div style="font-size:8.5px;color:#9ca3af;line-height:1.6">${[e.od,e.do].filter(Boolean).join('<br>')}</div></div><div style="border-left:2px solid ${c2};padding-left:10px"><div style="font-size:11px;font-weight:700;color:#111">${e.szkola}</div><div style="font-size:10px;color:#555;margin-top:1px">${e.kierunek||''}</div></div></div>`).join('')}</div>`:''}
+        ${!skillsInSb&&skills.length?`<div style="margin-bottom:16px">${bHdr(L("skills"), SVG_KEY)}<div style="display:flex;flex-wrap:wrap;gap:5px">${skills.map(s=>`<span style="font-size:9.5px;padding:3px 9px;background:#f0f4f8;color:#222;border-radius:99px">${s}</span>`).join('')}</div></div>`:''}
+        ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px">${bHdr(L("languages"), SVG_GLOBE)}${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:7px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px"><div style="font-size:10px;font-weight:600;color:#111">${l.jezyk}</div><div style="font-size:9px;color:#888">${l.poziom}</div></div></div>`).join('')}</div>`:''}
+        ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:16px">${bHdr(label, SVG_BOOK)}${certItemsMn(items)}</div>`).join('')}
+        ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:16px">${bHdr(L("interests"), SVG_STAR)}<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px;font-size:10.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div></div>`:''}
+        ${customSects.filter(s=>!sb.has('custom-'+s.id)).map(s=>`<div style="margin-bottom:16px">${bHdr(s.title||'', SVG_BOOK)}<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px;font-size:10.5px;color:#555;line-height:1.65">${s.content||''}</div></div></div>`).join('')}
         <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
@@ -4369,11 +4329,6 @@ function updateCVPreview() {
   try {
     el.innerHTML = buildCVHTML(cvTemplate);
     _fixCVFullHeight(el.firstElementChild);
-    if (cvTemplate === 'biznes') {
-      // Double rAF: ensure browser computes layout before scrollHeight is read
-      const _bizRoot = el.firstElementChild;
-      requestAnimationFrame(() => requestAnimationFrame(() => _fixBiznesOverflow(_bizRoot)));
-    }
   } catch(e) {
     console.error('buildCVHTML error:', e);
     el.innerHTML = '<div style="padding:20px;color:red;font-size:12px">Błąd szablonu: ' + e.message + '</div>';
