@@ -32,6 +32,7 @@ export default async function handler(req, res) {
 
   // Render at exactly 595px so PDF matches the kreator preview 1:1
   const cleanHtml = html
+    .replace(/min-height\s*:\s*842px/gi, 'height:842px;min-height:0')
     .replace(/min-height\s*:\s*\d+px/gi, 'min-height:0')
     .replace(/max-height\s*:\s*842px/gi, 'max-height:none');
 
