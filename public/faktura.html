@@ -365,8 +365,8 @@ onAuthStateChanged(auth, async u => {
       </div>
     </div>
 
-    <button class="fak-generate-btn" onclick="printInvoice()">
-      ⬇ Pobierz / Wydrukuj fakturę
+    <button class="fak-generate-btn" onclick="downloadFakturaPDF()">
+      ⬇ Pobierz fakturę PDF
     </button>
   </div>
 
@@ -374,9 +374,9 @@ onAuthStateChanged(auth, async u => {
   <div class="fak-preview-panel">
     <div class="fak-preview-header">
       <div class="fak-preview-title">Podgląd faktury</div>
-      <button class="fak-print-btn" onclick="printInvoice()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Drukuj / PDF
+      <button class="fak-print-btn" onclick="downloadFakturaPDF()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Pobierz PDF
       </button>
     </div>
     <div class="fak-preview-wrap">
@@ -389,6 +389,7 @@ onAuthStateChanged(auth, async u => {
 <!-- PRINT AREA -->
 <div id="fakPrintArea"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 /* ── AUTH NAV ── */
 function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
@@ -693,6 +694,37 @@ function renderPreview(){
   document.getElementById('fakPreviewDoc').innerHTML = html;
   renderTotals();
   setTimeout(setPreviewZoom, 0);
+}
+
+/* ── DOWNLOAD PDF ── */
+function downloadFakturaPDF(){
+  var genBtn = document.querySelector('.fak-generate-btn');
+  var prtBtn = document.querySelector('.fak-print-btn');
+  var genOrig = genBtn ? genBtn.innerHTML : '';
+  var prtOrig = prtBtn ? prtBtn.innerHTML : '';
+  if(genBtn){ genBtn.disabled=true; genBtn.textContent='Generowanie…'; }
+  if(prtBtn){ prtBtn.disabled=true; }
+
+  var numer = (document.getElementById('fNumer')||{}).value || 'faktura';
+  var filename = 'faktura-' + numer.replace(/[\s\/\\:*?"<>|]+/g,'-').toLowerCase() + '.pdf';
+
+  // Klon podglądu w naturalnym rozmiarze A4 (bez transform)
+  var container = document.createElement('div');
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;min-height:842px;background:#fff;font-family:Inter,sans-serif;font-size:10px;color:#1a1a1a;padding:40px 44px;box-sizing:border-box;';
+  container.innerHTML = document.getElementById('fakPreviewDoc').innerHTML;
+  document.body.appendChild(container);
+
+  html2pdf().set({
+    margin: 0,
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(container).save().then(function(){
+    document.body.removeChild(container);
+    if(genBtn){ genBtn.disabled=false; genBtn.innerHTML=genOrig; }
+    if(prtBtn){ prtBtn.disabled=false; prtBtn.innerHTML=prtOrig; }
+  });
 }
 
 /* ── PRINT ── */
