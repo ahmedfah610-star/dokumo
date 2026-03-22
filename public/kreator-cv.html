@@ -1443,9 +1443,9 @@ function buildCVHTML(tpl) {
     const sh = (lbl) => `<div style="font-size:9.5px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${c1};padding-left:9px;border-left:3px solid ${c1};margin-bottom:10px">${lbl}</div>`;
     const sbLabel = (lbl) => `<div style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.18em;color:rgba(255,255,255,0.85);padding-left:9px;border-left:3px solid rgba(255,255,255,0.38);margin-bottom:8px">${lbl}</div>`;
     return `
-    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px;display:flex;width:595px;box-sizing:border-box">
+    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px;max-height:842px;overflow:hidden;display:flex;width:595px;box-sizing:border-box">
       <!-- SIDEBAR ~32% -->
-      <div style="width:190px;flex-shrink:0;background:${c1};padding:26px 16px 24px;display:flex;flex-direction:column">
+      <div style="width:190px;flex-shrink:0;background:${c1};padding:26px 16px 24px;display:flex;flex-direction:column;overflow:hidden">
         <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto 13px;background:rgba(255,255,255,0.12);flex-shrink:0;border:2.5px solid rgba(255,255,255,0.2)">
           ${d.zdjecie?`<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover">`:
           `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
@@ -1485,7 +1485,7 @@ function buildCVHTML(tpl) {
         <div style="font-size:8.5px;color:rgba(255,255,255,0.8);line-height:1.55;margin-bottom:14px">${s.content||''}</div>`).join('')}
       </div>
       <!-- MAIN ~68% -->
-      <div style="flex:1;padding:26px 26px 24px 22px;min-width:0">
+      <div style="flex:1;padding:26px 26px 24px 22px;min-width:0;overflow:hidden">
         ${d.podsumowanie?`
         <div style="margin-bottom:18px">
           ${sh(L("summary"))}
