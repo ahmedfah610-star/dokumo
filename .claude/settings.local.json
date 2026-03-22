@@ -66,7 +66,8 @@
       "Bash(sed -i 's/<span class=\"\"u-nav-badge free\"\" id=\"\"uNavBadge\"\">Free<\\\\/span>//g' biznes.html kariera.html subskrypcja.html)",
       "Bash(git restore:*)",
       "Bash(grep -rn \"dokumo_sub\\\\|api/sub\\\\|check-sub\" \"C:\\\\Users\\\\asus\\\\Desktop\\\\dokumo\\\\public\"\" --include=\"*.js\" --include=\"*.html\" | grep -v \"plan-guard)",
-      "Bash(.min. \")"
+      "Bash(.min. \")",
+      "WebFetch(domain:www.cv-maker.pl)"
     ]
   },
   "hooks": {
