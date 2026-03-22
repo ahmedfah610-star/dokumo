@@ -49,10 +49,11 @@ app.post('/generate-pdf', async (req, res) => {
   try {
     const b = await getBrowser();
     page = await b.newPage();
-    await page.setViewport({ width: 794, height: 1, deviceScaleFactor: 1 });
+    // 595×842 matches the kreator preview exactly (A4 at 72dpi / CSS pixels)
+    await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
-    // Strip remaining min-height and vh heights
+    // Strip any remaining min-height / vh heights
     await page.evaluate(() => {
       document.body.style.height = 'auto';
       document.body.style.minHeight = '0';
@@ -67,12 +68,9 @@ app.post('/generate-pdf', async (req, res) => {
 
     await new Promise(r => setTimeout(r, 300));
 
-    const bodyHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-    console.log(`[PDF] scrollHeight = ${bodyHeight}px`);
-
     const buffer = await page.pdf({
-      width: '794px',
-      height: bodyHeight + 'px',
+      width: '595px',
+      height: '842px',
       printBackground: true,
       margin: { top: '0', right: '0', bottom: '0', left: '0' },
     });
