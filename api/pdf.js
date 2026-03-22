@@ -30,19 +30,19 @@ export default async function handler(req, res) {
 
   if (!pdfServiceUrl) return res.status(500).json({ error: 'PDF_SERVICE_URL nie ustawiony' });
 
-  // Remove fixed min-height; expand hardcoded 595px width to fill A4 (PDF renders at 794px)
+  // Render at exactly 595px so PDF matches the kreator preview 1:1
   const cleanHtml = html
     .replace(/min-height\s*:\s*\d+px/gi, 'min-height:0')
-    .replace(/\bwidth\s*:\s*595px/gi, 'width:100%');
+    .replace(/max-height\s*:\s*842px/gi, 'max-height:none');
 
   const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=794">
+<meta name="viewport" content="width=595">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden; height: auto !important; }
+  html, body { width: 595px !important; max-width: 595px !important; margin: 0 !important; padding: 0 !important; overflow: hidden; }
   body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 </style>
 </head>
