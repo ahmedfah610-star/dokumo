@@ -15,9 +15,27 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
     if (!token) return res.status(200).json({ active: false });
-    let uid;
-    try { ({ uid } = await auth.verifyIdToken(token)); }
+    let uid, email;
+    try { ({ uid, email } = await auth.verifyIdToken(token)); }
     catch { return res.status(200).json({ active: false }); }
+
+    // Sprawdź i aktywuj oczekującą subskrypcję (nadaną przez admina przed założeniem konta)
+    if (email) {
+      try {
+        const emailKey = email.toLowerCase().replace(/[^a-z0-9._-]/g, '_');
+        const pendingRef = db.collection('pending_subs').doc(emailKey);
+        const pendingSnap = await pendingRef.get();
+        if (pendingSnap.exists) {
+          const pendingData = pendingSnap.data();
+          const pendingExpires = pendingData.expiresAt?.toDate?.();
+          if (pendingExpires && pendingExpires > new Date()) {
+            await db.collection('users').doc(uid).collection('subscription').doc('current').set(pendingData);
+          }
+          await pendingRef.delete();
+        }
+      } catch (_) {}
+    }
+
     const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
     if (!snap.exists) return res.status(200).json({ active: false });
     const data = snap.data();
