@@ -4329,14 +4329,23 @@ function _fixBiznesOverflow(root) {
 
   const PAGE_H = 842;
 
-  // Measure natural content height by temporarily removing height constraint
+  // Measure natural content height by cloning element outside flex constraints
   function naturalH(el) {
-    const h = el.style.height, ov = el.style.overflow, mh = el.style.maxHeight, minh = el.style.minHeight, as = el.style.alignSelf;
-    // alignSelf:flex-start prevents flex-stretch from inflating the element to container height
-    el.style.height = 'auto'; el.style.overflow = 'visible'; el.style.maxHeight = 'none'; el.style.minHeight = '0'; el.style.alignSelf = 'flex-start';
-    const sh = el.scrollHeight;
-    el.style.height = h; el.style.overflow = ov; el.style.maxHeight = mh; el.style.minHeight = minh; el.style.alignSelf = as;
-    return sh;
+    const w = el.getBoundingClientRect().width || el.offsetWidth || 202;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;width:' + w + 'px;pointer-events:none;overflow:visible;';
+    const clone = el.cloneNode(true);
+    clone.style.height = 'auto';
+    clone.style.minHeight = '0';
+    clone.style.maxHeight = 'none';
+    clone.style.overflow = 'visible';
+    clone.style.width = '100%';
+    clone.style.flex = 'none';
+    wrap.appendChild(clone);
+    document.body.appendChild(wrap);
+    const h = clone.scrollHeight;
+    document.body.removeChild(wrap);
+    return h;
   }
 
   // Step 1: sidebar overflow → move last [data-biz-s] sections to main extra
