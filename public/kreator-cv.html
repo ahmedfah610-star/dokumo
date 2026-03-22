@@ -1551,6 +1551,102 @@ function buildCVHTML(tpl) {
     </div>`;
   }
 
+  // ── BIZNES (foto + dane w sidebarze, doświadczenie po prawej) ──
+  if (tpl === 'biznes') {
+    // Section header helper: small filled circle icon + uppercase label + underline
+    const bIcon = (svgPath) => `<div style="width:18px;height:18px;border-radius:50%;background:${c1};flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></div>`;
+    const bHdr = (lbl, svgPath) => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">${bIcon(svgPath)}<div style="font-size:9.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.09em">${lbl}</div></div><div style="height:1.5px;background:#dde3ed;margin-bottom:9px"></div>`;
+    const SVG_PERSON = '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>';
+    const SVG_SHARE  = '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>';
+    const SVG_KEY    = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
+    const SVG_GLOBE  = '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>';
+    const SVG_BRIEF  = '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>';
+    const SVG_GRAD   = '<path d="M22 10v6M2 10l10 5 10-5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>';
+    const SVG_BOOK   = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>';
+    const SVG_STAR   = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
+    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    return `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;min-height:842px;max-height:842px;overflow:hidden;display:flex;width:595px;box-sizing:border-box">
+      <!-- LEFT SIDEBAR 34% -->
+      <div style="width:200px;flex-shrink:0;background:#f5f7fa;border-right:1.5px solid #dde3ed;padding:24px 16px 20px;overflow:hidden;display:flex;flex-direction:column">
+        <!-- Photo -->
+        <div style="width:100%;margin-bottom:18px;flex-shrink:0">
+          ${d.zdjecie
+            ? `<div style="width:100%;height:148px;overflow:hidden">${photo.replace('border-radius:50%','border-radius:0').replace('width:100%;height:100%;object-fit:cover','width:100%;height:148px;object-fit:cover;object-position:top')}</div>`
+            : `<div style="width:100%;height:130px;background:#d8dde8;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#9ba4b8" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
+        </div>
+        ${bHdr(L("contact"), SVG_PERSON)}
+        <div style="margin-bottom:14px;font-size:9.5px;color:#333;line-height:1.7">
+          ${d.adres?`<div><b style="color:${c1}">Adres: </b>${d.adres}</div>`:''}
+          ${d.tel?`<div><b style="color:${c1}">Telefon: </b>${d.tel}</div>`:''}
+          ${d.email?`<div style="word-break:break-all"><b style="color:${c1}">E-mail: </b>${d.email}</div>`:''}
+        </div>
+        ${d.linkedin?`
+        ${bHdr('Social Media', SVG_SHARE)}
+        <div style="margin-bottom:14px;font-size:9.5px;color:#333"><b style="color:${c1}">LinkedIn: </b><span style="word-break:break-all">${d.linkedin}</span></div>`:''}
+        ${skills.length?`
+        ${bHdr(L("skills"), SVG_KEY)}
+        <div style="margin-bottom:14px">
+          ${skills.map(s=>`<div style="font-size:9.5px;color:#333;margin-bottom:4px;padding-left:8px;border-left:2.5px solid ${c2}">${s}</div>`).join('')}
+        </div>`:''}
+        ${d.jezyki.some(l=>l.jezyk)?`
+        ${bHdr(L("languages"), SVG_GLOBE)}
+        <div style="margin-bottom:14px">
+          ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="margin-bottom:7px"><div style="font-size:9.5px;font-weight:600;color:#222">${l.jezyk}</div><div style="font-size:8.5px;color:#888;margin-top:1px">${l.poziom}</div></div>`).join('')}
+        </div>`:''}
+        ${certGroups.map(({label,items})=>`
+        ${bHdr(label, SVG_BOOK)}
+        <div style="margin-bottom:14px">${items.map(c=>`<div style="font-size:9.5px;color:#444;margin-bottom:4px;padding-left:8px;border-left:2px solid ${c2}55">${c}</div>`).join('')}</div>`).join('')}
+      </div>
+      <!-- RIGHT MAIN 66% -->
+      <div style="flex:1;padding:24px 22px 18px 20px;min-width:0;overflow:hidden">
+        <div style="font-size:24px;font-weight:800;color:${c1};letter-spacing:-0.3px;line-height:1.1;margin-bottom:4px">${name}</div>
+        ${d.stanowisko?`<div style="font-size:11px;color:#6b7280;margin-bottom:10px;font-weight:500">${d.stanowisko}</div>`:''}
+        ${d.podsumowanie?`<div style="font-size:10.5px;color:#555;line-height:1.72;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #e0e7ef">${d.podsumowanie}</div>`:''}
+        ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+        <div style="margin-bottom:16px">
+          ${bHdr(L("experience"), SVG_BRIEF)}
+          ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+          <div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:12px">
+            <div style="padding-top:1px;text-align:right">
+              <div style="font-size:8.5px;color:#9ca3af;line-height:1.6">${[e.od,e.do].filter(Boolean).join('<br>')}</div>
+            </div>
+            <div style="border-left:2px solid ${c1}35;padding-left:10px">
+              <div style="font-size:11.5px;font-weight:700;color:#111">${e.firma||''}</div>
+              <div style="font-size:10px;color:${c2};font-weight:600;margin-top:1px">${e.stanowisko||''}</div>
+              ${e.opis?`<div style="font-size:10px;color:#555;line-height:1.62;margin-top:3px">${e.opis}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>`:''}
+        ${d.wyksztalcenie.some(e=>e.szkola)?`
+        <div style="margin-bottom:16px">
+          ${bHdr(L("education"), SVG_GRAD)}
+          ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+          <div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px;margin-bottom:11px">
+            <div style="padding-top:1px;text-align:right">
+              <div style="font-size:8.5px;color:#9ca3af;line-height:1.6">${[e.od,e.do].filter(Boolean).join('<br>')}</div>
+            </div>
+            <div style="border-left:2px solid ${c1}35;padding-left:10px">
+              <div style="font-size:11px;font-weight:700;color:#111">${e.szkola}</div>
+              <div style="font-size:10px;color:#555;margin-top:1px">${e.kierunek||''}</div>
+            </div>
+          </div>`).join('')}
+        </div>`:''}
+        ${d.zainteresowania?`
+        <div style="margin-bottom:16px">
+          ${bHdr(L("interests"), SVG_STAR)}
+          <div style="font-size:10.5px;color:#555;line-height:1.65">${d.zainteresowania}</div>
+        </div>`:''}
+        ${customSects.map(s=>`
+        <div style="margin-bottom:16px">
+          ${bHdr(s.title||'', SVG_BOOK)}
+          <div style="font-size:10.5px;color:#555;line-height:1.65">${s.content||''}</div>
+        </div>`).join('')}
+        <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
+      </div>
+    </div>`;
+  }
+
   // ── PRESTIGE ──────────────────────────────────────────────
   if (tpl === 'prestige') {
     const sh = (lbl) => `<div style="font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${c2};margin-bottom:10px;padding-bottom:4px;border-bottom:1.5px solid ${c2}55">${lbl}</div>`;
@@ -2795,6 +2891,7 @@ const CV_TEMPLATES = [
   { id:'matrix',       name:'Matrix',       color1:'#00ff88', color2:'#00cc6a',  thumb:'linear-gradient(135deg,#0d1117 60%,#00ff88 100%)' },
   { id:'prism',        name:'Prism',        color1:'#7c3aed', color2:'#ec4899',  thumb:'linear-gradient(135deg,#7c3aed,#ec4899)' },
   { id:'linen',        name:'Linen',        color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#fef3c7,#fed7aa)' },
+  { id:'biznes',       name:'Biznes',       color1:'#1a3a5c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#f5f7fa 34%,#fff 34%)' },
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
@@ -2807,7 +2904,7 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   const tpl = p.get('template');
   const mode = p.get('mode');
   const from = p.get('from');
-  const known = ['nova','oxford','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen'];
+  const known = ['nova','oxford','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen','biznes'];
   if (tpl && known.includes(tpl)) {
     cvTemplate = tpl; // Template chosen on picker page — continue to wizard
   } else if (mode === 'import' || from === 'translate') {
@@ -2873,7 +2970,7 @@ let cvCustomSections = []; // [{id, title, content}]
 const CASCADE_SIDEBAR_DEFAULTS = ['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania'];
 let cvSidebarSections = new Set(CASCADE_SIDEBAR_DEFAULTS);
 const CASCADE_MOVABLE = new Set(['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania']);
-const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens','timeline','oxford']);
+const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens','timeline','oxford','biznes']);
 function toggleCascadeSidebar(sec, e) {
   if (e) { e.stopPropagation(); }
   if (cvSidebarSections.has(sec)) cvSidebarSections.delete(sec);
@@ -4382,7 +4479,7 @@ function renderTplGrid() {
 
   const groups = [
     { label: 'Premium',      ids: ['nova', 'nordic', 'cascade', 'metro'] },
-    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen'] },
+    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen', 'biznes'] },
     { label: 'Klasyczne',    ids: ['sidebar', 'timeline', 'bold', 'midnight'] },
     { label: 'Nowoczesne',   ids: ['teal', 'ocean'] },
     { label: 'Kreatywne',    ids: ['creative', 'coral', 'rose'] },
