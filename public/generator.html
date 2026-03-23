@@ -72,6 +72,21 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .btn-new:hover{border-color:#999;color:var(--ink);}
 .btn-preview{display:none;padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink);align-items:center;gap:6px;transition:all .2s;}
 .btn-preview:hover{border-color:#999;background:var(--surface);}
+.btn-tpl{position:relative;padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:5px;transition:all .2s;}
+.btn-tpl:hover{border-color:#999;background:var(--surface);}
+
+/* TEMPLATE PICKER */
+.tpl-picker{display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,.12);min-width:220px;z-index:100;}
+.tpl-picker.open{display:block;}
+.tpl-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:background .15s;border:none;background:none;width:100%;font-family:'Figtree',sans-serif;text-align:left;}
+.tpl-opt:hover,.tpl-opt.active{background:var(--surface);}
+.tpl-opt-preview{width:34px;height:46px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;padding:3px;}
+.tpl-opt-label{font-size:.78rem;font-weight:700;color:var(--ink);}
+.tpl-opt-sub{font-size:.68rem;color:var(--ink3);}
+
+/* PAPER TEMPLATES */
+.lm-paper.tpl-nowoczesny{font-family:'Figtree',-apple-system,sans-serif;font-size:13px;line-height:1.75;border-top:3px solid #111;}
+.lm-paper.tpl-elegancki{font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.9;padding:60px 64px;letter-spacing:0.01em;}
 
 /* SAVE STATUS */
 .save-status{font-size:.72rem;color:var(--ink3);margin-left:4px;white-space:nowrap;}
@@ -86,6 +101,8 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
   .lm-editor{width:100%;min-width:0;border-right:none;}
   .lm-preview{display:none;}
   .btn-preview{display:flex;}
+  .btn-new{display:none;}
+  .btn-tpl{margin-left:auto;}
 }
 @media(max-width:480px){
   .preview-modal{padding:12px 8px 32px;}
@@ -190,6 +207,23 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <div class="lm-bar" id="lmBar" style="display:none;">
   <button class="btn-dl" onclick="downloadPdf()">⬇ Pobierz PDF</button>
+  <div style="position:relative;">
+    <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="tpl-picker" id="tplPicker">
+      <button class="tpl-opt active" id="tplOptKlasyczny" onclick="setTpl('klasyczny')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;"><div style="height:3px;background:#ccc;margin-bottom:2px;border-radius:1px;"></div><div style="height:2px;background:#ddd;margin-bottom:1px;border-radius:1px;width:80%;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:90%;"></div></div>
+        <div><div class="tpl-opt-label">Klasyczny</div><div class="tpl-opt-sub">Szeryfowy, tradycyjny</div></div>
+      </button>
+      <button class="tpl-opt" id="tplOptNowoczesny" onclick="setTpl('nowoczesny')">
+        <div class="tpl-opt-preview" style="border-top:3px solid #111;"><div style="height:2px;background:#bbb;margin-bottom:2px;border-radius:1px;width:70%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;"></div></div>
+        <div><div class="tpl-opt-label">Nowoczesny</div><div class="tpl-opt-sub">Bezszeryfowy, kreska</div></div>
+      </button>
+      <button class="tpl-opt" id="tplOptElegancki" onclick="setTpl('elegancki')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#aaa;margin-bottom:3px;border-radius:1px;width:60%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:85%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:75%;"></div></div>
+        <div><div class="tpl-opt-label">Elegancki</div><div class="tpl-opt-sub">Szeryfowy, więcej odstępów</div></div>
+      </button>
+    </div>
+  </div>
   <button class="btn-preview" onclick="openPreview()">👁 Podgląd</button>
   <span class="save-status" id="saveStatus"></span>
   <a href="kariera.html" class="btn-new">Nowy list</a>
@@ -369,9 +403,12 @@ async function autoGenerateFromWizard() {
       + '- Firma: ' + (gp('company') || '[firma]') + '\n'
       + '- Kandydat: ' + (fullName || '[imię i nazwisko]') + '\n'
       + '- Data: ' + dz + extra + '\n\n'
-      + 'Napisz 3-4 akapity. Formalny, konkretny, gotowy do wklejenia. Zero markdown, zero gwiazdek, zero emoji.\n'
+      + 'ZASADY FORMATOWANIA:\n'
+      + '- Dokładnie 3 akapity, każdy po 2-3 zdania. List MUSI zmieścić się na 1 stronie A4.\n'
+      + '- Liczby zawsze cyframi: "40%" nie "czterdzieści procent", "2024" nie "dwa tysiące", "50 000 zł" nie "pięćdziesiąt tysięcy".\n'
+      + '- Formalny, konkretny, gotowy do wklejenia. Zero markdown, zero gwiazdek, zero emoji.\n'
       + 'BEZWZGLĘDNY ZAKAZ: nie używaj ŻADNYCH angielskich słów ani zwrotów — nawet branżowych. Pisz wyłącznie po polsku.';
-    var coverSystemPrompt = 'Piszesz wyłącznie po polsku. ABSOLUTNY ZAKAZ używania jakichkolwiek angielskich słów lub zwrotów — dotyczy to również terminów branżowych, nawet powszechnie używanych. Zawsze stosuj polskie odpowiedniki: "umiejętności techniczne" zamiast "technical skills", "zarządzanie projektem" zamiast "project management", "oprogramowanie" zamiast "software", "programowanie" zamiast "coding", "dane" zamiast "data" itp. Zero markdown, zero gwiazdek. Tylko czysty tekst po polsku.';
+    var coverSystemPrompt = 'Piszesz wyłącznie po polsku. ABSOLUTNY ZAKAZ używania jakichkolwiek angielskich słów lub zwrotów — dotyczy to również terminów branżowych, nawet powszechnie używanych. Zawsze stosuj polskie odpowiedniki: "umiejętności techniczne" zamiast "technical skills", "zarządzanie projektem" zamiast "project management", "oprogramowanie" zamiast "software", "programowanie" zamiast "coding", "dane" zamiast "data" itp. Zero markdown, zero gwiazdek. Tylko czysty tekst po polsku. Liczby zawsze cyframi — nigdy słowami.';
     var res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -469,17 +506,29 @@ function downloadPdf() {
   if (btn) { btn.disabled = true; btn.textContent = 'Generowanie…'; }
   var company = val('fCompany') || 'dokumo';
   var filename = 'list-motywacyjny-' + company.replace(/\s+/g,'-').toLowerCase() + '.pdf';
+  // Clone paper — remove min-height so PDF is exactly as long as content (1 page)
+  var source = document.getElementById('lmPaper');
+  var clone = source.cloneNode(true);
+  clone.style.minHeight = '0';
+  clone.style.boxShadow = 'none';
+  clone.style.borderRadius = '0';
+  clone.style.position = 'absolute';
+  clone.style.left = '-9999px';
+  clone.style.width = '595px';
+  document.body.appendChild(clone);
   html2pdf()
     .set({
       margin: [18, 18, 18, 18],
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: 'avoid-all' }
     })
-    .from(document.getElementById('lmPaper'))
+    .from(clone)
     .save()
     .then(function() {
+      document.body.removeChild(clone);
       if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz PDF'; }
     });
 }
@@ -540,6 +589,38 @@ function showToast(msg) {
   t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 20px;border-radius:999px;font-size:.82rem;font-weight:600;z-index:9999;font-family:Figtree,sans-serif;pointer-events:none;';
   document.body.appendChild(t);
   setTimeout(function(){ t.remove(); }, 2200);
+}
+
+// ── Template picker ──
+var _currentTpl = 'klasyczny';
+function toggleTplPicker() {
+  var picker = document.getElementById('tplPicker');
+  picker.classList.toggle('open');
+  if (picker.classList.contains('open')) {
+    document.addEventListener('click', closeTplPickerOutside, true);
+  }
+}
+function closeTplPickerOutside(e) {
+  var btn = document.getElementById('btnTpl');
+  var picker = document.getElementById('tplPicker');
+  if (!btn.contains(e.target) && !picker.contains(e.target)) {
+    picker.classList.remove('open');
+    document.removeEventListener('click', closeTplPickerOutside, true);
+  }
+}
+function setTpl(tpl) {
+  _currentTpl = tpl;
+  var paper = document.getElementById('lmPaper');
+  paper.classList.remove('tpl-nowoczesny', 'tpl-elegancki');
+  if (tpl !== 'klasyczny') paper.classList.add('tpl-' + tpl);
+  var modal = document.getElementById('lmPaperModal');
+  if (modal) { modal.classList.remove('tpl-nowoczesny', 'tpl-elegancki'); if (tpl !== 'klasyczny') modal.classList.add('tpl-' + tpl); }
+  ['Klasyczny','Nowoczesny','Elegancki'].forEach(function(n) {
+    var el = document.getElementById('tplOpt' + n);
+    if (el) el.classList.toggle('active', n.toLowerCase() === tpl);
+  });
+  document.getElementById('tplPicker').classList.remove('open');
+  document.removeEventListener('click', closeTplPickerOutside, true);
 }
 </script>
 </body>
