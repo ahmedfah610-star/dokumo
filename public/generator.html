@@ -558,10 +558,16 @@ function renderPreview() {
     var subjectLine2 = pos
       ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
       : '';
+    var classicPhotoHtml = _letterPhoto
+      ? '<img src="' + _letterPhoto + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-left:16px;">'
+      : '';
     html =
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">' +
         '<div style="line-height:1.7;">' + senderHtml + '</div>' +
-        '<div style="text-align:right;white-space:nowrap;padding-left:16px;">' + dateHtml + '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">' +
+          classicPhotoHtml +
+          '<div style="text-align:right;white-space:nowrap;">' + dateHtml + '</div>' +
+        '</div>' +
       '</div>' +
       recipientBlock + subjectLine2 +
       '<div style="margin-bottom:20px;">' + salutation + '</div>' +
@@ -690,9 +696,6 @@ function setTpl(tpl) {
     if (tpl === 'klasyczny') modal.classList.add('tpl-klasyczny');
     if (tpl === 'elegancki') modal.classList.add('tpl-elegancki');
   }
-  // Show/hide photo upload field — only relevant for zdjecie template
-  var pf = document.getElementById('photoFieldWrap');
-  if (pf) pf.style.display = tpl === 'zdjecie' ? '' : 'none';
   ['Zdjecie','Klasyczny','Elegancki'].forEach(function(n) {
     var el = document.getElementById('tplOpt' + n);
     if (el) el.classList.toggle('active', n.toLowerCase() === tpl);
