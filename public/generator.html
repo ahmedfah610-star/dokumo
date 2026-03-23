@@ -62,7 +62,11 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 
 /* ── PREVIEW ── */
 .lm-preview{flex:1;overflow-y:auto;background:#f0f0f2;display:flex;justify-content:center;padding:28px 20px 48px;}
-.lm-paper{background:#fff;width:100%;max-width:600px;min-height:760px;padding:52px 56px;font-family:Georgia,'Times New Roman',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;box-shadow:0 2px 24px rgba(0,0,0,.09);border-radius:2px;align-self:flex-start;overflow-wrap:break-word;word-break:break-word;}
+.lm-paper{background:#fff;width:100%;max-width:600px;min-height:760px;padding:48px 52px;font-family:'Figtree',-apple-system,sans-serif;font-size:12px;line-height:1.75;color:#1a1a1a;box-shadow:0 2px 24px rgba(0,0,0,.09);border-radius:2px;align-self:flex-start;overflow-wrap:break-word;word-break:break-word;}
+.lm-photo-upload{display:flex;align-items:center;gap:10px;margin-top:4px;}
+.lm-photo-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1.5px dashed var(--border);background:#fafafa;font-family:'Figtree',sans-serif;font-size:.78rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;}
+.lm-photo-btn:hover{border-color:#999;background:var(--surface);}
+.lm-photo-preview{width:36px;height:36px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--border);}
 
 /* ── BOTTOM BAR ── */
 .lm-bar{height:52px;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:8px;flex-shrink:0;background:#fff;z-index:10;}
@@ -85,7 +89,7 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .tpl-opt-sub{font-size:.68rem;color:var(--ink3);}
 
 /* PAPER TEMPLATES */
-.lm-paper.tpl-nowoczesny{font-family:'Figtree',-apple-system,sans-serif;font-size:13px;line-height:1.75;border-top:3px solid #111;}
+.lm-paper.tpl-klasyczny{font-family:Georgia,'Times New Roman',serif;font-size:12.5px;line-height:1.8;padding:52px 56px;}
 .lm-paper.tpl-elegancki{font-family:Georgia,'Times New Roman',serif;font-size:12px;line-height:1.9;padding:60px 64px;letter-spacing:0.01em;}
 
 /* SAVE STATUS */
@@ -157,6 +161,15 @@ onAuthStateChanged(getAuth(app),async u=>{
           <div class="lm-field"><label class="lm-label">Imię</label><input class="lm-input" id="fFirstName" placeholder="np. Ahmed" oninput="renderPreview()"></div>
           <div class="lm-field"><label class="lm-label">Nazwisko</label><input class="lm-input" id="fLastName" placeholder="np. Kowalski" oninput="renderPreview()"></div>
         </div>
+        <div class="lm-field" id="photoFieldWrap">
+          <label class="lm-label">Zdjęcie (opcjonalne)</label>
+          <div class="lm-photo-upload">
+            <label class="lm-photo-btn" for="fPhotoInput">📷 Wgraj zdjęcie</label>
+            <input type="file" id="fPhotoInput" accept="image/*" style="display:none;" onchange="loadLetterPhoto(this)">
+            <img id="fPhotoThumb" class="lm-photo-preview" src="" alt="">
+            <button id="fPhotoRemove" style="display:none;background:none;border:none;cursor:pointer;font-size:.75rem;color:#ef4444;font-family:Figtree,sans-serif;font-weight:600;" onclick="removeLetterPhoto()">Usuń</button>
+          </div>
+        </div>
         <div class="lm-field"><label class="lm-label">Adres e-mail</label><input class="lm-input" id="fEmail" type="email" placeholder="np. jan@gmail.com" oninput="renderPreview()"></div>
         <div class="lm-field"><label class="lm-label">Numer telefonu</label><input class="lm-input" id="fPhone" placeholder="np. 567-898-765" oninput="renderPreview()"></div>
         <div class="lm-field"><label class="lm-label">Ulica</label><input class="lm-input" id="fStreet" placeholder="np. Partyzantów 12" oninput="renderPreview()"></div>
@@ -210,13 +223,13 @@ onAuthStateChanged(getAuth(app),async u=>{
   <div style="position:relative;">
     <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
     <div class="tpl-picker" id="tplPicker">
-      <button class="tpl-opt active" id="tplOptKlasyczny" onclick="setTpl('klasyczny')">
-        <div class="tpl-opt-preview" style="border-color:#bbb;"><div style="height:3px;background:#ccc;margin-bottom:2px;border-radius:1px;"></div><div style="height:2px;background:#ddd;margin-bottom:1px;border-radius:1px;width:80%;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:90%;"></div></div>
-        <div><div class="tpl-opt-label">Klasyczny</div><div class="tpl-opt-sub">Szeryfowy, tradycyjny</div></div>
+      <button class="tpl-opt active" id="tplOptZdjecie" onclick="setTpl('zdjecie')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:3px;display:flex;flex-direction:column;gap:1px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;"><div style="height:4px;background:#222;border-radius:1px;width:55%;"></div><div style="width:10px;height:10px;border-radius:50%;background:#ccc;flex-shrink:0;"></div></div><div style="height:0.5px;background:#111;width:100%;margin-bottom:2px;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
+        <div><div class="tpl-opt-label">Ze zdjęciem</div><div class="tpl-opt-sub">Nowoczesny z foto</div></div>
       </button>
-      <button class="tpl-opt" id="tplOptNowoczesny" onclick="setTpl('nowoczesny')">
-        <div class="tpl-opt-preview" style="border-top:3px solid #111;"><div style="height:2px;background:#bbb;margin-bottom:2px;border-radius:1px;width:70%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;"></div></div>
-        <div><div class="tpl-opt-label">Nowoczesny</div><div class="tpl-opt-sub">Bezszeryfowy, kreska</div></div>
+      <button class="tpl-opt" id="tplOptKlasyczny" onclick="setTpl('klasyczny')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#aaa;margin-bottom:3px;border-radius:1px;width:70%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
+        <div><div class="tpl-opt-label">Klasyczny</div><div class="tpl-opt-sub">Szeryfowy, tradycyjny</div></div>
       </button>
       <button class="tpl-opt" id="tplOptElegancki" onclick="setTpl('elegancki')">
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#aaa;margin-bottom:3px;border-radius:1px;width:60%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:85%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:75%;"></div></div>
@@ -433,6 +446,30 @@ function toggleRec() {
   document.getElementById('recToggle').classList.toggle('open', _recOpen);
 }
 
+// ── Photo ──
+var _letterPhoto = '';
+function loadLetterPhoto(inp) {
+  var file = inp.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _letterPhoto = e.target.result;
+    var thumb = document.getElementById('fPhotoThumb');
+    var rem   = document.getElementById('fPhotoRemove');
+    thumb.src = _letterPhoto; thumb.style.display = 'block';
+    rem.style.display = 'inline';
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+}
+function removeLetterPhoto() {
+  _letterPhoto = '';
+  document.getElementById('fPhotoInput').value = '';
+  document.getElementById('fPhotoThumb').style.display = 'none';
+  document.getElementById('fPhotoRemove').style.display = 'none';
+  renderPreview();
+}
+
 // ── Live Preview ──
 function renderPreview() {
   var firstName = val('fFirstName'), lastName = val('fLastName');
@@ -443,56 +480,95 @@ function renderPreview() {
   var body = val('fBody');
   var rCompany = val('rCompany'), rContact = val('rContact');
   var rStreet = val('rStreet'), rZip = val('rZip'), rCity = val('rCity');
-
   var today = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
-
-  // ── Sender block (top-left) ──
-  var senderHtml = '<b>' + esc(fullName || 'Imię Nazwisko') + '</b>';
-  if (street) senderHtml += '<br>' + esc(street);
-  var zipCity = [zip, city].filter(Boolean).join(' ');
-  if (zipCity) senderHtml += '<br>' + esc(zipCity);
-  if (email)   senderHtml += '<br>' + esc(email);
-  if (phone)   senderHtml += '<br>' + esc(phone);
-
-  // ── Date (top-right) ──
-  var dateHtml = esc((city || 'Miejscowość') + ', ' + today);
-
-  // ── Recipient block (left, below sender gap) ──
-  var recipientBlock = '';
-  if (rCompany || rContact) {
-    var rLines = [];
-    if (rCompany) rLines.push('<b>' + esc(rCompany) + '</b>');
-    if (rContact) rLines.push(esc(rContact));
-    if (rStreet)  rLines.push(esc(rStreet));
-    var rZipCity = [rZip, rCity].filter(Boolean).join(' ');
-    if (rZipCity) rLines.push(esc(rZipCity));
-    recipientBlock = '<div style="margin-bottom:32px;">' + rLines.join('<br>') + '</div>';
-  }
-
-  var subjectLine = pos
-    ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
-    : '';
-
   var salutation = rContact
     ? 'Szanowna Pani/Panie ' + esc(rContact.split(' ').slice(-1)[0]) + ','
     : 'Szanowni Państwo,';
-
   var bodyHtml = body
     ? '<div style="text-align:justify;">' + nl2br(body) + '</div>'
     : '<div style="color:#bbb;font-style:italic;">Tutaj pojawi się treść Twojego listu motywacyjnego…</div>';
 
-  var html =
-    // Header row: sender left, date right
-    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">' +
-      '<div style="line-height:1.7;">' + senderHtml + '</div>' +
-      '<div style="text-align:right;white-space:nowrap;padding-left:16px;">' + dateHtml + '</div>' +
-    '</div>' +
-    recipientBlock +
-    subjectLine +
-    '<div style="margin-bottom:20px;">' + salutation + '</div>' +
-    '<div style="margin-bottom:40px;">' + bodyHtml + '</div>' +
-    '<div>Z poważaniem,</div>' +
-    '<div style="margin-top:36px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
+  var html;
+  if (_currentTpl === 'zdjecie') {
+    // ── Ze zdjęciem layout ──
+    var photoHtml = _letterPhoto
+      ? '<img src="' + _letterPhoto + '" style="width:82px;height:82px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+      : '';
+    var contactParts = [];
+    var addrParts = [street, [zip,city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    if (addrParts) contactParts.push('<span style="display:inline-flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="color:#555;flex-shrink:0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' + esc(addrParts) + '</span>');
+    if (phone) contactParts.push('<span style="display:inline-flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="color:#555;flex-shrink:0;"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C9.61 21 3 14.39 3 6a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/></svg>' + esc(phone) + '</span>');
+    if (email) contactParts.push('<span style="display:inline-flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="color:#555;flex-shrink:0;"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>' + esc(email) + '</span>');
+    var recipientRight = '';
+    if (rCompany || rContact || rStreet) {
+      var rLines = [];
+      if (rCompany) rLines.push('<span style="font-weight:700;">' + esc(rCompany) + '</span>');
+      if (rContact) rLines.push(esc(rContact));
+      if (rStreet)  rLines.push(esc(rStreet));
+      var rZC = [rZip, rCity].filter(Boolean).join(' ');
+      if (rZC) rLines.push(esc(rZC));
+      recipientRight = '<div style="text-align:right;margin-bottom:20px;line-height:1.7;font-size:11.5px;">' + rLines.join('<br>') + '</div>';
+    }
+    var dateLine = '<div style="text-align:right;font-size:11px;color:#777;margin-bottom:20px;">' + esc(city || 'Miejscowość') + ', ' + today + '</div>';
+    var subjectLine = pos
+      ? '<div style="margin-bottom:16px;font-size:11.5px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
+      : '';
+    html =
+      '<div style="font-family:\'Figtree\',-apple-system,sans-serif;">' +
+      // Header
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
+        '<div>' +
+          '<div style="font-size:26px;font-weight:800;letter-spacing:-0.02em;color:#111;line-height:1.1;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+          (pos ? '<div style="font-size:12px;color:#777;margin-top:5px;">' + esc(pos) + '</div>' : '') +
+        '</div>' +
+        photoHtml +
+      '</div>' +
+      // Divider
+      '<div style="border-top:1.5px solid #111;margin:14px 0 12px;"></div>' +
+      // Contact row
+      (contactParts.length ? '<div style="display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:#333;margin-bottom:22px;">' + contactParts.join('') + '</div>' : '<div style="margin-bottom:22px;"></div>') +
+      // Recipient + date
+      recipientRight +
+      dateLine +
+      subjectLine +
+      '<div style="margin-bottom:16px;font-size:12px;">' + salutation + '</div>' +
+      '<div style="font-size:11.5px;line-height:1.8;margin-bottom:32px;">' + bodyHtml + '</div>' +
+      '<div style="font-size:12px;">Z poważaniem,</div>' +
+      '<div style="margin-top:28px;font-size:13px;font-weight:700;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+      '</div>';
+  } else {
+    // ── Klasyczny / Elegancki layout ──
+    var senderHtml = '<b>' + esc(fullName || 'Imię Nazwisko') + '</b>';
+    if (street) senderHtml += '<br>' + esc(street);
+    var zipCity = [zip, city].filter(Boolean).join(' ');
+    if (zipCity) senderHtml += '<br>' + esc(zipCity);
+    if (email)   senderHtml += '<br>' + esc(email);
+    if (phone)   senderHtml += '<br>' + esc(phone);
+    var dateHtml = esc((city || 'Miejscowość') + ', ' + today);
+    var recipientBlock = '';
+    if (rCompany || rContact) {
+      var rLines2 = [];
+      if (rCompany) rLines2.push('<b>' + esc(rCompany) + '</b>');
+      if (rContact) rLines2.push(esc(rContact));
+      if (rStreet)  rLines2.push(esc(rStreet));
+      var rZipCity2 = [rZip, rCity].filter(Boolean).join(' ');
+      if (rZipCity2) rLines2.push(esc(rZipCity2));
+      recipientBlock = '<div style="margin-bottom:32px;">' + rLines2.join('<br>') + '</div>';
+    }
+    var subjectLine2 = pos
+      ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
+      : '';
+    html =
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">' +
+        '<div style="line-height:1.7;">' + senderHtml + '</div>' +
+        '<div style="text-align:right;white-space:nowrap;padding-left:16px;">' + dateHtml + '</div>' +
+      '</div>' +
+      recipientBlock + subjectLine2 +
+      '<div style="margin-bottom:20px;">' + salutation + '</div>' +
+      '<div style="margin-bottom:40px;">' + bodyHtml + '</div>' +
+      '<div>Z poważaniem,</div>' +
+      '<div style="margin-top:36px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
+  }
 
   document.getElementById('lmPaper').innerHTML = html;
   var modal = document.getElementById('lmPaperModal');
@@ -506,29 +582,23 @@ function downloadPdf() {
   if (btn) { btn.disabled = true; btn.textContent = 'Generowanie…'; }
   var company = val('fCompany') || 'dokumo';
   var filename = 'list-motywacyjny-' + company.replace(/\s+/g,'-').toLowerCase() + '.pdf';
-  // Clone paper — remove min-height so PDF is exactly as long as content (1 page)
-  var source = document.getElementById('lmPaper');
-  var clone = source.cloneNode(true);
-  clone.style.minHeight = '0';
-  clone.style.boxShadow = 'none';
-  clone.style.borderRadius = '0';
-  clone.style.position = 'absolute';
-  clone.style.left = '-9999px';
-  clone.style.width = '595px';
-  document.body.appendChild(clone);
+  var paper = document.getElementById('lmPaper');
+  // Temporarily remove min-height so PDF matches actual content (no empty 2nd page)
+  var origMin = paper.style.minHeight;
+  paper.style.minHeight = '0';
   html2pdf()
     .set({
-      margin: [18, 18, 18, 18],
+      margin: [20, 20, 20, 20],
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: 'avoid-all' }
     })
-    .from(clone)
+    .from(paper)
     .save()
     .then(function() {
-      document.body.removeChild(clone);
+      paper.style.minHeight = origMin;
       if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz PDF'; }
     });
 }
@@ -592,7 +662,7 @@ function showToast(msg) {
 }
 
 // ── Template picker ──
-var _currentTpl = 'klasyczny';
+var _currentTpl = 'zdjecie';
 function toggleTplPicker() {
   var picker = document.getElementById('tplPicker');
   picker.classList.toggle('open');
@@ -611,16 +681,25 @@ function closeTplPickerOutside(e) {
 function setTpl(tpl) {
   _currentTpl = tpl;
   var paper = document.getElementById('lmPaper');
-  paper.classList.remove('tpl-nowoczesny', 'tpl-elegancki');
-  if (tpl !== 'klasyczny') paper.classList.add('tpl-' + tpl);
+  paper.classList.remove('tpl-klasyczny', 'tpl-elegancki');
+  if (tpl === 'klasyczny') paper.classList.add('tpl-klasyczny');
+  if (tpl === 'elegancki') paper.classList.add('tpl-elegancki');
   var modal = document.getElementById('lmPaperModal');
-  if (modal) { modal.classList.remove('tpl-nowoczesny', 'tpl-elegancki'); if (tpl !== 'klasyczny') modal.classList.add('tpl-' + tpl); }
-  ['Klasyczny','Nowoczesny','Elegancki'].forEach(function(n) {
+  if (modal) {
+    modal.classList.remove('tpl-klasyczny', 'tpl-elegancki');
+    if (tpl === 'klasyczny') modal.classList.add('tpl-klasyczny');
+    if (tpl === 'elegancki') modal.classList.add('tpl-elegancki');
+  }
+  // Show/hide photo upload field — only relevant for zdjecie template
+  var pf = document.getElementById('photoFieldWrap');
+  if (pf) pf.style.display = tpl === 'zdjecie' ? '' : 'none';
+  ['Zdjecie','Klasyczny','Elegancki'].forEach(function(n) {
     var el = document.getElementById('tplOpt' + n);
     if (el) el.classList.toggle('active', n.toLowerCase() === tpl);
   });
   document.getElementById('tplPicker').classList.remove('open');
   document.removeEventListener('click', closeTplPickerOutside, true);
+  renderPreview();
 }
 </script>
 </body>
