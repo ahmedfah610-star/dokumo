@@ -767,6 +767,12 @@ function v(id) { return (document.getElementById(id)?.value || '').trim(); }
 function showLogin() {
   document.getElementById('kontoDefault').style.display = 'block';
   document.getElementById('profileWrap').style.display = 'none';
+  // Auto-open email register tab when coming from "Załóż konto"
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('rejestracja') === '1') {
+    switchAuthTab('email');
+    if (typeof _emailMode !== 'undefined' && _emailMode !== 'register') toggleEmailMode();
+  }
 }
 function showProfile(user) {
   document.getElementById('kontoDefault').style.display = 'none';
