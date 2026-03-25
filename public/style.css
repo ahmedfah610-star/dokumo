@@ -195,6 +195,7 @@ nav {
   width:6px; height:6px; border-radius:50%;
   background:var(--gold);
   animation:pulse 2s ease-in-out infinite;
+  will-change:transform,opacity;
 }
 @keyframes pulse {
   0%,100% { opacity:0.4; transform:scale(1); }
