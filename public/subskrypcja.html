@@ -405,10 +405,8 @@ async function pollForPayment(plan){
     attempts++;
     const ok=await checkSubFromAPI();
     if(ok||getSub()?.plan){
-      if(msg) msg.innerHTML='<span style="font-size:1.5rem">✅</span><br>Płatność potwierdzona!<br><strong>'+({kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'}[plan]||plan)+'</strong> aktywny.';
-      if(window._renderUNav) window._renderUNav();
-      renderPage();
-      setTimeout(()=>{ if(overlay) overlay.style.display='none'; },2500);
+      if(msg) msg.innerHTML='<span style="font-size:1.5rem">✅</span><br>Płatność potwierdzona!<br>Przekierowuję…';
+      setTimeout(()=>{ window.location.href='dziekujemy.html?plan='+encodeURIComponent(plan); },1200);
       return;
     }
     if(msg) msg.innerHTML='⏳ Oczekiwanie na potwierdzenie płatności…<br><small style="opacity:.6">'+attempts+'/'+maxAttempts+' prób</small>';

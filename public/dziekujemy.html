@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dziękujemy za zakup! | Dokumo</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { font-family:'Inter',sans-serif; box-sizing:border-box; margin:0; padding:0; }
+body { background:#f5f3ef; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
+
+@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes popIn    { 0%{opacity:0;transform:scale(.6)} 60%{transform:scale(1.08)} 100%{opacity:1;transform:scale(1)} }
+@keyframes dashDraw { to { stroke-dashoffset: 0; } }
+
+.fu { opacity:0; animation:fadeUp .55s ease forwards; }
+.d1{animation-delay:.1s}.d2{animation-delay:.22s}.d3{animation-delay:.36s}.d4{animation-delay:.5s}.d5{animation-delay:.62s}
+
+.card {
+  background:#fff;
+  border-radius:24px;
+  border:1px solid #e5e7eb;
+  padding:52px 48px 44px;
+  max-width:500px;
+  width:100%;
+  text-align:center;
+  box-shadow:0 2px 24px rgba(0,0,0,.05);
+}
+
+.check-wrap {
+  width:80px; height:80px;
+  border-radius:50%;
+  background:linear-gradient(140deg,#064e3b 0%,#059669 100%);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 28px;
+  animation: popIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  box-shadow:0 8px 24px rgba(5,150,105,.28);
+}
+
+.check-wrap svg .tick {
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+  animation: dashDraw .4s ease .5s forwards;
+}
+
+.plan-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  border-radius:999px;
+  padding:5px 14px;
+  font-size:13px;
+  font-weight:600;
+  color:#065f46;
+  margin-bottom:20px;
+}
+
+h1 {
+  font-size:1.75rem;
+  font-weight:800;
+  color:#111827;
+  letter-spacing:-.03em;
+  line-height:1.2;
+  margin-bottom:12px;
+}
+
+.subtitle {
+  font-size:.95rem;
+  color:#6b7280;
+  line-height:1.65;
+  margin-bottom:36px;
+  max-width:380px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.btn-primary {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:#111827;
+  color:#fff;
+  font-size:.92rem;
+  font-weight:700;
+  padding:14px 28px;
+  border-radius:12px;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  transition:background .15s, transform .15s;
+  width:100%;
+  justify-content:center;
+  margin-bottom:12px;
+}
+.btn-primary:hover { background:#1f2937; transform:translateY(-1px); }
+
+.btn-secondary {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:#f9fafb;
+  color:#374151;
+  font-size:.88rem;
+  font-weight:600;
+  padding:12px 24px;
+  border-radius:12px;
+  text-decoration:none;
+  border:1.5px solid #e5e7eb;
+  cursor:pointer;
+  transition:background .15s, border-color .15s;
+  width:100%;
+  justify-content:center;
+}
+.btn-secondary:hover { background:#f3f4f6; border-color:#d1d5db; }
+
+.divider {
+  height:1px;
+  background:#f3f4f6;
+  margin:28px 0;
+}
+
+.features {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  text-align:left;
+}
+.feature-row {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font-size:.85rem;
+  color:#374151;
+  line-height:1.4;
+}
+.feature-icon {
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+.logo-row {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:36px;
+}
+.logo-row img { height:28px; width:auto; }
+.logo-row span { font-size:15px; font-weight:800; color:#111827; }
+
+@media(max-width:540px) {
+  .card { padding:36px 24px 32px; border-radius:20px; }
+  h1 { font-size:1.45rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="logo-row fu d1">
+  <img src="logo2.png" alt="Dokumo logo">
+  <span>Dokumo</span>
+</div>
+
+<div class="card">
+  <div class="check-wrap fu d1">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <polyline class="tick" points="8,19 15,26 28,11" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div id="planBadge" class="plan-badge fu d2" style="display:none">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="planBadgeText">Aktywna subskrypcja</span>
+  </div>
+
+  <h1 class="fu d2">Dziękujemy za zakup!</h1>
+  <p class="subtitle fu d3" id="subtitleText">
+    Twoja subskrypcja jest już aktywna. Możesz teraz korzystać ze wszystkich funkcji Dokumo bez ograniczeń.
+  </p>
+
+  <div class="features fu d3" id="featuresList">
+    <div class="feature-row">
+      <div class="feature-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span>Nieograniczone generowanie dokumentów i listów</span>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span>Kreator CV z eksportem PDF i wszystkimi szablonami</span>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span>Dostęp do kalkulatora i wszystkich narzędzi AI</span>
+    </div>
+  </div>
+
+  <div class="divider fu d4"></div>
+
+  <a href="kreator-cv.html" class="btn-primary fu d4">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Stwórz swoje CV teraz
+  </a>
+  <a href="index.html" class="btn-secondary fu d5">
+    Wróć do strony głównej
+  </a>
+</div>
+
+<script>
+var PLAN_NAMES = {
+  kariera: 'Pakiet Kariera',
+  biznes:  'Pakiet Biznes',
+  promax:  'Pro Max'
+};
+
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var plan = params.get('plan') || '';
+  var badge = document.getElementById('planBadge');
+  var badgeText = document.getElementById('planBadgeText');
+  var subtitle = document.getElementById('subtitleText');
+
+  if (plan && PLAN_NAMES[plan]) {
+    badge.style.display = 'inline-flex';
+    badgeText.textContent = PLAN_NAMES[plan] + ' — aktywny';
+    subtitle.textContent = 'Twój ' + PLAN_NAMES[plan] + ' jest już aktywny. Możesz teraz korzystać ze wszystkich funkcji Dokumo bez ograniczeń.';
+  } else {
+    badge.style.display = 'none';
+  }
+})();
+</script>
+</body>
+</html>
