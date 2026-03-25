@@ -63,10 +63,38 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 /* ── PREVIEW ── */
 .lm-preview{flex:1;overflow-y:auto;background:#f0f0f2;display:flex;justify-content:center;padding:28px 20px 48px;}
 .lm-paper{background:#fff;width:100%;max-width:600px;min-height:760px;padding:48px 52px;font-family:'Figtree',-apple-system,sans-serif;font-size:12px;line-height:1.75;color:#1a1a1a;box-shadow:0 2px 24px rgba(0,0,0,.09);border-radius:2px;align-self:flex-start;overflow-wrap:break-word;word-break:break-word;}
-.lm-photo-upload{display:flex;align-items:center;gap:10px;margin-top:4px;}
-.lm-photo-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1.5px dashed var(--border);background:#fafafa;font-family:'Figtree',sans-serif;font-size:.78rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;}
-.lm-photo-btn:hover{border-color:#999;background:var(--surface);}
-.lm-photo-preview{width:36px;height:36px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--border);}
+.lm-photo-drop{display:flex;align-items:center;gap:10px;border:1.5px dashed #e0e0e0;border-radius:8px;padding:7px 10px;background:#f9f9f9;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:4px;user-select:none;}
+.lm-photo-drop:hover,.lm-photo-drop.drag-over{border-color:#111;background:#f3f3f3;}
+.lm-photo-drop.drag-over{border-style:solid;}
+.lm-photo-avatar{width:32px;height:32px;border-radius:50%;background:#e8e8e8;flex-shrink:0;overflow:hidden;position:relative;}
+.lm-photo-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+.lm-photo-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#b0b0b0;}
+.lm-photo-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;gap:4px;opacity:0;transition:opacity .18s;}
+.lm-photo-avatar:hover .lm-photo-overlay{opacity:1;}
+.lm-photo-ov-btn{background:none;border:none;color:#fff;cursor:pointer;padding:2px;font-size:.7rem;display:flex;align-items:center;transition:transform .15s;}
+.lm-photo-ov-btn:hover{transform:scale(1.15);}
+.lm-photo-info{flex:1;min-width:0;}
+.lm-photo-label{font-size:.75rem;font-weight:600;color:#222;display:block;margin-bottom:2px;}
+.lm-photo-hint{font-size:.65rem;color:#999;display:block;}
+#lmCropOverlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.82);align-items:center;justify-content:center;}
+#lmCropOverlay.open{display:flex;}
+#lmCropModal{background:#1c1c1e;border-radius:18px;padding:28px 24px 22px;display:flex;flex-direction:column;align-items:center;gap:18px;box-shadow:0 24px 80px rgba(0,0,0,.7);width:340px;max-width:96vw;}
+#lmCropTitle{color:#fff;font-size:.95rem;font-weight:600;letter-spacing:.01em;align-self:flex-start;}
+#lmCropCircleWrap{width:260px;height:260px;border-radius:50%;overflow:hidden;background:#111;cursor:grab;flex-shrink:0;position:relative;box-shadow:0 0 0 3px #333,0 0 0 5px rgba(255,255,255,.06);touch-action:none;}
+#lmCropCircleWrap:active{cursor:grabbing;}
+#lmCropCanvas{display:block;}
+.lm-crop-slider-row{width:100%;display:flex;flex-direction:column;gap:6px;}
+.lm-crop-slider-label{display:flex;justify-content:space-between;align-items:center;}
+.lm-crop-slider-label span:first-child{color:#aaa;font-size:.78rem;}
+#lmCropPct{color:#fff;font-size:.78rem;font-weight:600;}
+#lmCropSlider{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:#333;outline:none;cursor:pointer;}
+#lmCropSlider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.5);}
+#lmCropSlider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;cursor:pointer;border:none;box-shadow:0 1px 4px rgba(0,0,0,.5);}
+.lm-crop-btns{display:flex;gap:10px;width:100%;}
+.lm-crop-btn-cancel{flex:1;padding:10px;border-radius:10px;border:1px solid #444;background:transparent;color:#ccc;font-size:.88rem;font-weight:500;cursor:pointer;transition:background .15s;font-family:'Figtree',sans-serif;}
+.lm-crop-btn-cancel:hover{background:#2a2a2a;}
+.lm-crop-btn-confirm{flex:2;padding:10px;border-radius:10px;border:none;background:#fff;color:#111;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s;font-family:'Figtree',sans-serif;}
+.lm-crop-btn-confirm:hover{opacity:.88;}
 
 /* ── BOTTOM BAR ── */
 .lm-bar{height:52px;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:8px;flex-shrink:0;background:#fff;z-index:10;}
@@ -163,12 +191,20 @@ onAuthStateChanged(getAuth(app),async u=>{
         </div>
         <div class="lm-field" id="photoFieldWrap">
           <label class="lm-label">Zdjęcie (opcjonalne)</label>
-          <div class="lm-photo-upload">
-            <label class="lm-photo-btn" for="fPhotoInput">📷 Wgraj zdjęcie</label>
-            <input type="file" id="fPhotoInput" accept="image/*" style="display:none;" onchange="loadLetterPhoto(this)">
-            <img id="fPhotoThumb" class="lm-photo-preview" src="" alt="">
-            <button id="fPhotoRemove" style="display:none;background:none;border:none;cursor:pointer;font-size:.75rem;color:#ef4444;font-family:Figtree,sans-serif;font-weight:600;" onclick="removeLetterPhoto()">Usuń</button>
+          <div class="lm-photo-drop" id="lmPhotoDrop"
+            onclick="document.getElementById('lmPhotoInput').click()"
+            ondragover="lmPhotoDragOver(event)"
+            ondragleave="lmPhotoDragLeave(event)"
+            ondrop="lmPhotoDropHandler(event)">
+            <div class="lm-photo-avatar" id="lmPhotoAvatar">
+              <div class="lm-photo-placeholder" id="lmPhotoPlaceholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            </div>
+            <div class="lm-photo-info">
+              <span class="lm-photo-label" id="lmPhotoLabel">Wybierz plik lub przeciągnij go tutaj</span>
+              <span class="lm-photo-hint">JPG, PNG • maks. 2 MB</span>
+            </div>
           </div>
+          <input type="file" id="lmPhotoInput" accept="image/jpeg,image/png" style="display:none" onchange="lmLoadPhoto(this)">
         </div>
         <div class="lm-field"><label class="lm-label">Adres e-mail</label><input class="lm-input" id="fEmail" type="email" placeholder="np. jan@gmail.com" oninput="renderPreview()"></div>
         <div class="lm-field"><label class="lm-label">Numer telefonu</label><input class="lm-input" id="fPhone" placeholder="np. 567-898-765" oninput="renderPreview()"></div>
@@ -223,9 +259,9 @@ onAuthStateChanged(getAuth(app),async u=>{
   <div style="position:relative;">
     <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
     <div class="tpl-picker" id="tplPicker">
-      <button class="tpl-opt active" id="tplOptZdjecie" onclick="setTpl('zdjecie')">
+      <button class="tpl-opt active" id="tplOptNowoczesny" onclick="setTpl('zdjecie')">
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:3px;display:flex;flex-direction:column;gap:1px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;"><div style="height:4px;background:#222;border-radius:1px;width:55%;"></div><div style="width:10px;height:10px;border-radius:50%;background:#ccc;flex-shrink:0;"></div></div><div style="height:0.5px;background:#111;width:100%;margin-bottom:2px;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
-        <div><div class="tpl-opt-label">Ze zdjęciem</div><div class="tpl-opt-sub">Nowoczesny z foto</div></div>
+        <div><div class="tpl-opt-label">Nowoczesny</div><div class="tpl-opt-sub">Z okrągłym zdjęciem</div></div>
       </button>
       <button class="tpl-opt" id="tplOptKlasyczny" onclick="setTpl('klasyczny')">
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#aaa;margin-bottom:3px;border-radius:1px;width:70%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
@@ -240,6 +276,32 @@ onAuthStateChanged(getAuth(app),async u=>{
   <button class="btn-preview" onclick="openPreview()">👁 Podgląd</button>
   <span class="save-status" id="saveStatus"></span>
   <a href="kariera.html" class="btn-new">Nowy list</a>
+</div>
+
+<!-- LETTER PHOTO CROP MODAL -->
+<div id="lmCropOverlay">
+  <div id="lmCropModal">
+    <div id="lmCropTitle">Dopasuj zdjęcie</div>
+    <div id="lmCropCircleWrap"
+      onmousedown="lmCropMouseDown(event)"
+      ontouchstart="lmCropTouchStart(event)"
+      ontouchmove="lmCropTouchMove(event)"
+      ontouchend="lmCropTouchEnd()">
+      <canvas id="lmCropCanvas" width="260" height="260"></canvas>
+    </div>
+    <div class="lm-crop-slider-row">
+      <div class="lm-crop-slider-label">
+        <span>Powiększ zdjęcie</span>
+        <span id="lmCropPct">100%</span>
+      </div>
+      <input id="lmCropSlider" type="range" min="100" max="300" value="100"
+        oninput="lmCropSliderChange(this.value)">
+    </div>
+    <div class="lm-crop-btns">
+      <button class="lm-crop-btn-cancel" onclick="lmCropCancel()">Anuluj</button>
+      <button class="lm-crop-btn-confirm" onclick="lmCropConfirm()">Potwierdź</button>
+    </div>
+  </div>
 </div>
 
 <!-- PREVIEW MODAL (mobile only) -->
@@ -448,27 +510,152 @@ function toggleRec() {
 
 // ── Photo ──
 var _letterPhoto = '';
-function loadLetterPhoto(inp) {
-  var file = inp.files[0];
-  if (!file) return;
+var LM_CROP_SIZE = 260;
+var _lmCropImg = null, _lmCropScale = 1.0, _lmCropOffX = 0, _lmCropOffY = 0;
+var _lmCropDragging = false, _lmCropDragStartX = 0, _lmCropDragStartY = 0, _lmCropDragBaseX = 0, _lmCropDragBaseY = 0;
+
+function lmLoadPhoto(input) {
+  var file = input.files[0];
+  if (file) lmLoadPhotoFile(file);
+}
+function lmLoadPhotoFile(file) {
+  if (!['image/jpeg','image/png'].includes(file.type)) { alert('Akceptowane formaty: JPG, PNG'); return; }
+  if (file.size > 2 * 1024 * 1024) { alert('Plik jest za duży. Maksymalny rozmiar to 2 MB'); return; }
   var reader = new FileReader();
-  reader.onload = function(e) {
-    _letterPhoto = e.target.result;
-    var thumb = document.getElementById('fPhotoThumb');
-    var rem   = document.getElementById('fPhotoRemove');
-    thumb.src = _letterPhoto; thumb.style.display = 'block';
-    rem.style.display = 'inline';
-    renderPreview();
-  };
+  reader.onload = function(e) { lmOpenCropModal(e.target.result); };
   reader.readAsDataURL(file);
 }
-function removeLetterPhoto() {
+function lmPhotoDragOver(e) {
+  e.preventDefault(); e.stopPropagation();
+  document.getElementById('lmPhotoDrop').classList.add('drag-over');
+}
+function lmPhotoDragLeave(e) {
+  e.stopPropagation();
+  document.getElementById('lmPhotoDrop').classList.remove('drag-over');
+}
+function lmPhotoDropHandler(e) {
+  e.preventDefault(); e.stopPropagation();
+  document.getElementById('lmPhotoDrop').classList.remove('drag-over');
+  var file = e.dataTransfer.files[0];
+  if (file) lmLoadPhotoFile(file);
+}
+function lmUpdatePhotoUI() {
+  var avatar = document.getElementById('lmPhotoAvatar');
+  var label = document.getElementById('lmPhotoLabel');
+  var placeholder = document.getElementById('lmPhotoPlaceholder');
+  if (_letterPhoto) {
+    placeholder.style.display = 'none';
+    var existImg = avatar.querySelector('img');
+    if (existImg) existImg.src = _letterPhoto;
+    else {
+      var img = document.createElement('img');
+      img.src = _letterPhoto;
+      avatar.appendChild(img);
+      var ov = document.createElement('div');
+      ov.className = 'lm-photo-overlay';
+      ov.innerHTML = '<button class="lm-photo-ov-btn" title="Zmień" onclick="event.stopPropagation();document.getElementById(\'lmPhotoInput\').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="lm-photo-ov-btn" title="Usuń" onclick="event.stopPropagation();lmRemovePhoto()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>';
+      avatar.appendChild(ov);
+    }
+    if (label) label.textContent = 'Zmień zdjęcie';
+  } else {
+    var img2 = avatar.querySelector('img');
+    var ov2 = avatar.querySelector('.lm-photo-overlay');
+    if (img2) img2.remove();
+    if (ov2) ov2.remove();
+    if (placeholder) placeholder.style.display = '';
+    if (label) label.textContent = 'Wybierz plik lub przeciągnij go tutaj';
+    document.getElementById('lmPhotoInput').value = '';
+  }
+}
+function lmRemovePhoto() {
   _letterPhoto = '';
-  document.getElementById('fPhotoInput').value = '';
-  document.getElementById('fPhotoThumb').style.display = 'none';
-  document.getElementById('fPhotoRemove').style.display = 'none';
+  lmUpdatePhotoUI();
   renderPreview();
 }
+function lmOpenCropModal(src) {
+  _lmCropOffX = 0; _lmCropOffY = 0; _lmCropScale = 1.0;
+  var slider = document.getElementById('lmCropSlider');
+  var pct = document.getElementById('lmCropPct');
+  slider.value = 100; pct.textContent = '100%';
+  document.getElementById('lmCropOverlay').classList.add('open');
+  _lmCropImg = new Image();
+  _lmCropImg.onload = function() { lmClampCropOffset(); lmRenderCropCanvas(); };
+  _lmCropImg.src = src;
+  document.addEventListener('mousemove', lmCropMouseMove);
+  document.addEventListener('mouseup', lmCropMouseUp);
+}
+function lmCloseCropModal() {
+  document.getElementById('lmCropOverlay').classList.remove('open');
+  document.removeEventListener('mousemove', lmCropMouseMove);
+  document.removeEventListener('mouseup', lmCropMouseUp);
+  _lmCropImg = null;
+  document.getElementById('lmPhotoInput').value = '';
+}
+function _lmCropBaseScale() {
+  if (!_lmCropImg) return 1;
+  return Math.max(LM_CROP_SIZE / _lmCropImg.naturalWidth, LM_CROP_SIZE / _lmCropImg.naturalHeight);
+}
+function lmClampCropOffset() {
+  if (!_lmCropImg) return;
+  var s = _lmCropBaseScale() * _lmCropScale;
+  var hw = (_lmCropImg.naturalWidth * s - LM_CROP_SIZE) / 2;
+  var hh = (_lmCropImg.naturalHeight * s - LM_CROP_SIZE) / 2;
+  _lmCropOffX = Math.max(-Math.max(hw,0), Math.min(Math.max(hw,0), _lmCropOffX));
+  _lmCropOffY = Math.max(-Math.max(hh,0), Math.min(Math.max(hh,0), _lmCropOffY));
+}
+function lmRenderCropCanvas() {
+  var canvas = document.getElementById('lmCropCanvas');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, LM_CROP_SIZE, LM_CROP_SIZE);
+  if (!_lmCropImg) return;
+  var s = _lmCropBaseScale() * _lmCropScale;
+  var w = _lmCropImg.naturalWidth * s, h = _lmCropImg.naturalHeight * s;
+  var x = (LM_CROP_SIZE - w) / 2 + _lmCropOffX, y = (LM_CROP_SIZE - h) / 2 + _lmCropOffY;
+  ctx.drawImage(_lmCropImg, x, y, w, h);
+}
+function lmCropSliderChange(val) {
+  _lmCropScale = val / 100;
+  document.getElementById('lmCropPct').textContent = val + '%';
+  lmClampCropOffset();
+  lmRenderCropCanvas();
+}
+function lmCropMouseDown(e) {
+  _lmCropDragging = true;
+  _lmCropDragStartX = e.clientX; _lmCropDragStartY = e.clientY;
+  _lmCropDragBaseX = _lmCropOffX; _lmCropDragBaseY = _lmCropOffY;
+  e.preventDefault();
+}
+function lmCropMouseMove(e) {
+  if (!_lmCropDragging) return;
+  _lmCropOffX = _lmCropDragBaseX + (e.clientX - _lmCropDragStartX);
+  _lmCropOffY = _lmCropDragBaseY + (e.clientY - _lmCropDragStartY);
+  lmClampCropOffset();
+  lmRenderCropCanvas();
+}
+function lmCropMouseUp() { _lmCropDragging = false; }
+function lmCropTouchStart(e) {
+  if (e.touches.length !== 1) return;
+  _lmCropDragging = true;
+  _lmCropDragStartX = e.touches[0].clientX; _lmCropDragStartY = e.touches[0].clientY;
+  _lmCropDragBaseX = _lmCropOffX; _lmCropDragBaseY = _lmCropOffY;
+  e.preventDefault();
+}
+function lmCropTouchMove(e) {
+  if (!_lmCropDragging || e.touches.length !== 1) return;
+  _lmCropOffX = _lmCropDragBaseX + (e.touches[0].clientX - _lmCropDragStartX);
+  _lmCropOffY = _lmCropDragBaseY + (e.touches[0].clientY - _lmCropDragStartY);
+  lmClampCropOffset();
+  lmRenderCropCanvas();
+}
+function lmCropTouchEnd() { _lmCropDragging = false; }
+function lmCropConfirm() {
+  var canvas = document.getElementById('lmCropCanvas');
+  _letterPhoto = canvas.toDataURL('image/png');
+  lmCloseCropModal();
+  lmUpdatePhotoUI();
+  renderPreview();
+}
+function lmCropCancel() { lmCloseCropModal(); }
 
 // ── Live Preview ──
 function renderPreview() {
@@ -553,7 +740,7 @@ function renderPreview() {
       if (rStreet)  rLines2.push(esc(rStreet));
       var rZipCity2 = [rZip, rCity].filter(Boolean).join(' ');
       if (rZipCity2) rLines2.push(esc(rZipCity2));
-      recipientBlock = '<div style="margin-bottom:32px;">' + rLines2.join('<br>') + '</div>';
+      recipientBlock = '<div style="margin-bottom:18px;">' + rLines2.join('<br>') + '</div>';
     }
     var subjectLine2 = pos
       ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
@@ -562,7 +749,7 @@ function renderPreview() {
       ? '<img src="' + _letterPhoto + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-left:16px;">'
       : '';
     html =
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">' +
         '<div style="line-height:1.7;">' + senderHtml + '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">' +
           classicPhotoHtml +
@@ -570,10 +757,10 @@ function renderPreview() {
         '</div>' +
       '</div>' +
       recipientBlock + subjectLine2 +
-      '<div style="margin-bottom:20px;">' + salutation + '</div>' +
-      '<div style="margin-bottom:40px;">' + bodyHtml + '</div>' +
+      '<div style="margin-bottom:12px;">' + salutation + '</div>' +
+      '<div style="margin-bottom:22px;">' + bodyHtml + '</div>' +
       '<div>Z poważaniem,</div>' +
-      '<div style="margin-top:36px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
+      '<div style="margin-top:22px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
   }
 
   document.getElementById('lmPaper').innerHTML = html;
@@ -589,22 +776,35 @@ function downloadPdf() {
   var company = val('fCompany') || 'dokumo';
   var filename = 'list-motywacyjny-' + company.replace(/\s+/g,'-').toLowerCase() + '.pdf';
   var paper = document.getElementById('lmPaper');
-  // Temporarily remove min-height so PDF matches actual content (no empty 2nd page)
-  var origMin = paper.style.minHeight;
-  paper.style.minHeight = '0';
   html2pdf()
     .set({
-      margin: [20, 20, 20, 20],
+      margin: 0,
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: function(doc) {
+          var el = doc.getElementById('lmPaper');
+          if (el) {
+            el.style.minHeight = '0';
+            el.style.maxHeight = 'none';
+            el.style.height = 'auto';
+            el.style.boxShadow = 'none';
+            el.style.borderRadius = '0';
+            el.style.alignSelf = 'auto';
+          }
+        }
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: 'avoid-all' }
     })
     .from(paper)
     .save()
     .then(function() {
-      paper.style.minHeight = origMin;
       if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz PDF'; }
     });
 }
@@ -696,9 +896,9 @@ function setTpl(tpl) {
     if (tpl === 'klasyczny') modal.classList.add('tpl-klasyczny');
     if (tpl === 'elegancki') modal.classList.add('tpl-elegancki');
   }
-  ['Zdjecie','Klasyczny','Elegancki'].forEach(function(n) {
-    var el = document.getElementById('tplOpt' + n);
-    if (el) el.classList.toggle('active', n.toLowerCase() === tpl);
+  [['Nowoczesny','zdjecie'],['Klasyczny','klasyczny'],['Elegancki','elegancki']].forEach(function(pair) {
+    var el = document.getElementById('tplOpt' + pair[0]);
+    if (el) el.classList.toggle('active', pair[1] === tpl);
   });
   document.getElementById('tplPicker').classList.remove('open');
   document.removeEventListener('click', closeTplPickerOutside, true);
