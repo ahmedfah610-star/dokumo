@@ -216,25 +216,6 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:#1a1714;letter-spacing:-.02em;">Wybierz pakiet</h1>
 </div>
 
-<!-- Kod rabatowy -->
-<div class="discount-wrap">
-  <button class="discount-toggle" id="discountToggleBtn" onclick="toggleDiscountInput()">
-    <span>🏷️</span> Masz kod rabatowy?
-  </button>
-  <div id="discountInputSection" style="display:none">
-    <div class="discount-input-row">
-      <input class="discount-input" id="discountCodeInput" placeholder="Wpisz kod (np. WELCOME20)" maxlength="24"
-        onkeydown="if(event.key==='Enter')applyDiscountCode()">
-      <button class="discount-apply-btn" onclick="applyDiscountCode()">Zastosuj</button>
-    </div>
-    <div id="discountErr" class="discount-err" style="display:none"></div>
-  </div>
-  <div class="discount-active" id="discountActiveBar" style="display:none">
-    <span class="discount-active-label">✓ Kod aktywny: <strong id="discountActiveLabel"></strong></span>
-    <button class="discount-remove" onclick="removeDiscountCode()">Usuń</button>
-  </div>
-</div>
-
 <!-- Overlay oczekiwania na płatność -->
 <div id="paymentOverlay" style="display:none;position:fixed;inset:0;background:rgba(26,23,20,.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;">
   <div style="background:#faf8f4;border-radius:20px;padding:40px 32px;max-width:320px;text-align:center;line-height:1.6;">
@@ -305,6 +286,25 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <button class="plan-btn green" id="btn-biznes" onclick="kupPakiet('biznes')">Kup Pakiet Biznes →</button>
   </div>
 
+</div>
+
+<!-- Kod rabatowy -->
+<div class="discount-wrap">
+  <button class="discount-toggle" id="discountToggleBtn" onclick="toggleDiscountInput()">
+    <span>🏷️</span> Masz kod rabatowy?
+  </button>
+  <div id="discountInputSection" style="display:none">
+    <div class="discount-input-row">
+      <input class="discount-input" id="discountCodeInput" placeholder="Wpisz kod rabatowy" maxlength="24"
+        onkeydown="if(event.key==='Enter')applyDiscountCode()">
+      <button class="discount-apply-btn" onclick="applyDiscountCode()">Zastosuj</button>
+    </div>
+    <div id="discountErr" class="discount-err" style="display:none"></div>
+  </div>
+  <div class="discount-active" id="discountActiveBar" style="display:none">
+    <span class="discount-active-label">✓ Kod aktywny: <strong id="discountActiveLabel"></strong></span>
+    <button class="discount-remove" onclick="removeDiscountCode()">Usuń</button>
+  </div>
 </div>
 
 <div class="cancel-wrap" id="cancelWrap" style="display:none">
