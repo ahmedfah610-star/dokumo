@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Popraw swoje CV z AI – DokumoFlow</title>
+<meta name="description" content="Wgraj swoje CV i otrzymaj spersonalizowane wskazówki od AI. Dowiedz się co poprawić i jednym kliknięciem zaktualizuj CV w kreatorze.">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f3ef;min-height:100vh;color:#111827;}
+
+/* NAV */
+.pcv-nav{background:rgba(255,255,255,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #f3f4f6;position:sticky;top:0;z-index:50;}
+.pcv-nav-inner{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;max-width:1120px;margin:0 auto;}
+.pcv-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.pcv-logo img{height:28px;width:auto;}
+.pcv-logo span{font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;}
+.pcv-back{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:#6b7280;text-decoration:none;padding:5px 12px;border-radius:8px;border:1px solid #e5e7eb;transition:all .2s;}
+.pcv-back:hover{color:#111827;border-color:#d1d5db;background:#f9fafb;}
+
+/* MAIN */
+.pcv-wrap{max-width:720px;margin:0 auto;padding:48px 24px 80px;}
+.pcv-hero{text-align:center;margin-bottom:40px;}
+.pcv-badge{display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:4px 12px;margin-bottom:14px;}
+.pcv-hero h1{font-size:2rem;font-weight:900;color:#0f172a;letter-spacing:-.04em;margin-bottom:12px;}
+.pcv-hero p{font-size:1rem;color:#4b5563;line-height:1.6;max-width:520px;margin:0 auto;}
+
+/* UPLOAD */
+.pcv-upload-box{background:#fff;border:2px dashed #d1d5db;border-radius:20px;padding:48px 32px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
+.pcv-upload-box:hover,.pcv-upload-box.drag{border-color:#2563eb;background:#f0f6ff;}
+.pcv-upload-icon{width:56px;height:56px;background:#f3f4f6;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.pcv-upload-title{font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:6px;}
+.pcv-upload-sub{font-size:.85rem;color:#6b7280;margin-bottom:20px;}
+.pcv-upload-btn{display:inline-block;padding:10px 24px;background:#111827;color:#fff;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.pcv-upload-btn:hover{opacity:.85;}
+#pcvFileInput{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+/* LOADING */
+.pcv-loading{display:none;text-align:center;padding:48px 0;}
+.pcv-spinner{width:44px;height:44px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:pcvSpin 1s linear infinite;margin:0 auto 20px;}
+@keyframes pcvSpin{to{transform:rotate(360deg);}}
+.pcv-loading-text{font-size:.95rem;font-weight:600;color:#374151;margin-bottom:6px;}
+.pcv-loading-sub{font-size:.8rem;color:#9ca3af;}
+
+/* RESULTS */
+.pcv-results{display:none;}
+.pcv-filename{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px 16px;margin-bottom:24px;font-size:.85rem;font-weight:600;color:#374151;}
+.pcv-filename svg{flex-shrink:0;color:#2563eb;}
+.pcv-section{margin-bottom:24px;}
+.pcv-section-title{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+.pcv-section-title.green{color:#16a34a;}
+.pcv-section-title.orange{color:#ea580c;}
+.pcv-cards{display:flex;flex-direction:column;gap:8px;}
+.pcv-card{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;font-size:.88rem;color:#374151;line-height:1.55;}
+.pcv-card.good{border-left:3px solid #16a34a;}
+.pcv-card.bad{border-left:3px solid #f59e0b;}
+.pcv-card-icon{flex-shrink:0;margin-top:1px;font-size:1rem;}
+
+/* ACTIONS */
+.pcv-actions{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;}
+.pcv-btn-primary{flex:1;min-width:200px;padding:14px 24px;background:#111827;color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:-.01em;}
+.pcv-btn-primary:hover{opacity:.85;}
+.pcv-btn-secondary{padding:14px 24px;background:#fff;color:#374151;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.pcv-btn-secondary:hover{border-color:#9ca3af;background:#f9fafb;}
+
+/* ERROR */
+.pcv-error{background:#fff5f5;border:1px solid #fecaca;border-radius:12px;padding:16px 20px;color:#dc2626;font-size:.88rem;font-weight:500;margin-top:20px;display:none;}
+
+@media(max-width:600px){
+  .pcv-hero h1{font-size:1.5rem;}
+  .pcv-upload-box{padding:32px 20px;}
+  .pcv-actions{flex-direction:column;}
+  .pcv-btn-primary,.pcv-btn-secondary{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<nav class="pcv-nav">
+  <div class="pcv-nav-inner">
+    <a href="index.html" class="pcv-logo">
+      <img src="logo2.png" alt="DokumoFlow" width="28" height="28">
+      <span>DokumoFlow</span>
+    </a>
+    <a href="index.html" class="pcv-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Strona główna
+    </a>
+  </div>
+</nav>
+
+<div class="pcv-wrap">
+  <div class="pcv-hero">
+    <div class="pcv-badge">✨ AI — Analiza CV</div>
+    <h1>Popraw swoje CV z AI</h1>
+    <p>Wgraj swoje CV, a AI przeanalizuje je i wskaże co poprawić — oraz co już działa dobrze. Jednym kliknięciem wprowadzisz zmiany w kreatorze.</p>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="pcv-upload-box" id="pcvUploadBox">
+    <input type="file" id="pcvFileInput" accept=".pdf" onchange="pcvHandleFile(this.files[0])">
+    <div class="pcv-upload-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    </div>
+    <div class="pcv-upload-title">Wgraj swoje CV</div>
+    <div class="pcv-upload-sub">Przeciągnij plik PDF lub kliknij by wybrać</div>
+    <span class="pcv-upload-btn">Wybierz plik PDF</span>
+  </div>
+  <div class="pcv-error" id="pcvError"></div>
+
+  <!-- LOADING -->
+  <div class="pcv-loading" id="pcvLoading">
+    <div class="pcv-spinner"></div>
+    <div class="pcv-loading-text" id="pcvLoadingText">Wczytuję plik PDF…</div>
+    <div class="pcv-loading-sub">AI analizuje Twoje CV, to może potrwać kilka sekund</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="pcv-results" id="pcvResults">
+    <div class="pcv-filename" id="pcvFilename">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span id="pcvFilenameTxt"></span>
+    </div>
+
+    <div class="pcv-section">
+      <div class="pcv-section-title green">✅ Mocne strony</div>
+      <div class="pcv-cards" id="pcvGoodCards"></div>
+    </div>
+
+    <div class="pcv-section">
+      <div class="pcv-section-title orange">⚠️ Co warto poprawić</div>
+      <div class="pcv-cards" id="pcvBadCards"></div>
+    </div>
+
+    <div class="pcv-actions">
+      <button class="pcv-btn-primary" onclick="pcvApplyChanges()">
+        Wprowadź zmiany w kreatorze CV →
+      </button>
+      <button class="pcv-btn-secondary" onclick="pcvReset()">
+        Wgraj inne CV
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// PDF.js worker
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+});
+
+var _pcvImprovedData = null;
+var _pcvFileName = '';
+
+// Drag & drop
+var box = document.getElementById('pcvUploadBox');
+box.addEventListener('dragover', function(e){ e.preventDefault(); box.classList.add('drag'); });
+box.addEventListener('dragleave', function(){ box.classList.remove('drag'); });
+box.addEventListener('drop', function(e){
+  e.preventDefault(); box.classList.remove('drag');
+  var f = e.dataTransfer.files[0];
+  if (f) pcvHandleFile(f);
+});
+
+function pcvShowError(msg) {
+  var el = document.getElementById('pcvError');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('pcvLoading').style.display = 'none';
+  document.getElementById('pcvUploadBox').style.display = 'block';
+}
+
+function pcvSetLoading(text) {
+  document.getElementById('pcvUploadBox').style.display = 'none';
+  document.getElementById('pcvError').style.display = 'none';
+  document.getElementById('pcvResults').style.display = 'none';
+  document.getElementById('pcvLoading').style.display = 'block';
+  document.getElementById('pcvLoadingText').textContent = text;
+}
+
+async function pcvHandleFile(file) {
+  if (!file) return;
+  if (file.type !== 'application/pdf') { pcvShowError('Proszę wybrać plik PDF.'); return; }
+  if (file.size > 10 * 1024 * 1024) { pcvShowError('Plik jest za duży (max 10 MB).'); return; }
+
+  _pcvFileName = file.name;
+  pcvSetLoading('Wczytuję plik PDF…');
+
+  try {
+    // Wait for PDF.js to load
+    var attempts = 0;
+    while (!window.pdfjsLib && attempts < 30) { await new Promise(r => setTimeout(r, 200)); attempts++; }
+    if (!window.pdfjsLib) throw new Error('Nie udało się załadować biblioteki PDF. Odśwież stronę.');
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    var arrayBuffer = await file.arrayBuffer();
+    var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    var fullText = '';
+    for (var i = 1; i <= pdf.numPages; i++) {
+      var page = await pdf.getPage(i);
+      var content = await page.getTextContent();
+      fullText += content.items.map(function(item){ return item.str; }).join(' ') + '\n';
+    }
+
+    if (!fullText.trim()) throw new Error('Nie udało się wyciągnąć tekstu z PDF. Upewnij się, że plik nie jest skanem obrazkowym.');
+
+    pcvSetLoading('AI analizuje Twoje CV…');
+    await pcvAnalyze(fullText);
+
+  } catch(err) {
+    pcvShowError(err.message || 'Wystąpił błąd. Spróbuj ponownie.');
+  }
+}
+
+async function pcvAnalyze(cvText) {
+  var prompt = `Jesteś ekspertem kariery i specjalistą ATS. Zanalizuj poniższe CV i zwróć odpowiedź TYLKO jako poprawny JSON (bez markdown, bez backticks) w tej strukturze:
+
+{
+  "mocneStrony": ["punkt 1", "punkt 2", "punkt 3"],
+  "doPoprawy": ["punkt 1", "punkt 2", "punkt 3", "punkt 4"],
+  "poprawioneCV": {
+    "imie": "imię",
+    "nazwisko": "nazwisko",
+    "stanowisko": "stanowisko zawodowe (bardziej profesjonalne, pod ATS)",
+    "email": "email",
+    "tel": "telefon",
+    "adres": "miasto, kraj",
+    "linkedin": "url linkedin lub puste",
+    "www": "strona www lub puste",
+    "podsumowanie": "ulepszone podsumowanie zawodowe 3-4 zdania (profesjonalne, pod ATS, bez wymyślania nowych faktów)",
+    "doswiadczenie": [
+      {"firma": "nazwa firmy", "stanowisko": "stanowisko", "od": "data", "do": "data lub obecnie", "opis": "ulepszone opisy obowiązków (konkretne, z liczbami jeśli były, pod ATS)"}
+    ],
+    "wyksztalcenie": [
+      {"szkola": "uczelnia", "kierunek": "kierunek", "od": "rok", "do": "rok", "opis": ""}
+    ],
+    "umiejetnosci": "ulepszona lista umiejętności oddzielona przecinkami (dodaj słowa kluczowe ATS pasujące do branży)",
+    "jezyki": [{"jezyk": "język", "poziom": "poziom"}],
+    "zainteresowania": "zainteresowania oddzielone przecinkami"
+  }
+}
+
+WAŻNE zasady:
+- NIE wymyślaj nowych faktów, firm, stanowisk ani osiągnięć
+- Poprawiaj TYLKO styl, profesjonalizm i słowa kluczowe ATS
+- Jeśli czegoś nie ma w CV, zostaw puste
+- mocneStrony: 2-4 konkretne zalety tego CV
+- doPoprawy: 3-5 konkretnych wskazówek co ulepszyć
+- Odpowiedź WYŁĄCZNIE po polsku
+
+CV DO ANALIZY:
+${cvText.substring(0, 8000)}`;
+
+  var response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: prompt })
+  });
+
+  if (!response.ok) throw new Error('Błąd API: ' + response.status);
+
+  var data = await response.json();
+  var rawText = data.text || data.result || '';
+
+  var parsed;
+  try {
+    parsed = JSON.parse(rawText.replace(/```json|```/g, '').trim());
+  } catch(e) {
+    var match = rawText.match(/\{[\s\S]*\}/);
+    if (match) parsed = JSON.parse(match[0]);
+    else throw new Error('Nie udało się odczytać odpowiedzi AI. Spróbuj ponownie.');
+  }
+
+  _pcvImprovedData = parsed.poprawioneCV || null;
+  pcvShowResults(parsed.mocneStrony || [], parsed.doPoprawy || []);
+}
+
+function pcvShowResults(good, bad) {
+  document.getElementById('pcvLoading').style.display = 'none';
+  document.getElementById('pcvResults').style.display = 'block';
+  document.getElementById('pcvFilenameTxt').textContent = _pcvFileName;
+
+  var goodHtml = '';
+  good.forEach(function(item) {
+    goodHtml += '<div class="pcv-card good"><span class="pcv-card-icon">✅</span><span>' + pcvEsc(item) + '</span></div>';
+  });
+  document.getElementById('pcvGoodCards').innerHTML = goodHtml || '<div class="pcv-card good"><span class="pcv-card-icon">✅</span><span>Brak uwag — CV wygląda dobrze!</span></div>';
+
+  var badHtml = '';
+  bad.forEach(function(item) {
+    badHtml += '<div class="pcv-card bad"><span class="pcv-card-icon">💡</span><span>' + pcvEsc(item) + '</span></div>';
+  });
+  document.getElementById('pcvBadCards').innerHTML = badHtml || '<div class="pcv-card bad"><span class="pcv-card-icon">💡</span><span>Brak sugestii — CV jest już na wysokim poziomie.</span></div>';
+}
+
+function pcvApplyChanges() {
+  if (!_pcvImprovedData) { alert('Brak danych do wprowadzenia.'); return; }
+  sessionStorage.setItem('dokumo_cv_improve', JSON.stringify(_pcvImprovedData));
+  window.location.href = 'kreator-cv.html?mode=improve';
+}
+
+function pcvReset() {
+  _pcvImprovedData = null;
+  _pcvFileName = '';
+  document.getElementById('pcvResults').style.display = 'none';
+  document.getElementById('pcvUploadBox').style.display = 'block';
+  document.getElementById('pcvFileInput').value = '';
+}
+
+function pcvEsc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

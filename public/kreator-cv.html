@@ -2501,6 +2501,46 @@ async function loadCVDraft() {
 
 document.addEventListener('DOMContentLoaded', function() {
   updateCVNavProfile();
+
+  // Tryb "popraw CV z AI" — wczytaj ulepszone dane z popraw-cv.html
+  if (new URLSearchParams(location.search).get('mode') === 'improve') {
+    const improvedJson = sessionStorage.getItem('dokumo_cv_improve');
+    if (improvedJson) {
+      sessionStorage.removeItem('dokumo_cv_improve');
+      try {
+        const parsed = JSON.parse(improvedJson);
+        cvData.imie = parsed.imie || '';
+        cvData.nazwisko = parsed.nazwisko || '';
+        cvData.stanowisko = parsed.stanowisko || '';
+        cvData.email = parsed.email || '';
+        cvData.tel = parsed.tel || '';
+        cvData.adres = parsed.adres || '';
+        cvData.linkedin = parsed.linkedin || '';
+        cvData.www = parsed.www || '';
+        cvData.podsumowanie = parsed.podsumowanie || '';
+        cvData.umiejetnosci = parsed.umiejetnosci || '';
+        cvData.zainteresowania = parsed.zainteresowania || '';
+        if (Array.isArray(parsed.doswiadczenie) && parsed.doswiadczenie.length > 0) {
+          cvData.doswiadczenie = parsed.doswiadczenie.map(e => ({
+            firma: e.firma || '', stanowisko: e.stanowisko || '',
+            od: e.od || '', do: e.do || '', opis: e.opis || ''
+          }));
+        }
+        if (Array.isArray(parsed.wyksztalcenie) && parsed.wyksztalcenie.length > 0) {
+          cvData.wyksztalcenie = parsed.wyksztalcenie.map(e => ({
+            szkola: e.szkola || '', kierunek: e.kierunek || '',
+            od: e.od || '', do: e.do || '', opis: e.opis || ''
+          }));
+        }
+        if (Array.isArray(parsed.jezyki) && parsed.jezyki.length > 0) {
+          cvData.jezyki = parsed.jezyki.map(l => ({ jezyk: l.jezyk || '', poziom: l.poziom || 'B2' }));
+        }
+        renderCVForm();
+        updateCVPreview();
+      } catch(e) { console.error('CV improve parse error:', e); }
+    }
+  }
+
   if (new URLSearchParams(location.search).get('mode') === 'import') {
     const dataUrl = sessionStorage.getItem('dokumo_import_cv_pdf');
     if (dataUrl) {

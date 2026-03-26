@@ -198,6 +198,10 @@ body { background:#f5f3ef; }
                 <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
                 <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
               </a>
+              <a href="popraw-cv.html" class="nav-tool-item">
+                <span class="nav-tool-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+                <span class="nav-tool-text"><span class="nav-tool-name">Popraw CV z AI</span><span class="nav-tool-desc">Analiza i wskazówki do Twojego CV</span></span>
+              </a>
               <a href="#" onclick="wmOpenLetter();return false;" class="nav-tool-item">
                 <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
                 <span class="nav-tool-text"><span class="nav-tool-name">List motywacyjny</span><span class="nav-tool-desc">Napisz przekonujący list z AI</span></span>
@@ -264,6 +268,10 @@ body { background:#f5f3ef; }
     <a href="wybierz-szablon.html" class="mobile-menu-link">
       <span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
       <span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz profesjonalne CV z AI</div></span>
+    </a>
+    <a href="popraw-cv.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+      <span><div class="mobile-menu-link-name">Popraw CV z AI</div><div class="mobile-menu-link-desc">Analiza i wskazówki do Twojego CV</div></span>
     </a>
     <a href="#" onclick="wmOpenLetter();return false;" class="mobile-menu-link">
       <span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
@@ -353,7 +361,7 @@ body { background:#f5f3ef; }
 
         <!-- CTA button — desktop only -->
         <div class="htd-cta-desktop" style="text-align:center;margin-top:auto;padding-top:32px;">
-          <button onclick="wizardModalOpen()" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;border:none;cursor:pointer;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Stwórz swój dokument →</button>
+          <a href="wybierz-szablon.html" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;text-decoration:none;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Stwórz swój dokument →</a>
         </div>
 
       </div>
@@ -555,7 +563,7 @@ body { background:#f5f3ef; }
 
       <!-- CTA button — mobile only, below animation -->
       <div class="htd-cta-mobile" style="text-align:center;margin-top:20px;display:none;">
-        <button onclick="wizardModalOpen()" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;border:none;cursor:pointer;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Stwórz swój dokument →</button>
+        <a href="wybierz-szablon.html" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;text-decoration:none;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Stwórz swój dokument →</a>
       </div>
 
     </div>
