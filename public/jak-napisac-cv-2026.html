@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/jpeg" href="logo2.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5.0">
 <title>Jak napisać dobre CV w 2026 — kompletny przewodnik | Dokumo</title>
 <meta name="description" content="Kompletny przewodnik: jak napisać CV w 2026, które przejdzie przez filtry ATS, wyróżni się u rekrutera i przyniesie zaproszenie na rozmowę kwalifikacyjną. Format, treść, błędy.">
 <link rel="canonical" href="https://dokumoflow.com/jak-napisac-cv-2026.html">
@@ -18,8 +18,13 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Jak długo powinno być CV w 2026?","acceptedAnswer":{"@type":"Answer","text":"CV powinno mieć 1 stronę dla osób z doświadczeniem do 10 lat, 2 strony dla senior specjalistów i managerów. Rekruterzy przeglądają CV średnio 6-30 sekund, więc zwięzłość jest kluczowa."}},{"@type":"Question","name":"Co umieścić w CV bez doświadczenia zawodowego?","acceptedAnswer":{"@type":"Answer","text":"W CV bez doświadczenia umieść: praktyki i staże, projekty studenckie i własne, wolontariat, kursy i certyfikaty, mocne umiejętności twarde (języki, programowanie, obsługa programów). Skup się na tym, co możesz wnieść, nie na tym, czego Ci brakuje."}},{"@type":"Question","name":"Jak napisać podsumowanie zawodowe w CV?","acceptedAnswer":{"@type":"Answer","text":"Podsumowanie zawodowe powinno mieć 3-4 zdania: kim jesteś zawodowo, ile lat doświadczenia masz, jakie są Twoje kluczowe osiągnięcia (z liczbami) i co możesz wnieść do nowej firmy. Unikaj ogólników jak 'komunikatywny' i 'odpowiedzialny'."}},{"@type":"Question","name":"Czy dodawać zdjęcie do CV w Polsce?","acceptedAnswer":{"@type":"Answer","text":"W Polsce zdjęcie w CV jest nadal powszechne i akceptowane, choć nie jest wymagane. Jeśli je dodajesz, użyj profesjonalnego zdjęcia portretowego w dobrym oświetleniu, formalnym lub smart-casual stroju."}},{"@type":"Question","name":"Jaki format pliku CV wybrać: PDF czy Word?","acceptedAnswer":{"@type":"Answer","text":"Zawsze wysyłaj CV w formacie PDF, chyba że pracodawca wyraźnie prosi o Word. PDF zachowuje formatowanie na każdym urządzeniu i wyglądzie tak samo u każdego rekrutera. Word może się rozjechać przy otwieraniu w różnych wersjach programu."}},{"@type":"Question","name":"Jak sprawić, żeby CV przeszło przez filtr ATS?","acceptedAnswer":{"@type":"Answer","text":"Aby CV przeszło przez ATS: używaj standardowych nazw sekcji (Doświadczenie, Wykształcenie, Umiejętności), wpisuj słowa kluczowe z ogłoszenia o pracę, unikaj tabel, ramek i grafik, nie wstawiaj tekstu w nagłówki/stopki, zapisz w formacie PDF lub DOCX."}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link rel="dns-prefetch" href="https://www.gstatic.com">
+<link rel="preload" href="logo2.png" as="image">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="style.css"></noscript>
 
 <style>
 * { font-family:'Inter',sans-serif; box-sizing:border-box; }
@@ -331,6 +336,7 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
 </script>
 </head>
 <body>
+<a href="#main-content" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#fff;color:#111;padding:8px 16px;border-radius:8px;font-weight:600;text-decoration:none;border:2px solid #111;" onfocus="this.style.left='4px'" onblur="this.style.left='-9999px'">Przejdź do treści</a>
 
 <!-- NAVBAR -->
 <header style="background:rgba(255,255,255,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #f3f4f6;position:sticky;top:0;z-index:50;">
@@ -342,49 +348,58 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
 
     <div class="nav-center-links" style="display:flex;align-items:center;gap:4px;">
       <div class="nav-tools-wrap" style="position:relative;">
-        <button class="nav-center-btn" onclick="toggleToolsDropdown(event)" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;">
+        <button class="nav-center-btn" onclick="toggleToolsDropdown(event)" aria-expanded="false" id="toolsMenuBtn" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;">
           Narzędzia
           <svg id="toolsChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div id="toolsDropdown" class="nav-tools-dropdown" style="display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid #f3f4f6;z-index:200;overflow:hidden;">
-          <div style="display:flex;">
-            <div style="padding:8px;min-width:260px;">
-              <a href="wybierz-szablon.html" class="nav-tool-item">
-                <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
-              </a>
-              <a href="index.html?open=letter" class="nav-tool-item">
-                <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">List motywacyjny</span><span class="nav-tool-desc">Napisz przekonujący list z AI</span></span>
-              </a>
-              <a href="kalkulator-wynagrodzen.html" class="nav-tool-item">
-                <span class="nav-tool-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span>
-              </a>
-              <div style="height:1px;background:#f3f4f6;margin:4px 4px;"></div>
-              <a href="wypowiedzenia.html" class="nav-tool-item" style="text-decoration:none;">
-                <span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty pracownicze</span><span class="nav-tool-desc">Urlop, wypowiedzenie, świadectwo</span></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-              <a href="ecommerce.html" class="nav-tool-item" style="text-decoration:none;">
-                <span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty ecommerce</span><span class="nav-tool-desc">Regulamin, RODO, zwroty</span></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-              <a href="hr.html" class="nav-tool-item" style="text-decoration:none;">
-                <span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty HR i Biznes</span><span class="nav-tool-desc">B2B, NDA, zlecenie, umowa o pracę</span></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-              <a href="admin.html" class="nav-tool-item" style="text-decoration:none;">
-                <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-                <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty administracyjne</span><span class="nav-tool-desc">Najem, biznesplan, SWOT</span></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex-shrink:0;color:#9ca3af;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-            </div>
-          </div>
-        </div>
+  <div style="display:flex;">
+    <!-- KOLUMNA 1: Kariera -->
+    <div style="padding:8px;min-width:230px;border-right:1px solid #f3f4f6;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Kariera</div>
+      <a href="wybierz-szablon.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
+      </a>
+      <a href="popraw-cv.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Popraw CV z AI</span><span class="nav-tool-desc">Analiza i wskazówki do Twojego CV</span></span>
+      </a>
+      <a href="index.html?open=letter" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">List motywacyjny</span><span class="nav-tool-desc">Napisz przekonujący list z AI</span></span>
+      </a>
+      <a href="kalkulator-wynagrodzen.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span>
+      </a>
+      <a href="wypowiedzenia.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty pracownicze</span><span class="nav-tool-desc">Urlop, wypowiedzenie, świadectwo</span></span>
+      </a>
+    </div>
+    <!-- KOLUMNA 2: Biznes -->
+    <div style="padding:8px;min-width:230px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Biznes</div>
+      <a href="ecommerce.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty ecommerce</span><span class="nav-tool-desc">Regulamin, RODO, zwroty</span></span>
+      </a>
+      <a href="hr.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty HR i Biznes</span><span class="nav-tool-desc">B2B, NDA, zlecenie, umowa o pracę</span></span>
+      </a>
+      <a href="admin.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty administracyjne</span><span class="nav-tool-desc">Najem, biznesplan, SWOT</span></span>
+      </a>
+      <a href="faktura.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Generator faktur</span><span class="nav-tool-desc">Faktura VAT i proforma w PDF</span></span>
+      </a>
+    </div>
+  </div>
+</div>
       </div>
       <a href="artykuly.html" class="nav-center-btn" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Inter',sans-serif;">Artykuły</a>
     </div>
@@ -418,6 +433,10 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
     <a href="wybierz-szablon.html" class="mobile-menu-link">
       <span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
       <span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz profesjonalne CV z AI</div></span>
+    </a>
+    <a href="popraw-cv.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+      <span><div class="mobile-menu-link-name">Popraw CV z AI</div><div class="mobile-menu-link-desc">Analiza i wskazówki do Twojego CV</div></span>
     </a>
     <a href="index.html?open=letter" class="mobile-menu-link">
       <span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
@@ -453,7 +472,7 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
   </div>
 </div>
 
-<main>
+<main id="main-content">
 
   <!-- ARTICLE HEADER (full width) -->
   <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
@@ -844,10 +863,12 @@ function toggleToolsDropdown(e) {
   e.stopPropagation();
   const dd = document.getElementById('toolsDropdown');
   const chevron = document.getElementById('toolsChevron');
+  const btn = document.getElementById('toolsMenuBtn');
   if (!dd) return;
   const isOpen = dd.style.display === 'block';
   dd.style.display = isOpen ? 'none' : 'block';
   if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (btn) btn.setAttribute('aria-expanded', dd.style.display !== 'none' ? 'true' : 'false');
 }
 
 document.addEventListener('click', () => {
