@@ -2972,8 +2972,8 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   const known = ['nova','oxford','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen','biznes','maroon'];
   if (tpl && known.includes(tpl)) {
     cvTemplate = tpl; // Template chosen on picker page — continue to wizard
-  } else if (mode === 'import' || from === 'translate') {
-    // Special cases: imported CV — don't redirect, use default template
+  } else if (mode === 'import' || mode === 'improve' || from === 'translate') {
+    // Special cases: imported CV / AI improve — don't redirect, use default template
   } else {
     // No template — send user to template picker
     window.location.replace('wybierz-szablon.html');
