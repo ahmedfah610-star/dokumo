@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <script>if(location.search.indexOf('mode=improve')!==-1)window._cvEditLoaded=true;</script>
 <link rel="icon" type="image/jpeg" href="logo2.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link rel="preload" href="logo2.png" as="image">
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
@@ -24,7 +30,8 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kreator CV online – Dokumo","description":"Stwórz profesjonalne CV online w kilka minut. Kreator CV wspierany przez AI z eksportem do PDF.","applicationCategory":"BusinessApplication","operatingSystem":"Web","url":"https://dokumoflow.com/kreator-cv.html","inLanguage":"pl","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"},"provider":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="style.css">
 <style>
 :root {
@@ -42,10 +49,11 @@
 }
 body { font-family: 'Figtree', -apple-system, sans-serif; background: #ffffff; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 .cvf-struct-entry { background: #f9f9f9; border: 1px solid #ebebeb; border-radius: 10px; padding: 12px 14px 8px; margin-bottom: 10px; }
+.skip-link:focus { left: 4px; }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // cv-templates.js – szablony CV
 // Ten plik jest ładowany przez kreator-cv.html
@@ -104,7 +112,7 @@ function buildCVHTML(tpl) {
     ...(kursyItems.length ? [{ key: 'kursy', label: 'Kursy', items: kursyItems }] : []),
     ...(stazeItems.length ? [{ key: 'staze', label: 'Staże', items: stazeItems }] : []),
   ];
-  const photo = d.zdjecie ? `<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
+  const photo = d.zdjecie ? `<img src="${d.zdjecie}" alt="${[d.imie,d.nazwisko].filter(Boolean).join(' ') || 'Zdjęcie profilowe'}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '';
   const contact = [
     d.email && `<span>✉ ${d.email}</span>`,
     d.tel && `<span>📞 ${d.tel}</span>`,
@@ -1448,7 +1456,7 @@ function buildCVHTML(tpl) {
       <!-- SIDEBAR ~32% -->
       <div style="width:190px;flex-shrink:0;background:${c1};padding:26px 16px 24px;display:flex;flex-direction:column;overflow:hidden">
         <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto 13px;background:rgba(255,255,255,0.12);flex-shrink:0;border:2.5px solid rgba(255,255,255,0.2)">
-          ${d.zdjecie?`<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover">`:
+          ${d.zdjecie?`<img src="${d.zdjecie}" alt="" style="width:100%;height:100%;object-fit:cover">`:
           `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
         </div>
         <div style="text-align:center;margin-bottom:16px">
@@ -1577,7 +1585,7 @@ function buildCVHTML(tpl) {
       <!-- LEFT SIDEBAR 34% -->
       <div style="width:34%;flex-shrink:0;background:#f5f7fa;border-right:1.5px solid #dde3ed;padding:24px 16px 20px;overflow:hidden;display:flex;flex-direction:column">
         <div style="width:100%;aspect-ratio:1/1;margin-bottom:18px;flex-shrink:0;overflow:hidden">
-          ${d.zdjecie?`<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block">`:`<div style="width:100%;height:100%;background:#d8dde8;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#9ba4b8" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
+          ${d.zdjecie?`<img src="${d.zdjecie}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block">`:`<div style="width:100%;height:100%;background:#d8dde8;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#9ba4b8" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
         </div>
         ${bHdrSb(L("contact"), SVG_PERSON)}
         <div style="margin-bottom:14px;font-size:9.5px;color:#333;line-height:1.7">
@@ -1652,7 +1660,7 @@ function buildCVHTML(tpl) {
       <!-- RIGHT SIDEBAR 37% -->
       <div style="width:37%;flex-shrink:0;background:#f8f8f8;border-left:1px solid #e5e7eb;padding:22px 15px 18px;overflow:hidden;display:flex;flex-direction:column">
         <div style="width:86px;height:86px;border-radius:50%;overflow:hidden;margin:0 auto 16px;flex-shrink:0;border:2.5px solid #e5e7eb">
-          ${d.zdjecie?`<img src="${d.zdjecie}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block">`:`<div style="width:100%;height:100%;background:#e5e7eb;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
+          ${d.zdjecie?`<img src="${d.zdjecie}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block">`:`<div style="width:100%;height:100%;background:#e5e7eb;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
         </div>
         ${mHdrSb(L("contact"))}
         <div style="margin-bottom:13px">
@@ -2305,7 +2313,7 @@ onAuthStateChanged(_cvAuth, async u=>{
 </script>
 </head>
 <body>
-
+<a href="#cv-main-content" class="skip-link" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#111;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;text-decoration:none;font-weight:600;">Przejdź do treści</a>
 
 <script>
 function updateChip(){
@@ -2373,6 +2381,8 @@ function toggleCVNavDropdown(e) {
   if (!dd) return;
   var isOpen = dd.classList.contains('open');
   dd.classList.toggle('open');
+  var avatar = document.getElementById('cvNavAvatar');
+  if (avatar) avatar.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
   if (!isOpen) {
     var avatar = document.getElementById('cvNavAvatar');
     if (avatar) {
@@ -2387,6 +2397,8 @@ function toggleCVNavDropdown(e) {
 document.addEventListener('click', function() {
   var dd = document.getElementById('cvNavDropdown');
   if (dd) dd.classList.remove('open');
+  var avatar = document.getElementById('cvNavAvatar');
+  if (avatar) avatar.setAttribute('aria-expanded', 'false');
 });
 
 function logoutUserCV() {
@@ -2608,7 +2620,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- NAV — ciemny pasek -->
   <div class="cv-nav">
     <a href="index.html" class="logo cv-nav-logo" style="display:flex;align-items:center;gap:8px;color:#111827!important;text-decoration:none;">
-      <img src="logo2.png" style="height:28px;width:auto;display:block;"><span style="color:#111827!important;font-size:1.125rem;font-weight:800;letter-spacing:-0.02em;">DokumoFlow</span>
+      <img src="logo2.png" alt="Dokumo logo" width="28" height="28" style="height:28px;width:auto;display:block;"><span style="color:#111827!important;font-size:1.125rem;font-weight:800;letter-spacing:-0.02em;">DokumoFlow</span>
     </a>
     <div style="flex:1;"></div>
     <div class="cv-nav-right">
@@ -2617,7 +2629,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
       <div class="cv-nav-profile" id="cvNavProfile" style="display:none">
-        <div class="cv-nav-avatar" id="cvNavAvatar" onclick="toggleCVNavDropdown(event)">?</div>
+        <div class="cv-nav-avatar" id="cvNavAvatar" onclick="toggleCVNavDropdown(event)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu użytkownika" onkeydown="if(event.key==='Enter'||event.key===' '){toggleCVNavDropdown(event)}">?</div>
         <div class="cv-nav-dropdown" id="cvNavDropdown">
           <div class="cv-nav-drop-email" id="cvNavEmail"></div>
           <a href="konto.html" class="cv-nav-drop-link">Moje konto</a>
@@ -2631,7 +2643,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 
   <!-- MAIN -->
-  <div class="cv-main">
+  <main id="cv-main-content" class="cv-main">
     <div class="cv-form-col" id="cvFormPanel"></div>
     <div class="cv-resizer" id="cvResizer"></div>
     <div class="cv-preview-col" id="cvPreviewCol">
@@ -2639,14 +2651,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <span>Podgląd na żywo · A4</span>
         <div id="cvQuickColors" style="display:flex;align-items:center;gap:5px;flex:1;justify-content:center;flex-wrap:wrap"></div>
         <div class="cv-zoom-bar">
-          <button class="cv-zoom-btn" onclick="cvZoomStep(-1)" title="Pomniejsz">−</button>
+          <button class="cv-zoom-btn" onclick="cvZoomStep(-1)" title="Pomniejsz" aria-label="Pomniejsz podgląd">−</button>
           <span id="cvZoomLevel">100%</span>
-          <button class="cv-zoom-btn" onclick="cvZoomStep(1)" title="Powiększ">+</button>
+          <button class="cv-zoom-btn" onclick="cvZoomStep(1)" title="Powiększ" aria-label="Powiększ podgląd">+</button>
         </div>
       </div>
       <div class="cv-preview-doc" id="cvPreviewInner"></div>
     </div>
-  </div>
+  </main>
 
 </div>
 
@@ -2669,7 +2681,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="cv-tpl-drawer">
     <div class="cv-tpl-drawer-head">
       <h3>Wybierz szablon</h3>
-      <button onclick="closeTplDrawer()">✕</button>
+      <button onclick="closeTplDrawer()" aria-label="Zamknij">✕</button>
     </div>
     <!-- COLOR THEME PICKER -->
     <div style="padding:14px 22px 0;border-bottom:1px solid var(--border)">
@@ -2683,7 +2695,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- CV IMPORT OVERLAY (wyzwalany z kariera.html) -->
 <div id="cvImportOverlay" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(15,14,12,.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:24px;">
   <style>@keyframes cvSpin{to{transform:rotate(360deg)}}</style>
-  <div style="width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;animation:cvSpin .75s linear infinite;"></div>
+  <div style="width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;animation:cvSpin .75s linear infinite;will-change:transform;"></div>
   <div id="cvImportText" style="color:#fff;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:600;">Wczytuję plik PDF…</div>
   <div style="width:220px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden;">
     <div id="cvImportBar" style="height:100%;width:0%;background:#fff;border-radius:99px;transition:width .35s ease;"></div>
@@ -3523,7 +3535,7 @@ function renderCVForm() {
           <div class="acc-info">
             <span class="acc-label">${L("personalData")}</span>
           </div>
-          <button class="acc-btn" onclick="event.stopPropagation();toggleAccPersonal()">
+          <button class="acc-btn" onclick="event.stopPropagation();toggleAccPersonal()" aria-label="Rozwiń lub zwiń sekcję danych osobowych">
             <svg width="14" height="14" viewBox="0 0 14 14"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="acc-plus-v"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -3536,11 +3548,11 @@ function renderCVForm() {
               ondrop="cvPhotoDropHandler(event)">
               <div class="cv-photo-avatar">
                 ${cvData.zdjecie
-                  ? `<img src="${cvData.zdjecie}"><div class="cv-photo-overlay">
-                      <button class="cv-photo-ov-btn" title="Zmień" onclick="event.stopPropagation();document.getElementById('cvPhotoInput').click()">
+                  ? `<img src="${cvData.zdjecie}" alt="Twoje zdjęcie profilowe"><div class="cv-photo-overlay">
+                      <button class="cv-photo-ov-btn" title="Zmień" aria-label="Zmień zdjęcie" onclick="event.stopPropagation();document.getElementById('cvPhotoInput').click()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </button>
-                      <button class="cv-photo-ov-btn" title="Usuń" onclick="event.stopPropagation();cvData.zdjecie=null;renderCVForm();updateCVPreview()">
+                      <button class="cv-photo-ov-btn" title="Usuń" aria-label="Usuń zdjęcie" onclick="event.stopPropagation();cvData.zdjecie=null;renderCVForm();updateCVPreview()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
                       </button>
                     </div>`
@@ -3634,7 +3646,7 @@ function buildSectionFormHTML(sec) {
           ${summary ? `<span class="acc-summary">${summary}</span>` : ''}
         </div>
         ${sidebarBtn}
-        <button class="acc-btn" tabindex="-1">
+        <button class="acc-btn" tabindex="-1" aria-label="Rozwiń lub zwiń sekcję">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
             <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -3785,7 +3797,7 @@ function buildSectionBodyHTML(sec) {
           <select class="cvf-input" style="width:100px;flex-shrink:0" onchange="cvData.jezyki[${i}].poziom=this.value;updateCVPreview()">
             ${['A1','A2','B1','B2','C1','C2','Ojczysty'].map(p=>`<option${l.poziom===p?' selected':''}>${p}</option>`).join('')}
           </select>
-          <button class="acc-remove-x" onclick="removeCVLang(${i})" ${i===0&&cvData.jezyki.length===1?'style="visibility:hidden"':''}>✕</button>
+          <button class="acc-remove-x" onclick="removeCVLang(${i})" aria-label="Usuń język" ${i===0&&cvData.jezyki.length===1?'style="visibility:hidden"':''}>✕</button>
         </div>`).join('')}
     </div>
     <div style="margin-top:8px">
@@ -3982,7 +3994,7 @@ function buildCustomSectionHTML(sec) {
             oninput="updateCustomSection('${sec.id}','title',this.value);updateCVPreview()">
         </div>
         ${sidebarBtn}
-        <button class="acc-btn" tabindex="-1">
+        <button class="acc-btn" tabindex="-1" aria-label="Rozwiń lub zwiń sekcję">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="acc-plus-v"/>
             <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -4853,7 +4865,7 @@ async function saveCVToMyDocs(fullName) {
 </div>
 <!-- PDF loading overlay -->
 <div id="pdfLoadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:18px">
-  <div style="width:52px;height:52px;border:4px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:pdfSpin 0.8s linear infinite"></div>
+  <div style="width:52px;height:52px;border:4px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:pdfSpin 0.8s linear infinite;will-change:transform;"></div>
   <div style="color:#fff;font-size:15px;font-weight:500;letter-spacing:0.01em">Generowanie PDF…</div>
 </div>
 <style>@keyframes pdfSpin{to{transform:rotate(360deg)}}</style>
