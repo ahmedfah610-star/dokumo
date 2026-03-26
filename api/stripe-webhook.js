@@ -72,6 +72,7 @@ export default async function handler(req, res) {
           expiresAt: Timestamp.fromDate(expiresAt),
           activatedAt: Timestamp.now(),
           stripeSessionId: session.id,
+          stripeSubscriptionId: session.subscription || null,
           email,
         });
         

@@ -96,6 +96,25 @@ export default async function handler(req, res) {
   }
 
   if (action === 'cancel') {
+    const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
+    const stripeSubId = snap.exists ? snap.data().stripeSubscriptionId : null;
+
+    // Anuluj subskrypcję w Stripe (na koniec okresu, żeby nie pobrał następnej płatności)
+    if (stripeSubId && process.env.STRIPE_SECRET_KEY) {
+      try {
+        await fetch(`https://api.stripe.com/v1/subscriptions/${stripeSubId}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({ cancel_at_period_end: 'true' }).toString(),
+        });
+      } catch (e) {
+        console.error('Stripe cancel failed:', e.message);
+      }
+    }
+
     await db.collection('users').doc(uid).collection('subscription').doc('current').update({
       cancelled: true,
       cancelledAt: new Date(),
