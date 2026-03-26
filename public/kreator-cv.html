@@ -2460,6 +2460,8 @@ async function saveCVDraft() {
       })
     });
     if (resp.ok) {
+      // Cache lokalnie dla szybszego ładowania przy następnym wejściu
+      try { localStorage.setItem('dokumo_cv_draft_cache', JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))); } catch(e) {}
       var badge = document.getElementById('cvDraftBadge');
       if (badge) {
         badge.textContent = '✓ Zapisano';
@@ -2472,6 +2474,22 @@ async function saveCVDraft() {
 
 async function loadCVDraft() {
   try {
+    // Ładuj z localStorage natychmiast (zanim Firestore odpowie)
+    var cached = localStorage.getItem('dokumo_cv_draft_cache');
+    if (cached) {
+      try {
+        var cachedData = JSON.parse(cached);
+        var urlTpl = new URLSearchParams(location.search).get('template');
+        if (!urlTpl && cachedData.__template) cvTemplate = cachedData.__template;
+        if (!urlTpl && cachedData.__color) cvCustomColor = cachedData.__color;
+        if (!urlTpl && cachedData.__customSections) cvCustomSections = cachedData.__customSections;
+        if (!urlTpl && cachedData.__sidebarSections) cvSidebarSections = new Set(cachedData.__sidebarSections);
+        delete cachedData.__template; delete cachedData.__color; delete cachedData.__customSections; delete cachedData.__sidebarSections;
+        Object.assign(cvData, cachedData);
+        if (typeof renderCVForm === 'function') renderCVForm();
+        if (typeof updateCVPreview === 'function') updateCVPreview();
+      } catch(e) {}
+    }
     var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
     if (!token) return;
     var resp = await fetch('/api/draft', { headers: { 'Authorization': 'Bearer ' + token } });
@@ -2538,6 +2556,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         renderCVForm();
         updateCVPreview();
+        // Zapisz od razu jako wersję roboczą
+        _lastDraftSave = 0;
+        setTimeout(saveCVDraft, 800);
       } catch(e) { console.error('CV improve parse error:', e); }
     }
   }
