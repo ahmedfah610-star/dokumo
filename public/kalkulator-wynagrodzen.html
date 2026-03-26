@@ -5,7 +5,7 @@
 <link rel="icon" type="image/jpeg" href="logo2.png">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5.0">
 <title>Kalkulator Wynagrodzeń 2026 — Brutto Netto | Dokumo</title>
 <meta name="description" content="Kalkulator brutto netto 2026. Oblicz wynagrodzenie netto z brutto lub brutto z netto. Uwzględnia aktualne składki ZUS, podatek PIT 12%, kwotę wolną 30 000 zł i składkę zdrowotną.">
 <meta name="keywords" content="kalkulator brutto netto 2026, kalkulator wynagrodzeń 2026, brutto netto kalkulator, ile netto z brutto 2026, kalkulator pensji 2026, kalkulator ZUS 2026, wynagrodzenie netto 2026, przelicznik brutto netto">
@@ -15,7 +15,12 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/kalkulator-wynagrodzen.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta property="og:image:width" content="256">
+<meta property="og:image:height" content="256">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kalkulator Brutto-Netto 2026 | Dokumo">
+<meta name="twitter:description" content="Oblicz wynagrodzenie netto z brutto 2026.">
+<meta name="twitter:image" content="https://dokumoflow.com/logo2.png">
 <meta name="robots" content="index, follow">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Kalkulator Wynagrodzeń Brutto-Netto 2026","description":"Kalkulator obliczający wynagrodzenie netto z brutto lub brutto z netto według stawek podatkowych w Polsce w 2026 roku.","url":"https://dokumoflow.com/kalkulator-wynagrodzen.html","applicationCategory":"FinanceApplication","operatingSystem":"Any","inLanguage":"pl","provider":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"}}
@@ -25,7 +30,10 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link rel="dns-prefetch" href="https://www.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 :root { --bg:#fff; --ink:#111; --ink2:#555; --ink3:#999; --border:#e5e5e5; --surface:#f5f5f7; --pill:50px; }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -166,6 +174,8 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
   .netto-pct-num{font-size:1.4rem;}
   .netto-card{padding:18px 20px;}
   .mode-btn{padding:8px 14px;font-size:.8rem;}
+  .contract-toggle{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
+  .contract-btn{white-space:nowrap;flex-shrink:0;}
 }
 @media(max-width:420px){.rates-grid{grid-template-columns:1fr;}}
 </style>
@@ -183,6 +193,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#fff;color:#111;padding:8px 16px;border-radius:8px;font-weight:600;text-decoration:none;border:2px solid #111;" onfocus="this.style.left='4px'" onblur="this.style.left='-9999px'">Przejdź do treści</a>
 
 <nav class="nav">
   <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
@@ -209,16 +220,16 @@ onAuthStateChanged(getAuth(app),async u=>{
 </nav>
 
 
-<main class="calc-section">
+<main class="calc-section" id="main-content">
 
   <h1 style="text-align:center;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;color:#1a1714;letter-spacing:-.03em;margin:40px 0 8px;">Kalkulator Wynagrodzeń 2026</h1>
   <div class="contract-toggle" style="margin-top:16px;">
-    <button class="contract-btn active" data-ct="uop" onclick="setContract('uop')">Umowa o pracę</button>
-    <button class="contract-btn" data-ct="uz" onclick="setContract('uz')">Umowa zlecenie</button>
-    <button class="contract-btn" data-ct="uod" onclick="setContract('uod')">Umowa o dzieło</button>
-    <button class="contract-btn" data-ct="b2b_ryczalt" onclick="setContract('b2b_ryczalt')">B2B · Ryczałt 12%</button>
-    <button class="contract-btn" data-ct="b2b_skala" onclick="setContract('b2b_skala')">B2B · Skala</button>
-    <button class="contract-btn" data-ct="b2b" onclick="setContract('b2b')">B2B · Liniowy 19%</button>
+    <button class="contract-btn active" data-ct="uop" onclick="setContract('uop')" aria-pressed="true">Umowa o pracę</button>
+    <button class="contract-btn" data-ct="uz" onclick="setContract('uz')" aria-pressed="false">Umowa zlecenie</button>
+    <button class="contract-btn" data-ct="uod" onclick="setContract('uod')" aria-pressed="false">Umowa o dzieło</button>
+    <button class="contract-btn" data-ct="b2b_ryczalt" onclick="setContract('b2b_ryczalt')" aria-pressed="false">B2B · Ryczałt 12%</button>
+    <button class="contract-btn" data-ct="b2b_skala" onclick="setContract('b2b_skala')" aria-pressed="false">B2B · Skala</button>
+    <button class="contract-btn" data-ct="b2b" onclick="setContract('b2b')" aria-pressed="false">B2B · Liniowy 19%</button>
   </div>
   <div class="contract-note" id="contractNote"></div>
 
@@ -248,7 +259,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
   <!-- PIE CHART -->
   <div class="pie-section">
-    <canvas id="pieChart" width="200" height="200"></canvas>
+    <canvas id="pieChart" width="200" height="200" role="img" aria-label="Wykres podziału wynagrodzenia"></canvas>
     <div class="pie-legend" id="pieLegend"></div>
   </div>
 
@@ -316,32 +327,32 @@ onAuthStateChanged(getAuth(app),async u=>{
   <div class="section-sub" style="margin-bottom:28px;">Kalkulator brutto netto 2026 — odpowiedzi</div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Jak obliczyć wynagrodzenie netto z brutto w 2026 roku? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Jak obliczyć wynagrodzenie netto z brutto w 2026 roku? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Od wynagrodzenia brutto odejmuje się <strong>składki ZUS pracownika (13,71%)</strong>: emerytalną 9,76%, rentową 1,5% i chorobową 2,45%. Następnie od podstawy (brutto − ZUS) oblicza się <strong>składkę zdrowotną 9%</strong>. Na końcu wylicza się <strong>zaliczkę na podatek PIT</strong> — podstawa to brutto − ZUS − 250 zł kosztów uzyskania przychodu, podatek = 12% × podstawa − 300 zł miesięcznej ulgi. Suma tych odliczeń odjęta od brutto daje wynagrodzenie netto.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Ile wynosi minimalne wynagrodzenie w 2026 roku? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Ile wynosi minimalne wynagrodzenie w 2026 roku? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Minimalne wynagrodzenie w 2026 roku wynosi <strong>4 806 zł brutto</strong> miesięcznie, co odpowiada ok. <strong>3 606 zł netto</strong>. Minimalna stawka godzinowa wynosi <strong>31,40 zł brutto</strong>.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Ile ZUS płaci pracownik z umowy o pracę w 2026 roku? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Ile ZUS płaci pracownik z umowy o pracę w 2026 roku? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Pracownik płaci składki ZUS łącznie <strong>13,71% wynagrodzenia brutto</strong>: emerytalną 9,76%, rentową 1,5% i chorobową 2,45%. Składka zdrowotna to dodatkowo 9% od podstawy (brutto minus ZUS). Pracownik nie płaci składki na Fundusz Pracy — to obowiązek pracodawcy.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Ile wynosi koszt pracodawcy w 2026 roku? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Ile wynosi koszt pracodawcy w 2026 roku? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Pracodawca opłaca od wynagrodzenia brutto pracownika łącznie ok. <strong>20,48%</strong> tytułem składek ZUS: emerytalną 9,76%, rentową 6,5%, wypadkową 1,67%, Fundusz Pracy 2,45% i FGŚP 0,1%. Całkowity koszt zatrudnienia to ok. <strong>120,48% brutto</strong>. Dla wynagrodzenia 5 000 zł brutto pracodawca ponosi koszt ok. 6 024 zł miesięcznie.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Kiedy obowiązuje 32% podatek PIT w 2026 roku? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Kiedy obowiązuje 32% podatek PIT w 2026 roku? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Stawka 32% obowiązuje od <strong>dochodu powyżej 120 000 zł rocznie</strong>. Przy typowym wynagrodzeniu i standardowych kosztach uzyskania przychodu, II próg podatkowy zaczyna się od ok. <strong>11 500–12 000 zł brutto miesięcznie</strong>. Dochody objęte kwotą wolną (do 30 000 zł rocznie) są zwolnione z podatku.</div>
   </div>
 
   <div class="faq-item" style="border-bottom:none;">
-    <button class="faq-q" onclick="toggleFaq(this)">Czy kalkulator uwzględnia PPK? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Czy kalkulator uwzględnia PPK? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Kalkulator oblicza wynagrodzenie netto <strong>bez PPK</strong> (Pracowniczych Planów Kapitałowych). Jeśli uczestniczysz w PPK, od netto zostanie dodatkowo potrącona składka pracownika — domyślnie <strong>2% brutto</strong> (możliwe 2–4%). Pracodawca dokłada do PPK 1,5% brutto.</div>
   </div>
 </section>
@@ -523,6 +534,7 @@ function setContract(ct) {
   contract = ct;
   document.querySelectorAll('.contract-btn').forEach(function(b){
     b.classList.toggle('active', b.dataset.ct === ct);
+    b.setAttribute('aria-pressed', b.dataset.ct === ct ? 'true' : 'false');
   });
   document.getElementById('contractNote').textContent = CONTRACT_NOTES[ct];
   // show PIT-0 toggle only for uop and uz
@@ -702,6 +714,7 @@ function calculate() {
 
 function toggleFaq(btn) {
   btn.closest('.faq-item').classList.toggle('open');
+  btn.setAttribute('aria-expanded', btn.closest('.faq-item').classList.contains('open') ? 'true' : 'false');
 }
 
 // Init
