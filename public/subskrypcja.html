@@ -82,6 +82,23 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .plan-card:nth-child(1){animation-delay:.05s}
 .plan-card:nth-child(2){animation-delay:.1s}
 .plan-card:nth-child(3){animation-delay:.15s}
+
+/* DISCOUNT CODE */
+.discount-wrap{max-width:860px;margin:0 auto 16px;padding:0 1.5rem;}
+.discount-toggle{background:none;border:none;font-size:.8rem;color:var(--ink2);cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;}
+.discount-toggle:hover{color:var(--ink);}
+.discount-input-row{display:flex;gap:8px;margin-top:8px;}
+.discount-input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;background:#fff;color:var(--ink);}
+.discount-input:focus{border-color:var(--ink);}
+.discount-apply-btn{padding:10px 16px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.discount-apply-btn:hover{opacity:.85;}
+.discount-active{display:flex;align-items:center;gap:10px;margin-top:8px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;}
+.discount-active-label{font-size:.82rem;color:#15803d;font-weight:600;flex:1;}
+.discount-remove{background:none;border:none;font-size:.75rem;color:#6b6560;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:'DM Sans',sans-serif;}
+.discount-remove:hover{color:var(--ink);}
+.discount-err{font-size:.78rem;color:#dc2626;margin-top:6px;}
+.plan-price-orig{text-decoration:line-through;color:#aaa;font-size:1rem;font-weight:500;margin-right:4px;}
+.plan-price-note{display:block;font-size:.65rem;color:var(--ink2);margin-top:3px;font-weight:400;}
 </style>
 
 <script type="module">
@@ -199,6 +216,25 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:#1a1714;letter-spacing:-.02em;">Wybierz pakiet</h1>
 </div>
 
+<!-- Kod rabatowy -->
+<div class="discount-wrap">
+  <button class="discount-toggle" id="discountToggleBtn" onclick="toggleDiscountInput()">
+    <span>🏷️</span> Masz kod rabatowy?
+  </button>
+  <div id="discountInputSection" style="display:none">
+    <div class="discount-input-row">
+      <input class="discount-input" id="discountCodeInput" placeholder="Wpisz kod (np. WELCOME20)" maxlength="24"
+        onkeydown="if(event.key==='Enter')applyDiscountCode()">
+      <button class="discount-apply-btn" onclick="applyDiscountCode()">Zastosuj</button>
+    </div>
+    <div id="discountErr" class="discount-err" style="display:none"></div>
+  </div>
+  <div class="discount-active" id="discountActiveBar" style="display:none">
+    <span class="discount-active-label">✓ Kod aktywny: <strong id="discountActiveLabel"></strong></span>
+    <button class="discount-remove" onclick="removeDiscountCode()">Usuń</button>
+  </div>
+</div>
+
 <!-- Overlay oczekiwania na płatność -->
 <div id="paymentOverlay" style="display:none;position:fixed;inset:0;background:rgba(26,23,20,.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;">
   <div style="background:#faf8f4;border-radius:20px;padding:40px 32px;max-width:320px;text-align:center;line-height:1.6;">
@@ -218,7 +254,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <div class="plan-icon">🎯</div>
     <div class="plan-name">Pakiet Kariera</div>
     <div class="plan-tagline">CV, wypowiedzenia, kalkulator wynagrodzeń</div>
-    <div class="plan-price">5 zł <span>/ tydzień</span></div>
+    <div class="plan-price" id="price-kariera">5 zł <span>/ tydzień</span></div>
 
     <ul class="plan-features">
       <li><span class="ck">✓</span> Kreator CV z AI</li>
@@ -237,7 +273,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <div class="plan-icon">🚀</div>
     <div class="plan-name">Pro Max</div>
     <div class="plan-tagline">Dostęp do wszystkiego bez ograniczeń</div>
-    <div class="plan-price">31,99 zł <span>/ miesiąc</span></div>
+    <div class="plan-price" id="price-promax">31,99 zł <span>/ miesiąc</span></div>
 
     <ul class="plan-features">
       <li><span class="ck">✓</span> Kreator CV z AI</li>
@@ -256,7 +292,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <div class="plan-icon">💼</div>
     <div class="plan-name">Pakiet Biznes</div>
     <div class="plan-tagline">Umowy, regulaminy i dokumenty firmowe</div>
-    <div class="plan-price">29,99 zł <span>/ miesiąc</span></div>
+    <div class="plan-price" id="price-biznes">29,99 zł <span>/ miesiąc</span></div>
 
     <ul class="plan-features">
       <li><span class="no">✕</span> Strefa Kariery</li>
@@ -276,13 +312,108 @@ updateNavAuth();window._renderUNav=updateNavAuth;
 </div>
 
 <script>
-// ── Stripe linki — uzupełnij po stworzeniu produktów w Stripe Dashboard ──
-// W każdym linku ustaw metadata: plan=kariera / plan=biznes / plan=promax
+// ── Stripe linki (fallback gdy brak konfiguracji STRIPE_PRICE_* w Vercel) ──
 const STRIPE_LINKS = {
   kariera: 'https://buy.stripe.com/7sY5kC6du7D09HQ1n7gIo04',
   biznes:  'https://buy.stripe.com/8x27sKeK0e1og6e5DngIo05',
   promax:  'https://buy.stripe.com/dRm5kCbxO6yWaLUd5PgIo06',
 };
+
+// ── Bazowe ceny (do wyświetlania rabatu) ──
+const BASE_PRICES = {
+  kariera: { amount: 5,     period: '/ tydzień', note: '1. tydzień' },
+  biznes:  { amount: 29.99, period: '/ miesiąc', note: '1. miesiąc' },
+  promax:  { amount: 31.99, period: '/ miesiąc', note: '1. miesiąc' },
+};
+
+// ── Stan kodu rabatowego ──
+let _discountCode = null;
+let _discountPercent = 0;
+
+function fmtPrice(n) {
+  return n % 1 === 0 ? String(n) : n.toFixed(2).replace('.', ',');
+}
+
+function updatePriceDisplay() {
+  Object.entries(BASE_PRICES).forEach(([plan, info]) => {
+    const el = document.getElementById('price-' + plan);
+    if (!el) return;
+    if (_discountPercent) {
+      const disc = (info.amount * (1 - _discountPercent / 100));
+      el.innerHTML =
+        `<span class="plan-price-orig">${fmtPrice(info.amount)} zł</span>${fmtPrice(disc)} zł <span>${info.period}</span>` +
+        `<small class="plan-price-note">potem ${fmtPrice(info.amount)} zł</small>`;
+    } else {
+      el.innerHTML = `${fmtPrice(info.amount)} zł <span>${info.period}</span>`;
+    }
+  });
+}
+
+function toggleDiscountInput() {
+  const sec = document.getElementById('discountInputSection');
+  const btn = document.getElementById('discountToggleBtn');
+  const open = sec.style.display === 'none';
+  sec.style.display = open ? 'block' : 'none';
+  btn.style.display = open ? 'none' : '';
+  if (open) document.getElementById('discountCodeInput').focus();
+}
+
+async function applyDiscountCode() {
+  const input = document.getElementById('discountCodeInput');
+  const errEl = document.getElementById('discountErr');
+  const code = (input.value || '').trim().toUpperCase();
+  if (!code) return;
+  errEl.style.display = 'none';
+
+  const btn = document.querySelector('.discount-apply-btn');
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    const res = await fetch('/api/validate-code?code=' + encodeURIComponent(code));
+    const data = await res.json();
+    if (data.valid) {
+      _discountCode = code;
+      _discountPercent = data.percent;
+      // Zapisz w sessionStorage (przeżyje redirect do logowania)
+      sessionStorage.setItem('dokumo_disc', JSON.stringify({ code, percent: data.percent }));
+      document.getElementById('discountInputSection').style.display = 'none';
+      document.getElementById('discountToggleBtn').style.display = 'none';
+      document.getElementById('discountActiveLabel').textContent = `${code} (−${data.percent}%)`;
+      document.getElementById('discountActiveBar').style.display = 'flex';
+      updatePriceDisplay();
+    } else {
+      errEl.textContent = 'Nieprawidłowy kod rabatowy.';
+      errEl.style.display = 'block';
+    }
+  } catch {
+    errEl.textContent = 'Błąd połączenia. Spróbuj ponownie.';
+    errEl.style.display = 'block';
+  }
+  btn.textContent = 'Zastosuj'; btn.disabled = false;
+}
+
+function removeDiscountCode() {
+  _discountCode = null; _discountPercent = 0;
+  sessionStorage.removeItem('dokumo_disc');
+  document.getElementById('discountActiveBar').style.display = 'none';
+  document.getElementById('discountToggleBtn').style.display = '';
+  document.getElementById('discountCodeInput').value = '';
+  document.getElementById('discountErr').style.display = 'none';
+  updatePriceDisplay();
+}
+
+// Przywróć kod rabatowy po powrocie z logowania
+(function restoreDiscount() {
+  const saved = sessionStorage.getItem('dokumo_disc');
+  if (!saved) return;
+  try {
+    const { code, percent } = JSON.parse(saved);
+    _discountCode = code; _discountPercent = percent;
+    document.getElementById('discountToggleBtn').style.display = 'none';
+    document.getElementById('discountActiveLabel').textContent = `${code} (−${percent}%)`;
+    document.getElementById('discountActiveBar').style.display = 'flex';
+    updatePriceDisplay();
+  } catch {}
+})();
 
 function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
 function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
@@ -415,22 +546,40 @@ async function pollForPayment(plan){
   setTimeout(()=>{ if(overlay) overlay.style.display='none'; },4000);
 }
 
-function kupPakiet(plan){
+async function kupPakiet(plan){
   const user=getUser();
   if(!user){
-    sessionStorage.setItem('dokumo_after_sub',window.location.href+'?pending='+plan);
+    sessionStorage.setItem('dokumo_after_sub',window.location.href);
     window.location.href='konto.html';
     return;
   }
+
+  sessionStorage.setItem('dokumo_pending_plan', plan);
+
+  // Jeśli jest kod rabatowy lub jest token — użyj Checkout Session API
+  if(_discountCode && window._fbToken){
+    const btn=document.getElementById('btn-'+plan);
+    if(btn){ btn.disabled=true; btn.textContent='Przekierowuję…'; }
+    try{
+      const res=await fetch('/api/create-checkout',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},
+        body:JSON.stringify({plan,code:_discountCode}),
+      });
+      const data=await res.json();
+      if(data.url){ window.location.href=data.url; return; }
+    }catch{}
+    // Fallback — jeśli API nie działa, użyj statycznego linku
+    if(btn){ btn.disabled=false; renderPage(); }
+  }
+
+  // Statyczny link Stripe (brak kodu rabatowego lub błąd API)
   const link=STRIPE_LINKS[plan];
   if(!link||link.includes('UZUPELNIJ')){
-    alert('Link płatności dla pakietu "'+plan+'" nie jest jeszcze skonfigurowany.\nDodaj go w STRIPE_LINKS w subskrypcja.html.');
+    alert('Link płatności dla pakietu "'+plan+'" nie jest jeszcze skonfigurowany.');
     return;
   }
-  // Zapisz oczekiwany plan w sessionStorage — sprawdzony po powrocie
-  sessionStorage.setItem('dokumo_pending_plan', plan);
-  // Przekieruj na Stripe (w tym samym oknie)
-  window.location.href = link;
+  window.location.href=link;
 }
 
 async function anulujSub(){
