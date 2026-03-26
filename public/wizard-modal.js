@@ -49,7 +49,8 @@ function _wmIcon(type, stroke, bg) {
     handshake:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11l-5-5-5 5"/><path d="M17 19l-5-5-5 5"/></svg>',
     house:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
     file:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>',
-    match:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>'
+    match:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+    edit:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
   };
   return '<div class="wm-tool-icon" style="background:'+bg+'">'+( icons[type]||icons.file )+'</div>';
 }
