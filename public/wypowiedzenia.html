@@ -22,7 +22,12 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link rel="preload" href="logo2.png" as="image">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
   --bg: #ffffff;
@@ -37,6 +42,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; min-height: 100vh; overflow-x: hidden; }
+.skip-link:focus { left: 0; width: auto; height: auto; overflow: visible; }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
@@ -77,7 +83,7 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 
 /* ── SCREENS ── */
 .screen { display: none; min-height: calc(100vh - 60px - 72px); }
-.screen.active { display: block; animation: fadeUp .38s ease both; }
+.screen.active { display: block; animation: fadeUp .38s ease both; will-change: opacity, transform; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes wzShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
@@ -148,7 +154,7 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 
 /* ── SCREEN 3 — SUCCESS ── */
 .success-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 72px 2rem; min-height: calc(100vh - 60px - 72px); }
-.success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(52,199,89,.1); border: 2px solid rgba(52,199,89,.25); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 28px; animation: float 3s ease-in-out infinite, popIn .5s ease both; }
+.success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(52,199,89,.1); border: 2px solid rgba(52,199,89,.25); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 28px; animation: float 3s ease-in-out infinite, popIn .5s ease both; will-change: transform; }
 .success-h1 { font-size: clamp(2rem,4vw,2.8rem); font-weight: 900; letter-spacing: -.05em; margin-bottom: 12px; }
 .success-sub { font-size: 1rem; color: var(--ink2); max-width: 420px; line-height: 1.6; margin-bottom: 36px; }
 .success-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 52px; }
@@ -221,11 +227,12 @@ onAuthStateChanged(getAuth(app),async u=>{
 </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;background:#111;color:#fff;padding:8px 16px;border-radius:0 0 8px 8px;font-size:.85rem;font-weight:700;text-decoration:none;">Przejdź do treści</a>
 
 <!-- NAV -->
 <nav class="wiz-nav">
   <a href="index.html" class="nav-logo">
-    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+    <img src="logo2.png" alt="Dokumo" width="28" height="28" style="height:28px;width:auto;display:block;">
     Dokumo
   </a>
   <div class="nav-steps" id="navSteps"></div>
@@ -233,7 +240,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     <a href="konto.html" class="nav-login" id="navLogin">Zaloguj się</a>
     <div class="nav-profile" id="navProfile">
       
-      <div class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)">?</div>
+      <button class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)" aria-label="Menu konta" aria-expanded="false" aria-haspopup="true">?</button>
       <div class="nav-dropdown" id="navDrop">
         <div class="nav-dd-email">
           <div class="nav-dd-name" id="navName"></div>
@@ -249,9 +256,12 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 </nav>
 
+<main id="main-content">
 <!-- SCREEN 0: WYBIERZ DOKUMENT -->
 <section class="screen active" id="screen0">
   <div class="choose-hero">
+    <h1 class="choose-h1">Dokumenty pracownicze</h1>
+    <p class="choose-sub">Wypowiedzenie umowy o pracę, wnioski o urlop i świadectwo pracy — generowane przez AI w kilka sekund.</p>
   </div>
   <div class="doc-grid">
     <div class="doc-card" onclick="selectDoc('wypowiedzenie')">
@@ -352,6 +362,8 @@ onAuthStateChanged(getAuth(app),async u=>{
   </div>
 </section>
 
+</main>
+
 <!-- BOTTOM BAR -->
 <div class="bot-bar">
   <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
@@ -379,9 +391,9 @@ onAuthStateChanged(getAuth(app),async u=>{
       var names={kariera:"Kariera",biznes:"Biznes",promax:"Pro Max",pro:"PRO"};
     }else{login.style.display="";profile.classList.remove("show");}
   }
-  window.toggleDrop=function(e){e.stopPropagation();document.getElementById("navDrop").classList.toggle("show");};
+  window.toggleDrop=function(e){e.stopPropagation();var d=document.getElementById("navDrop");var open=d.classList.toggle("show");var av=document.getElementById("navAvatar");if(av)av.setAttribute("aria-expanded",open?"true":"false");};
   window.navLogout=function(){localStorage.removeItem("dokumo_user");localStorage.removeItem("dokumo_sub");(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href="index.html";});};
-  document.addEventListener("click",function(){var d=document.getElementById("navDrop");if(d)d.classList.remove("show");});
+  document.addEventListener("click",function(){var d=document.getElementById("navDrop");if(d)d.classList.remove("show");var av=document.getElementById("navAvatar");if(av)av.setAttribute("aria-expanded","false");});
   renderNav();window._renderNav=renderNav;
 })();
 
@@ -814,7 +826,7 @@ renderBar();
 })();
 </script>
 
-<script src="plan-guard.js"></script>
+<script src="plan-guard.js" defer></script>
 
 <!-- FAQ -->
 <section class="faq-section">
@@ -822,39 +834,41 @@ renderBar();
   <div class="faq-section-sub">Dokumenty pracownicze — odpowiedzi</div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Ile wynosi okres wypowiedzenia umowy o pracę? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Ile wynosi okres wypowiedzenia umowy o pracę? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Okres wypowiedzenia zależy od stażu pracy u danego pracodawcy. Przy umowie na czas nieokreślony: <strong>2 tygodnie</strong> przy stażu poniżej 6 miesięcy, <strong>1 miesiąc</strong> przy stażu od 6 miesięcy do 3 lat, <strong>3 miesiące</strong> przy stażu powyżej 3 lat. Przy umowie na czas określony obowiązuje takie samo uzależnienie od stażu.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Czy wypowiedzenie musi być złożone na piśmie? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Czy wypowiedzenie musi być złożone na piśmie? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Tak, wypowiedzenie umowy o pracę powinno być złożone <strong>na piśmie</strong>. Pracodawca jest zobowiązany do podania przyczyny wypowiedzenia w przypadku umowy na czas nieokreślony. Pracownik nie musi uzasadniać swojej decyzji o rozwiązaniu umowy.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Kiedy można złożyć wniosek o urlop wypoczynkowy? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Kiedy można złożyć wniosek o urlop wypoczynkowy? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Pracownik nabywa prawo do urlopu wypoczynkowego z dniem podjęcia pracy. Wymiar urlopu wynosi <strong>20 dni</strong> przy stażu pracy poniżej 10 lat oraz <strong>26 dni</strong> przy stażu 10 lat i więcej. Urlop powinien być udzielony zgodnie z planem urlopowym lub po uzgodnieniu z pracodawcą.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Co powinno zawierać świadectwo pracy? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Co powinno zawierać świadectwo pracy? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Świadectwo pracy musi zawierać: <strong>okres i rodzaj wykonywanej pracy</strong>, zajmowane stanowiska, tryb rozwiązania stosunku pracy, informacje o urlopach i uprawnieniach pracowniczych. Pracodawca ma obowiązek wydać świadectwo pracy <strong>niezwłocznie po zakończeniu zatrudnienia</strong>, nie później niż w dniu ustania stosunku pracy.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Czym różni się wypowiedzenie od rozwiązania umowy za porozumieniem? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Czym różni się wypowiedzenie od rozwiązania umowy za porozumieniem? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Przy <strong>wypowiedzeniu</strong> umowa rozwiązuje się po upływie okresu wypowiedzenia, a pracodawca przy umowie na czas nieokreślony musi podać przyczynę. Przy <strong>rozwiązaniu za porozumieniem stron</strong> obie strony uzgadniają datę zakończenia stosunku pracy — może to być natychmiastowe lub w dowolnym terminie, bez konieczności podawania przyczyny.</div>
   </div>
 
   <div class="faq-item" style="border-bottom:none;">
-    <button class="faq-q" onclick="toggleFaq(this)">Czy pracodawca może zwolnić pracownika bez wypowiedzenia? <span class="faq-chevron">▼</span></button>
+    <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Czy pracodawca może zwolnić pracownika bez wypowiedzenia? <span class="faq-chevron">▼</span></button>
     <div class="faq-a">Tak, pracodawca może rozwiązać umowę bez zachowania okresu wypowiedzenia tylko w przypadku <strong>ciężkiego naruszenia podstawowych obowiązków pracowniczych</strong> (zwolnienie dyscyplinarne), popełnienia przestępstwa przez pracownika lub utraty uprawnień niezbędnych do pracy. Pracownik ma prawo odwołać się do sądu pracy w terminie <strong>21 dni</strong> od dnia doręczenia pisma.</div>
   </div>
 </section>
 
 <script>
 function toggleFaq(btn) {
-  btn.closest('.faq-item').classList.toggle('open');
+  var item = btn.closest('.faq-item');
+  item.classList.toggle('open');
+  btn.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
 }
 </script>
 
