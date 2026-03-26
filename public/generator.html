@@ -6,10 +6,24 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>List motywacyjny – Dokumo</title>
+<title>Generator listów motywacyjnych AI – Dokumo</title>
+<meta name="description" content="Stwórz profesjonalny list motywacyjny w kilka sekund dzięki AI. Wybierz szablon, wpisz dane i pobierz gotowy PDF.">
 <link rel="canonical" href="https://dokumoflow.com/generator.html">
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dokumoflow.com/generator.html">
+<meta property="og:title" content="Generator listów motywacyjnych AI – Dokumo">
+<meta property="og:description" content="Stwórz profesjonalny list motywacyjny w kilka sekund dzięki AI. Wybierz szablon, wpisz dane i pobierz gotowy PDF.">
+<meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Generator listów motywacyjnych – Dokumo","applicationCategory":"BusinessApplication","operatingSystem":"Web","url":"https://dokumoflow.com/generator.html","description":"Narzędzie AI do tworzenia profesjonalnych listów motywacyjnych w języku polskim.","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link rel="preload" href="logo2.png" as="image">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap"></noscript>
 <style>
 :root{--bg:#fff;--ink:#111;--ink2:#555;--ink3:#999;--border:#e5e5e5;--surface:#f5f5f7;--pill:50px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -24,7 +38,7 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 
 /* LOADING */
 .lm-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-.lm-spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:lmspin .8s linear infinite;}
+.lm-spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:lmspin .8s linear infinite;will-change:transform;}
 @keyframes lmspin{to{transform:rotate(360deg);}}
 .lm-loading-title{font-size:1rem;font-weight:700;color:var(--ink);}
 .lm-loading-sub{font-size:.85rem;color:var(--ink3);text-align:center;}
@@ -141,8 +155,8 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
   .preview-modal .lm-paper{padding:28px 20px;font-size:12px;min-height:0;}
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="plan-guard.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<script src="plan-guard.js" defer></script>
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -156,13 +170,16 @@ onAuthStateChanged(getAuth(app),async u=>{
 </script>
 </head>
 <body>
-
+<a href="#lm-main-content" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;" onfocus="this.style.left='0';this.style.width='auto';this.style.height='auto';" onblur="this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Przejdź do treści</a>
 <nav class="nav">
   <a href="index.html" class="nav-logo">
-    <img src="logo2.png" style="height:28px;width:auto;display:block;">
+    <img src="logo2.png" alt="Dokumo" width="28" height="28" style="height:28px;width:auto;display:block;">
     Dokumo
   </a>
 </nav>
+
+<main id="lm-main-content">
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Generator listów motywacyjnych AI</h1>
 
 <div class="lm-loading" id="lmLoading">
   <div class="lm-spinner"></div>
@@ -179,16 +196,16 @@ onAuthStateChanged(getAuth(app),async u=>{
       <!-- Aplikacja -->
       <div class="lm-section">
         <div class="lm-section-head"><span class="lm-section-title">Aplikacja</span></div>
-        <div class="lm-field"><label class="lm-label">Stanowisko</label><input class="lm-input" id="fPos" placeholder="np. Frontend Developer" oninput="renderPreview()"></div>
-        <div class="lm-field"><label class="lm-label">Firma</label><input class="lm-input" id="fCompany" placeholder="np. Google" oninput="renderPreview()"></div>
+        <div class="lm-field"><label class="lm-label" for="fPos">Stanowisko</label><input class="lm-input" id="fPos" placeholder="np. Frontend Developer" oninput="renderPreview()"></div>
+        <div class="lm-field"><label class="lm-label" for="fCompany">Firma</label><input class="lm-input" id="fCompany" placeholder="np. Google" oninput="renderPreview()"></div>
       </div>
 
       <!-- Nadawca -->
       <div class="lm-section">
         <div class="lm-section-head"><span class="lm-section-title">Nadawca</span></div>
         <div class="lm-row2">
-          <div class="lm-field"><label class="lm-label">Imię</label><input class="lm-input" id="fFirstName" placeholder="np. Ahmed" oninput="renderPreview()"></div>
-          <div class="lm-field"><label class="lm-label">Nazwisko</label><input class="lm-input" id="fLastName" placeholder="np. Kowalski" oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="fFirstName">Imię</label><input class="lm-input" id="fFirstName" placeholder="np. Ahmed" oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="fLastName">Nazwisko</label><input class="lm-input" id="fLastName" placeholder="np. Kowalski" oninput="renderPreview()"></div>
         </div>
         <div class="lm-field" id="photoFieldWrap">
           <label class="lm-label">Zdjęcie (opcjonalne)</label>
@@ -207,12 +224,12 @@ onAuthStateChanged(getAuth(app),async u=>{
           </div>
           <input type="file" id="lmPhotoInput" accept="image/jpeg,image/png" style="display:none" onchange="lmLoadPhoto(this)">
         </div>
-        <div class="lm-field"><label class="lm-label">Adres e-mail</label><input class="lm-input" id="fEmail" type="email" placeholder="np. jan@gmail.com" oninput="renderPreview()"></div>
-        <div class="lm-field"><label class="lm-label">Numer telefonu</label><input class="lm-input" id="fPhone" placeholder="np. 567-898-765" oninput="renderPreview()"></div>
-        <div class="lm-field"><label class="lm-label">Ulica</label><input class="lm-input" id="fStreet" placeholder="np. Partyzantów 12" oninput="renderPreview()"></div>
+        <div class="lm-field"><label class="lm-label" for="fEmail">Adres e-mail</label><input class="lm-input" id="fEmail" type="email" placeholder="np. jan@gmail.com" oninput="renderPreview()"></div>
+        <div class="lm-field"><label class="lm-label" for="fPhone">Numer telefonu</label><input class="lm-input" id="fPhone" placeholder="np. 567-898-765" oninput="renderPreview()"></div>
+        <div class="lm-field"><label class="lm-label" for="fStreet">Ulica</label><input class="lm-input" id="fStreet" placeholder="np. Partyzantów 12" oninput="renderPreview()"></div>
         <div class="lm-row2">
-          <div class="lm-field"><label class="lm-label">Kod pocztowy</label><input class="lm-input" id="fZip" placeholder="np. 47-220" oninput="renderPreview()"></div>
-          <div class="lm-field"><label class="lm-label">Miasto</label><input class="lm-input" id="fCity" placeholder="np. Kraków" oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="fZip">Kod pocztowy</label><input class="lm-input" id="fZip" placeholder="np. 47-220" oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="fCity">Miasto</label><input class="lm-input" id="fCity" placeholder="np. Kraków" oninput="renderPreview()"></div>
         </div>
       </div>
 
@@ -220,19 +237,19 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="lm-section">
         <div class="lm-section-head">
           <span class="lm-section-title">Odbiorca</span>
-          <button class="lm-toggle-rec" id="recToggle" onclick="toggleRec()">
+          <button class="lm-toggle-rec" id="recToggle" onclick="toggleRec()" aria-expanded="false" aria-controls="recFields">
             Dodaj dane
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
         </div>
         <p class="lm-rec-hint">Jeśli znasz odbiorcę listu motywacyjnego, możesz dodać jego dane tutaj. Nie martw się, jeśli ich nie znasz – Twój list będzie nadal świetny bez nich.</p>
         <div class="lm-rec-fields" id="recFields">
-          <div class="lm-field"><label class="lm-label">Firma</label><input class="lm-input" id="rCompany" placeholder="np. Google Sp. z o.o." oninput="renderPreview()"></div>
-          <div class="lm-field"><label class="lm-label">Osoba kontaktowa</label><input class="lm-input" id="rContact" placeholder="np. Anna Kowalska" oninput="renderPreview()"></div>
-          <div class="lm-field"><label class="lm-label">Ulica</label><input class="lm-input" id="rStreet" placeholder="np. Aleje Jerozolimskie 1" oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="rCompany">Firma</label><input class="lm-input" id="rCompany" placeholder="np. Google Sp. z o.o." oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="rContact">Osoba kontaktowa</label><input class="lm-input" id="rContact" placeholder="np. Anna Kowalska" oninput="renderPreview()"></div>
+          <div class="lm-field"><label class="lm-label" for="rStreet">Ulica</label><input class="lm-input" id="rStreet" placeholder="np. Aleje Jerozolimskie 1" oninput="renderPreview()"></div>
           <div class="lm-row2">
-            <div class="lm-field"><label class="lm-label">Kod pocztowy</label><input class="lm-input" id="rZip" placeholder="np. 47-224" oninput="renderPreview()"></div>
-            <div class="lm-field"><label class="lm-label">Miasto</label><input class="lm-input" id="rCity" placeholder="np. Kraków" oninput="renderPreview()"></div>
+            <div class="lm-field"><label class="lm-label" for="rZip">Kod pocztowy</label><input class="lm-input" id="rZip" placeholder="np. 47-224" oninput="renderPreview()"></div>
+            <div class="lm-field"><label class="lm-label" for="rCity">Miasto</label><input class="lm-input" id="rCity" placeholder="np. Kraków" oninput="renderPreview()"></div>
           </div>
         </div>
       </div>
@@ -241,7 +258,7 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="lm-section">
         <div class="lm-section-head"><span class="lm-section-title">Treść listu</span></div>
         <div class="lm-field">
-          <textarea class="lm-input lm-textarea" id="fBody" placeholder="Opisz w 3-4 zdaniach, dlaczego jesteś idealnym kandydatem na to stanowisko." oninput="renderPreview()"></textarea>
+          <label class="lm-label" for="fBody" style="display:none;">Treść listu</label><textarea class="lm-input lm-textarea" id="fBody" placeholder="Opisz w 3-4 zdaniach, dlaczego jesteś idealnym kandydatem na to stanowisko." oninput="renderPreview()"></textarea>
         </div>
       </div>
 
@@ -250,7 +267,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
   <!-- ── PREVIEW ── -->
   <div class="lm-preview">
-    <div class="lm-paper" id="lmPaper"></div>
+    <div class="lm-paper" id="lmPaper" aria-live="polite" aria-label="Podgląd listu motywacyjnego"></div>
   </div>
 
 </div>
@@ -258,7 +275,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 <div class="lm-bar" id="lmBar" style="display:none;">
   <button class="btn-dl" onclick="downloadPdf()">⬇ Pobierz PDF</button>
   <div style="position:relative;">
-    <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()" aria-expanded="false" aria-controls="tplPicker" aria-label="Wybierz szablon">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
     <div class="tpl-picker" id="tplPicker">
       <button class="tpl-opt active" id="tplOptNowoczesny" onclick="setTpl('zdjecie')">
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:3px;display:flex;flex-direction:column;gap:1px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;"><div style="height:4px;background:#222;border-radius:1px;width:55%;"></div><div style="width:10px;height:10px;border-radius:50%;background:#ccc;flex-shrink:0;"></div></div><div style="height:0.5px;background:#111;width:100%;margin-bottom:2px;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
@@ -278,6 +295,8 @@ onAuthStateChanged(getAuth(app),async u=>{
   <span class="save-status" id="saveStatus"></span>
   <a href="kariera.html" class="btn-new">Nowy list</a>
 </div>
+
+</main>
 
 <!-- LETTER PHOTO CROP MODAL -->
 <div id="lmCropOverlay">
@@ -307,7 +326,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <!-- PREVIEW MODAL (mobile only) -->
 <div class="preview-modal" id="previewModal">
-  <button class="preview-modal-close" onclick="closePreview()">
+  <button class="preview-modal-close" onclick="closePreview()" aria-label="Zamknij podgląd">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
   <div class="lm-paper" id="lmPaperModal"></div>
@@ -426,7 +445,9 @@ window.addEventListener('DOMContentLoaded', function() {
       if (editData.rCompany || editData.rContact) {
         _recOpen = true;
         document.getElementById('recFields').classList.add('open');
-        document.getElementById('recToggle').classList.add('open');
+        var recBtn = document.getElementById('recToggle');
+        recBtn.classList.add('open');
+        recBtn.setAttribute('aria-expanded', 'true');
       }
     } else if (editText) {
       setVal('fBody', editText);
@@ -506,7 +527,9 @@ var _recOpen = false;
 function toggleRec() {
   _recOpen = !_recOpen;
   document.getElementById('recFields').classList.toggle('open', _recOpen);
-  document.getElementById('recToggle').classList.toggle('open', _recOpen);
+  var btn = document.getElementById('recToggle');
+  btn.classList.toggle('open', _recOpen);
+  btn.setAttribute('aria-expanded', String(_recOpen));
 }
 
 // ── Photo ──
@@ -874,7 +897,9 @@ var _currentTpl = 'zdjecie';
 function toggleTplPicker() {
   var picker = document.getElementById('tplPicker');
   picker.classList.toggle('open');
-  if (picker.classList.contains('open')) {
+  var isOpen = picker.classList.contains('open');
+  document.getElementById('btnTpl').setAttribute('aria-expanded', String(isOpen));
+  if (isOpen) {
     document.addEventListener('click', closeTplPickerOutside, true);
   }
 }
@@ -883,6 +908,7 @@ function closeTplPickerOutside(e) {
   var picker = document.getElementById('tplPicker');
   if (!btn.contains(e.target) && !picker.contains(e.target)) {
     picker.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
     document.removeEventListener('click', closeTplPickerOutside, true);
   }
 }
@@ -903,6 +929,7 @@ function setTpl(tpl) {
     if (el) el.classList.toggle('active', pair[1] === tpl);
   });
   document.getElementById('tplPicker').classList.remove('open');
+  document.getElementById('btnTpl').setAttribute('aria-expanded', 'false');
   document.removeEventListener('click', closeTplPickerOutside, true);
   renderPreview();
 }
