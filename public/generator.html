@@ -142,6 +142,7 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="plan-guard.js"></script>
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -771,6 +772,7 @@ function renderPreview() {
 
 // ── Export ──
 function downloadPdf() {
+  if (!window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
   var btn = document.querySelector('.btn-dl');
   if (btn) { btn.disabled = true; btn.textContent = 'Generowanie…'; }
   var company = val('fCompany') || 'dokumo';
