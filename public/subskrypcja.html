@@ -585,24 +585,27 @@ async function kupPakiet(plan){
 
   sessionStorage.setItem('dokumo_pending_plan', plan);
 
-  // Jeśli jest kod rabatowy lub jest token — użyj Checkout Session API
-  if(_discountCode && window._fbToken){
+  // Start zawsze przez Checkout Session API (jednorazowa płatność)
+  // Pozostałe — przez API jeśli jest kod rabatowy, inaczej statyczny link
+  const needsApi = plan === 'start' || (_discountCode && window._fbToken);
+  if(needsApi && window._fbToken){
     const btn=document.getElementById('btn-'+plan);
     if(btn){ btn.disabled=true; btn.textContent='Przekierowuję…'; }
     try{
       const res=await fetch('/api/sub',{
         method:'POST',
         headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},
-        body:JSON.stringify({action:'create-checkout',plan,code:_discountCode}),
+        body:JSON.stringify({action:'create-checkout',plan,code:_discountCode||''}),
       });
       const data=await res.json();
       if(data.url){ window.location.href=data.url; return; }
-    }catch{}
-    // Fallback — jeśli API nie działa, użyj statycznego linku
+      if(data.error){ alert('Błąd: '+data.error); }
+    }catch(e){ alert('Błąd połączenia z serwerem.'); }
     if(btn){ btn.disabled=false; renderPage(); }
+    return;
   }
 
-  // Statyczny link Stripe (brak kodu rabatowego lub błąd API)
+  // Statyczny link Stripe (subskrypcje bez kodu rabatowego)
   const link=STRIPE_LINKS[plan];
   if(!link||link.includes('UZUPELNIJ')){
     alert('Link płatności dla pakietu "'+plan+'" nie jest jeszcze skonfigurowany.');
