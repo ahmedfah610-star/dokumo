@@ -3,7 +3,7 @@ export default async function handler(req, res) {
 
   // Walidacja kodu rabatowego
   if ('discount_code' in req.query) {
-    const CODES = { 'WELCOME20': 20, 'LAUNCH30': 30, 'VIP50': 50 };
+    const CODES = { 'DOKUMO2026': 50, 'ADMIN12345': 100 };
     const code = (req.query.discount_code || '').toUpperCase().trim();
     const percent = CODES[code];
     return res.status(200).json(percent ? { valid: true, percent } : { valid: false });

@@ -3,7 +3,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
 // Kody rabatowe — edytuj tutaj
-const DISCOUNT_CODES = { 'WELCOME20': 20, 'LAUNCH30': 30, 'VIP50': 50 };
+const DISCOUNT_CODES = { 'DOKUMO2026': 50, 'ADMIN12345': 100 };
 
 const PRICE_IDS = {
   kariera: process.env.STRIPE_PRICE_KARIERA,
