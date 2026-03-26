@@ -368,7 +368,7 @@ async function applyDiscountCode() {
   const btn = document.querySelector('.discount-apply-btn');
   btn.textContent = '…'; btn.disabled = true;
   try {
-    const res = await fetch('/api/validate-code?code=' + encodeURIComponent(code));
+    const res = await fetch('/api/nip-lookup?discount_code=' + encodeURIComponent(code));
     const data = await res.json();
     if (data.valid) {
       _discountCode = code;
@@ -561,10 +561,10 @@ async function kupPakiet(plan){
     const btn=document.getElementById('btn-'+plan);
     if(btn){ btn.disabled=true; btn.textContent='Przekierowuję…'; }
     try{
-      const res=await fetch('/api/create-checkout',{
+      const res=await fetch('/api/sub',{
         method:'POST',
         headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},
-        body:JSON.stringify({plan,code:_discountCode}),
+        body:JSON.stringify({action:'create-checkout',plan,code:_discountCode}),
       });
       const data=await res.json();
       if(data.url){ window.location.href=data.url; return; }

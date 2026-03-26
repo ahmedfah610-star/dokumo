@@ -16,6 +16,8 @@
   ],
   "rewrites": [
     { "source": "/api/check-sub", "destination": "/api/sub" },
+    { "source": "/api/validate-code", "destination": "/api/nip-lookup" },
+    { "source": "/api/create-checkout", "destination": "/api/sub" },
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ],

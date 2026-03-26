@@ -1,6 +1,14 @@
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
+  // Walidacja kodu rabatowego
+  if ('discount_code' in req.query) {
+    const CODES = { 'WELCOME20': 20, 'LAUNCH30': 30, 'VIP50': 50 };
+    const code = (req.query.discount_code || '').toUpperCase().trim();
+    const percent = CODES[code];
+    return res.status(200).json(percent ? { valid: true, percent } : { valid: false });
+  }
+
   if ('fbconfig' in req.query) {
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.json({
