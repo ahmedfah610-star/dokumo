@@ -730,8 +730,37 @@ function renderPreview(){
   scheduleAutoSave();
 }
 
+/* ── PLAN GATE ── */
+function _getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
+function _hasPdfAccess(){
+  var sub=_getSub();
+  if(!sub||!sub.plan) return false;
+  var p=sub.plan.toLowerCase();
+  if(p!=='biznes'&&p!=='promax') return false;
+  if(sub.expiresAt && Date.now()>new Date(sub.expiresAt).getTime()) return false;
+  return true;
+}
+function _showPlanGate(){
+  var overlay=document.getElementById('fakPlanGate');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='fakPlanGate';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML='<div style="background:#fff;border-radius:18px;padding:36px 32px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.18);">'
+      +'<div style="font-size:2rem;margin-bottom:12px;">🔒</div>'
+      +'<div style="font-size:1.15rem;font-weight:800;color:#111;margin-bottom:8px;">Funkcja premium</div>'
+      +'<p style="font-size:.88rem;color:#555;line-height:1.5;margin-bottom:24px;">Pobieranie faktur PDF jest dostępne w planie <strong>Biznes</strong> lub <strong>ProMax</strong>.</p>'
+      +'<a href="subskrypcja.html" style="display:block;background:#111;color:#fff;border-radius:11px;padding:13px 18px;font-weight:700;font-size:.9rem;text-decoration:none;margin-bottom:10px;">Zobacz plany →</a>'
+      +'<button onclick="document.getElementById(\'fakPlanGate\').remove()" style="background:none;border:none;color:#888;font-size:.82rem;cursor:pointer;">Zamknij</button>'
+      +'</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+  }
+}
+
 /* ── DOWNLOAD PDF ── */
 function downloadFakturaPDF(){
+  if(!_hasPdfAccess()){_showPlanGate();return;}
   var numer = (document.getElementById('fNumer')||{}).value || 'faktura';
   var filename = 'faktura-' + numer.replace(/[\s\/\\:*?"<>|]+/g,'-').toLowerCase() + '.pdf';
 
@@ -993,7 +1022,7 @@ var _FAK_CFG = {
     } else { addItem(); }
     renderPreview();
     setPreviewZoom();
-    if(autodl){ setTimeout(downloadFakturaPDF, 800); }
+    if(autodl && _hasPdfAccess()){ setTimeout(downloadFakturaPDF, 800); }
   } catch(e){ addItem(); renderPreview(); setPreviewZoom(); }
 })();
 </script>
