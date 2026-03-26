@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
 
-  const { docId, text, name, covDataJson } = req.body;
+  const { docId, text, name, covDataJson, fakDataJson } = req.body;
   if (!docId) return res.status(400).json({ error: 'Brak docId' });
 
   try {
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
     const update = { text: text || '', updatedAt: new Date() };
     if (name !== undefined) update.name = name;
     if (covDataJson !== undefined) update.covDataJson = covDataJson;
+    if (fakDataJson !== undefined) update.fakDataJson = fakDataJson;
     await ref.update(update);
     return res.status(200).json({ ok: true });
   } catch (e) {

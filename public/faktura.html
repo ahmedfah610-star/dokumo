@@ -881,11 +881,11 @@ async function autoSave(){
   var cfg = _FAK_CFG[_fakType] || _FAK_CFG.vat;
   var docName = cfg.label + (data.numer ? ' ' + data.numer : '');
   var body = {
-    typeId: 'faktura',
+    docId: 'faktura',
     docCat: 'biznes',
     docCatLabel: 'Biznes',
     docIcon: '🧾',
-    name: docName,
+    docName: docName,
     fakDataJson: JSON.stringify(data),
     text: '__FAK_JSON__:' + JSON.stringify(data)
   };
