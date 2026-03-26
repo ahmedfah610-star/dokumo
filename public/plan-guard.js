@@ -16,12 +16,10 @@
   ].join('');
   document.head.appendChild(style);
 
-  var PLAN_NAMES = { kariera: 'Pakiet Kariera', biznes: 'Pakiet Biznes', promax: 'Pro Max' };
+  var PLAN_NAMES = { start: 'Pakiet Start', kariera: 'Pakiet Kariera', biznes: 'Pakiet Biznes', promax: 'Pro Max' };
 
   function suggestUpgrade(currentPlan, requiredPlans) {
-    // Jeśli ma biznes, ale potrzeba kariera → tylko promax pokryje oba
     if (currentPlan === 'biznes' && requiredPlans.indexOf('kariera') >= 0) return 'promax';
-    // Jeśli ma kariera, ale potrzeba biznes → wystarczy biznes
     if (currentPlan === 'kariera' && requiredPlans.indexOf('biznes') >= 0) return 'biznes';
     return 'promax';
   }
@@ -45,6 +43,23 @@
     overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
   };
 
+  window.showStartUsedModal = function () {
+    var el = document.getElementById('pgOverlay');
+    if (el) el.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'pgOverlay';
+    overlay.innerHTML =
+      '<div id="pgModal">' +
+        '<div class="pg-ico">📄</div>' +
+        '<h2>Pobranie już wykorzystane</h2>' +
+        '<p>Twój Pakiet Start pozwala na <strong>jedno pobranie</strong>.<br>Kup subskrypcję, żeby pobierać bez limitu.</p>' +
+        '<a href="subskrypcja.html" class="pg-upgrade">Zobacz plany →</a>' +
+        '<button class="pg-close" onclick="document.getElementById(\'pgOverlay\').remove()">Zamknij</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+  };
+
   // requiredPlans: np. ['kariera','promax','pro']
   // Zwraca true jeśli dostęp OK, false jeśli zablokowane (pokazuje modal lub przekierowuje)
   window.checkPlanAccess = function (requiredPlans) {
@@ -60,6 +75,27 @@
       sessionStorage.setItem('dokumo_after_sub', window.location.href);
       window.location.href = 'subskrypcja.html';
       return false;
+    }
+
+    // Pakiet Start — jednorazowe pobranie
+    if (sub.plan === 'start') {
+      var left = typeof sub.downloadsLeft === 'number' ? sub.downloadsLeft : 1;
+      if (left <= 0) {
+        window.showStartUsedModal();
+        return false;
+      }
+      // Dekrement lokalny
+      sub.downloadsLeft = left - 1;
+      localStorage.setItem('dokumo_sub', JSON.stringify(sub));
+      // Sync z serwerem (fire-and-forget)
+      if (window._fbToken) {
+        fetch('/api/sub', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + window._fbToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'use-download' }),
+        }).catch(function () {});
+      }
+      return true;
     }
 
     // Plan pasuje → dostęp

@@ -14,6 +14,7 @@ export const config = { api: { bodyParser: false } };
 // Mapowanie Stripe Price ID → plan
 // Uzupełnij po stworzeniu produktów w Stripe Dashboard
 const PRICE_TO_PLAN = {
+  [process.env.STRIPE_PRICE_START]:   'start',
   [process.env.STRIPE_PRICE_KARIERA]: 'kariera',
   [process.env.STRIPE_PRICE_BIZNES]:  'biznes',
   [process.env.STRIPE_PRICE_PROMAX]:  'promax',
@@ -64,17 +65,19 @@ export default async function handler(req, res) {
       try {
         const auth = getAuth();
         const user = await auth.getUserByEmail(email);
-        const days = plan === 'kariera' ? 7 : 30;
+        const days = plan === 'start' ? 365 : 30;
         const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
-        
-        await db.collection('users').doc(user.uid).collection('subscription').doc('current').set({
+        const subDoc = {
           plan,
           expiresAt: Timestamp.fromDate(expiresAt),
           activatedAt: Timestamp.now(),
           stripeSessionId: session.id,
           stripeSubscriptionId: session.subscription || null,
           email,
-        });
+        };
+        if (plan === 'start') subDoc.downloadsLeft = 1;
+
+        await db.collection('users').doc(user.uid).collection('subscription').doc('current').set(subDoc);
         
         // Zapisz płatność do kolekcji payments
         await db.collection('payments').add({

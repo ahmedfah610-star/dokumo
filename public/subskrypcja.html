@@ -33,7 +33,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .badge-free{background:rgba(26,23,20,.07);color:var(--ink2);}
 
 /* PLANS GRID */
-.plans{max-width:860px;margin:0 auto 40px;padding:0 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.plans{max-width:1120px;margin:0 auto 40px;padding:0 1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 
 .plan-card{background:var(--cream);border:1.5px solid var(--border);border-radius:16px;padding:18px;display:flex;flex-direction:column;position:relative;transition:box-shadow .25s,border-color .25s;}
 .plan-card:hover{box-shadow:0 6px 28px rgba(26,23,20,.08);}
@@ -71,8 +71,14 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .cancel-link{font-size:.75rem;color:var(--ink2);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
 .cancel-link:hover{color:var(--ink);}
 
+@media(max-width:880px){
+  .plans{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:500px){
+  .plans{grid-template-columns:1fr;}
+}
 @media(max-width:680px){
-  .plans{grid-template-columns:1fr;gap:12px;}
+  .plans{gap:12px;}
   .hero{padding:32px 1.2rem 28px;}
   .current-bar,.plans,.cancel-wrap{padding:0 1rem;}
 }
@@ -230,12 +236,27 @@ updateNavAuth();window._renderUNav=updateNavAuth;
 
 <div class="plans">
 
+  <!-- START -->
+  <div class="plan-card" id="card-start">
+    <div class="plan-icon">⚡</div>
+    <div class="plan-name">Pakiet Start</div>
+    <div class="plan-tagline">Jedno pobranie dowolnego dokumentu</div>
+    <div class="plan-price" id="price-start">4,99 zł <span>/ jednorazowo</span></div>
+    <ul class="plan-features">
+      <li><span class="ck">✓</span> 1 pobranie PDF (dowolny dok.)</li>
+      <li><span class="ck">✓</span> Kreator CV, list, faktura</li>
+      <li><span class="ck">✓</span> Bez subskrypcji</li>
+      <li><span class="no">✕</span> Nieograniczony dostęp</li>
+    </ul>
+    <button class="plan-btn dark" id="btn-start" onclick="kupPakiet('start')">Kup Pakiet Start →</button>
+  </div>
+
   <!-- KARIERA -->
   <div class="plan-card" id="card-kariera">
     <div class="plan-icon">🎯</div>
     <div class="plan-name">Pakiet Kariera</div>
     <div class="plan-tagline">CV, wypowiedzenia, kalkulator wynagrodzeń</div>
-    <div class="plan-price" id="price-kariera">5 zł <span>/ tydzień</span></div>
+    <div class="plan-price" id="price-kariera">9,99 zł <span>/ miesiąc</span></div>
 
     <ul class="plan-features">
       <li><span class="ck">✓</span> Kreator CV z AI</li>
@@ -314,6 +335,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
 <script>
 // ── Stripe linki (fallback gdy brak konfiguracji STRIPE_PRICE_* w Vercel) ──
 const STRIPE_LINKS = {
+  start:   'UZUPELNIJ_START',
   kariera: 'https://buy.stripe.com/7sY5kC6du7D09HQ1n7gIo04',
   biznes:  'https://buy.stripe.com/8x27sKeK0e1og6e5DngIo05',
   promax:  'https://buy.stripe.com/dRm5kCbxO6yWaLUd5PgIo06',
@@ -321,7 +343,8 @@ const STRIPE_LINKS = {
 
 // ── Bazowe ceny (do wyświetlania rabatu) ──
 const BASE_PRICES = {
-  kariera: { amount: 5,     period: '/ tydzień', note: '1. tydzień' },
+  start:   { amount: 4.99,  period: '/ jednorazowo', note: null },
+  kariera: { amount: 9.99,  period: '/ miesiąc', note: '1. miesiąc' },
   biznes:  { amount: 29.99, period: '/ miesiąc', note: '1. miesiąc' },
   promax:  { amount: 31.99, period: '/ miesiąc', note: '1. miesiąc' },
 };
@@ -339,10 +362,10 @@ function updatePriceDisplay() {
     const el = document.getElementById('price-' + plan);
     if (!el) return;
     if (_discountPercent) {
-      const disc = (info.amount * (1 - _discountPercent / 100));
+      const disc = +(info.amount * (1 - _discountPercent / 100)).toFixed(2);
       el.innerHTML =
         `<span class="plan-price-orig">${fmtPrice(info.amount)} zł</span>${fmtPrice(disc)} zł <span>${info.period}</span>` +
-        `<small class="plan-price-note">potem ${fmtPrice(info.amount)} zł</small>`;
+        (info.note ? `<small class="plan-price-note">potem ${fmtPrice(info.amount)} zł</small>` : '');
     } else {
       el.innerHTML = `${fmtPrice(info.amount)} zł <span>${info.period}</span>`;
     }
@@ -418,11 +441,12 @@ function removeDiscountCode() {
 function getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){return null;}}
 function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
 
-const PLAN_NAMES={kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'};
+const PLAN_NAMES={start:'Pakiet Start',kariera:'Pakiet Kariera',biznes:'Pakiet Biznes',promax:'Pro Max'};
 const BTN_DEFAULTS={
+  start:  {text:'Kup Pakiet Start →', cls:'plan-btn dark'},
   kariera:{text:'Kup Pakiet Kariera →',cls:'plan-btn dark'},
-  biznes:{text:'Kup Pakiet Biznes →',cls:'plan-btn green'},
-  promax:{text:'Kup Pro Max →',cls:'plan-btn gold'},
+  biznes: {text:'Kup Pakiet Biznes →', cls:'plan-btn green'},
+  promax: {text:'Kup Pro Max →',       cls:'plan-btn gold'},
 };
 
 function renderPage(){
@@ -449,13 +473,16 @@ function renderPage(){
       const cancelledBadge=isCancelled?`<span style="font-size:.73rem;background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:999px;font-weight:700;">Anulowana</span>`:'';
       const cancelledNote=isCancelled?`<p style="font-size:.8rem;color:#b91c1c;margin-top:6px;">Twoja subskrypcja została anulowana i jest ważna do <strong>${expStr}</strong>. Po tym terminie dostęp wygasa.</p>`:'';
       const upgradeNote=(!isCancelled&&plan!=='promax')?`<p style="font-size:.78rem;color:#6b6560;margin-top:6px;">Chcesz więcej? Wybierz wyższy pakiet poniżej.</p>`:'';
+      const statusBadge = plan==='start'
+        ? `<span style="font-size:.73rem;background:#dbeafe;color:#1e40af;padding:3px 10px;border-radius:999px;font-weight:700;">${(sub.downloadsLeft??1)===0?'Pobranie wykorzystane':'1 pobranie dostępne'}</span>`
+        : `<span style="font-size:.73rem;background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:999px;font-weight:700;">${daysLeft} ${daysLabel} pozostało</span>`;
       statusDiv.innerHTML=`<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:16px;padding:18px 22px;">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;font-weight:800;color:#14532d;">✓ Posiadasz: ${PLAN_NAMES[plan]||plan}</span>
-          <span style="font-size:.73rem;background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:999px;font-weight:700;">${daysLeft} ${daysLabel} pozostało</span>
+          ${statusBadge}
           ${cancelledBadge}
         </div>
-        ${cancelledNote}${upgradeNote}
+        ${plan!=='start'?cancelledNote+upgradeNote:''}
       </div>`;
       statusDiv.style.display='block';
     } else {
@@ -465,13 +492,13 @@ function renderPage(){
 
   // ── Cancel link ──
   const cw=document.getElementById('cancelWrap');
-  if(cw) cw.style.display=(plan&&!isCancelled)?'block':'none';
+  if(cw) cw.style.display=(plan&&plan!=='start'&&!isCancelled)?'block':'none';
 
   // ── Plan tier hierarchy ──
-  const TIER={kariera:1,biznes:2,promax:3};
+  const TIER={start:0,kariera:1,biznes:2,promax:3};
 
   // ── Plan cards ──
-  ['kariera','biznes','promax'].forEach(p=>{
+  ['start','kariera','biznes','promax'].forEach(p=>{
     const btn=document.getElementById('btn-'+p);
     const card=document.getElementById('card-'+p);
     const topBadge=document.getElementById('badge-'+p);
@@ -516,7 +543,9 @@ async function checkSubFromAPI(){
     const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
     const data=await res.json();
     if(data.expiresAt){
-      localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false}));
+      const subObj={plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false};
+      if(data.downloadsLeft!==null&&data.downloadsLeft!==undefined) subObj.downloadsLeft=data.downloadsLeft;
+      localStorage.setItem('dokumo_sub',JSON.stringify(subObj));
       return data.active;
     }
   }catch(e){}

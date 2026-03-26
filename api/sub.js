@@ -6,6 +6,7 @@ import { getAuth } from 'firebase-admin/auth';
 const DISCOUNT_CODES = { 'DOKUMO2026': 50, 'ADMIN12345': 100 };
 
 const PRICE_IDS = {
+  start:   process.env.STRIPE_PRICE_START,
   kariera: process.env.STRIPE_PRICE_KARIERA,
   biznes:  process.env.STRIPE_PRICE_BIZNES,
   promax:  process.env.STRIPE_PRICE_PROMAX,
@@ -36,7 +37,7 @@ if (!getApps().length) {
 const db = getFirestore();
 const auth = getAuth();
 
-const VALID_PLANS = ['kariera', 'biznes', 'promax'];
+const VALID_PLANS = ['start', 'kariera', 'biznes', 'promax'];
 
 export default async function handler(req, res) {
   // GET — sprawdź subskrypcję (dawniej /api/check-sub)
@@ -69,7 +70,7 @@ export default async function handler(req, res) {
     const data = snap.data();
     const expiresAt = data.expiresAt?.toDate?.();
     const active = expiresAt && expiresAt > new Date();
-    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false });
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null });
   }
 
   if (req.method !== 'POST') return res.status(405).end();
@@ -122,6 +123,18 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
+  if (action === 'use-download') {
+    const ref = db.collection('users').doc(uid).collection('subscription').doc('current');
+    const snap = await ref.get();
+    if (!snap.exists) return res.status(403).json({ error: 'Brak subskrypcji' });
+    const data = snap.data();
+    if (data.plan !== 'start') return res.status(200).json({ ok: true }); // inne plany - bez limitu
+    const left = data.downloadsLeft ?? 0;
+    if (left <= 0) return res.status(403).json({ error: 'Pobranie już wykorzystane' });
+    await ref.update({ downloadsLeft: left - 1 });
+    return res.status(200).json({ ok: true, downloadsLeft: left - 1 });
+  }
+
   if (action === 'create-checkout') {
     if (!VALID_PLANS.includes(plan)) return res.status(400).json({ error: 'Nieprawidłowy plan' });
     const priceId = PRICE_IDS[plan];
@@ -131,8 +144,9 @@ export default async function handler(req, res) {
     try { email = (await auth.getUser(uid)).email; } catch {}
 
     const origin = 'https://dokumoflow.com';
+    const isOneTime = plan === 'start';
     const sessionParams = {
-      mode: 'subscription',
+      mode: isOneTime ? 'payment' : 'subscription',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
       customer_email: email || '',
@@ -146,16 +160,19 @@ export default async function handler(req, res) {
     const percent = code ? DISCOUNT_CODES[code] : null;
     if (percent) {
       const couponId = `DOKUMO_${code}`;
-      const existing = await stripeGet('/coupons/' + couponId);
+      const couponSuffix = isOneTime ? '_OT' : '';
+      const fullCouponId = couponId + couponSuffix;
+      const existing = await stripeGet('/coupons/' + fullCouponId);
       if (existing.error?.code === 'resource_missing') {
         await stripePost('/coupons', {
-          id: couponId,
+          id: fullCouponId,
           percent_off: String(percent),
-          duration: 'once',
-          name: `${percent}% rabat — 1. miesiąc`,
+          duration: isOneTime ? 'forever' : 'once',
+          name: isOneTime ? `${percent}% rabat — jednorazowe` : `${percent}% rabat — 1. miesiąc`,
         });
       }
-      sessionParams['discounts[0][coupon]'] = couponId;
+      const couponId2 = fullCouponId;
+      sessionParams['discounts[0][coupon]'] = couponId2;
     }
 
     const session = await stripePost('/checkout/sessions', sessionParams);

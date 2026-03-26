@@ -735,10 +735,24 @@ function _getSub(){try{return JSON.parse(localStorage.getItem('dokumo_sub'));}ca
 function _hasPdfAccess(){
   var sub=_getSub();
   if(!sub||!sub.plan) return false;
-  var p=sub.plan.toLowerCase();
-  if(p!=='biznes'&&p!=='promax') return false;
   if(sub.expiresAt && Date.now()>new Date(sub.expiresAt).getTime()) return false;
-  return true;
+  var p=sub.plan.toLowerCase();
+  if(p==='biznes'||p==='promax') return true;
+  if(p==='start'){
+    var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:1;
+    return left>0;
+  }
+  return false;
+}
+function _useStartDownload(){
+  var sub=_getSub();
+  if(!sub||sub.plan!=='start') return;
+  var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:1;
+  sub.downloadsLeft=Math.max(0,left-1);
+  localStorage.setItem('dokumo_sub',JSON.stringify(sub));
+  if(window._fbToken){
+    fetch('/api/sub',{method:'POST',headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},body:JSON.stringify({action:'use-download'})}).catch(function(){});
+  }
 }
 function _showPlanGate(){
   var overlay=document.getElementById('fakPlanGate');
@@ -761,6 +775,7 @@ function _showPlanGate(){
 /* ── DOWNLOAD PDF ── */
 function downloadFakturaPDF(){
   if(!_hasPdfAccess()){_showPlanGate();return;}
+  _useStartDownload();
   var numer = (document.getElementById('fNumer')||{}).value || 'faktura';
   var filename = 'faktura-' + numer.replace(/[\s\/\\:*?"<>|]+/g,'-').toLowerCase() + '.pdf';
 
