@@ -13,7 +13,7 @@
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5.0, viewport-fit=cover">
 <title>Kreator CV online – stwórz profesjonalne CV w kilka minut | Dokumo</title>
 <meta name="description" content="Stwórz profesjonalne CV online w kilka minut. Wybierz szablon, wypełnij formularz i pobierz gotowe CV w PDF. Kreator CV wspierany przez AI.">
 <meta name="keywords" content="kreator CV online, jak napisać CV, wzór CV, szablon CV, CV po polsku, CV dla studenta, CV bez doświadczenia">
@@ -23,9 +23,12 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/kreator-cv.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta property="og:image:width" content="256">
+<meta property="og:image:height" content="256">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kreator CV online – Dokumo">
 <meta name="twitter:description" content="Stwórz profesjonalne CV w kilka minut. Wybierz szablon, wypełnij dane i pobierz PDF.">
+<meta name="twitter:image" content="https://dokumoflow.com/logo2.png">
 <meta name="robots" content="index, follow">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kreator CV online – Dokumo","description":"Stwórz profesjonalne CV online w kilka minut. Kreator CV wspierany przez AI z eksportem do PDF.","applicationCategory":"BusinessApplication","operatingSystem":"Web","url":"https://dokumoflow.com/kreator-cv.html","inLanguage":"pl","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"},"provider":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"}}
@@ -4692,8 +4695,7 @@ function pickTemplate(id) {
   }
 })();
 
-renderCVForm();
-updateCVPreview();
+(window.requestIdleCallback || function(cb){setTimeout(cb,0);})(function(){renderCVForm();updateCVPreview();});
 
 
 async function downloadCV() {
