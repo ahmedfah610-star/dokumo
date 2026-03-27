@@ -3,16 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generator Faktur Online — Darmowy kreator faktur | Dokumo</title>
-<meta name="description" content="Darmowy generator faktur online. Twórz profesjonalne faktury VAT i proforma w kilka sekund. Pobierz PDF bez rejestracji. Dokumo — narzędzia dla freelancerów i firm.">
+<title>Darmowy Generator Faktur VAT Online — Faktura VAT, Proforma, Zaliczkowa | Dokumo</title>
+<meta name="description" content="Darmowy generator faktur VAT, proforma i zaliczkowych online. Wystaw fakturę w 60 sekund — pobierz PDF bez rejestracji. Profesjonalny kreator faktur dla freelancerów i firm. Zgodny z polskim prawem podatkowym.">
+<meta name="keywords" content="generator faktur VAT online, darmowy generator faktur, faktura VAT online, faktura proforma generator, faktura zaliczkowa generator, kreator faktur online, wystawienie faktury online, faktura dla freelancera, faktura PDF online, faktura VAT wzór, program do fakturowania online, darmowe fakturowanie, faktura B2B, faktura 2024, jak wystawić fakturę VAT">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://dokumoflow.com/faktura.html">
-<meta property="og:title" content="Generator Faktur Online — Dokumo">
-<meta property="og:description" content="Darmowy generator faktur VAT i proforma. Pobierz PDF w kilka sekund.">
+<meta property="og:title" content="Darmowy Generator Faktur VAT, Proforma i Zaliczkowych — Dokumo">
+<meta property="og:description" content="Wystaw fakturę VAT, proformę lub zaliczkową w 60 sekund. Pobierz PDF bez rejestracji — darmowy kreator faktur online.">
 <meta property="og:url" content="https://dokumoflow.com/faktura.html">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="logo2.png" type="image/png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script type="application/ld+json">
+[
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Generator Faktur VAT Online — Dokumo","description":"Darmowy generator faktur VAT, proforma i zaliczkowych online. Wystaw fakturę w 60 sekund i pobierz PDF bez rejestracji.","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"},"provider":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"},"url":"https://dokumoflow.com/faktura.html","inLanguage":"pl"},
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"Jak wystawić fakturę VAT?","acceptedAnswer":{"@type":"Answer","text":"Faktura VAT musi zawierać: datę wystawienia, kolejny numer faktury, dane sprzedawcy i nabywcy (nazwa, adres, NIP), opis sprzedanego towaru lub usługi, ilość, cenę netto, stawkę i kwotę VAT oraz sumę brutto. Fakturę należy wystawić do 15. dnia miesiąca następującego po miesiącu sprzedaży."}},
+    {"@type":"Question","name":"Czym różni się faktura proforma od faktury VAT?","acceptedAnswer":{"@type":"Answer","text":"Faktura proforma nie jest dokumentem księgowym — to jedynie zapowiedź faktury lub wezwanie do zapłaty. Nie stanowi podstawy do odliczenia VAT przez nabywcę. Faktura VAT jest dokumentem księgowym potwierdzającym sprzedaż i jest podstawą do rozliczenia podatku."}},
+    {"@type":"Question","name":"Kiedy wystawić fakturę zaliczkową?","acceptedAnswer":{"@type":"Answer","text":"Fakturę zaliczkową wystawia się po otrzymaniu przedpłaty lub zaliczki przed wykonaniem usługi lub dostawą towaru. Powinna być wystawiona nie później niż 15. dnia miesiąca następującego po miesiącu, w którym otrzymano zaliczkę."}},
+    {"@type":"Question","name":"Czy freelancer bez działalności może wystawiać faktury?","acceptedAnswer":{"@type":"Answer","text":"Osoba bez zarejestrowanej działalności gospodarczej nie może wystawiać faktur VAT. Może natomiast zawierać umowy o dzieło lub zlecenie i otrzymywać wynagrodzenie na ich podstawie. Jeśli sprzedaż ma charakter regularny i zarobkowy, wymagana jest rejestracja działalności w CEIDG."}},
+    {"@type":"Question","name":"Jak długo przechowywać faktury?","acceptedAnswer":{"@type":"Answer","text":"Faktury VAT należy przechowywać przez 5 lat, licząc od końca roku kalendarzowego, w którym upłynął termin płatności podatku. Można je przechowywać w formie elektronicznej, pod warunkiem zapewnienia autentyczności ich pochodzenia i integralności treści."}}
+  ]}
+]
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
   --ink:#111827; --ink2:#374151; --ink3:#6b7280;
@@ -231,6 +249,12 @@ onAuthStateChanged(auth, async u => {
 <div class="fak-mob-tabs">
   <button class="fak-mob-tab active" onclick="switchFakTab('form',this)">✏️ Formularz</button>
   <button class="fak-mob-tab" onclick="switchFakTab('preview',this)">👁 Podgląd</button>
+</div>
+
+<!-- H1 SEO -->
+<div style="text-align:center;padding:28px 2rem 0;">
+  <h1 id="fakPageH1" style="font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;letter-spacing:-.03em;color:#111827;margin-bottom:6px;line-height:1.2;">Generator Faktur VAT Online</h1>
+  <p style="font-size:.85rem;color:#6b7280;margin:0;">Faktura VAT, proforma i zaliczkowa — pobierz PDF w 60 sekund</p>
 </div>
 
 <!-- MAIN -->
@@ -1041,5 +1065,42 @@ var _FAK_CFG = {
   } catch(e){ addItem(); renderPreview(); setPreviewZoom(); }
 })();
 </script>
+
+<!-- FAQ -->
+<style>
+.fak-faq{max-width:760px;margin:60px auto 80px;padding:0 2rem;}
+.fak-faq h2{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;color:#111827;margin-bottom:6px;}
+.fak-faq-sub{font-size:.88rem;color:#6b7280;margin-bottom:22px;}
+.fak-faq-item{border-bottom:1px solid #e5e7eb;}
+.fak-faq-q{width:100%;text-align:left;background:none;border:none;padding:18px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.93rem;font-weight:700;color:#111827;}
+.fak-faq-chevron{font-size:.72rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
+.fak-faq-a{display:none;padding:0 0 18px;font-size:.88rem;color:#6b7280;line-height:1.7;}
+.fak-faq-item.open .fak-faq-chevron{transform:rotate(180deg);}
+.fak-faq-item.open .fak-faq-a{display:block;}
+</style>
+<section class="fak-faq">
+  <h2>Najczęstsze pytania o faktury VAT</h2>
+  <p class="fak-faq-sub">Odpowiedzi na pytania o wystawianie faktur VAT, proforma i zaliczkowych w Polsce</p>
+  <div class="fak-faq-item">
+    <button class="fak-faq-q" onclick="this.closest('.fak-faq-item').classList.toggle('open')">Jak wystawić fakturę VAT? <span class="fak-faq-chevron">▼</span></button>
+    <div class="fak-faq-a">Faktura VAT musi zawierać: datę wystawienia, kolejny numer faktury, <strong>dane sprzedawcy i nabywcy</strong> (nazwa, adres, NIP), opis sprzedanego towaru lub usługi, ilość, cenę netto, stawkę i kwotę VAT oraz sumę brutto. Fakturę należy wystawić do <strong>15. dnia miesiąca</strong> następującego po miesiącu sprzedaży.</div>
+  </div>
+  <div class="fak-faq-item">
+    <button class="fak-faq-q" onclick="this.closest('.fak-faq-item').classList.toggle('open')">Czym różni się faktura proforma od faktury VAT? <span class="fak-faq-chevron">▼</span></button>
+    <div class="fak-faq-a"><strong>Faktura proforma</strong> nie jest dokumentem księgowym — to jedynie zapowiedź faktury lub wezwanie do zapłaty. Nie stanowi podstawy do odliczenia VAT przez nabywcę. <strong>Faktura VAT</strong> jest dokumentem księgowym potwierdzającym sprzedaż i jest podstawą do rozliczenia podatku.</div>
+  </div>
+  <div class="fak-faq-item">
+    <button class="fak-faq-q" onclick="this.closest('.fak-faq-item').classList.toggle('open')">Kiedy wystawić fakturę zaliczkową? <span class="fak-faq-chevron">▼</span></button>
+    <div class="fak-faq-a">Fakturę zaliczkową wystawia się po otrzymaniu przedpłaty lub zaliczki przed wykonaniem usługi lub dostawą towaru. Powinna być wystawiona nie później niż <strong>15. dnia miesiąca</strong> następującego po miesiącu, w którym otrzymano zaliczkę.</div>
+  </div>
+  <div class="fak-faq-item">
+    <button class="fak-faq-q" onclick="this.closest('.fak-faq-item').classList.toggle('open')">Czy freelancer bez działalności może wystawiać faktury? <span class="fak-faq-chevron">▼</span></button>
+    <div class="fak-faq-a">Osoba bez zarejestrowanej działalności gospodarczej <strong>nie może wystawiać faktur VAT</strong>. Może natomiast zawierać umowy o dzieło lub zlecenie i otrzymywać wynagrodzenie na ich podstawie. Jeśli sprzedaż ma charakter regularny i zarobkowy, wymagana jest rejestracja działalności w CEIDG.</div>
+  </div>
+  <div class="fak-faq-item" style="border-bottom:none;">
+    <button class="fak-faq-q" onclick="this.closest('.fak-faq-item').classList.toggle('open')">Jak długo przechowywać faktury? <span class="fak-faq-chevron">▼</span></button>
+    <div class="fak-faq-a">Faktury VAT należy przechowywać przez <strong>5 lat</strong>, licząc od końca roku kalendarzowego, w którym upłynął termin płatności podatku. Można je przechowywać w formie elektronicznej, pod warunkiem zapewnienia autentyczności ich pochodzenia i integralności treści.</div>
+  </div>
+</section>
 </body>
 </html>
