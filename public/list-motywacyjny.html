@@ -435,11 +435,11 @@ onAuthStateChanged(getAuth(app),async u=>{
   <div style="position:relative;">
     <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()" aria-expanded="false" aria-controls="tplPicker" aria-label="Wybierz szablon">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
     <div class="tpl-picker" id="tplPicker">
-      <button class="tpl-opt active" id="tplOptNowoczesny" onclick="setTpl('zdjecie')">
+      <button class="tpl-opt" id="tplOptNowoczesny" onclick="setTpl('zdjecie')">
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:3px;display:flex;flex-direction:column;gap:1px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px;"><div style="height:4px;background:#222;border-radius:1px;width:55%;"></div><div style="width:10px;height:10px;border-radius:50%;background:#ccc;flex-shrink:0;"></div></div><div style="height:0.5px;background:#111;width:100%;margin-bottom:2px;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
         <div><div class="tpl-opt-label">Nowoczesny</div><div class="tpl-opt-sub">Z okrągłym zdjęciem</div></div>
       </button>
-      <button class="tpl-opt" id="tplOptKlasyczny" onclick="setTpl('klasyczny')">
+      <button class="tpl-opt active" id="tplOptKlasyczny" onclick="setTpl('klasyczny')">
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#aaa;margin-bottom:3px;border-radius:1px;width:70%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
         <div><div class="tpl-opt-label">Klasyczny</div><div class="tpl-opt-sub">Szeryfowy, tradycyjny</div></div>
       </button>
@@ -598,6 +598,12 @@ async function autoSave() {
 var _autoGenDone = false;
 
 window.addEventListener('DOMContentLoaded', function() {
+  // Ustaw domyślny szablon Klasyczny
+  var paperEl = document.getElementById('lmPaper');
+  if (paperEl) paperEl.classList.add('tpl-klasyczny');
+  var modalEl = document.getElementById('lmPaperModal');
+  if (modalEl) modalEl.classList.add('tpl-klasyczny');
+
   document.getElementById('fPos').value     = gp('position');
   document.getElementById('fCompany').value = gp('company');
 
@@ -1090,7 +1096,7 @@ function showToast(msg) {
 }
 
 // ── Template picker ──
-var _currentTpl = 'zdjecie';
+var _currentTpl = 'klasyczny';
 function toggleTplPicker() {
   var picker = document.getElementById('tplPicker');
   picker.classList.toggle('open');
