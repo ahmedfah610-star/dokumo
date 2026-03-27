@@ -1014,7 +1014,7 @@ function downloadPdf() {
 
   html2pdf()
     .set({
-      margin: 0,
+      margin: [18, 18, 18, 18],
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
