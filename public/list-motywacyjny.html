@@ -1008,9 +1008,12 @@ function downloadPdf() {
         logging: false,
         scrollX: 0,
         scrollY: 0,
+        windowWidth: 794,
         onclone: function(doc) {
           var el = doc.getElementById('lmPaper');
           if (el) {
+            el.style.width = '794px';
+            el.style.maxWidth = '794px';
             el.style.minHeight = '0';
             el.style.maxHeight = 'none';
             el.style.height = 'auto';
