@@ -185,7 +185,7 @@ function _wmRenderLetter() {
         '<div class="wm-gen-sub">Przygotowujemy spersonalizowaną treść.</div>' +
       '</div>';
     setTimeout(function() {
-      window.location.href = 'generator.html?type=cover-letter&' + new URLSearchParams(_wmLetter.answers).toString();
+      window.location.href = 'list-motywacyjny.html?type=cover-letter&' + new URLSearchParams(_wmLetter.answers).toString();
     }, 2000);
     return;
   }
