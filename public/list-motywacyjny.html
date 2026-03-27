@@ -380,6 +380,47 @@ onAuthStateChanged(getAuth(app),async u=>{
       </div>
 
     </div>
+
+    <!-- SEO: widoczne po przewinięciu panelu edytora, indeksowane przez Google -->
+    <div style="border-top:1px solid var(--border);margin-top:32px;padding:28px 0 8px;">
+      <div style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:16px;">Jak to działa</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
+        <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 1</div>
+          <div style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;">Podaj stanowisko i firmę</div>
+          <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">Wpisz nazwę stanowiska i opcjonalnie firmę — AI dobierze ton i słowa kluczowe dopasowane do roli.</div>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 2</div>
+          <div style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;">AI generuje treść w 60 sekund</div>
+          <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">3 akapity, formalny styl, zero angielskich wtrętów — gotowa treść listu motywacyjnego po polsku.</div>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 3</div>
+          <div style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;">Pobierz PDF</div>
+          <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">Wybierz jeden z 3 szablonów (Nowoczesny, Klasyczny, Elegancki) i pobierz gotowy PDF.</div>
+        </div>
+      </div>
+      <div style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;">Powiązane narzędzia</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:28px;">
+        <a href="kreator-cv.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📄 Kreator CV</a>
+        <a href="popraw-cv.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">✨ Popraw CV z AI</a>
+        <a href="hr.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📋 Umowy B2B</a>
+        <a href="wypowiedzenia.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📝 Wypowiedzenie</a>
+        <a href="jak-napisac-cv-2026.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📚 Jak napisać CV</a>
+        <a href="prawo-pracy-2026.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">⚖️ Prawo pracy 2026</a>
+      </div>
+      <div style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:16px;">FAQ — lista motywacyjna</div>
+      <div style="display:flex;flex-direction:column;">
+        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jak napisać list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Dobry list składa się z 3 części: wstęp (dlaczego aplikujesz), środek (osiągnięcia dopasowane do oferty) i zakończenie (zaproszenie do rozmowy). Maksymalnie 1 strona A4, ~300 słów.</div></div>
+        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Co powinien zawierać list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Dane kontaktowe, datę, nagłówek z nazwą stanowiska, 3 akapity treści (motywacja, doświadczenie, podsumowanie) i formułę grzecznościową z podpisem.</div></div>
+        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Ile stron powinien mieć list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Maksymalnie 1 strona A4 — ok. 250–350 słów. Rekruterzy poświęcają na lekturę ok. 30 sekund, więc krótki i konkretny list ma przewagę.</div></div>
+        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Czy list motywacyjny jest obowiązkowy? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Nie zawsze, ale znacząco zwiększa szanse — 49% rekruterów odrzuca aplikacje bez listu gdy jest wymagany. Nawet niewymagany pomaga się wyróżnić.</div></div>
+        <div class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jaka jest różnica między CV a listem motywacyjnym? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">CV — wykaz doświadczenia i umiejętności (co robiłem/am). List motywacyjny — narracja (dlaczego jestem idealnym kandydatem dla tej firmy). Nie powielaj tych samych treści.</div></div>
+      </div>
+    </div>
+
+  </div>
   </div>
 
   <!-- ── PREVIEW ── -->
@@ -1090,69 +1131,6 @@ function setTpl(tpl) {
 }
 </script>
 
-<!-- SEO SECTIONS — crawlowane przez Google -->
-<section class="lm-seo">
-  <h2>Jak napisać list motywacyjny krok po kroku?</h2>
-  <p>Profesjonalny list motywacyjny nie musi zajmować godzin. Generator Dokumo AI tworzy spersonalizowaną treść w 60 sekund — wystarczy podać stanowisko i firmę.</p>
-  <div class="lm-seo-steps">
-    <div class="lm-seo-step">
-      <div class="lm-seo-step-num">Krok 1</div>
-      <h3>Podaj stanowisko</h3>
-      <p>Wpisz nazwę stanowiska, na które aplikujesz — AI dobierze odpowiednie słowa kluczowe i ton listu dopasowany do branży.</p>
-    </div>
-    <div class="lm-seo-step">
-      <div class="lm-seo-step-num">Krok 2</div>
-      <h3>AI generuje treść</h3>
-      <p>W ciągu 30–60 sekund otrzymujesz gotowy list: 3 akapity, formalny styl, poprawna polszczyzna. Zero angielskich wtrętów.</p>
-    </div>
-    <div class="lm-seo-step">
-      <div class="lm-seo-step-num">Krok 3</div>
-      <h3>Pobierz PDF</h3>
-      <p>Wybierz jeden z 3 szablonów graficznych (Nowoczesny, Klasyczny, Elegancki) i pobierz gotowy PDF — do wysłania rekruterowi.</p>
-    </div>
-  </div>
-</section>
-<section class="lm-seo" style="margin-top:16px;">
-  <h2>Powiązane narzędzia i artykuły</h2>
-  <div class="lm-seo-links">
-    <a href="kreator-cv.html" class="lm-seo-link">📄 Kreator CV online</a>
-    <a href="popraw-cv.html" class="lm-seo-link">✨ Popraw CV z AI</a>
-    <a href="hr.html" class="lm-seo-link">📋 Umowy B2B i o pracę</a>
-    <a href="wypowiedzenia.html" class="lm-seo-link">📝 Wypowiedzenie umowy o pracę</a>
-    <a href="kalkulator-wynagrodzen.html" class="lm-seo-link">🧮 Kalkulator wynagrodzeń 2026</a>
-    <a href="prawo-pracy-2026.html" class="lm-seo-link">⚖️ Prawo pracy 2026</a>
-    <a href="jak-napisac-cv-2026.html" class="lm-seo-link">📚 Jak napisać CV 2026</a>
-  </div>
-</section>
-
-<section class="lm-faq-section">
-  <div class="lm-faq-title">Najczęstsze pytania o list motywacyjny</div>
-  <div class="lm-faq-sub">Wzór 2026 — odpowiedzi</div>
-  <div class="lm-faq-item">
-    <button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jak napisać list motywacyjny? <span class="lm-faq-chevron">▼</span></button>
-    <div class="lm-faq-a">Dobry list motywacyjny składa się z <strong>3 części</strong>: wstęp (dlaczego aplikujesz i znasz firmę), środek (2–3 konkretne osiągnięcia dopasowane do oferty) i zakończenie (zaproszenie do rozmowy). Powinien zajmować maksymalnie 1 stronę A4 i być spersonalizowany pod konkretną ofertę — nie używaj tego samego listu do każdej firmy.</div>
-  </div>
-  <div class="lm-faq-item">
-    <button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Co powinien zawierać list motywacyjny? <span class="lm-faq-chevron">▼</span></button>
-    <div class="lm-faq-a">List motywacyjny powinien zawierać: <strong>dane kontaktowe</strong> (imię, email, telefon), datę i miasto, dane odbiorcy (jeśli znane), nagłówek z nazwą stanowiska, <strong>treść 3 akapitów</strong> (motywacja, doświadczenie, podsumowanie), formułę grzecznościową i podpis. Nasz generator uzupełnia wszystkie te elementy automatycznie.</div>
-  </div>
-  <div class="lm-faq-item">
-    <button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Ile stron powinien mieć list motywacyjny? <span class="lm-faq-chevron">▼</span></button>
-    <div class="lm-faq-a">List motywacyjny powinien mieć <strong>maksymalnie 1 stronę A4</strong> — około 250–350 słów. Rekruterzy przeglądają go średnio przez 30 sekund. Krótki i konkretny list jest zawsze lepszy niż długi i ogólny. Generator Dokumo automatycznie pilnuje, żeby treść zmieściła się na jednej stronie.</div>
-  </div>
-  <div class="lm-faq-item">
-    <button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Czy list motywacyjny jest obowiązkowy? <span class="lm-faq-chevron">▼</span></button>
-    <div class="lm-faq-a">Nie zawsze — ale <strong>znacząco zwiększa szanse</strong>. Około 49% rekruterów odrzuca aplikacje bez listu motywacyjnego, gdy jest on wymagany w ogłoszeniu. Nawet jeśli nie jest wymagany, dobrze napisany list pozwala wyróżnić się wśród kandydatów z podobnym CV i pokazać prawdziwą motywację.</div>
-  </div>
-  <div class="lm-faq-item">
-    <button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jaka jest różnica między CV a listem motywacyjnym? <span class="lm-faq-chevron">▼</span></button>
-    <div class="lm-faq-a"><strong>CV</strong> to chronologiczny wykaz doświadczenia, wykształcenia i umiejętności — odpowiada na pytanie „co robiłem/am". <strong>List motywacyjny</strong> to tekst narracyjny — odpowiada na pytanie „dlaczego jestem idealnym kandydatem właśnie dla tej firmy". Oba dokumenty powinny się uzupełniać, nie powielać tych samych treści.</div>
-  </div>
-  <div class="lm-faq-item" style="border-bottom:none;">
-    <button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jak długo trwa generowanie przez AI? <span class="lm-faq-chevron">▼</span></button>
-    <div class="lm-faq-a">Generator Dokumo tworzy spersonalizowany list motywacyjny w ciągu <strong>30–60 sekund</strong>. AI dopasowuje treść do stanowiska i firmy, zachowując formalny styl i poprawną polszczyznę. Gotowy dokument możesz od razu edytować, zmienić szablon i pobrać jako PDF.</div>
-  </div>
-</section>
 <script>
 function toggleLmFaq(btn){
   var item=btn.closest('.lm-faq-item');
