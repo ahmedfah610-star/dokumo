@@ -996,7 +996,18 @@ function downloadPdf() {
   if (btn) { btn.disabled = true; btn.textContent = 'Generowanie…'; }
   var company = val('fCompany') || 'dokumo';
   var filename = 'list-motywacyjny-' + company.replace(/\s+/g,'-').toLowerCase() + '.pdf';
+
+  // Klonuj papier do osobnego kontenera poza ekranem o dokładnej szerokości A4
   var paper = document.getElementById('lmPaper');
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;top:0;left:-9999px;width:794px;background:#fff;z-index:-1;pointer-events:none;';
+  var clone = paper.cloneNode(true);
+  clone.className = paper.className; // zachowaj klasy szablonu
+  clone.removeAttribute('id');
+  clone.style.cssText = 'width:794px;max-width:none;min-height:0;max-height:none;height:auto;box-shadow:none;border-radius:0;align-self:auto;';
+  wrap.appendChild(clone);
+  document.body.appendChild(wrap);
+
   html2pdf()
     .set({
       margin: 0,
@@ -1008,27 +1019,14 @@ function downloadPdf() {
         logging: false,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: 794,
-        onclone: function(doc) {
-          var el = doc.getElementById('lmPaper');
-          if (el) {
-            el.style.width = '794px';
-            el.style.maxWidth = '794px';
-            el.style.minHeight = '0';
-            el.style.maxHeight = 'none';
-            el.style.height = 'auto';
-            el.style.boxShadow = 'none';
-            el.style.borderRadius = '0';
-            el.style.alignSelf = 'auto';
-          }
-        }
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: 'avoid-all' }
     })
-    .from(paper)
+    .from(clone)
     .save()
     .then(function() {
+      document.body.removeChild(wrap);
       if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz PDF'; }
     });
 }
