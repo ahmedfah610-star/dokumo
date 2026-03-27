@@ -330,7 +330,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 <!-- BOTTOM BAR -->
 <div class="bot-bar">
   <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
-  <span class="bar-info" id="barInfo">Wybierz dokument, aby kontynuować</span>
+  <span class="bar-info" id="barInfo">Dokumenty mają charakter pomocniczy — zalecamy weryfikację z doradcą prawnym</span>
   <button class="btn-next hide" id="btnNext" onclick="goNext()">Dalej →</button>
 </div>
 
@@ -529,7 +529,7 @@ function renderBar(){
   var back=document.getElementById('btnBack'),next=document.getElementById('btnNext'),info=document.getElementById('barInfo');
   if(mainStep===0){
     back.className='btn-back hide'; next.className='btn-next hide';
-    info.textContent='Wybierz dokument, aby kontynuować';
+    info.textContent='Dokumenty mają charakter pomocniczy — zalecamy weryfikację z doradcą prawnym';
   } else if(mainStep===1){
     var form=FORMS[selDoc], total=form.steps.length, isLast=subStep===total-1;
     back.className='btn-back'; back.textContent='← Wróć';
