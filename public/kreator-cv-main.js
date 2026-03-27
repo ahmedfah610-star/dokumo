@@ -39,30 +39,30 @@ async function processCvImport(arrayBuffer) {
 
     _cvImportSetProgress('Wyciągam dane przez AI…', 40);
 
-    const prompt = `Jesteś profesjonalnym parserem CV. Wyciągnij WSZYSTKIE informacje z poniższego tekstu CV i zwróć je jako pojedynczy poprawny obiekt JSON. Zachowaj oryginalny język danych (nie tłumacz).
+    const prompt = `Jesteś parserem CV. Twoim jedynym zadaniem jest PRZEPISANIE danych z CV do formatu JSON — dokładnie tak jak są w tekście. NIE dodawaj, NIE zmieniaj, NIE ulepszaj, NIE generuj żadnych nowych informacji. Jeśli jakiegoś pola nie ma w CV — zostaw puste ("" lub []).
 
-Zwróć TYLKO surowy obiekt JSON (bez markdown, bez backticks, bez wyjaśnień) w tej dokładnej strukturze:
+Zwróć TYLKO surowy obiekt JSON (bez markdown, bez backticks, bez wyjaśnień):
 {
-  "imie": "imię",
-  "nazwisko": "nazwisko",
-  "stanowisko": "stanowisko/tytuł zawodowy",
-  "email": "email",
-  "tel": "telefon",
-  "adres": "miasto, kraj",
-  "linkedin": "url linkedin lub puste",
-  "www": "strona www lub puste",
-  "podsumowanie": "podsumowanie zawodowe 2-4 zdania",
+  "imie": "przepisz imię z CV",
+  "nazwisko": "przepisz nazwisko z CV",
+  "stanowisko": "przepisz stanowisko/tytuł z CV, jeśli nie ma — puste",
+  "email": "przepisz email z CV, jeśli nie ma — puste",
+  "tel": "przepisz telefon z CV, jeśli nie ma — puste",
+  "adres": "przepisz miasto/adres z CV, jeśli nie ma — puste",
+  "linkedin": "przepisz URL LinkedIn z CV, jeśli nie ma — puste",
+  "www": "przepisz URL strony z CV, jeśli nie ma — puste",
+  "podsumowanie": "przepisz dosłownie tekst podsumowania/profilu z CV, jeśli nie ma — puste",
   "doswiadczenie": [
-    {"firma": "nazwa firmy", "stanowisko": "stanowisko", "od": "data rozpoczęcia", "do": "data zakończenia lub obecnie", "opis": "obowiązki"}
+    {"firma": "nazwa firmy z CV", "stanowisko": "stanowisko z CV", "od": "data z CV", "do": "data z CV", "opis": "przepisz opis obowiązków z CV dosłownie"}
   ],
   "wyksztalcenie": [
-    {"szkola": "nazwa uczelni/szkoły", "kierunek": "kierunek studiów", "od": "rok rozpoczęcia", "do": "rok ukończenia", "opis": ""}
+    {"szkola": "nazwa z CV", "kierunek": "kierunek z CV", "od": "rok z CV", "do": "rok z CV", "opis": ""}
   ],
-  "umiejetnosci": "umiejętności oddzielone przecinkami",
+  "umiejetnosci": "przepisz umiejętności z CV oddzielone przecinkami, jeśli nie ma — puste",
   "jezyki": [
-    {"jezyk": "nazwa języka", "poziom": "poziom (A1/A2/B1/B2/C1/C2/Ojczysty)"}
+    {"jezyk": "nazwa języka z CV", "poziom": "poziom z CV (A1/A2/B1/B2/C1/C2/Ojczysty)"}
   ],
-  "zainteresowania": "zainteresowania oddzielone przecinkami"
+  "zainteresowania": "przepisz zainteresowania z CV oddzielone przecinkami, jeśli nie ma — puste"
 }
 
 TEKST CV:
