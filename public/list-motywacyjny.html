@@ -113,7 +113,8 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 .lm-retry{padding:10px 24px;border-radius:var(--pill);background:var(--ink);color:#fff;border:none;font-family:'Figtree',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;margin-top:8px;}
 
 /* LAYOUT */
-.lm-wrap{flex:1;display:flex;overflow:hidden;}
+main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.lm-wrap{flex:1;display:flex;overflow:hidden;min-height:0;}
 
 /* ── EDITOR ── */
 .lm-editor{width:360px;min-width:300px;overflow-y:auto;border-right:1px solid var(--border);flex-shrink:0;}
