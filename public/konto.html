@@ -493,13 +493,34 @@ body {
   </div>
 </main>
 
-<!-- Szybkie ukrycie panelu logowania jeśli user jest już zalogowany (eliminuje flash) -->
+<!-- Natychmiastowy render profilu z localStorage (eliminuje biały ekran + flash logowania) -->
 <script>
 (function(){
-  if (localStorage.getItem('dokumo_user')) {
-    var d = document.getElementById('kontoDefault');
-    if (d) d.style.display = 'none';
-  }
+  try {
+    var u = JSON.parse(localStorage.getItem('dokumo_user') || 'null');
+    if (!u) return;
+    // Ukryj panel logowania
+    var loginEl = document.getElementById('kontoDefault');
+    if (loginEl) loginEl.style.display = 'none';
+    // Pokaż profil od razu
+    var wrap = document.getElementById('profileWrap');
+    if (wrap) wrap.style.display = 'flex';
+    var av = document.getElementById('profileAvatar');
+    if (av) {
+      if (u.photo) av.innerHTML = '<img src="' + u.photo + '" alt="">';
+      else av.textContent = (u.name || u.email || '?')[0].toUpperCase();
+    }
+    var nameEl = document.getElementById('profileName');
+    if (nameEl) nameEl.textContent = u.name || '—';
+    var emailEl = document.getElementById('profileEmail');
+    if (emailEl) emailEl.textContent = u.email || '—';
+    // Wypełnij pola z lokalnego profilu
+    var p = JSON.parse(localStorage.getItem('dokumo_profile') || 'null');
+    if (p) {
+      var flds = {pImie:'imie',pNazwisko:'nazwisko',pFirma:'firma',pNip:'nip',pAdres:'adres',pTelefon:'telefon',pStanowisko:'stanowisko',pBranza:'branza'};
+      Object.keys(flds).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=p[flds[id]]||''; });
+    }
+  } catch(e) {}
 })();
 </script>
 
