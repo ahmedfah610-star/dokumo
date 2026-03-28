@@ -493,6 +493,16 @@ body {
   </div>
 </main>
 
+<!-- Szybkie ukrycie panelu logowania jeśli user jest już zalogowany (eliminuje flash) -->
+<script>
+(function(){
+  if (localStorage.getItem('dokumo_user')) {
+    var d = document.getElementById('kontoDefault');
+    if (d) d.style.display = 'none';
+  }
+})();
+</script>
+
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
