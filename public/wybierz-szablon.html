@@ -123,7 +123,7 @@ body{
 
 /* label */
 .ws-lbl{
-  padding:9px 12px 10px;
+  padding:5px 10px 6px;
   display:flex; align-items:center; justify-content:space-between;
   border-top:1px solid #e5e5e5;
 }
@@ -132,7 +132,7 @@ body{
 
 /* counter + hint */
 .ws-footer{
-  flex-shrink:0; padding:14px 28px 20px;
+  flex-shrink:0; padding:8px 28px 12px;
   display:flex; align-items:center; justify-content:center; gap:16px;
 }
 .ws-dots{display:flex;gap:5px;}
@@ -980,9 +980,9 @@ function stageH() {
 }
 function cardW() {
   // Size from height so cards fill the vertical space
-  const fromH = stageH() * (595 / 842);
-  if (window.innerWidth <= 600) return Math.min(fromH, window.innerWidth * 0.76);
-  return Math.min(fromH, (window.innerWidth - 160) * 0.38);
+  const fromH = stageH() * 0.70 * (595 / 842);
+  if (window.innerWidth <= 600) return Math.min(fromH, window.innerWidth * 0.52);
+  return Math.min(fromH, (window.innerWidth - 160) * 0.22);
 }
 function gap() { return window.innerWidth <= 600 ? 14 : 22; }
 
