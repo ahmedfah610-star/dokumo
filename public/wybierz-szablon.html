@@ -980,9 +980,9 @@ function stageH() {
 }
 function cardW() {
   // Size from height so cards fill the vertical space
-  const fromH = stageH() * 0.70 * (595 / 842);
-  if (window.innerWidth <= 600) return Math.min(fromH, window.innerWidth * 0.52);
-  return Math.min(fromH, (window.innerWidth - 160) * 0.22);
+  const fromH = stageH() * (595 / 842);
+  if (window.innerWidth <= 600) return Math.min(fromH, window.innerWidth * 0.68);
+  return Math.min(fromH, (window.innerWidth - 160) * 0.30);
 }
 function gap() { return window.innerWidth <= 600 ? 14 : 22; }
 
