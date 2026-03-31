@@ -22,12 +22,12 @@ var _wmTools = {
     { name:'Umowa zlecenie',          desc:'Współpraca na zasadach zlecenia',     href:'hr.html?doc=zlecenie', bg:'#fef3c7', stroke:'#d97706', icon:'doc' }
   ],
   biznes_admin: [
-    { name:'Umowa najmu mieszkania',       desc:'Najem na czas określony lub nieokreślony', href:'admin.html?doc=najmu',              bg:'#f0fdf4', stroke:'#16a34a', icon:'house' },
-    { name:'Protokół zdawczo-odbiorczy',   desc:'Przy przekazaniu lub zwrocie lokalu',      href:'admin.html?doc=protokol',           bg:'#eff6ff', stroke:'#2563eb', icon:'badge' },
-    { name:'Wypowiedzenie umowy najmu',    desc:'Dla najemcy i wynajmującego',              href:'admin.html?doc=wypowiedzenie_najmu', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
-    { name:'Umowa wspólników',             desc:'Regulamin współpracy w spółce',           href:'admin.html?doc=spolnikow',           bg:'#fdf4ff', stroke:'#a855f7', icon:'handshake' },
-    { name:'Biznesplan dla banku',         desc:'Profesjonalny plan finansowy firmy',      href:'admin.html?doc=biznesplan',          bg:'#f8fafc', stroke:'#475569', icon:'calc' },
-    { name:'Analiza SWOT firmy',           desc:'Strategiczna analiza mocnych stron',      href:'admin.html?doc=swot',               bg:'#fff7ed', stroke:'#ea580c', icon:'file' }
+    { name:'Umowa najmu mieszkania',       desc:'Najem na czas określony lub nieokreślony', href:'umowa-najmu.html',              bg:'#f0fdf4', stroke:'#16a34a', icon:'house' },
+    { name:'Protokół zdawczo-odbiorczy',   desc:'Przy przekazaniu lub zwrocie lokalu',      href:'protokol-zdawczo-odbiorczy.html',           bg:'#eff6ff', stroke:'#2563eb', icon:'badge' },
+    { name:'Wypowiedzenie umowy najmu',    desc:'Dla najemcy i wynajmującego',              href:'wypowiedzenie-najmu.html', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
+    { name:'Umowa wspólników',             desc:'Regulamin współpracy w spółce',           href:'umowa-wspolnikow.html',           bg:'#fdf4ff', stroke:'#a855f7', icon:'handshake' },
+    { name:'Biznesplan dla banku',         desc:'Profesjonalny plan finansowy firmy',      href:'biznesplan-dla-banku.html',          bg:'#f8fafc', stroke:'#475569', icon:'calc' },
+    { name:'Analiza SWOT firmy',           desc:'Strategiczna analiza mocnych stron',      href:'analiza-swot.html',               bg:'#fff7ed', stroke:'#ea580c', icon:'file' }
   ],
   biznes_faktury: [
     { name:'Faktura VAT',      desc:'Generator faktur z pozycjami i VAT',   href:'faktura.html?type=vat',        bg:'#fff7ed', stroke:'#ea580c', icon:'doc' },
