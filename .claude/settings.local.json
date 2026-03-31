@@ -70,17 +70,5 @@
       "WebFetch(domain:www.cv-maker.pl)"
     ]
   },
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cd C:/Users/asus/Desktop/dokumo && git add -A && git diff --cached --quiet || (git commit -m \"auto: save changes\" && git push)",
-            "timeout": 30
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }
