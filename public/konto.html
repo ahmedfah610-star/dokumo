@@ -3,14 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/jpeg" href="logo2.png">
-<!-- Google Analytics – Consent Mode v2 -->
-<script>
-window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});
-if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});}
-</script>
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
-<script>gtag('js',new Date());gtag('config','G-61ETEPHJB7');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-61ETEPHJB7");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moje konto – Dokumo</title>
 <meta name="robots" content="noindex, nofollow">
@@ -317,6 +312,23 @@ body {
   .k-main { padding:24px 12px 60px; }
 }
 
+/* ── AUTH TABS ── */
+.k-auth-tabs {
+  display:flex; gap:4px; background:var(--surface2);
+  border:1px solid var(--border); border-radius:11px;
+  padding:4px; margin-bottom:16px;
+}
+.k-auth-tab {
+  flex:1; padding:8px 12px; border-radius:8px; border:none;
+  background:transparent; font-family:"DM Sans",sans-serif;
+  font-size:.82rem; font-weight:600; color:var(--ink2);
+  cursor:pointer; transition:all .18s;
+}
+.k-auth-tab.active {
+  background:#fff; color:var(--ink);
+  box-shadow:0 1px 4px rgba(0,0,0,.1);
+}
+
 /* ── EMAIL FORM ── */
 .k-email-form { display:flex; flex-direction:column; gap:10px; }
 .k-email-input {
@@ -367,7 +379,7 @@ body {
 <nav class="k-nav">
   <a href="index.html" class="k-nav-logo">
     <img src="logo2.png" style="height:28px;width:auto;display:block;">
-    DokumoFlow
+    Dokumo
   </a>
 </nav>
 
@@ -376,44 +388,75 @@ body {
 
     <!-- NIEZALOGOWANY -->
     <div class="k-login-panel" id="kontoDefault">
-      <div class="k-login-title" id="loginTitle">Zaloguj się</div>
-      <p class="k-login-sub">Zapisz swoje dane i nie wypełniaj formularzy dwa razy.</p>
+      <div class="k-logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a1714" stroke-width="2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div class="k-login-title">Witaj w DokumoFlow</div>
+      <p class="k-login-sub">Zaloguj się, by zapisać swoje dane i nie wypełniać formularzy dwa razy.</p>
 
-      <!-- Email form -->
-      <div class="k-email-form">
-        <div class="k-auth-msg" id="emailMsg"></div>
-        <input class="k-email-input" id="authEmailInput" type="email" placeholder="Adres e-mail" autocomplete="email">
-        <input class="k-email-input" id="authPasswordInput" type="password" placeholder="Hasło (min. 6 znaków)" autocomplete="current-password">
-        <button class="k-email-submit" id="emailSubmitBtn" onclick="handleEmailSubmit()">
-          <span id="emailSubmitText">Zaloguj się</span>
+      <!-- Tabs -->
+      <div class="k-auth-tabs">
+        <button class="k-auth-tab active" id="tabGoogle" onclick="switchAuthTab('google')">Google</button>
+        <button class="k-auth-tab" id="tabEmail" onclick="switchAuthTab('email')">E-mail</button>
+      </div>
+
+      <!-- Google -->
+      <div id="authGoogle">
+        <button class="k-oauth-btn" onclick="handleOAuth()">
+          <svg class="k-oauth-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span class="k-oauth-label">Kontynuuj z Google</span>
+          <span class="k-oauth-arrow">→</span>
         </button>
-        <div class="k-email-toggle">
-          <span id="emailToggleLabel">Nie masz konta?</span>
-          <button onclick="toggleEmailMode()">Zarejestruj się</button>
+      </div>
+
+      <!-- Email -->
+      <div id="authEmail" style="display:none">
+        <div class="k-email-form">
+          <div class="k-auth-msg" id="emailMsg"></div>
+          <input class="k-email-input" id="authEmailInput" type="email" placeholder="Adres e-mail" autocomplete="email">
+          <input class="k-email-input" id="authPasswordInput" type="password" placeholder="Hasło (min. 6 znaków)" autocomplete="current-password">
+          <button class="k-email-submit" id="emailSubmitBtn" onclick="handleEmailSubmit()">
+            <span id="emailSubmitText">Zaloguj się</span>
+          </button>
+          <div class="k-email-toggle">
+            <span id="emailToggleLabel">Nie masz konta?</span>
+            <button onclick="toggleEmailMode()">Zarejestruj się</button>
+          </div>
+          <button class="k-forgot-btn" id="forgotBtn" onclick="handleForgotPassword()">Zapomniałem hasła</button>
         </div>
-        <button class="k-forgot-btn" id="forgotBtn" onclick="handleForgotPassword()">Zapomniałem hasła</button>
       </div>
 
       <div class="k-divider">
         <div class="k-divider-line"></div>
-        <div class="k-divider-text">lub</div>
+        <div class="k-divider-text">Co zyskujesz?</div>
         <div class="k-divider-line"></div>
       </div>
 
-      <!-- Google -->
-      <button class="k-oauth-btn" onclick="handleOAuth()">
-        <svg class="k-oauth-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
-        <span class="k-oauth-label">Kontynuuj z Google</span>
-        <span class="k-oauth-arrow">→</span>
-      </button>
+      <div class="k-benefits">
+        <div class="k-benefit">
+          <div class="k-benefit-icon">✦</div>
+          <div class="k-benefit-text">Dane firmy zapisane raz — dokumenty wypełniają się automatycznie</div>
+        </div>
+        <div class="k-benefit">
+          <div class="k-benefit-icon">📄</div>
+          <div class="k-benefit-text">Historia wygenerowanych dokumentów zawsze pod ręką</div>
+        </div>
+        <div class="k-benefit">
+          <div class="k-benefit-icon">⭐</div>
+          <div class="k-benefit-text">Dostęp do Planu Biznes i dokumentów premium</div>
+        </div>
+      </div>
 
-
-      <p class="k-privacy" style="margin-top:20px">
+      <p class="k-privacy">
         Logując się akceptujesz <a href="regulamin.html">Regulamin</a> i <a href="prywatnosc.html">Politykę prywatności</a>.
       </p>
     </div>
@@ -498,37 +541,6 @@ body {
   </div>
 </main>
 
-<!-- Natychmiastowy render profilu z localStorage (eliminuje biały ekran + flash logowania) -->
-<script>
-(function(){
-  try {
-    var u = JSON.parse(localStorage.getItem('dokumo_user') || 'null');
-    if (!u) return;
-    // Ukryj panel logowania
-    var loginEl = document.getElementById('kontoDefault');
-    if (loginEl) loginEl.style.display = 'none';
-    // Pokaż profil od razu
-    var wrap = document.getElementById('profileWrap');
-    if (wrap) wrap.style.display = 'flex';
-    var av = document.getElementById('profileAvatar');
-    if (av) {
-      if (u.photo) av.innerHTML = '<img src="' + u.photo + '" alt="">';
-      else av.textContent = (u.name || u.email || '?')[0].toUpperCase();
-    }
-    var nameEl = document.getElementById('profileName');
-    if (nameEl) nameEl.textContent = u.name || '—';
-    var emailEl = document.getElementById('profileEmail');
-    if (emailEl) emailEl.textContent = u.email || '—';
-    // Wypełnij pola z lokalnego profilu
-    var p = JSON.parse(localStorage.getItem('dokumo_profile') || 'null');
-    if (p) {
-      var flds = {pImie:'imie',pNazwisko:'nazwisko',pFirma:'firma',pNip:'nip',pAdres:'adres',pTelefon:'telefon',pStanowisko:'stanowisko',pBranza:'branza'};
-      Object.keys(flds).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=p[flds[id]]||''; });
-    }
-  } catch(e) {}
-})();
-</script>
-
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -536,7 +548,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signO
          createUserWithEmailAndPassword, signInWithEmailAndPassword,
          sendPasswordResetEmail, updateProfile }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+import { getFirestore, doc, setDoc, getDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();const app = initializeApp(__c);
@@ -552,20 +564,6 @@ onAuthStateChanged(auth, async user => {
     localStorage.setItem('dokumo_user', JSON.stringify({
       name: user.displayName, email: user.email, photo: user.photoURL
     }));
-    // Zapisz dane logowania w Firestore (widoczne w Firebase Console → users/{uid})
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      const snap = await getDoc(userRef);
-      const loginEntry = {
-        email: user.email,
-        name: user.displayName,
-        photo: user.photoURL,
-        lastLogin: serverTimestamp(),
-        loginCount: (snap.exists() && snap.data().loginCount) ? snap.data().loginCount + 1 : 1,
-      };
-      if (!snap.exists()) loginEntry.firstLogin = serverTimestamp();
-      await setDoc(userRef, loginEntry, { merge: true });
-    } catch(e) { console.warn('Login tracking:', e); }
     // Pobierz subskrypcję (aktywuje też pending sub nadaną przez admina)
     try {
       const token = await user.getIdToken();
@@ -597,56 +595,48 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
-async function handleOAuthProvider(btn, authProvider, defaultLabel) {
+window.handleOAuth = async function() {
+  const btn = event.currentTarget;
   btn.style.opacity = '.6'; btn.style.pointerEvents = 'none';
   btn.querySelector('.k-oauth-label').textContent = 'Łączenie…';
   try {
-    const { user } = await signInWithPopup(auth, authProvider);
+    const { user } = await signInWithPopup(auth, provider);
     localStorage.setItem('dokumo_user', JSON.stringify({
       name: user.displayName, email: user.email, photo: user.photoURL
     }));
     document.getElementById('kontoDefault').style.display = 'none';
     const s = document.getElementById('kontoSuccess');
     s.style.display = 'block';
-    document.getElementById('successMsg').textContent = 'Zalogowano jako ' + (user.displayName || user.email);
+    document.getElementById('successMsg').textContent = 'Zalogowano jako ' + user.displayName;
     setTimeout(() => { showProfile(user); s.style.display = 'none'; }, 1400);
   } catch(err) {
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
-    btn.querySelector('.k-oauth-label').textContent = defaultLabel;
-    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-      alert('Błąd logowania: ' + err.message);
-    }
+    btn.querySelector('.k-oauth-label').textContent = 'Kontynuuj z Google';
+    if (err.code !== 'auth/popup-closed-by-user') alert('Błąd logowania: ' + err.message);
   }
-}
-
-window.handleOAuth = async function() {
-  await handleOAuthProvider(event.currentTarget, provider, 'Kontynuuj z Google');
 };
-
 
 // --- email mode state ---
 let _emailMode = 'login'; // 'login' | 'register'
 
-window.toggleEmailMode = function() {
-  _emailMode = _emailMode === 'login' ? 'register' : 'login';
-  applyEmailMode();
+window.switchAuthTab = function(tab) {
+  const isGoogle = tab === 'google';
+  document.getElementById('authGoogle').style.display = isGoogle ? '' : 'none';
+  document.getElementById('authEmail').style.display  = isGoogle ? 'none' : '';
+  document.getElementById('tabGoogle').classList.toggle('active', isGoogle);
+  document.getElementById('tabEmail').classList.toggle('active', !isGoogle);
+  showEmailMsg('', '');
 };
 
-function applyEmailMode() {
+window.toggleEmailMode = function() {
+  _emailMode = _emailMode === 'login' ? 'register' : 'login';
   const isReg = _emailMode === 'register';
-  document.getElementById('loginTitle').textContent = isReg ? 'Zarejestruj się' : 'Zaloguj się';
   document.getElementById('emailSubmitText').textContent = isReg ? 'Zarejestruj się' : 'Zaloguj się';
   document.getElementById('emailToggleLabel').textContent = isReg ? 'Masz już konto?' : 'Nie masz konta?';
-  document.querySelector('.k-email-toggle button').textContent = isReg ? 'Zaloguj się' : 'Zarejestruj się';
+  document.querySelector('#authEmail .k-email-toggle button').textContent = isReg ? 'Zaloguj się' : 'Zarejestruj się';
   document.getElementById('authPasswordInput').autocomplete = isReg ? 'new-password' : 'current-password';
   document.getElementById('forgotBtn').style.display = isReg ? 'none' : '';
-  document.querySelector('.k-email-toggle').style.display = isReg ? 'none' : '';
   showEmailMsg('', '');
-}
-
-window.setEmailMode = function(mode) {
-  _emailMode = mode;
-  applyEmailMode();
 };
 
 function showEmailMsg(text, type) {
@@ -763,11 +753,6 @@ function v(id) { return (document.getElementById(id)?.value || '').trim(); }
 function showLogin() {
   document.getElementById('kontoDefault').style.display = 'block';
   document.getElementById('profileWrap').style.display = 'none';
-  // Auto-switch to register mode when coming from "Załóż konto"
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('rejestracja') === '1' && window.setEmailMode) {
-    window.setEmailMode('register');
-  }
 }
 function showProfile(user) {
   document.getElementById('kontoDefault').style.display = 'none';
