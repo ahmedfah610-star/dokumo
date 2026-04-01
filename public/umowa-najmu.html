@@ -223,7 +223,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <!-- NAV -->
 <nav class="wiz-nav">
-  <a href="admin.html" class="nav-back">← Wróć</a>
+  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;"><img src="logo2.png" alt="DokumoFlow logo" style="height:28px;width:auto;display:block;"><span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Inter',sans-serif;">DokumoFlow</span></a>
   <div class="nav-steps" id="navSteps"></div>
   <div class="nav-right">
     <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
@@ -419,7 +419,7 @@ function renderBar(){
   var back=document.getElementById('btnBack'),next=document.getElementById('btnNext'),info=document.getElementById('barInfo');
   if(mainStep===1){
     var form=FORMS[selDoc], total=form.steps.length, isLast=subStep===total-1;
-    back.className='btn-back'; back.textContent='← Wróć';
+    back.className='btn-back'; back.textContent=subStep===0?'← Dokumenty administracyjne':'← Wróć';
     info.textContent='Krok '+(subStep+1)+' z '+total+' · '+form.steps[subStep].label;
     next.className='btn-next'; next.textContent=isLast?'Generuj dokument ⚡':'Dalej →';
   } else if(mainStep===2){

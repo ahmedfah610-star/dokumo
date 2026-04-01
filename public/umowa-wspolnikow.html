@@ -415,7 +415,7 @@ function renderBar(){
   var back=document.getElementById('btnBack'),next=document.getElementById('btnNext'),info=document.getElementById('barInfo');
   if(mainStep===1){
     var form=FORMS[selDoc], total=form.steps.length, isLast=subStep===total-1;
-    back.className='btn-back'; back.textContent='← Wróć';
+    back.className='btn-back'; back.textContent=subStep===0?'← Dokumenty administracyjne':'← Wróć';
     info.textContent='Krok '+(subStep+1)+' z '+total+' · '+form.steps[subStep].label;
     next.className='btn-next'; next.textContent=isLast?'Generuj dokument ⚡':'Dalej →';
   } else if(mainStep===2){
