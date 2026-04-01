@@ -976,12 +976,13 @@ let idx = 0;
 const total = T.length;
 
 function stageH() {
-  // nav=58, footer~58, vertical padding=48
-  return window.innerHeight - 58 - 58 - 48;
+  // nav=60, ws-footer~38, stage-padding=48, safety buffer=8
+  return window.innerHeight - 60 - 38 - 48 - 8;
 }
 function cardW() {
-  // Size from height so cards fill the vertical space
-  const fromH = stageH() * (595 / 842);
+  // Subtract card label bar (~32px) so thumb + label fit without clipping
+  const availH = stageH() - 32;
+  const fromH = availH * (595 / 842);
   if (window.innerWidth <= 600) return Math.min(fromH, window.innerWidth * 0.76);
   return Math.min(fromH, (window.innerWidth - 160) * 0.38);
 }
