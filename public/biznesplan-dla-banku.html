@@ -359,7 +359,8 @@ var FORMS = {
       {label:"Firma",fields:[
         {id:"nip",label:"NIP firmy",ph:"np. 1234567890",opt:true},
         {id:"firma",label:"Nazwa firmy",ph:"np. MójBiznes Sp. z o.o."},
-        {id:"forma_prawna",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","Sp. j.","Działalność gospodarcza","Sp. k.","S.A."]},
+        {id:"forma_prawna",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","Sp. j.","Działalność gospodarcza","Sp. k.","S.A.","Inne"]},
+        {id:"forma_prawna_inne",label:"Inna forma prawna",ph:"np. Prosta S.A., Spółka cywilna, Fundacja",opt:true,replaces:true,showIf:{field:"forma_prawna",val:"Inne"}},
         {id:"branza",label:"Branża",ph:"np. e-commerce, sprzedaż online"},
         {id:"adres",label:"Adres",ph:"np. ul. Kwiatowa 1, Warszawa",opt:true},
         {id:"rok_zal",label:"Rok założenia",ph:"np. 2021",opt:true},
@@ -368,7 +369,8 @@ var FORMS = {
       {label:"Cel kredytu",fields:[
         {id:"kwota",label:"Kwota kredytu (zł)",ph:"np. 200 000"},
         {id:"cel",label:"Na co przeznaczony kredyt",ph:"np. zakup magazynu, rozbudowa zaplecza"},
-        {id:"okres_splaty",label:"Wnioskowany okres spłaty",type:"pills",opts:["12 miesięcy","24 miesiące","36 miesięcy","48 miesięcy","60 miesięcy"]},
+        {id:"okres_splaty",label:"Wnioskowany okres spłaty",type:"pills",opts:["12 miesięcy","24 miesiące","36 miesięcy","48 miesięcy","60 miesięcy","Inne"]},
+        {id:"okres_splaty_inne",label:"Inny okres spłaty",ph:"np. 84 miesiące (7 lat)",opt:true,replaces:true,showIf:{field:"okres_splaty",val:"Inne"}},
         {id:"zabezpieczenie",label:"Proponowane zabezpieczenie",ph:"np. nieruchomość, poręczenie, weksel",opt:true}
       ]},
       {label:"Opis działalności",fields:[
@@ -388,7 +390,7 @@ var FORMS = {
       ]}
     ],
     prompt:function(v){
-      return "Napisz profesjonalny biznesplan dla banku pod kredyt inwestycyjny. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nFirma: "+v.firma+", forma prawna: "+(v.forma_prawna||"[brak]")+", NIP: "+(v.nip||"[brak]")+", branża: "+v.branza+", adres: "+(v.adres||"[brak]")+", rok założenia: "+(v.rok_zal||"[brak]")+", pracownicy: "+(v.pracownicy||"[brak]")+"\nKredyt: "+v.kwota+" zł, cel: "+v.cel+", okres spłaty: "+(v.okres_splaty||"36 miesięcy")+", zabezpieczenie: "+(v.zabezpieczenie||"do uzgodnienia")+"\nOpis: "+v.opis+"\nRynek: "+(v.rynek||"[brak]")+", przewaga: "+(v.przewaga||"[brak]")+"\nFinanse: przychód "+v.przychod+" zł, koszty "+(v.koszty||"[brak]")+" zł, zysk "+(v.zysk||"[brak]")+" zł, prognoza: "+v.prognoza+"\nPlan rozwoju: "+(v.plan_rozw||"[brak]")+"\nRyzyka: "+(v.ryzyka||"[brak]")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nBiznesplan musi zawierać: 1. Streszczenie zarządcze, 2. Opis firmy i modelu biznesowego, 3. Analiza rynku i konkurencji, 4. Plan inwestycji i harmonogram realizacji, 5. Prognoza finansowa (rachunek wyników na 3 lata, przepływy pieniężne), 6. Harmonogram spłat kredytu, 7. Analiza ryzyka. Zacznij od treści.";
+      return "Napisz profesjonalny biznesplan dla banku pod kredyt inwestycyjny. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nFirma: "+v.firma+", forma prawna: "+(v.forma_prawna_inne||v.forma_prawna||"[brak]")+", NIP: "+(v.nip||"[brak]")+", branża: "+v.branza+", adres: "+(v.adres||"[brak]")+", rok założenia: "+(v.rok_zal||"[brak]")+", pracownicy: "+(v.pracownicy||"[brak]")+"\nKredyt: "+v.kwota+" zł, cel: "+v.cel+", okres spłaty: "+(v.okres_splaty_inne||v.okres_splaty||"36 miesięcy")+", zabezpieczenie: "+(v.zabezpieczenie||"do uzgodnienia")+"\nOpis: "+v.opis+"\nRynek: "+(v.rynek||"[brak]")+", przewaga: "+(v.przewaga||"[brak]")+"\nFinanse: przychód "+v.przychod+" zł, koszty "+(v.koszty||"[brak]")+" zł, zysk "+(v.zysk||"[brak]")+" zł, prognoza: "+v.prognoza+"\nPlan rozwoju: "+(v.plan_rozw||"[brak]")+"\nRyzyka: "+(v.ryzyka||"[brak]")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nBiznesplan musi zawierać: 1. Streszczenie zarządcze, 2. Opis firmy i modelu biznesowego, 3. Analiza rynku i konkurencji, 4. Plan inwestycji i harmonogram realizacji, 5. Prognoza finansowa (rachunek wyników na 3 lata, przepływy pieniężne), 6. Harmonogram spłat kredytu, 7. Analiza ryzyka. Zacznij od treści.";
     }
   }
 };
@@ -478,20 +480,22 @@ function renderForm(){
   var html='';
   step.fields.forEach(function(f){
     var val=wizVals[f.id]||'';
+    var vis=f.showIf?(wizVals[f.showIf.field]||'')===f.showIf.val:true;
+    var wrapOpen='<div class="field'+(f.showIf?' cond-field':'')+'" id="condwrap_'+f.id+'" style="'+(f.showIf&&!vis?'display:none':'')+'">';
     var lbl='<label class="field-lbl">'+f.label+(f.opt?' <span>(opcjonalnie)</span>':'')+'</label>';
     if(f.type==='pills'){
       var pills=f.opts.map(function(o){
         return '<button type="button" class="pill'+(val===o?' on':'')+'" data-field="'+f.id+'" data-val="'+o+'" onclick="pickPill(this)">'+o+'</button>';
       }).join('');
-      html+='<div class="field">'+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
+      html+=wrapOpen+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
            +'<input type="hidden" id="gf_'+f.id+'" value="'+val+'"></div>';
     } else if(f.type==='date'){
-      html+='<div class="field">'+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
+      html+=wrapOpen+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
     } else {
       var nipHint=(f.id==='nip'||f.id.indexOf('_nip')!==-1)
         ?'<p style="font-size:.7rem;color:var(--ink3);margin:4px 0 0;">🔍 Wpisz NIP — automatycznie uzupełnimy dane firmy</p>'
         :'';
-      html+='<div class="field">'+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()">'+nipHint+'</div>';
+      html+=wrapOpen+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()">'+nipHint+'</div>';
     }
   });
 
@@ -517,6 +521,13 @@ function pickPill(btn){
   document.getElementById('pills_'+fid).querySelectorAll('.pill').forEach(function(b){
     b.classList.toggle('on',b.dataset.val===val);
   });
+  var allFields=FORMS[selDoc].steps.reduce(function(a,s){return a.concat(s.fields);},[]);
+  allFields.forEach(function(cf){
+    if(cf.showIf&&cf.showIf.field===fid){
+      var wrap=document.getElementById('condwrap_'+cf.id);
+      if(wrap) wrap.style.display=(val===cf.showIf.val)?'':'none';
+    }
+  });
   liveUpdate();
 }
 
@@ -536,7 +547,11 @@ function renderPreview(){
   form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
   var rows=[];
   allFields.forEach(function(f){
-    if(wizVals[f.id]) rows.push({l:f.label,v:wizVals[f.id]});
+    if(f.showIf) return;
+    var val=wizVals[f.id]; if(!val) return;
+    var sub=allFields.find(function(sf){return sf.showIf&&sf.showIf.field===f.id&&sf.showIf.val===val;});
+    if(sub&&sub.replaces){var sv=wizVals[sub.id];if(sv) rows.push({l:f.label,v:sv});}
+    else{rows.push({l:f.label,v:val});if(sub&&wizVals[sub.id]) rows.push({l:sub.label,v:wizVals[sub.id]});}
   });
   var filled=rows.map(function(r){
     return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';

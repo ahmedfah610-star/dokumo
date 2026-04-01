@@ -368,13 +368,15 @@ var FORMS = {
       {label:"Szczegóły wypowiedzenia",fields:[
         {id:"adres_m",label:"Adres mieszkania",ph:"np. ul. Słoneczna 3/15, Wrocław"},
         {id:"data_umowy",label:"Data zawarcia umowy najmu",ph:"np. 01.04.2024",opt:true},
-        {id:"okres",label:"Okres wypowiedzenia",type:"pills",opts:["1 miesiąc","2 miesiące","3 miesiące"]},
-        {id:"powod",label:"Podstawa wypowiedzenia",type:"pills",opts:["Wypowiedzenie z zachowaniem okresu (art. 673 KC)","Rozwiązanie za porozumieniem stron","Naruszenie warunków umowy przez najemcę (art. 11 ustawy o ochronie praw lokatorów)"]},
+        {id:"okres",label:"Okres wypowiedzenia",type:"pills",opts:["1 miesiąc","2 miesiące","3 miesiące","Inne"]},
+        {id:"okres_inne",label:"Inny okres wypowiedzenia",ph:"np. 6 tygodni",opt:true,replaces:true,showIf:{field:"okres",val:"Inne"}},
+        {id:"powod",label:"Podstawa wypowiedzenia",type:"pills",opts:["Wypowiedzenie z zachowaniem okresu (art. 673 KC)","Rozwiązanie za porozumieniem stron","Naruszenie warunków umowy przez najemcę (art. 11 ustawy o ochronie praw lokatorów)","Inne"]},
+        {id:"powod_inne",label:"Inna podstawa",ph:"np. wzajemne porozumienie stron z dn. 01.04.2025",opt:true,replaces:true,showIf:{field:"powod",val:"Inne"}},
         {id:"data_wydania",label:"Planowana data zdania kluczy",type:"date",opt:true}
       ]}
     ],
     prompt:function(v){
-      return "Napisz wypowiedzenie umowy najmu zgodne z KC i ustawą o ochronie praw lokatorów. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nSkładający: "+(v.strona||"najemca")+": "+v.skladajacy+", adres: "+(v.adres_s||"[brak]")+"\nAdresowane do: "+v.druga+", adres: "+(v.adres_d||"[brak]")+"\nMieszkanie: "+v.adres_m+"\nUmowa zawarta: "+(v.data_umowy||"[brak]")+"\nOkres wypowiedzenia: "+(v.okres||"1 miesiąc")+"\nPodstawa: "+(v.powod||"art. 673 KC")+(v.data_wydania?"\nPlanowane wydanie lokalu: "+v.data_wydania:"")+"\n\nPismo musi zawierać: miejscowość i datę, dane stron, podstawę prawną (art. 673 KC lub właściwy artykuł), datę upływu okresu wypowiedzenia, żądanie zwrotu kluczy, podpis. Zacznij od treści pisma. Tylko czysty tekst.";
+      return "Napisz wypowiedzenie umowy najmu zgodne z KC i ustawą o ochronie praw lokatorów. Uzywaj DOKLADNIE ponizszych danych.\n\nDANE:\nSkładający: "+(v.strona||"najemca")+": "+v.skladajacy+", adres: "+(v.adres_s||"[brak]")+"\nAdresowane do: "+v.druga+", adres: "+(v.adres_d||"[brak]")+"\nMieszkanie: "+v.adres_m+"\nUmowa zawarta: "+(v.data_umowy||"[brak]")+"\nOkres wypowiedzenia: "+(v.okres_inne||v.okres||"1 miesiąc")+"\nPodstawa: "+(v.powod_inne||v.powod||"art. 673 KC")+(v.data_wydania?"\nPlanowane wydanie lokalu: "+v.data_wydania:"")+"\n\nPismo musi zawierać: miejscowość i datę, dane stron, podstawę prawną (art. 673 KC lub właściwy artykuł), datę upływu okresu wypowiedzenia, żądanie zwrotu kluczy, podpis. Zacznij od treści pisma. Tylko czysty tekst.";
     }
   }
 };
@@ -461,17 +463,19 @@ function renderForm(){
   var html='';
   step.fields.forEach(function(f){
     var val=wizVals[f.id]||'';
+    var vis=f.showIf?(wizVals[f.showIf.field]||'')===f.showIf.val:true;
+    var wrapOpen='<div class="field'+(f.showIf?' cond-field':'')+'" id="condwrap_'+f.id+'" style="'+(f.showIf&&!vis?'display:none':'')+'">';
     var lbl='<label class="field-lbl">'+f.label+(f.opt?' <span>(opcjonalnie)</span>':'')+'</label>';
     if(f.type==='pills'){
       var pills=f.opts.map(function(o){
         return '<button type="button" class="pill'+(val===o?' on':'')+'" data-field="'+f.id+'" data-val="'+o+'" onclick="pickPill(this)">'+o+'</button>';
       }).join('');
-      html+='<div class="field">'+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
+      html+=wrapOpen+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
            +'<input type="hidden" id="gf_'+f.id+'" value="'+val+'"></div>';
     } else if(f.type==='date'){
-      html+='<div class="field">'+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
+      html+=wrapOpen+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
     } else {
-      html+='<div class="field">'+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()"></div>';
+      html+=wrapOpen+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()"></div>';
     }
   });
 
@@ -496,6 +500,13 @@ function pickPill(btn){
   document.getElementById('pills_'+fid).querySelectorAll('.pill').forEach(function(b){
     b.classList.toggle('on',b.dataset.val===val);
   });
+  var allFields=FORMS[selDoc].steps.reduce(function(a,s){return a.concat(s.fields);},[]);
+  allFields.forEach(function(cf){
+    if(cf.showIf&&cf.showIf.field===fid){
+      var wrap=document.getElementById('condwrap_'+cf.id);
+      if(wrap) wrap.style.display=(val===cf.showIf.val)?'':'none';
+    }
+  });
   liveUpdate();
 }
 
@@ -515,7 +526,11 @@ function renderPreview(){
   form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
   var rows=[];
   allFields.forEach(function(f){
-    if(wizVals[f.id]) rows.push({l:f.label,v:wizVals[f.id]});
+    if(f.showIf) return;
+    var val=wizVals[f.id]; if(!val) return;
+    var sub=allFields.find(function(sf){return sf.showIf&&sf.showIf.field===f.id&&sf.showIf.val===val;});
+    if(sub&&sub.replaces){var sv=wizVals[sub.id];if(sv) rows.push({l:f.label,v:sv});}
+    else{rows.push({l:f.label,v:val});if(sub&&wizVals[sub.id]) rows.push({l:sub.label,v:wizVals[sub.id]});}
   });
   var filled=rows.map(function(r){
     return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';

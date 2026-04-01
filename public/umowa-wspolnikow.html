@@ -357,7 +357,8 @@ var FORMS = {
     steps:[
       {label:"Spółka",fields:[
         {id:"spolka",label:"Nazwa spółki",ph:"np. FinTech Sp. z o.o."},
-        {id:"forma_prawna",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","Sp. j.","Sp. k.","S.A.","Prosta S.A."]},
+        {id:"forma_prawna",label:"Forma prawna",type:"pills",opts:["Sp. z o.o.","Sp. j.","Sp. k.","S.A.","Prosta S.A.","Inne"]},
+        {id:"forma_prawna_inne",label:"Inna forma prawna",ph:"np. Spółka cywilna",opt:true,replaces:true,showIf:{field:"forma_prawna",val:"Inne"}},
         {id:"branza",label:"Branża i produkt",ph:"np. aplikacja mobilna do oszczędzania"},
         {id:"kapital",label:"Kapitał zakładowy (zł)",ph:"np. 5000",opt:true}
       ]},
@@ -375,18 +376,23 @@ var FORMS = {
       ]},
       {label:"Zarządzanie",fields:[
         {id:"vesting",label:"Vesting (opcjonalnie)",ph:"np. 4-letni vesting, 1 rok cliff",opt:true},
-        {id:"decyzje",label:"Próg decyzji strategicznych",type:"pills",opts:["Jednomyślność","Większość 51%","Większość 75%"]},
+        {id:"decyzje",label:"Próg decyzji strategicznych",type:"pills",opts:["Jednomyślność","Większość 51%","Większość 75%","Inne"]},
+        {id:"decyzje_inne",label:"Inny próg decyzji",ph:"np. Większość 2/3 głosów",opt:true,replaces:true,showIf:{field:"decyzje",val:"Inne"}},
         {id:"wyjscie",label:"Zasady wyjścia ze spółki",ph:"np. prawo pierwokupu dla pozostałych wspólników"}
       ]},
       {label:"Klauzule szczególne",fields:[
-        {id:"zakaz_konk",label:"Zakaz konkurencji",type:"pills",opts:["Tak — przez 12 miesięcy po wyjściu","Tak — przez 24 miesiące po wyjściu","Nie"]},
-        {id:"dywidenda",label:"Podział zysku (dywidenda)",type:"pills",opts:["Proporcjonalnie do udziałów","Reinwestycja przez 2 lata","Według uchwały wspólników"]},
-        {id:"smierc",label:"Postanowienia na wypadek śmierci wspólnika",type:"pills",opts:["Udziały przechodzą na spadkobierców","Spółka odkupuje udziały po wartości rynkowej","Wymagana zgoda pozostałych wspólników"]},
-        {id:"arbitraz",label:"Rozwiązywanie sporów",type:"pills",opts:["Sąd powszechny — właściwy dla siedziby spółki","Sąd Arbitrażowy przy KIG","Mediacja przed sądem"]}
+        {id:"zakaz_konk",label:"Zakaz konkurencji",type:"pills",opts:["Tak — przez 12 miesięcy po wyjściu","Tak — przez 24 miesiące po wyjściu","Nie","Inne"]},
+        {id:"zakaz_konk_inne",label:"Inny zakaz konkurencji",ph:"np. Tak — przez 36 miesięcy, obejmuje rynek UE",opt:true,replaces:true,showIf:{field:"zakaz_konk",val:"Inne"}},
+        {id:"dywidenda",label:"Podział zysku (dywidenda)",type:"pills",opts:["Proporcjonalnie do udziałów","Reinwestycja przez 2 lata","Według uchwały wspólników","Inne"]},
+        {id:"dywidenda_inne",label:"Inne zasady dywidendy",ph:"np. 50% reinwestycja, 50% proporcjonalnie",opt:true,replaces:true,showIf:{field:"dywidenda",val:"Inne"}},
+        {id:"smierc",label:"Postanowienia na wypadek śmierci wspólnika",type:"pills",opts:["Udziały przechodzą na spadkobierców","Spółka odkupuje udziały po wartości rynkowej","Wymagana zgoda pozostałych wspólników","Inne"]},
+        {id:"smierc_inne",label:"Inne postanowienia",ph:"np. Udziały przejmują pozostali wspólnicy po wartości nominalnej",opt:true,replaces:true,showIf:{field:"smierc",val:"Inne"}},
+        {id:"arbitraz",label:"Rozwiązywanie sporów",type:"pills",opts:["Sąd powszechny — właściwy dla siedziby spółki","Sąd Arbitrażowy przy KIG","Mediacja przed sądem","Inne"]},
+        {id:"arbitraz_inne",label:"Inne rozwiązywanie sporów",ph:"np. Mediacja ICC, następnie sąd arbitrażowy",opt:true,replaces:true,showIf:{field:"arbitraz",val:"Inne"}}
       ]}
     ],
     prompt:function(v){
-      return "Napisz umowę wspólników (shareholders agreement) dla: "+v.spolka+", forma prawna: "+(v.forma_prawna||"Sp. z o.o.")+", branża: "+v.branza+", kapitał: "+(v.kapital||"[brak]")+" zł.\nWspólnik 1: "+v.w1_imie+(v.w1_pesel?", PESEL: "+v.w1_pesel:"")+", "+v.w1_udzial+"%, wkład: "+(v.w1_wklad||"[brak]")+" zł, rola: "+v.w1_rola+"\nWspólnik 2: "+v.w2_imie+(v.w2_pesel?", PESEL: "+v.w2_pesel:"")+", "+v.w2_udzial+"%, wkład: "+(v.w2_wklad||"[brak]")+" zł, rola: "+v.w2_rola+"\nVesting: "+(v.vesting||"brak")+", decyzje: "+(v.decyzje||"jednomyślność")+", wyjście: "+v.wyjscie+"\nZakaz konkurencji: "+(v.zakaz_konk||"brak")+", dywidenda: "+(v.dywidenda||"proporcjonalnie")+", śmierć wspólnika: "+(v.smierc||"zgoda pozostałych")+", spory: "+(v.arbitraz||"sąd powszechny")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nUmowa musi zawierać: §1 Strony i przedmiot, §2 Udziały i wkłady, §3 Zarządzanie i reprezentacja, §4 Podejmowanie decyzji, §5 Vesting i retencja, §6 Transfer udziałów i prawo pierwokupu, §7 Zakaz konkurencji, §8 Podział zysku, §9 Rozwiązanie stosunku i wyjście, §10 Postanowienia końcowe. Zacznij od treści umowy. Tylko czysty tekst.";
+      return "Napisz umowę wspólników (shareholders agreement) dla: "+v.spolka+", forma prawna: "+(v.forma_prawna_inne||v.forma_prawna||"Sp. z o.o.")+", branża: "+v.branza+", kapitał: "+(v.kapital||"[brak]")+" zł.\nWspólnik 1: "+v.w1_imie+(v.w1_pesel?", PESEL: "+v.w1_pesel:"")+", "+v.w1_udzial+"%, wkład: "+(v.w1_wklad||"[brak]")+" zł, rola: "+v.w1_rola+"\nWspólnik 2: "+v.w2_imie+(v.w2_pesel?", PESEL: "+v.w2_pesel:"")+", "+v.w2_udzial+"%, wkład: "+(v.w2_wklad||"[brak]")+" zł, rola: "+v.w2_rola+"\nVesting: "+(v.vesting||"brak")+", decyzje: "+(v.decyzje_inne||v.decyzje||"jednomyślność")+", wyjście: "+v.wyjscie+"\nZakaz konkurencji: "+(v.zakaz_konk_inne||v.zakaz_konk||"brak")+", dywidenda: "+(v.dywidenda_inne||v.dywidenda||"proporcjonalnie")+", śmierć wspólnika: "+(v.smierc_inne||v.smierc||"zgoda pozostałych")+", spory: "+(v.arbitraz_inne||v.arbitraz||"sąd powszechny")+(v._extra_info?"\nDodatkowo: "+v._extra_info:"")+"\n\nUmowa musi zawierać: §1 Strony i przedmiot, §2 Udziały i wkłady, §3 Zarządzanie i reprezentacja, §4 Podejmowanie decyzji, §5 Vesting i retencja, §6 Transfer udziałów i prawo pierwokupu, §7 Zakaz konkurencji, §8 Podział zysku, §9 Rozwiązanie stosunku i wyjście, §10 Postanowienia końcowe. Zacznij od treści umowy. Tylko czysty tekst.";
     }
   }
 };
@@ -473,17 +479,19 @@ function renderForm(){
   var html='';
   step.fields.forEach(function(f){
     var val=wizVals[f.id]||'';
+    var vis=f.showIf?(wizVals[f.showIf.field]||'')===f.showIf.val:true;
+    var wrapOpen='<div class="field'+(f.showIf?' cond-field':'')+'" id="condwrap_'+f.id+'" style="'+(f.showIf&&!vis?'display:none':'')+'">';
     var lbl='<label class="field-lbl">'+f.label+(f.opt?' <span>(opcjonalnie)</span>':'')+'</label>';
     if(f.type==='pills'){
       var pills=f.opts.map(function(o){
         return '<button type="button" class="pill'+(val===o?' on':'')+'" data-field="'+f.id+'" data-val="'+o+'" onclick="pickPill(this)">'+o+'</button>';
       }).join('');
-      html+='<div class="field">'+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
+      html+=wrapOpen+lbl+'<div class="pills-row" id="pills_'+f.id+'">'+pills+'</div>'
            +'<input type="hidden" id="gf_'+f.id+'" value="'+val+'"></div>';
     } else if(f.type==='date'){
-      html+='<div class="field">'+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
+      html+=wrapOpen+lbl+'<input class="field-in" type="date" id="gf_'+f.id+'" value="'+val+'" oninput="liveUpdate()"></div>';
     } else {
-      html+='<div class="field">'+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()"></div>';
+      html+=wrapOpen+lbl+'<input class="field-in" type="text" id="gf_'+f.id+'" placeholder="'+(f.ph||'')+'" value="'+val+'" oninput="liveUpdate()"></div>';
     }
   });
 
@@ -508,6 +516,13 @@ function pickPill(btn){
   document.getElementById('pills_'+fid).querySelectorAll('.pill').forEach(function(b){
     b.classList.toggle('on',b.dataset.val===val);
   });
+  var allFields=FORMS[selDoc].steps.reduce(function(a,s){return a.concat(s.fields);},[]);
+  allFields.forEach(function(cf){
+    if(cf.showIf&&cf.showIf.field===fid){
+      var wrap=document.getElementById('condwrap_'+cf.id);
+      if(wrap) wrap.style.display=(val===cf.showIf.val)?'':'none';
+    }
+  });
   liveUpdate();
 }
 
@@ -527,7 +542,11 @@ function renderPreview(){
   form.steps.forEach(function(s){ allFields=allFields.concat(s.fields); });
   var rows=[];
   allFields.forEach(function(f){
-    if(wizVals[f.id]) rows.push({l:f.label,v:wizVals[f.id]});
+    if(f.showIf) return;
+    var val=wizVals[f.id]; if(!val) return;
+    var sub=allFields.find(function(sf){return sf.showIf&&sf.showIf.field===f.id&&sf.showIf.val===val;});
+    if(sub&&sub.replaces){var sv=wizVals[sub.id];if(sv) rows.push({l:f.label,v:sv});}
+    else{rows.push({l:f.label,v:val});if(sub&&wizVals[sub.id]) rows.push({l:sub.label,v:wizVals[sub.id]});}
   });
   var filled=rows.map(function(r){
     return '<div class="prev-row"><div class="prev-row-lbl">'+r.l+'</div><div class="prev-row-val">'+r.v+'</div></div>';
