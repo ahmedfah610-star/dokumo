@@ -5,9 +5,9 @@ var _wmTools = {
     { name:'Dopasuj CV do ogłoszenia z AI', desc:'AI porówna Twoje CV z wymaganiami', action:'match-wizard',                    bg:'#ecfdf5', stroke:'#059669', icon:'match' },
     { name:'Popraw CV z AI',               desc:'Analiza i wskazówki do Twojego CV',   href:'popraw-cv.html',                     bg:'#fef9c3', stroke:'#ca8a04', icon:'edit' },
     { name:'Oblicz wynagrodzenie',         desc:'Kalkulator netto / brutto',           href:'kalkulator-wynagrodzen.html',        bg:'#eff6ff', stroke:'#2563eb', icon:'calc' },
-    { name:'Wniosek o urlop',              desc:'Gotowy wniosek zgodny z KP',          href:'wypowiedzenia.html?doc=urlop',       bg:'#f0fdf4', stroke:'#16a34a', icon:'sun' },
-    { name:'Wypowiedzenie umowy o pracę',  desc:'Wypowiedzenie — krok po kroku',       href:'wypowiedzenia.html?doc=wypowiedzenie', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
-    { name:'Wniosek o świadectwo pracy',   desc:'Dokument potwierdzający zatrudnienie', href:'wypowiedzenia.html?doc=swiadectwo', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' }
+    { name:'Wniosek o urlop',              desc:'Gotowy wniosek zgodny z KP',          href:'generator-wniosku-o-urlop.html',       bg:'#f0fdf4', stroke:'#16a34a', icon:'sun' },
+    { name:'Wypowiedzenie umowy o pracę',  desc:'Wypowiedzenie — krok po kroku',       href:'generator-wypowiedzenia.html', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
+    { name:'Świadectwo pracy',             desc:'Dokument potwierdzający zatrudnienie', href:'generator-swiadectwa-pracy.html', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' }
   ],
   biznes_ecommerce: [
     { name:'Regulamin sklepu internetowego', desc:'Zgodny z prawem konsumenckim',  href:'generator-regulaminu-sklepu.html', bg:'#eff6ff', stroke:'#2563eb', icon:'shop' },
