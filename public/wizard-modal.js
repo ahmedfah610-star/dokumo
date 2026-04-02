@@ -10,9 +10,9 @@ var _wmTools = {
     { name:'Wniosek o świadectwo pracy',   desc:'Dokument potwierdzający zatrudnienie', href:'wypowiedzenia.html?doc=swiadectwo', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' }
   ],
   biznes_ecommerce: [
-    { name:'Regulamin sklepu internetowego', desc:'Zgodny z prawem konsumenckim',  href:'regulamin-sklepu.html', bg:'#eff6ff', stroke:'#2563eb', icon:'shop' },
-    { name:'Polityka prywatności RODO',      desc:'Dokumentacja ochrony danych',   href:'polityka-prywatnosci.html',      bg:'#ecfdf5', stroke:'#059669', icon:'shield' },
-    { name:'Polityka zwrotów',               desc:'Procedura reklamacji i zwrotów', href:'zwroty-reklamacje.html',    bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' }
+    { name:'Regulamin sklepu internetowego', desc:'Zgodny z prawem konsumenckim',  href:'generator-regulaminu-sklepu.html', bg:'#eff6ff', stroke:'#2563eb', icon:'shop' },
+    { name:'Polityka prywatności RODO',      desc:'Dokumentacja ochrony danych',   href:'generator-polityki-prywatnosci.html',      bg:'#ecfdf5', stroke:'#059669', icon:'shield' },
+    { name:'Polityka zwrotów',               desc:'Procedura reklamacji i zwrotów', href:'generator-polityki-zwrotow.html',    bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' }
   ],
   biznes_hr: [
     { name:'Umowa o pracę',           desc:'Pełna umowa zgodna z Kodeksem pracy', href:'hr.html?doc=uop',    bg:'#f0fdf4', stroke:'#16a34a', icon:'badge' },
