@@ -682,153 +682,68 @@ function attachNIPListeners(){
 
 <script src="plan-guard.js"></script>
 
+<!-- SEO SECTION -->
 <style>
-.seo-section{max-width:800px;margin:60px auto 0;padding:0 2rem;}
-.seo-section+.seo-section{margin-top:48px;}
-.seo-section h2{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;color:var(--ink);margin-bottom:10px;}
-.seo-section>p{font-size:.9rem;color:var(--ink2);line-height:1.75;margin-bottom:16px;}
+.seo-section{max-width:760px;margin:60px auto 40px;padding:0 2rem;}
+.seo-section h2{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;color:var(--ink);margin-bottom:8px;}
+.seo-section>p{font-size:.9rem;color:var(--ink2);line-height:1.7;margin-bottom:28px;}
 .seo-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:12px;}
 @media(max-width:640px){.seo-steps{grid-template-columns:1fr;}}
 .seo-step{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:22px 20px;}
 .seo-step-num{font-size:.7rem;font-weight:800;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;margin-bottom:8px;}
 .seo-step h3{font-size:.95rem;font-weight:800;color:var(--ink);margin-bottom:6px;}
 .seo-step p{font-size:.83rem;color:var(--ink2);line-height:1.6;margin:0;}
-.seo-list{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:8px;}
-.seo-list li{font-size:.88rem;color:var(--ink2);line-height:1.65;padding-left:1.4em;position:relative;}
-.seo-list li::before{content:"✓";position:absolute;left:0;color:#16a34a;font-weight:700;font-size:.82rem;}
-.seo-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-@media(max-width:600px){.seo-info-grid{grid-template-columns:1fr;}}
-.seo-info-card{background:var(--surface);border-radius:14px;padding:18px 20px;}
-.seo-info-card h3{font-size:.88rem;font-weight:800;color:var(--ink);margin-bottom:6px;}
-.seo-info-card p{font-size:.82rem;color:var(--ink2);line-height:1.6;margin:0;}
 .seo-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;}
 .seo-link{font-size:.82rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:7px 16px;text-decoration:none;transition:border-color .15s;}
 .seo-link:hover{border-color:#999;}
-.faq-section{max-width:800px;margin:56px auto 80px;padding:0 2rem;}
-.faq-section-title{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
-.faq-section-sub{font-size:.9rem;color:var(--ink2);margin-bottom:24px;}
-.faq-item{border-bottom:1px solid var(--border);}
-.faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:'Figtree',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
-.faq-chevron{font-size:.75rem;flex-shrink:0;transition:transform .2s;display:inline-block;}
-.faq-a{display:none;padding:0 0 20px;font-size:.9rem;color:var(--ink2);line-height:1.75;}
-.faq-item.open .faq-chevron{transform:rotate(180deg);}
-.faq-item.open .faq-a{display:block;}
 </style>
-
 <section class="seo-section">
-  <h2>Jak stworzyć regulamin sklepu internetowego? — 3 kroki</h2>
-  <p>Regulamin sklepu internetowego to obowiązkowy dokument prawny. Musi być dostępny przed złożeniem zamówienia i zawierać wszystkie elementy wymagane ustawą o prawach konsumenta i dyrektywą Omnibus. Nasz generator tworzy go automatycznie na podstawie danych Twojego sklepu.</p>
+  <h2>Jak stworzyć regulamin sklepu internetowego?</h2>
+  <p>Prawidłowy regulamin sklepu internetowego musi spełniać wymogi ustawy o prawach konsumenta i dyrektywy Omnibus. Generator AI wypełni wszystkie wymagane sekcje automatycznie.</p>
   <div class="seo-steps">
-    <div class="seo-step"><div class="seo-step-num">Krok 1</div><h3>Podaj dane firmy</h3><p>Wpisz NIP — generator automatycznie pobierze nazwę i adres firmy z bazy GUS. Dodaj email do reklamacji i godziny obsługi klienta.</p></div>
-    <div class="seo-step"><div class="seo-step-num">Krok 2</div><h3>Skonfiguruj sklep</h3><p>Zaznacz metody płatności (BLIK, karta, PayU), firmy kurierskie, zasady zwrotów i czy sprzedajesz produkty cyfrowe lub SaaS.</p></div>
-    <div class="seo-step"><div class="seo-step-num">Krok 3</div><h3>Pobierz PDF lub skopiuj</h3><p>AI generuje kompletny regulamin — gotowy do wklejenia na stronę sklepu lub publikacji jako osobna podstrona /regulamin.</p></div>
+    <div class="seo-step"><div class="seo-step-num">Krok 1</div><h3>Uzupełnij dane firmy</h3><p>Podaj nazwę sklepu, NIP, adres i email do reklamacji. Generator automatycznie uzupełni dane z NIP.</p></div>
+    <div class="seo-step"><div class="seo-step-num">Krok 2</div><h3>Skonfiguruj sklep</h3><p>Wskaż metody płatności, firmy kurierskie, zasady zwrotów i czy sprzedajesz produkty cyfrowe.</p></div>
+    <div class="seo-step"><div class="seo-step-num">Krok 3</div><h3>Pobierz gotowy regulamin</h3><p>AI generuje kompletny regulamin zgodny z dyrektywą Omnibus i polskim prawem — gotowy do wklejenia na stronę.</p></div>
   </div>
 </section>
-
 <section class="seo-section">
-  <h2>Co musi zawierać regulamin sklepu internetowego w 2026 roku?</h2>
-  <p>Zgodnie z ustawą z dnia 30 maja 2014 r. o prawach konsumenta oraz dyrektywą Omnibus (implementowaną w Polsce od 1 stycznia 2023 r.) regulamin sklepu internetowego musi zawierać:</p>
-  <ul class="seo-list">
-    <li><strong>Dane sprzedawcy</strong> — pełna nazwa firmy, adres siedziby, NIP, REGON, adres email i numer telefonu (lub formularz kontaktowy)</li>
-    <li><strong>Opis procesu składania zamówień</strong> — jak dodać produkt do koszyka, jak złożyć zamówienie, kiedy umowa jest zawarta</li>
-    <li><strong>Metody płatności i dostawy</strong> — lista wszystkich dostępnych form płatności, operatorzy, terminy i koszty dostawy</li>
-    <li><strong>Prawo odstąpienia od umowy</strong> — 14-dniowe prawo zwrotu (art. 27 UPK), wzór formularza odstąpienia, wyjątki od prawa zwrotu</li>
-    <li><strong>Procedura reklamacyjna</strong> — podstawa (rękojmia 2 lata, art. 556 KC), termin rozpatrzenia 14 dni, sposób składania reklamacji</li>
-    <li><strong>Klauzula dyrektywy Omnibus</strong> — informacja o najniższej cenie produktu z ostatnich 30 dni przy każdej obniżce ceny</li>
-    <li><strong>Pozasądowe rozwiązywanie sporów</strong> — informacja o platformie ODR (ec.europa.eu/consumers/odr) i Inspekcji Handlowej</li>
-    <li><strong>Ochrona danych osobowych</strong> — odwołanie do polityki prywatności, cele przetwarzania danych przy zakupie</li>
-    <li><strong>Postanowienia dotyczące konta użytkownika</strong> — rejestracja, logowanie, usunięcie konta (jeśli sklep ma rejestrację)</li>
-    <li><strong>Prawo właściwe i sąd właściwości</strong> — prawo polskie, sąd właściwy dla siedziby sprzedawcy</li>
-  </ul>
-</section>
-
-<section class="seo-section">
-  <h2>Dyrektywa Omnibus — co musisz zmienić w regulaminie sklepu?</h2>
-  <p>Od 1 stycznia 2023 r. obowiązuje w Polsce dyrektywa Omnibus (ustawa z dnia 4 listopada 2022 r. o zmianie ustawy o prawach konsumenta). Nakłada ona nowe obowiązki na sklepy internetowe:</p>
-  <div class="seo-info-grid">
-    <div class="seo-info-card">
-      <h3>📉 Historia cen przy promocjach</h3>
-      <p>Przy każdej obniżce ceny sklep musi podać <strong>najniższą cenę z ostatnich 30 dni</strong> przed obniżką. Dotyczy to przekreślonych cen, promocji i wyprzedaży. Kara: do 10% obrotu.</p>
-    </div>
-    <div class="seo-info-card">
-      <h3>⭐ Weryfikacja opinii klientów</h3>
-      <p>Sklep musi informować, czy <strong>opinie o produktach są weryfikowane</strong> — czy tylko kupujący mogą wystawiać oceny. Publikowanie fałszywych recenzji jest zakazane.</p>
-    </div>
-    <div class="seo-info-card">
-      <h3>🤖 Produkty i usługi cyfrowe</h3>
-      <p>Nowe przepisy rozszerzają ochronę konsumenta na <strong>treści cyfrowe i usługi cyfrowe</strong> (SaaS, platformy, subskrypcje) — obowiązuje rękojmia 2 lata.</p>
-    </div>
-    <div class="seo-info-card">
-      <h3>📋 Indywidualne dostosowanie cen</h3>
-      <p>Jeśli sklep stosuje <strong>profilowanie cenowe</strong> (różne ceny dla różnych użytkowników), musi o tym poinformować konsumenta przed zakupem.</p>
-    </div>
-  </div>
-</section>
-
-<section class="seo-section">
-  <h2>Powiązane dokumenty dla sklepu internetowego</h2>
+  <h2>Powiązane dokumenty e-commerce</h2>
   <div class="seo-links">
     <a href="polityka-prywatnosci.html" class="seo-link">🔒 Polityka Prywatności RODO</a>
-    <a href="zwroty-reklamacje.html" class="seo-link">↩️ Polityka Zwrotów i Reklamacji</a>
-    <a href="faktura.html" class="seo-link">🧾 Generator Faktur VAT</a>
+    <a href="zwroty-reklamacje.html" class="seo-link">↩️ Zwroty &amp; Reklamacje</a>
     <a href="hr.html" class="seo-link">📄 Umowy B2B i NDA</a>
-    <a href="analiza-swot.html" class="seo-link">📊 Analiza SWOT firmy</a>
-    <a href="artykuly.html" class="seo-link">📚 Artykuły prawne dla firm</a>
+    <a href="faktura.html" class="seo-link">🧾 Generator faktur VAT</a>
   </div>
 </section>
 
+<!-- FAQ -->
 <section class="faq-section">
   <h2 class="faq-section-title">Najczęstsze pytania o regulamin sklepu internetowego</h2>
-  <p class="faq-section-sub">Odpowiedzi na najważniejsze pytania prawne dla właścicieli sklepów online w Polsce</p>
+  <p class="faq-section-sub">Odpowiedzi na najważniejsze pytania dla właścicieli sklepów online i e-commerce</p>
 
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">Co musi zawierać regulamin sklepu internetowego? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Regulamin sklepu internetowego musi zawierać: <strong>dane sprzedawcy</strong> (firma, NIP, adres, email), opis procesu składania zamówień, dostępne metody płatności i dostawy, terminy realizacji zamówień, <strong>14-dniowe prawo odstąpienia od umowy</strong> (art. 27 UPK) z wzorem formularza, procedurę reklamacyjną z terminami, informację o platformie ODR oraz klauzulę dyrektywy Omnibus o historii cen. Regulamin musi być dostępny w sposób łatwy i trwały przed złożeniem zamówienia.</div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Czy regulamin sklepu internetowego jest obowiązkowy? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Tak — regulamin sklepu internetowego jest <strong>obowiązkowy</strong> na mocy ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną. Sprzedawca zobowiązany jest udostępnić regulamin świadczenia usług drogą elektroniczną przed zawarciem umowy. Brak regulaminu lub nieczytelny regulamin naraża sprzedawcę na odpowiedzialność prawną i kary UOKiK.</div>
+    <div class="faq-a">Regulamin sklepu internetowego musi zawierać: <strong>dane sprzedawcy</strong> (firma, NIP, adres, email), opis procesu zamówień, metody płatności i dostawy, terminy realizacji, <strong>14-dniowe prawo odstąpienia od umowy</strong>, procedurę reklamacyjną z terminami, informację o pozasądowym rozwiązywaniu sporów (ODR) oraz klauzule dyrektywy Omnibus dotyczące historii cen.</div>
   </div>
 
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">Czym jest dyrektywa Omnibus i jak wpływa na regulamin sklepu? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Dyrektywa Omnibus (implementowana w Polsce od 1 stycznia 2023 r.) nakłada na sklepy obowiązek informowania o <strong>najniższej cenie produktu z ostatnich 30 dni</strong> przy każdej promocji i obniżce. Regulamin musi zawierać klauzulę opisującą politykę cenową. Dodatkowo Omnibus reguluje weryfikację opinii klientów i ochronę przy zakupie treści cyfrowych. Naruszenie przepisów grozi karą do 10% rocznego obrotu.</div>
+    <div class="faq-a">Dyrektywa Omnibus (implementowana w Polsce od 2023 r.) nakłada na sklepy obowiązek informowania o <strong>najniższej cenie produktu z ostatnich 30 dni</strong> przy każdej promocji. Regulamin sklepu musi zawierać odpowiednią klauzulę opisującą tę politykę cenową. Naruszenie przepisów grozi karą do 10% obrotu.</div>
   </div>
 
   <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Ile dni ma konsument na zwrot towaru kupionego online? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Konsument kupujący w sklepie internetowym ma <strong>14 dni na odstąpienie od umowy</strong> bez podania przyczyny — licząc od dnia odebrania towaru (art. 27 ustawy o prawach konsumenta). Sprzedawca ma obowiązek zwrócić pieniądze w ciągu 14 dni. Sklep może dobrowolnie wydłużyć ten termin do 30 lub 60 dni. Prawo zwrotu nie obejmuje towarów spersonalizowanych, cyfrowych po ich udostępnieniu ani produktów szybko psujących się.</div>
+    <button class="faq-q" onclick="toggleFaq(this)">Ile dni ma konsument na zwrot towaru w sklepie internetowym? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Konsument kupujący online ma <strong>14 dni na odstąpienie od umowy</strong> bez podania przyczyny — licząc od dnia odebrania towaru (art. 27 ustawy o prawach konsumenta). Sprzedawca ma obowiązek zwrócić pieniądze w ciągu 14 dni od otrzymania oświadczenia o odstąpieniu. Prawo zwrotu nie dotyczy towarów spersonalizowanych, treści cyfrowych po ich udostępnieniu ani produktów szybko psujących się.</div>
   </div>
 
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">Jak długo obowiązuje rękojmia w sklepie internetowym? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Rękojmia za wady fizyczne i prawne towaru obowiązuje przez <strong>2 lata od daty wydania produktu</strong> (art. 556 Kodeksu Cywilnego). W ciągu pierwszego roku od zakupu przyjmuje się domniemanie, że wada istniała w chwili wydania towaru. Konsument może żądać naprawy, wymiany, obniżenia ceny lub odstąpienia od umowy. Sprzedawca musi ustosunkować się do reklamacji w ciągu 14 dni — brak odpowiedzi oznacza uznanie reklamacji.</div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Czy regulamin sklepu a polityka prywatności to to samo? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Nie — to dwa odrębne dokumenty. <strong>Regulamin sklepu</strong> reguluje zasady zawierania umów, składania zamówień, płatności, dostawy, zwrotów i reklamacji. <strong>Polityka prywatności</strong> dotyczy wyłącznie przetwarzania danych osobowych (RODO) — celów przetwarzania, podstaw prawnych, praw użytkowników i plików cookies. Oba dokumenty są obowiązkowe dla sklepu internetowego i muszą być dostępne na stronie przed zakupem.</div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Czy regulamin sklepu musi być napisany przez prawnika? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Prawo nie wymaga, aby regulamin sklepu był sporządzony przez prawnika — musi jednak spełniać wymogi ustawowe. Generator DokumoFlow tworzy regulamin na podstawie aktualnych przepisów, dostosowany do specyfiki Twojego sklepu. <strong>Zalecamy weryfikację z doradcą prawnym</strong> w przypadku sklepów o specyficznej działalności (produkty regulowane, sprzedaż zagraniczna, subskrypcje).</div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Co to jest platforma ODR i czy muszę ją umieścić w regulaminie? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Platforma ODR (Online Dispute Resolution) to europejski system pozasądowego rozwiązywania sporów konsumenckich dostępny pod adresem ec.europa.eu/consumers/odr. <strong>Każdy sklep internetowy sprzedający konsumentom z UE ma obowiązek</strong> umieścić w regulaminie link do platformy ODR oraz adres email do kontaktu w sprawie sporów (art. 14 rozporządzenia ODR). Brak tej informacji może być podstawą do reklamacji ze strony UOKiK.</div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(this)">Jak często trzeba aktualizować regulamin sklepu? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">Regulamin sklepu należy aktualizować <strong>przy każdej zmianie przepisów prawa</strong> dotyczących e-commerce oraz przy każdej istotnej zmianie w działaniu sklepu (nowe metody płatności, nowi kurierzy, zmiana zasad zwrotów). O zmianie regulaminu należy poinformować zarejestrowanych użytkowników z odpowiednim wyprzedzeniem (minimum 14 dni) — zmieniony regulamin nie obowiązuje dla zamówień złożonych przed zmianą.</div>
+    <div class="faq-a">Od 2023 roku rękojmia za wady fizyczne i prawne towaru obowiązuje przez <strong>2 lata od daty wydania produktu</strong>. Konsument może żądać naprawy, wymiany, obniżenia ceny lub odstąpienia od umowy. W ciągu pierwszego roku od zakupu przyjmuje się domniemanie, że wada istniała w chwili wydania towaru.</div>
   </div>
 
   <div class="faq-item" style="border-bottom:none;">
-    <button class="faq-q" onclick="toggleFaq(this)">Jakie kary grożą za brak lub nieprawidłowy regulamin sklepu? <span class="faq-chevron">▼</span></button>
-    <div class="faq-a">UOKiK może nałożyć karę do <strong>10% rocznego obrotu firmy</strong> za stosowanie niedozwolonych klauzul w regulaminie lub naruszenie przepisów o prawach konsumenta. Brak informacji o prawie odstąpienia przedłuża termin zwrotu do 12 miesięcy. Niezamieszczenie linku do ODR i brak wymaganych informacji może skutkować postępowaniem UOKiK. Sądy mogą uznać niekorzystne dla konsumenta klauzule regulaminowe za bezskuteczne z mocy prawa.</div>
+    <button class="faq-q" onclick="toggleFaq(this)">Czy regulamin sklepu musi być napisany przez prawnika? <span class="faq-chevron">▼</span></button>
+    <div class="faq-a">Prawo nie wymaga, aby regulamin sklepu był tworzony przez prawnika. Musi jednak zawierać wszystkie wymagane prawnie elementy i być zgodny z aktualnymi przepisami. Generator DokumoFlow tworzy regulamin dostosowany do specyfiki Twojego sklepu na podstawie aktualnych przepisów — <strong>zalecamy jednak weryfikację z doradcą prawnym</strong> przed wdrożeniem.</div>
   </div>
 </section>
 </main>
