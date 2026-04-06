@@ -32,8 +32,7 @@ var _wmTools = {
   biznes_faktury: [
     { name:'Faktura VAT',      desc:'Generator faktur z pozycjami i VAT',   href:'faktura.html?type=vat',        bg:'#fff7ed', stroke:'#ea580c', icon:'doc' },
     { name:'Faktura proforma', desc:'Wstępna faktura przed realizacją',     href:'faktura.html?type=proforma',   bg:'#eff6ff', stroke:'#2563eb', icon:'doc' },
-    { name:'Faktura zaliczkowa', desc:'Faktura na podstawie wpłaconej zaliczki', href:'faktura.html?type=zaliczkowa', bg:'#f0fdf4', stroke:'#16a34a', icon:'doc' },
-    { name:'Umowa sprzedaży',  desc:'Sprzedaż rzeczy z rękojmią i PDF',    href:'generator-umowy-sprzedazy.html', bg:'#fff7ed', stroke:'#ea580c', icon:'doc' }
+    { name:'Faktura zaliczkowa', desc:'Faktura na podstawie wpłaconej zaliczki', href:'faktura.html?type=zaliczkowa', bg:'#f0fdf4', stroke:'#16a34a', icon:'doc' }
   ]
 };
 
