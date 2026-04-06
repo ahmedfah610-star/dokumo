@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Profil użytkownika — tylko właściciel może czytać i zapisywać
+    match /users/{userId}/profile/{document} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Wszystkie pozostałe kolekcje (documents, subscription, drafts, payments,
+    // pending_subs) są zarządzane wyłącznie przez Admin SDK po stronie serwera
+    // i nie wymagają dostępu z przeglądarki.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
