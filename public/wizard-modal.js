@@ -17,6 +17,7 @@ var _wmTools = {
   biznes_hr: [
     { name:'Umowa o pracę',           desc:'Pełna umowa zgodna z Kodeksem pracy', href:'generator-umowy-o-prace.html',    bg:'#f0fdf4', stroke:'#16a34a', icon:'badge' },
     { name:'Umowa B2B',               desc:'Umowa współpracy między firmami',     href:'generator-umowy-b2b.html',    bg:'#fef9c3', stroke:'#ca8a04', icon:'handshake' },
+    { name:'Umowa sprzedaży',         desc:'Sprzedaż rzeczy z rękojmią i PDF',   href:'generator-umowy-sprzedazy.html', bg:'#fff7ed', stroke:'#ea580c', icon:'doc' },
     { name:'Umowa NDA (poufność)',    desc:'Ochrona informacji poufnych',         href:'generator-nda.html',    bg:'#fdf4ff', stroke:'#a855f7', icon:'shield' },
     { name:'Umowa o dzieło',          desc:'Jednorazowe zlecenie twórcze',        href:'generator-umowy-o-dzielo.html', bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' },
     { name:'Umowa zlecenie',          desc:'Współpraca na zasadach zlecenia',     href:'generator-umowy-zlecenie.html', bg:'#fef3c7', stroke:'#d97706', icon:'doc' }
