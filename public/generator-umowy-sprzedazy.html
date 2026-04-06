@@ -619,7 +619,7 @@ async function doGenerate(){
     var res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr',docCatLabel:'HR',docIcon:form.icon})
+      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'sprzedaz',docCatLabel:'Sprzedaż',docIcon:form.icon})
     });
     var data=await res.json();
     genText=data.text||data.result||'Błąd generowania';
@@ -717,6 +717,8 @@ selectDoc('sprzedaz');
 .seo-link:hover{border-color:#999;}
 </style>
 <section class="seo-section">
+  <h1 style="font-size:1.7rem;font-weight:800;letter-spacing:-.04em;color:var(--ink);margin-bottom:6px;">Generator Umowy Sprzedaży 2026 — Wzór PDF</h1>
+  <p style="font-size:.88rem;color:var(--ink2);line-height:1.7;margin-bottom:32px;">Darmowy generator umowy sprzedaży online zgodny z Kodeksem cywilnym (art. 535 KC). Wygeneruj kompletną umowę z <strong>rękojmią za wady</strong> (art. 556 KC), <strong>zastrzeżeniem własności</strong> (art. 589 KC) i oświadczeniem o braku obciążeń — gotową do podpisania w 60 sekund. Działa dla firm i osób prywatnych: sprzedaż elektroniki, samochodu, mebli, sprzętu i innych rzeczy ruchomych.</p>
   <h2>Jak napisać umowę sprzedaży krok po kroku?</h2>
   <p>Umowa sprzedaży (art. 535 KC) przenosi własność rzeczy na kupującego w zamian za zapłatę ceny. Generator Dokumo tworzy kompletną umowę z rękojmią, zastrzeżeniem własności i oświadczeniem o braku obciążeń.</p>
   <div class="seo-steps">
