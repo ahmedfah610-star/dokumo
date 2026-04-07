@@ -367,7 +367,8 @@ window.wmRunMatch = async function() {
   if (urlVal && jobText.length < 20) {
     _wmMatch.state = 'loading'; _wmRenderMatch();
     try {
-      var fr = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url: urlVal }) });
+      var _tokUrl = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
+      var fr = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tokUrl}, body: JSON.stringify({ url: urlVal }) });
       var fd = await fr.json();
       if (!fr.ok || !fd.text) throw new Error(fd.error || 'Błąd');
       jobText = fd.text;
@@ -389,7 +390,8 @@ window.wmRunMatch = async function() {
     'CV KANDYDATA:\n' + cvText.substring(0, 4000) + '\n\nOGŁOSZENIE:\n' + jobText.substring(0, 4000);
 
   try {
-    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt: prompt }) });
+    var _tokWm = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
+    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tokWm}, body: JSON.stringify({ prompt: prompt }) });
     if (!res.ok) throw new Error('Błąd API: ' + res.status);
     var data = await res.json();
     var raw = (data.text || data.result || '').replace(/```json|```/g,'').trim();

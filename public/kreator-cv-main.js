@@ -68,9 +68,10 @@ Zwróć TYLKO surowy obiekt JSON (bez markdown, bez backticks, bez wyjaśnień):
 TEKST CV:
 ${fullText.substring(0, 8000)}`;
 
+    const _tok71 = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
     const response = await fetch('/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok71 },
       body: JSON.stringify({ prompt })
     });
 
@@ -1594,9 +1595,10 @@ async function useAISummary() {
     var langNames = {pl:'polskim',en:'English',de:'Deutsch',uk:'українською',es:'español',cs:'češtině',nl:'Nederlands'};
     var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
     var aiPrompt = 'Przepisz poniższy profil osobisty z CV tak, żeby brzmiał profesjonalnie i naturalnie. WAŻNE: zachowaj DOKŁADNIE te same informacje co w oryginale — nie dodawaj nowych faktów, nie usuwaj żadnych informacji, nie zmieniaj stanowisk ani doświadczeń. Tylko popraw styl, płynność i profesjonalizm. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst, bez komentarzy:\n\n' + text;
+    var _tok1597 = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
     var res = await fetch('/api/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok1597 },
       body: JSON.stringify({ prompt: aiPrompt })
     });
     var data = await res.json();
@@ -1639,7 +1641,8 @@ async function useAIDuties(i) {
     var langNames = {pl:'polskim',en:'English',de:'Deutsch',uk:'українською',es:'español',cs:'češtině',nl:'Nederlands'};
     var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
     var prompt = 'Przepisz poniższy opis obowiązków z CV tak, żeby brzmiał profesjonalnie i naturalnie. WAŻNE: zachowaj DOKŁADNIE te same informacje — nie dodawaj nowych obowiązków, nie usuwaj żadnych. Bez punktowania, bez list. Tylko ciągły, profesjonalny tekst. Bez żadnych komentarzy ani wstępów. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst:\n\n' + context;
-    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ prompt:prompt }) });
+    var _tok1642 = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
+    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok1642}, body:JSON.stringify({ prompt:prompt }) });
     var data = await res.json();
     var suggestion = (data.text || '').trim();
     if (suggestion) {
