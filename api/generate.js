@@ -104,6 +104,12 @@ export default async function handler(req, res) {
   // ── Tryb pobierania URL (fetch-url wbudowany) ──
   if (url) {
     try { new URL(url); } catch { return res.status(400).json({ error: 'Nieprawidłowy URL' }); }
+    // Blokuj SSRF — prywatne sieci, metadata AWS/GCP/Azure
+    const parsedUrl = new URL(url);
+    if (!/^https?:$/.test(parsedUrl.protocol)) return res.status(400).json({ error: 'Niedozwolony protokół URL' });
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const BLOCKED = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|::1|0\.0\.0\.0|metadata\.)/;
+    if (BLOCKED.test(hostname)) return res.status(400).json({ error: 'Niedozwolony adres URL' });
     try {
       const r = await fetch(url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
@@ -125,6 +131,7 @@ export default async function handler(req, res) {
   }
 
   if (!prompt) return res.status(400).json({ error: 'Brak zapytania' });
+  if (typeof prompt !== 'string' || prompt.length > 20000) return res.status(400).json({ error: 'Zapytanie zbyt długie' });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' });
