@@ -47,10 +47,12 @@ async function checkRateLimit(uid) {
   return snap.data().count;
 }
 
-async function recordUsage(uid) {
-  await db.collection('users').doc(uid)
+// Zapisuje usage PRZED generowaniem i zwraca funkcję rollback
+async function reserveUsage(uid) {
+  const ref = await db.collection('users').doc(uid)
     .collection('usage')
     .add({ ts: Timestamp.now() });
+  return () => ref.delete().catch(() => {});
 }
 
 export default async function handler(req, res) {
@@ -71,13 +73,17 @@ export default async function handler(req, res) {
   }
 
   // ── Rate limiting ──
+  let rollbackUsage = null;
   try {
     const count = await checkRateLimit(uid);
     if (count >= RATE_LIMIT) {
       return res.status(429).json({ error: 'Przekroczono limit generowania dokumentów (25/godz.). Spróbuj za chwilę.' });
     }
+    // Rezerwuj slot PRZED generowaniem — blokuje race condition
+    rollbackUsage = await reserveUsage(uid);
   } catch(e) {
     console.error('Rate limit check error:', e.message);
+    return res.status(503).json({ error: 'Chwilowy problem z serwerem. Spróbuj ponownie.' });
   }
 
   // ── Walidacja kategorii ──
@@ -150,12 +156,15 @@ export default async function handler(req, res) {
         signal: AbortSignal.timeout(57000) }
     );
     const data = await r.json();
-    if (data.error) return res.status(500).json({ error: data.error.message });
+    if (data.error) {
+      if (rollbackUsage) rollbackUsage();
+      return res.status(500).json({ error: data.error.message });
+    }
     const text = data.content?.[0]?.text || '';
-    if (!text) return res.status(500).json({ error: 'Pusta odpowiedź AI' });
-
-    // Zapisz użycie do rate limitera
-    recordUsage(uid).catch(e => console.error('Usage record error:', e.message));
+    if (!text) {
+      if (rollbackUsage) rollbackUsage();
+      return res.status(500).json({ error: 'Pusta odpowiedź AI' });
+    }
 
     // Zapisz dokument do Firestore
     try {
@@ -178,6 +187,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ text });
   } catch(e) {
+    if (rollbackUsage) rollbackUsage();
     const msg = e.name === 'TimeoutError' || e.message?.includes('aborted')
       ? 'Generowanie trwa zbyt długo — spróbuj ponownie za chwilę.'
       : e.message;
