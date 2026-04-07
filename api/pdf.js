@@ -1,6 +1,6 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -15,9 +15,20 @@ async function hasActiveSubscription(uid) {
   return exp && exp > new Date();
 }
 
+// Rate limit: max 20 PDF na godzinę per użytkownik
+const PDF_RATE_LIMIT = 20;
+const PDF_WINDOW_MS = 60 * 60 * 1000;
+
+async function checkPdfRateLimit(uid) {
+  const windowStart = Timestamp.fromMillis(Date.now() - PDF_WINDOW_MS);
+  const snap = await db.collection('users').doc(uid).collection('pdfUsage')
+    .where('ts', '>=', windowStart).count().get();
+  return snap.data().count;
+}
+
 export const config = {
   api: {
-    bodyParser: { sizeLimit: '10mb' },
+    bodyParser: { sizeLimit: '2mb' },  // zredukowany z 10mb — CV nie potrzebuje więcej
     responseLimit: '10mb',
   },
 };
@@ -38,8 +49,19 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
   }
 
+  // Rate limit PDF
+  try {
+    const count = await checkPdfRateLimit(uid);
+    if (count >= PDF_RATE_LIMIT) return res.status(429).json({ error: 'Przekroczono limit PDF (20/godz.). Spróbuj za chwilę.' });
+    await db.collection('users').doc(uid).collection('pdfUsage').add({ ts: Timestamp.now() });
+  } catch(e) {
+    console.error('PDF rate limit error:', e.message);
+    return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+  }
+
   const { html, filename } = req.body || {};
   if (!html) return res.status(400).json({ error: 'Brak HTML' });
+  if (typeof html !== 'string' || html.length > 1500000) return res.status(400).json({ error: 'HTML zbyt duży' });
 
   const pdfServiceUrl = process.env.PDF_SERVICE_URL;
   const pdfApiKey = process.env.PDF_API_KEY;

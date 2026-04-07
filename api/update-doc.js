@@ -17,6 +17,12 @@ export default async function handler(req, res) {
   const { docId, text, name, covDataJson, fakDataJson } = req.body;
   if (!docId) return res.status(400).json({ error: 'Brak docId' });
 
+  // Limity rozmiaru
+  const MAX = 500000;
+  if (typeof text === 'string' && text.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+  if (typeof covDataJson === 'string' && covDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+  if (typeof fakDataJson === 'string' && fakDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+
   try {
     const { uid } = await auth.verifyIdToken(token);
     const ref = db.collection('users').doc(uid).collection('documents').doc(docId);
