@@ -15,6 +15,7 @@
     { "source": "/kalkulator.html", "destination": "/kalkulator-wynagrodzen.html", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/api/generate-free", "destination": "/api/generate" },
     { "source": "/api/check-sub", "destination": "/api/sub" },
     { "source": "/api/validate-code", "destination": "/api/nip-lookup" },
     { "source": "/api/create-checkout", "destination": "/api/sub" },

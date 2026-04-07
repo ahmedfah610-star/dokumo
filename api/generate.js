@@ -8,12 +8,10 @@ if (!getApps().length) {
 const db = getFirestore();
 const auth = getAuth();
 
-// Dozwolone kategorie dokumentów — blokuje wywołania spoza aplikacji
-const ALLOWED_CATS = new Set([
-  'hr','kariera','biznes','najem','sprzedaz','inne'
-]);
+// Dozwolone kategorie dokumentów
+const ALLOWED_CATS = new Set(['hr','kariera','biznes','najem','sprzedaz','inne']);
 
-// Wymagane plany per kategoria (serwer-side — nie można ominąć)
+// Wymagane plany per kategoria (serwer-side)
 const CAT_REQUIRED_PLANS = {
   hr:       ['kariera','biznes','promax'],
   kariera:  ['kariera','biznes','promax','start'],
@@ -22,6 +20,26 @@ const CAT_REQUIRED_PLANS = {
   sprzedaz: ['kariera','biznes','promax'],
   inne:     ['kariera','biznes','promax'],
 };
+
+// Darmowy tryb — limity per IP per godzinę
+const FREE_LIMITS = { cv: 10, letter: 5 };
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+
+function getIp(req) {
+  const fwd = (req.headers['x-forwarded-for'] || '').split(',');
+  return (req.headers['x-real-ip'] || fwd[fwd.length - 1] || req.socket?.remoteAddress || 'unknown')
+    .trim().replace(/[^a-zA-Z0-9._:-]/g, '_').substring(0, 64);
+}
+
+async function checkFreeLimit(ip, type) {
+  const max = FREE_LIMITS[type];
+  const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
+  const count = (await db.collection('freeUsage').doc(type).collection(ip)
+    .where('ts', '>=', windowStart).count().get()).data().count;
+  if (count >= max) return false;
+  await db.collection('freeUsage').doc(type).collection(ip).add({ ts: Timestamp.now() });
+  return true;
+}
 
 async function checkSubscription(uid) {
   const snap = await db.collection('users').doc(uid)
@@ -33,32 +51,59 @@ async function checkSubscription(uid) {
   return data;
 }
 
-// Limit: max 25 requestów na godzinę na użytkownika
 const RATE_LIMIT = 25;
-const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 godzina
 
 async function checkRateLimit(uid) {
   const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
   const snap = await db.collection('users').doc(uid)
-    .collection('usage')
-    .where('ts', '>=', windowStart)
-    .count()
-    .get();
+    .collection('usage').where('ts', '>=', windowStart).count().get();
   return snap.data().count;
 }
 
-// Zapisuje usage PRZED generowaniem i zwraca funkcję rollback
 async function reserveUsage(uid) {
-  const ref = await db.collection('users').doc(uid)
-    .collection('usage')
-    .add({ ts: Timestamp.now() });
+  const ref = await db.collection('users').doc(uid).collection('usage').add({ ts: Timestamp.now() });
   return () => ref.delete().catch(() => {});
 }
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel } = req.body;
+  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType } = req.body;
+
+  // ── Tryb darmowy (generate-free) — bez subskrypcji, limit IP ──
+  if (freeType === 'cv' || freeType === 'letter') {
+    const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
+    if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
+    try { await auth.verifyIdToken(token); } catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
+    if (!prompt || typeof prompt !== 'string' || prompt.length > 15000)
+      return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
+    const ip = getIp(req);
+    try {
+      const ok = await checkFreeLimit(ip, freeType);
+      if (!ok) return res.status(429).json({ error: 'limit_reached', type: freeType, max: FREE_LIMITS[freeType] });
+    } catch(e) {
+      return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+    }
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'Brak klucza API' });
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000,
+          system: 'Piszesz wyłącznie po polsku. Zero markdown, zero gwiazdek, zero emoji.',
+          messages: [{ role: 'user', content: prompt }] }),
+        signal: AbortSignal.timeout(30000)
+      });
+      const data = await r.json();
+      if (data.error) return res.status(500).json({ error: data.error.message });
+      const text = data.content?.[0]?.text || '';
+      if (!text) return res.status(500).json({ error: 'Pusta odpowiedź AI' });
+      return res.status(200).json({ text });
+    } catch(e) {
+      return res.status(500).json({ error: e.name === 'TimeoutError' ? 'Przekroczono czas — spróbuj ponownie.' : e.message });
+    }
+  }
 
   // ── 1. Wymagane uwierzytelnienie ──
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
