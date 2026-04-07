@@ -1,3 +1,8 @@
+// Sanitizacja — ucieczka HTML żeby zapobiec XSS przy wstawianiu do innerHTML
+function _esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 var _wmTools = {
   kariera: [
     { name:'Kreator CV',                   desc:'10 profesjonalnych szablonów',        action:'cv-wizard',                       bg:'#111827', stroke:'#fff',     icon:'cv' },
@@ -259,10 +264,10 @@ function _wmRenderMatch() {
     if (missKw.length) kwHtml += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:4px;">Brakuje Ci</div>' + missKw.map(function(k){ return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:7px;height:7px;border-radius:50%;background:#ef4444;flex-shrink:0;"></div><span style="font-size:.75rem;color:#374151;">'+k+'</span></div>'; }).join('');
     if (matchKw.length) kwHtml += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:4px;margin-top:8px;">Masz już</div>' + matchKw.map(function(k){ return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div><span style="font-size:.75rem;color:#374151;">'+k+'</span></div>'; }).join('');
 
-    var sugHtml = sugs.map(function(sg){ return '<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 11px;background:#f9fafb;border-radius:10px;margin-bottom:6px;"><span style="font-size:.85rem;">✏️</span><div><div style="font-size:.72rem;font-weight:700;color:#374151;">'+sg.section+'</div><div style="font-size:.72rem;color:#6b7280;margin-top:2px;">'+sg.tip+'</div></div></div>'; }).join('');
+    var sugHtml = sugs.map(function(sg){ return '<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 11px;background:#f9fafb;border-radius:10px;margin-bottom:6px;"><span style="font-size:.85rem;">✏️</span><div><div style="font-size:.72rem;font-weight:700;color:#374151;">'+_esc(sg.section)+'</div><div style="font-size:.72rem;color:#6b7280;margin-top:2px;">'+_esc(sg.tip)+'</div></div></div>'; }).join('');
 
     c.innerHTML =
-      (r.overall_assessment ? '<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:11px;padding:10px 12px;font-size:.78rem;color:#166534;margin-bottom:12px;">💡 '+r.overall_assessment+'</div>' : '') +
+      (r.overall_assessment ? '<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:11px;padding:10px 12px;font-size:.78rem;color:#166534;margin-bottom:12px;">💡 '+_esc(r.overall_assessment)+'</div>' : '') +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
         '<div style="background:#f9fafb;border-radius:12px;padding:12px;">' +
           '<div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Dopasowanie</div>' +
@@ -279,7 +284,7 @@ function _wmRenderMatch() {
   }
 
   var cvUploadHtml = s.cvText
-    ? '<div style="display:flex;align-items:center;gap:7px;padding:9px 12px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style="font-size:.78rem;color:#065f46;font-weight:600;">'+s.cvName+'</span><button onclick="_wmMatchClearCv()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#9ca3af;font-size:.73rem;padding:0;">Usuń</button></div>'
+    ? '<div style="display:flex;align-items:center;gap:7px;padding:9px 12px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style="font-size:.78rem;color:#065f46;font-weight:600;">'+_esc(s.cvName)+'</span><button onclick="_wmMatchClearCv()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#9ca3af;font-size:.73rem;padding:0;">Usuń</button></div>'
     : '<button onclick="document.getElementById(\'wmMatchCvFile\').click()" style="display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;background:#fafafa;border:1.5px dashed #d1d5db;border-radius:10px;cursor:pointer;font-size:.8rem;color:#374151;font-weight:600;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Wgraj CV (PDF lub TXT)</button>' +
       '<input type="file" id="wmMatchCvFile" accept=".pdf,.txt" style="display:none" onchange="wmMatchLoadCv(this)">';
 
@@ -295,7 +300,7 @@ function _wmRenderMatch() {
     '</div>' +
     '<div style="margin-bottom:12px;">' +
       '<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Ogłoszenie o pracę</div>' +
-      '<input type="url" class="wm-wiz-input" id="wmMatchUrl" placeholder="Wklej link do ogłoszenia…" value="'+(s.matchUrl||'')+'">' +
+      '<input type="url" class="wm-wiz-input" id="wmMatchUrl" placeholder="Wklej link do ogłoszenia…" value="'+_esc(s.matchUrl||'')+'">' +
       fallbackHtml +
     '</div>' +
     '<button class="wm-wiz-next" id="wmMatchBtn" disabled onclick="wmRunMatch()">Analizuj dopasowanie <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>';

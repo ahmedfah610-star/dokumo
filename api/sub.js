@@ -121,14 +121,21 @@ export default async function handler(req, res) {
 
   if (action === 'use-download') {
     const ref = db.collection('users').doc(uid).collection('subscription').doc('current');
-    const snap = await ref.get();
-    if (!snap.exists) return res.status(403).json({ error: 'Brak subskrypcji' });
-    const data = snap.data();
-    if (data.plan !== 'start') return res.status(200).json({ ok: true }); // inne plany - bez limitu
-    const left = data.downloadsLeft ?? 0;
-    if (left <= 0) return res.status(403).json({ error: 'Pobranie już wykorzystane' });
-    await ref.update({ downloadsLeft: left - 1 });
-    return res.status(200).json({ ok: true, downloadsLeft: left - 1 });
+    try {
+      const result = await db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists) throw Object.assign(new Error('Brak subskrypcji'), { status: 403 });
+        const data = snap.data();
+        if (data.plan !== 'start') return { ok: true }; // inne plany - bez limitu
+        const left = data.downloadsLeft ?? 0;
+        if (left <= 0) throw Object.assign(new Error('Pobranie już wykorzystane'), { status: 403 });
+        tx.update(ref, { downloadsLeft: left - 1 });
+        return { ok: true, downloadsLeft: left - 1 };
+      });
+      return res.status(200).json(result);
+    } catch(e) {
+      return res.status(e.status || 500).json({ error: e.message });
+    }
   }
 
   if (action === 'create-checkout') {
