@@ -69,12 +69,13 @@ TEKST CV:
 ${fullText.substring(0, 8000)}`;
 
     const _tok71 = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
-    const response = await fetch('/api/generate', {
+    const response = await fetch('/api/generate-free', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok71 },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ prompt, type: 'cv' })
     });
 
+    if (response.status === 429) { _showFreeAiLimitModal('cv'); throw new Error('limit'); }
     if (!response.ok) throw new Error('Błąd API: ' + response.status);
 
     _cvImportSetProgress('Przetwarzam odpowiedź AI…', 78);
@@ -1596,11 +1597,12 @@ async function useAISummary() {
     var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
     var aiPrompt = 'Przepisz poniższy profil osobisty z CV tak, żeby brzmiał profesjonalnie i naturalnie. WAŻNE: zachowaj DOKŁADNIE te same informacje co w oryginale — nie dodawaj nowych faktów, nie usuwaj żadnych informacji, nie zmieniaj stanowisk ani doświadczeń. Tylko popraw styl, płynność i profesjonalizm. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst, bez komentarzy:\n\n' + text;
     var _tok1597 = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
-    var res = await fetch('/api/generate', {
+    var res = await fetch('/api/generate-free', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok1597 },
-      body: JSON.stringify({ prompt: aiPrompt })
+      body: JSON.stringify({ prompt: aiPrompt, type: 'cv' })
     });
+    if (res.status === 429) { _showFreeAiLimitModal('cv'); return; }
     var data = await res.json();
     var suggestion = data.text || data.result || data.content || '';
     if (suggestion) {
@@ -1642,7 +1644,8 @@ async function useAIDuties(i) {
     var promptLang = langNames[cvCurrentLang || 'pl'] || 'polskim';
     var prompt = 'Przepisz poniższy opis obowiązków z CV tak, żeby brzmiał profesjonalnie i naturalnie. WAŻNE: zachowaj DOKŁADNIE te same informacje — nie dodawaj nowych obowiązków, nie usuwaj żadnych. Bez punktowania, bez list. Tylko ciągły, profesjonalny tekst. Bez żadnych komentarzy ani wstępów. Odpowiedz w języku ' + promptLang + '. Zwróć TYLKO gotowy tekst:\n\n' + context;
     var _tok1642 = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
-    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok1642}, body:JSON.stringify({ prompt:prompt }) });
+    var res = await fetch('/api/generate-free', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok1642}, body:JSON.stringify({ prompt:prompt, type:'cv' }) });
+    if (res.status === 429) { _showFreeAiLimitModal('cv'); return; }
     var data = await res.json();
     var suggestion = (data.text || '').trim();
     if (suggestion) {
@@ -2082,4 +2085,24 @@ async function saveCVToMyDocs(fullName) {
       })
     });
   } catch(e) {}
+}
+
+// Modal przy przekroczeniu darmowego limitu AI
+function _showFreeAiLimitModal(type) {
+  var existing = document.getElementById('_freeAiLimitOverlay');
+  if (existing) existing.remove();
+  var max = type === 'letter' ? 5 : 10;
+  var overlay = document.createElement('div');
+  overlay.id = '_freeAiLimitOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;animation:pgFade .2s ease';
+  overlay.innerHTML =
+    '<div style="background:#fff;border-radius:18px;padding:2.2rem 2rem;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.25);">' +
+      '<div style="font-size:2.5rem;margin-bottom:.75rem;">⚡</div>' +
+      '<h2 style="font-size:1.15rem;font-weight:700;color:#111;margin:0 0 .5rem">Wykorzystałeś darmowy limit AI</h2>' +
+      '<p style="color:#555;font-size:.9rem;line-height:1.55;margin:0 0 1.5rem">Darmowe korzystanie z AI jest ograniczone do <strong>' + max + ' użyć na godzinę</strong>.<br>Kup plan i korzystaj bez limitu.</p>' +
+      '<a href="subskrypcja.html" style="display:block;width:100%;padding:.85rem 1rem;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;margin-bottom:.75rem;box-sizing:border-box;">Zobacz plany →</a>' +
+      '<button onclick="document.getElementById(\'_freeAiLimitOverlay\').remove()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:.88rem;">Zamknij</button>' +
+    '</div>';
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
