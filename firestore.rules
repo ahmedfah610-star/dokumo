@@ -7,6 +7,13 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Kolekcja usage (rate limiting) — tylko odczyt przez właściciela
+    // Zapis wyłącznie przez Admin SDK (serwer)
+    match /users/{userId}/usage/{document} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
     // Wszystkie pozostałe kolekcje (documents, subscription, drafts, payments,
     // pending_subs) są zarządzane wyłącznie przez Admin SDK po stronie serwera
     // i nie wymagają dostępu z przeglądarki.
