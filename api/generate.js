@@ -13,6 +13,26 @@ const ALLOWED_CATS = new Set([
   'hr','kariera','biznes','najem','sprzedaz','inne'
 ]);
 
+// Wymagane plany per kategoria (serwer-side — nie można ominąć)
+const CAT_REQUIRED_PLANS = {
+  hr:       ['kariera','biznes','promax'],
+  kariera:  ['kariera','biznes','promax','start'],
+  biznes:   ['biznes','promax'],
+  najem:    ['kariera','biznes','promax'],
+  sprzedaz: ['kariera','biznes','promax'],
+  inne:     ['kariera','biznes','promax'],
+};
+
+async function checkSubscription(uid) {
+  const snap = await db.collection('users').doc(uid)
+    .collection('subscription').doc('current').get();
+  if (!snap.exists) return null;
+  const data = snap.data();
+  const expiresAt = data.expiresAt?.toDate?.();
+  if (!expiresAt || expiresAt <= new Date()) return null;
+  return data;
+}
+
 // Limit: max 25 requestów na godzinę na użytkownika
 const RATE_LIMIT = 25;
 const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 godzina
@@ -64,6 +84,21 @@ export default async function handler(req, res) {
   const cat = docCat || 'inne';
   if (!ALLOWED_CATS.has(cat)) {
     return res.status(400).json({ error: 'Niedozwolona kategoria dokumentu' });
+  }
+
+  // ── Sprawdzenie subskrypcji (serwer-side) ──
+  try {
+    const sub = await checkSubscription(uid);
+    if (!sub) {
+      return res.status(403).json({ error: 'Brak aktywnej subskrypcji' });
+    }
+    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
+    if (!requiredPlans.includes(sub.plan)) {
+      return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
+    }
+  } catch(e) {
+    console.error('Subscription check error:', e.message);
+    return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
   }
 
   // ── Tryb pobierania URL (fetch-url wbudowany) ──
