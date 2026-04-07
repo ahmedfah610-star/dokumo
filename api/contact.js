@@ -31,9 +31,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Wiadomość jest zbyt długa (max 4000 znaków)' });
   }
 
-  // Rate limit per IP
-  const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
-  const ipKey = ip.replace(/[^a-zA-Z0-9._-]/g, '_');
+  // Rate limit per IP — używamy ostatniego zaufanego IP (nie X-Forwarded-For który można sfałszować)
+  // Na Vercel prawdziwe IP jest w x-real-ip lub ostatnim w x-forwarded-for
+  const fwd = (req.headers['x-forwarded-for'] || '').split(',');
+  const ip = (req.headers['x-real-ip'] || fwd[fwd.length - 1] || req.socket?.remoteAddress || 'unknown').trim();
+  const ipKey = ip.replace(/[^a-zA-Z0-9._:-]/g, '_').substring(0, 64);
   try {
     const windowStart = Timestamp.fromMillis(Date.now() - CONTACT_WINDOW_MS);
     const snap = await db.collection('contactRateLimit').doc(ipKey)

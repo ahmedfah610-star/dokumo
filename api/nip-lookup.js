@@ -17,7 +17,8 @@ export default async function handler(req, res) {
   }
 
   if ('fbconfig' in req.query) {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
+    // Nie cachujemy publicznie — tylko no-store żeby przeglądarka nie trzymała w cache
+    res.setHeader('Cache-Control', 'private, no-store');
     return res.json({
       apiKey: process.env.FIREBASE_WEB_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
