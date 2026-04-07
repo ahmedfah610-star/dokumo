@@ -1,6 +1,17 @@
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
+  // Prosty in-memory rate limit per IP: max 30 req/min
+  const ip = ((req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || '').split(',').pop() || '').trim();
+  if (ip) {
+    const now = Date.now();
+    if (!handler._rl) handler._rl = new Map();
+    const e = handler._rl.get(ip) || { c: 0, r: now + 60000 };
+    if (now > e.r) { e.c = 0; e.r = now + 60000; }
+    if (e.c >= 30) return res.status(429).json({ error: 'Zbyt wiele żądań' });
+    e.c++;
+    handler._rl.set(ip, e);
+  }
   // Walidacja kodu rabatowego — kody z env: DISCOUNT_CODES=KOD1:50,KOD2:30
   if ('discount_code' in req.query) {
     const CODES = (() => {
