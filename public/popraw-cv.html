@@ -79,6 +79,15 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   .pcv-btn-primary,.pcv-btn-secondary{width:100%;}
 }
 </style>
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
+const app=getApps().length?getApps()[0]:initializeApp(__c);
+onAuthStateChanged(getAuth(app),async u=>{
+  window._fbToken=u?()=>u.getIdToken(true):null;
+});
+</script>
 </head>
 <body>
 
@@ -256,10 +265,11 @@ WAŻNE zasady:
 CV DO ANALIZY:
 ${cvText.substring(0, 8000)}`;
 
+  var token = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
   var response = await fetch('/api/generate', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: prompt })
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ prompt: prompt, docCat: 'kariera' })
   });
 
   if (!response.ok) throw new Error('Błąd API: ' + response.status);
