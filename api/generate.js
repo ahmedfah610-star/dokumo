@@ -58,7 +58,7 @@ async function reserveUsage(uid) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, systemPrompt } = req.body;
+  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel } = req.body;
 
   // ── Wymagane uwierzytelnienie ──
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
@@ -109,18 +109,38 @@ export default async function handler(req, res) {
 
   // ── Tryb pobierania URL (fetch-url wbudowany) ──
   if (url) {
+    if (rollbackUsage) { rollbackUsage(); rollbackUsage = null; } // URL fetch nie zużywa limitu generowania
     try { new URL(url); } catch { return res.status(400).json({ error: 'Nieprawidłowy URL' }); }
-    // Blokuj SSRF — prywatne sieci, metadata AWS/GCP/Azure
     const parsedUrl = new URL(url);
     if (!/^https?:$/.test(parsedUrl.protocol)) return res.status(400).json({ error: 'Niedozwolony protokół URL' });
-    const hostname = parsedUrl.hostname.toLowerCase();
-    const BLOCKED = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|::1|0\.0\.0\.0|metadata\.)/;
-    if (BLOCKED.test(hostname)) return res.status(400).json({ error: 'Niedozwolony adres URL' });
+    const BLOCKED_HOST = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|::1|0\.0\.0\.0|metadata\.)/;
+    if (BLOCKED_HOST.test(parsedUrl.hostname.toLowerCase())) return res.status(400).json({ error: 'Niedozwolony adres URL' });
     try {
+      // redirect: 'manual' — nie podążamy za redirectami żeby uniknąć SSRF bypass
       const r = await fetch(url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
-        redirect: 'follow', signal: AbortSignal.timeout(8000)
+        redirect: 'manual', signal: AbortSignal.timeout(8000)
       });
+      // Blokuj redirecty do innych domen (302/301/307/308)
+      if (r.status >= 300 && r.status < 400) {
+        const location = r.headers.get('location') || '';
+        let destUrl; try { destUrl = new URL(location, url); } catch { return res.status(422).json({ error: 'Nieprawidłowy redirect' }); }
+        if (destUrl.hostname.toLowerCase() !== parsedUrl.hostname.toLowerCase()) {
+          return res.status(422).json({ error: 'Redirect do innej domeny — niedozwolone' });
+        }
+        // Ten sam host — podążamy raz
+        const r2 = await fetch(destUrl.href, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
+          redirect: 'manual', signal: AbortSignal.timeout(8000)
+        });
+        if (!r2.ok) return res.status(422).json({ error: 'Strona niedostępna (' + r2.status + ')' });
+        const html2 = await r2.text();
+        const text2 = html2.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ')
+          .replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"')
+          .replace(/\s{2,}/g,' ').trim().substring(0,12000);
+        if (text2.length < 100) return res.status(422).json({ error: 'Nie udało się pobrać treści strony' });
+        return res.status(200).json({ text: text2 });
+      }
       if (!r.ok) return res.status(422).json({ error: 'Strona niedostępna (' + r.status + ')' });
       const html = await r.text();
       const text = html
@@ -142,10 +162,8 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' });
 
-  // systemPrompt przyjmowany tylko od zalogowanego użytkownika — ale max 4000 znaków
-  const safeSystemPrompt = typeof systemPrompt === 'string' && systemPrompt.length <= 4000
-    ? systemPrompt
-    : 'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.';
+  // systemPrompt jest zawsze stały — klient nie może go nadpisać
+  const safeSystemPrompt = 'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.';
 
   // Generuj przez Claude
   try {
