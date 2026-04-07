@@ -19,6 +19,8 @@ export default async function handler(req, res) {
   // POST – zapisz wersję roboczą
   if (req.method === 'POST') {
     const { text, cvDataJson } = req.body;
+    if (typeof text === 'string' && text.length > 200000) return res.status(400).json({ error: 'Dane zbyt duże' });
+    if (typeof cvDataJson === 'string' && cvDataJson.length > 200000) return res.status(400).json({ error: 'Dane zbyt duże' });
     try {
       await db.collection('users').doc(uid).collection('drafts').doc('cv').set({
         text: text || '',

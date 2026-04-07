@@ -2,8 +2,15 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
-// Kody rabatowe — edytuj tutaj
-const DISCOUNT_CODES = { 'DOKUMO2026': 50, 'ADMIN12345': 100 };
+// Kody rabatowe — ustaw w Vercel env: DISCOUNT_CODES=KOD1:50,KOD2:30
+const DISCOUNT_CODES = (() => {
+  const out = {};
+  (process.env.DISCOUNT_CODES || '').split(',').forEach(entry => {
+    const [k, v] = entry.trim().split(':');
+    if (k && v && !isNaN(v)) out[k.toUpperCase()] = Number(v);
+  });
+  return out;
+})();
 
 const PRICE_IDS = {
   start:   process.env.STRIPE_PRICE_START,
@@ -83,18 +90,7 @@ export default async function handler(req, res) {
 
   const { action, plan } = req.body || {};
 
-  if (action === 'activate') {
-    if (!VALID_PLANS.includes(plan)) {
-      return res.status(400).json({ error: 'Nieprawidłowy plan: ' + plan });
-    }
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await db.collection('users').doc(uid).collection('subscription').doc('current').set({
-      plan,
-      expiresAt: Timestamp.fromDate(expiresAt),
-      activatedAt: Timestamp.now(),
-    });
-    return res.status(200).json({ ok: true, plan, expiresAt: expiresAt.toISOString() });
-  }
+  // action 'activate' usunięty — subskrypcje nadaje tylko stripe-webhook lub admin.js
 
   if (action === 'cancel') {
     const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();

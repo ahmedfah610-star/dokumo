@@ -1,10 +1,19 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
 }
 const auth = getAuth();
+const db = getFirestore();
+
+async function hasActiveSubscription(uid) {
+  const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
+  if (!snap.exists) return false;
+  const exp = snap.data().expiresAt?.toDate?.();
+  return exp && exp > new Date();
+}
 
 export const config = {
   api: {
@@ -19,8 +28,15 @@ export default async function handler(req, res) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
 
-  try { await auth.verifyIdToken(token); }
+  let uid;
+  try { ({ uid } = await auth.verifyIdToken(token)); }
   catch { return res.status(401).json({ error: 'Nieważny token' }); }
+
+  try {
+    if (!await hasActiveSubscription(uid)) return res.status(403).json({ error: 'Brak aktywnej subskrypcji' });
+  } catch(e) {
+    return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
+  }
 
   const { html, filename } = req.body || {};
   if (!html) return res.status(400).json({ error: 'Brak HTML' });
