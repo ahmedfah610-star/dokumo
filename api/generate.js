@@ -60,7 +60,7 @@ export default async function handler(req, res) {
 
   const { prompt, url, docId, docName, docCat, docIcon, docCatLabel } = req.body;
 
-  // ── Wymagane uwierzytelnienie ──
+  // ── 1. Wymagane uwierzytelnienie ──
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
 
@@ -72,27 +72,13 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Nieprawidłowy token' });
   }
 
-  // ── Rate limiting ──
-  let rollbackUsage = null;
-  try {
-    const count = await checkRateLimit(uid);
-    if (count >= RATE_LIMIT) {
-      return res.status(429).json({ error: 'Przekroczono limit generowania dokumentów (25/godz.). Spróbuj za chwilę.' });
-    }
-    // Rezerwuj slot PRZED generowaniem — blokuje race condition
-    rollbackUsage = await reserveUsage(uid);
-  } catch(e) {
-    console.error('Rate limit check error:', e.message);
-    return res.status(503).json({ error: 'Chwilowy problem z serwerem. Spróbuj ponownie.' });
-  }
-
-  // ── Walidacja kategorii ──
+  // ── 2. Walidacja kategorii (bez Firestore) ──
   const cat = docCat || 'inne';
   if (!ALLOWED_CATS.has(cat)) {
     return res.status(400).json({ error: 'Niedozwolona kategoria dokumentu' });
   }
 
-  // ── Sprawdzenie subskrypcji (serwer-side) ──
+  // ── 3. Sprawdzenie subskrypcji (Firestore read) ──
   try {
     const sub = await checkSubscription(uid);
     if (!sub) {
@@ -105,6 +91,20 @@ export default async function handler(req, res) {
   } catch(e) {
     console.error('Subscription check error:', e.message);
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
+  }
+
+  // ── 4. Rate limiting (Firestore read + write) — po walidacji żeby nie tracić slotów ──
+  let rollbackUsage = null;
+  try {
+    const count = await checkRateLimit(uid);
+    if (count >= RATE_LIMIT) {
+      return res.status(429).json({ error: 'Przekroczono limit generowania dokumentów (25/godz.). Spróbuj za chwilę.' });
+    }
+    // Rezerwuj slot PRZED generowaniem — blokuje race condition
+    rollbackUsage = await reserveUsage(uid);
+  } catch(e) {
+    console.error('Rate limit check error:', e.message);
+    return res.status(503).json({ error: 'Chwilowy problem z serwerem. Spróbuj ponownie.' });
   }
 
   // ── Tryb pobierania URL (fetch-url wbudowany) ──
