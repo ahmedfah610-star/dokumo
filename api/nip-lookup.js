@@ -1,9 +1,16 @@
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
-  // Walidacja kodu rabatowego
+  // Walidacja kodu rabatowego — kody z env: DISCOUNT_CODES=KOD1:50,KOD2:30
   if ('discount_code' in req.query) {
-    const CODES = { 'DOKUMO2026': 50, 'ADMIN12345': 100 };
+    const CODES = (() => {
+      const out = {};
+      (process.env.DISCOUNT_CODES || '').split(',').forEach(entry => {
+        const [k, v] = entry.trim().split(':');
+        if (k && v && !isNaN(v)) out[k.toUpperCase()] = Number(v);
+      });
+      return out;
+    })();
     const code = (req.query.discount_code || '').toUpperCase().trim();
     const percent = CODES[code];
     return res.status(200).json(percent ? { valid: true, percent } : { valid: false });
