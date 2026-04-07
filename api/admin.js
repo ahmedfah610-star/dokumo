@@ -14,17 +14,19 @@ async function verifyAdmin(req) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) throw Object.assign(new Error('Brak tokenu'), { status: 401 });
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  // Jeśli ADMIN_EMAILS nie skonfigurowany — blokuj wszystkich (fail-closed)
+  if (!ADMIN_EMAILS.length) throw Object.assign(new Error('Brak dostępu — ADMIN_EMAILS nie skonfigurowane'), { status: 403 });
   let decoded;
   try { decoded = await auth.verifyIdToken(token); }
   catch { throw Object.assign(new Error('Nieważny token'), { status: 401 }); }
-  if (ADMIN_EMAILS.length && !ADMIN_EMAILS.includes((decoded.email || '').toLowerCase())) {
+  if (!ADMIN_EMAILS.includes((decoded.email || '').toLowerCase())) {
     throw Object.assign(new Error('Brak dostępu'), { status: 403 });
   }
   return decoded;
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://dokumoflow.com');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
