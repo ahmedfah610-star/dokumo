@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
   const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType } = req.body;
 
-  // ── CV i list motywacyjny — zawsze wymaga subskrypcji ──
+  // ── CV i list motywacyjny — zawsze wymaga subskrypcji + rate limit 20/hr per uid ──
   if (freeType === 'cv' || freeType === 'letter') {
     const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
     if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
@@ -70,6 +70,16 @@ export default async function handler(req, res) {
       const sub = await checkSubscription(uid);
       if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan))
         return res.status(403).json({ error: 'subscription_required' });
+    } catch(e) {
+      return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+    }
+    // Rate limit: 20 wywołań AI per uid per godzinę (CV + list łącznie)
+    try {
+      const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
+      const aiCount = (await db.collection('users').doc(uid).collection('aiUsage')
+        .where('ts', '>=', windowStart).count().get()).data().count;
+      if (aiCount >= 20) return res.status(429).json({ error: 'Przekroczono limit AI (20/godz.). Spróbuj za chwilę.' });
+      await db.collection('users').doc(uid).collection('aiUsage').add({ ts: Timestamp.now(), type: freeType });
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
@@ -117,15 +127,20 @@ export default async function handler(req, res) {
   try {
     const sub = await checkSubscription(uid);
     if (!sub) {
-      // Brak subskrypcji — sprawdź jednorazowy darmowy slot per IP
+      // Brak subskrypcji — atomowe zajęcie jednorazowego slotu per IP
+      // create() rzuca błąd ALREADY_EXISTS (kod 6) jeśli dokument istnieje — brak race condition
       const ip = getIp(req);
       const freeRef = db.collection('freeDocUsage').doc(ip);
-      const freeSnap = await freeRef.get();
-      if (freeSnap.exists) {
-        return res.status(403).json({ error: 'free_used' });
+      try {
+        await freeRef.create({ usedAt: Timestamp.now(), uid });
+        isFree = true;
+      } catch(createErr) {
+        // gRPC ALREADY_EXISTS = kod 6
+        if (createErr.code === 6) {
+          return res.status(403).json({ error: 'free_used' });
+        }
+        throw createErr;
       }
-      await freeRef.set({ usedAt: Timestamp.now(), uid });
-      isFree = true;
     } else {
       const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
       if (!requiredPlans.includes(sub.plan)) {
