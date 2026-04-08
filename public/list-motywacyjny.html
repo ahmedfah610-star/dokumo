@@ -719,7 +719,7 @@ async function autoGenerateFromWizard() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ prompt: prompt, type: 'letter' })
     });
-    if (res.status === 429) { _showLetterLimitModal(); return; }
+    if (res.status === 403 || res.status === 429) { _showLetterLimitModal(); return; }
     var data = await res.json();
     var text = data.text || data.result || '';
     if (!text) throw new Error('empty');
@@ -1151,8 +1151,8 @@ function _showLetterLimitModal() {
   overlay.innerHTML =
     '<div style="background:#fff;border-radius:18px;padding:2.2rem 2rem;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.25);">' +
       '<div style="font-size:2.5rem;margin-bottom:.75rem;">⚡</div>' +
-      '<h2 style="font-size:1.15rem;font-weight:700;color:#111;margin:0 0 .5rem">Wykorzystałeś darmowy limit AI</h2>' +
-      '<p style="color:#555;font-size:.9rem;line-height:1.55;margin:0 0 1.5rem">Darmowe generowanie listów jest ograniczone do <strong>5 na godzinę</strong>.<br>Kup plan i generuj bez limitu.</p>' +
+      '<h2 style="font-size:1.15rem;font-weight:700;color:#111;margin:0 0 .5rem">Wymagana subskrypcja</h2>' +
+      '<p style="color:#555;font-size:.9rem;line-height:1.55;margin:0 0 1.5rem">Generator listów motywacyjnych wymaga <strong>aktywnej subskrypcji</strong>.<br>Kup plan i generuj bez limitu.</p>' +
       '<a href="subskrypcja.html" style="display:block;width:100%;padding:.85rem 1rem;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border-radius:10px;font-size:1rem;font-weight:600;text-decoration:none;margin-bottom:.75rem;box-sizing:border-box;">Zobacz plany →</a>' +
       '<button onclick="document.getElementById(\'_letterLimitOverlay\').remove()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:.88rem;">Zamknij</button>' +
     '</div>';

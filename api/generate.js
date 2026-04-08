@@ -21,24 +21,13 @@ const CAT_REQUIRED_PLANS = {
   inne:     ['kariera','biznes','promax'],
 };
 
-// Darmowy tryb — limity per IP per godzinę
-const FREE_LIMITS = { cv: 10, letter: 5 };
+const RATE_LIMIT = 25;
 const RATE_WINDOW_MS = 60 * 60 * 1000;
 
 function getIp(req) {
   const fwd = (req.headers['x-forwarded-for'] || '').split(',');
   return (req.headers['x-real-ip'] || fwd[fwd.length - 1] || req.socket?.remoteAddress || 'unknown')
     .trim().replace(/[^a-zA-Z0-9._:-]/g, '_').substring(0, 64);
-}
-
-async function checkFreeLimit(ip, type) {
-  const max = FREE_LIMITS[type];
-  const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
-  const count = (await db.collection('freeUsage').doc(type).collection(ip)
-    .where('ts', '>=', windowStart).count().get()).data().count;
-  if (count >= max) return false;
-  await db.collection('freeUsage').doc(type).collection(ip).add({ ts: Timestamp.now() });
-  return true;
 }
 
 async function checkSubscription(uid) {
@@ -50,8 +39,6 @@ async function checkSubscription(uid) {
   if (!expiresAt || expiresAt <= new Date()) return null;
   return data;
 }
-
-const RATE_LIMIT = 25;
 
 async function checkRateLimit(uid) {
   const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
@@ -70,17 +57,19 @@ export default async function handler(req, res) {
 
   const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType } = req.body;
 
-  // ── Tryb darmowy (generate-free) — bez subskrypcji, limit IP ──
+  // ── CV i list motywacyjny — zawsze wymaga subskrypcji ──
   if (freeType === 'cv' || freeType === 'letter') {
     const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
     if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
-    try { await auth.verifyIdToken(token); } catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
+    let uid;
+    try { const decoded = await auth.verifyIdToken(token); uid = decoded.uid; }
+    catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
     if (!prompt || typeof prompt !== 'string' || prompt.length > 15000)
       return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
-    const ip = getIp(req);
     try {
-      const ok = await checkFreeLimit(ip, freeType);
-      if (!ok) return res.status(429).json({ error: 'limit_reached', type: freeType, max: FREE_LIMITS[freeType] });
+      const sub = await checkSubscription(uid);
+      if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan))
+        return res.status(403).json({ error: 'subscription_required' });
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
@@ -117,63 +106,71 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Nieprawidłowy token' });
   }
 
-  // ── 2. Walidacja kategorii (bez Firestore) ──
+  // ── 2. Walidacja kategorii ──
   const cat = docCat || 'inne';
   if (!ALLOWED_CATS.has(cat)) {
     return res.status(400).json({ error: 'Niedozwolona kategoria dokumentu' });
   }
 
-  // ── 3. Sprawdzenie subskrypcji (Firestore read) ──
+  // ── 3. Subskrypcja lub darmowy slot per IP (1 na zawsze) ──
+  let isFree = false;
   try {
     const sub = await checkSubscription(uid);
     if (!sub) {
-      return res.status(403).json({ error: 'Brak aktywnej subskrypcji' });
-    }
-    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
-    if (!requiredPlans.includes(sub.plan)) {
-      return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
+      // Brak subskrypcji — sprawdź jednorazowy darmowy slot per IP
+      const ip = getIp(req);
+      const freeRef = db.collection('freeDocUsage').doc(ip);
+      const freeSnap = await freeRef.get();
+      if (freeSnap.exists) {
+        return res.status(403).json({ error: 'free_used' });
+      }
+      await freeRef.set({ usedAt: Timestamp.now(), uid });
+      isFree = true;
+    } else {
+      const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
+      if (!requiredPlans.includes(sub.plan)) {
+        return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
+      }
     }
   } catch(e) {
     console.error('Subscription check error:', e.message);
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
   }
 
-  // ── 4. Rate limiting (Firestore read + write) — po walidacji żeby nie tracić slotów ──
+  // ── 4. Rate limiting (tylko dla subskrybentów) ──
   let rollbackUsage = null;
-  try {
-    const count = await checkRateLimit(uid);
-    if (count >= RATE_LIMIT) {
-      return res.status(429).json({ error: 'Przekroczono limit generowania dokumentów (25/godz.). Spróbuj za chwilę.' });
+  if (!isFree) {
+    try {
+      const count = await checkRateLimit(uid);
+      if (count >= RATE_LIMIT) {
+        return res.status(429).json({ error: 'Przekroczono limit generowania dokumentów (25/godz.). Spróbuj za chwilę.' });
+      }
+      rollbackUsage = await reserveUsage(uid);
+    } catch(e) {
+      console.error('Rate limit check error:', e.message);
+      return res.status(503).json({ error: 'Chwilowy problem z serwerem. Spróbuj ponownie.' });
     }
-    // Rezerwuj slot PRZED generowaniem — blokuje race condition
-    rollbackUsage = await reserveUsage(uid);
-  } catch(e) {
-    console.error('Rate limit check error:', e.message);
-    return res.status(503).json({ error: 'Chwilowy problem z serwerem. Spróbuj ponownie.' });
   }
 
-  // ── Tryb pobierania URL (fetch-url wbudowany) ──
+  // ── Tryb pobierania URL ──
   if (url) {
-    if (rollbackUsage) { rollbackUsage(); rollbackUsage = null; } // URL fetch nie zużywa limitu generowania
+    if (rollbackUsage) { rollbackUsage(); rollbackUsage = null; }
     try { new URL(url); } catch { return res.status(400).json({ error: 'Nieprawidłowy URL' }); }
     const parsedUrl = new URL(url);
     if (!/^https?:$/.test(parsedUrl.protocol)) return res.status(400).json({ error: 'Niedozwolony protokół URL' });
     const BLOCKED_HOST = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|::1|0\.0\.0\.0|metadata\.)/;
     if (BLOCKED_HOST.test(parsedUrl.hostname.toLowerCase())) return res.status(400).json({ error: 'Niedozwolony adres URL' });
     try {
-      // redirect: 'manual' — nie podążamy za redirectami żeby uniknąć SSRF bypass
       const r = await fetch(url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
         redirect: 'manual', signal: AbortSignal.timeout(8000)
       });
-      // Blokuj redirecty do innych domen (302/301/307/308)
       if (r.status >= 300 && r.status < 400) {
         const location = r.headers.get('location') || '';
         let destUrl; try { destUrl = new URL(location, url); } catch { return res.status(422).json({ error: 'Nieprawidłowy redirect' }); }
         if (destUrl.hostname.toLowerCase() !== parsedUrl.hostname.toLowerCase()) {
           return res.status(422).json({ error: 'Redirect do innej domeny — niedozwolone' });
         }
-        // Ten sam host — podążamy raz
         const r2 = await fetch(destUrl.href, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
           redirect: 'manual', signal: AbortSignal.timeout(8000)
@@ -193,7 +190,7 @@ export default async function handler(req, res) {
         .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
         .replace(/\s{2,}/g, ' ').trim().substring(0, 12000);
-      if (text.length < 100) return res.status(422).json({ error: 'Nie udało się pobrać treści strony' });
+      if (text.length < 100) return res.status(422).json({ error: 'Nie udało się pobrać treści ogłoszenia' });
       return res.status(200).json({ text });
     } catch(err) {
       const msg = err.name === 'TimeoutError' ? 'Przekroczono czas pobierania strony' : 'Nie udało się pobrać treści ogłoszenia';
@@ -207,10 +204,8 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' });
 
-  // systemPrompt jest zawsze stały — klient nie może go nadpisać
   const safeSystemPrompt = 'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.';
 
-  // Generuj przez Claude
   try {
     const r = await fetch(
       'https://api.anthropic.com/v1/messages',
@@ -229,23 +224,25 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Pusta odpowiedź AI' });
     }
 
-    // Zapisz dokument do Firestore
-    try {
-      const ref = db.collection('users').doc(uid).collection('documents').doc();
-      await ref.set({
-        id: ref.id,
-        typeId: docId || 'unknown',
-        name: docName || 'Dokument',
-        text,
-        cat,
-        icon: docIcon || '📄',
-        catLabel: docCatLabel || 'Inne',
-        status: 'generated',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    } catch(e) {
-      console.error('Firestore save error:', e.message);
+    // Zapisz dokument do Firestore (tylko dla subskrybentów — darmowi mogą nie mieć dashboardu)
+    if (!isFree) {
+      try {
+        const ref = db.collection('users').doc(uid).collection('documents').doc();
+        await ref.set({
+          id: ref.id,
+          typeId: docId || 'unknown',
+          name: docName || 'Dokument',
+          text,
+          cat,
+          icon: docIcon || '📄',
+          catLabel: docCatLabel || 'Inne',
+          status: 'generated',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } catch(e) {
+        console.error('Firestore save error:', e.message);
+      }
     }
 
     return res.status(200).json({ text });

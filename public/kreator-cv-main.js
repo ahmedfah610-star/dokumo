@@ -75,7 +75,7 @@ ${fullText.substring(0, 8000)}`;
       body: JSON.stringify({ prompt, type: 'cv' })
     });
 
-    if (response.status === 429) { _showFreeAiLimitModal('cv'); throw new Error('limit'); }
+    if (response.status === 403 || response.status === 429) { _showFreeAiLimitModal('cv'); throw new Error('limit'); }
     if (!response.ok) throw new Error('Błąd API: ' + response.status);
 
     _cvImportSetProgress('Przetwarzam odpowiedź AI…', 78);
@@ -1994,7 +1994,7 @@ function pickTemplate(id) {
 
 
 async function downloadCV() {
-  if (!window.checkPlanAccess(['kariera','promax','pro'])) return;
+  if (!window.checkPlanAccess(['kariera','promax','pro','start'])) return;
 
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
@@ -2098,8 +2098,8 @@ function _showFreeAiLimitModal(type) {
   overlay.innerHTML =
     '<div style="background:#fff;border-radius:18px;padding:2.2rem 2rem;max-width:400px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.25);">' +
       '<div style="font-size:2.5rem;margin-bottom:.75rem;">⚡</div>' +
-      '<h2 style="font-size:1.15rem;font-weight:700;color:#111;margin:0 0 .5rem">Wykorzystałeś darmowy limit AI</h2>' +
-      '<p style="color:#555;font-size:.9rem;line-height:1.55;margin:0 0 1.5rem">Darmowe korzystanie z AI jest ograniczone do <strong>' + max + ' użyć na godzinę</strong>.<br>Kup plan i korzystaj bez limitu.</p>' +
+      '<h2 style="font-size:1.15rem;font-weight:700;color:#111;margin:0 0 .5rem">Wymagana subskrypcja</h2>' +
+      '<p style="color:#555;font-size:.9rem;line-height:1.55;margin:0 0 1.5rem">Kreator CV i funkcje AI wymagają <strong>aktywnej subskrypcji</strong>.<br>Kup plan i korzystaj bez limitu.</p>' +
       '<a href="subskrypcja.html" style="display:block;width:100%;padding:.85rem 1rem;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;margin-bottom:.75rem;box-sizing:border-box;">Zobacz plany →</a>' +
       '<button onclick="document.getElementById(\'_freeAiLimitOverlay\').remove()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:.88rem;">Zamknij</button>' +
     '</div>';

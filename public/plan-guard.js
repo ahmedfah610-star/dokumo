@@ -69,12 +69,17 @@
     // Niezalogowany → panel logowania
     if (!user) { window.location.href = 'konto.html'; return false; }
 
-    // Brak aktywnej subskrypcji → strona pakietów
+    // Brak aktywnej subskrypcji
     var active = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
     if (!active) {
-      sessionStorage.setItem('dokumo_after_sub', window.location.href);
-      window.location.href = 'subskrypcja.html';
-      return false;
+      // Jeśli wymagany jest jakikolwiek plan (włącznie z start) → wymagana subskrypcja
+      if (requiredPlans.indexOf('start') >= 0) {
+        sessionStorage.setItem('dokumo_after_sub', window.location.href);
+        window.location.href = 'subskrypcja.html';
+        return false;
+      }
+      // Dokumenty regularne — pozwól spróbować (serwer sprawdzi 1 darmowy slot per IP)
+      return true;
     }
 
     // Pakiet Start — jednorazowe pobranie
@@ -105,4 +110,41 @@
     window.showPlanUpgradeModal(sub.plan, suggestUpgrade(sub.plan, requiredPlans));
     return false;
   };
+
+  // Modal gdy darmowy slot per IP został już wykorzystany
+  window.showFreeDocModal = function () {
+    var el = document.getElementById('pgOverlay');
+    if (el) el.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'pgOverlay';
+    overlay.innerHTML =
+      '<div id="pgModal">' +
+        '<div class="pg-ico">🎁</div>' +
+        '<h2>Darmowy dokument już wykorzystany</h2>' +
+        '<p>Każdy użytkownik może wygenerować <strong>jeden darmowy dokument</strong>.<br>Kup pakiet, aby generować bez limitu.</p>' +
+        '<a href="subskrypcja.html" class="pg-upgrade">Zobacz plany →</a>' +
+        '<button class="pg-close" onclick="document.getElementById(\'pgOverlay\').remove()">Zamknij</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+  };
+
+  // Interceptor fetch — pokazuje modal gdy serwer zwróci 403 free_used
+  (function () {
+    var _orig = window.fetch;
+    window.fetch = function (url) {
+      var p = _orig.apply(this, arguments);
+      if (typeof url === 'string' && url === '/api/generate') {
+        return p.then(function (res) {
+          if (res.status === 403) {
+            res.clone().json().then(function (d) {
+              if (d.error === 'free_used' && window.showFreeDocModal) window.showFreeDocModal();
+            }).catch(function () {});
+          }
+          return res;
+        });
+      }
+      return p;
+    };
+  })();
 })();
