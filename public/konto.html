@@ -856,11 +856,19 @@ function setSyncBadge(text, ok) {
 
   document.addEventListener('DOMContentLoaded', function() {
     var nipEl = document.getElementById('pNip');
-    if (!nipEl) return;
-    nipEl.addEventListener('blur', lookupProfileNIP);
-    nipEl.addEventListener('input', function(){
-      if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupProfileNIP();
-    });
+    if (nipEl) {
+      nipEl.addEventListener('blur', lookupProfileNIP);
+      nipEl.addEventListener('input', function(){
+        if (this.value.replace(/[\s\-\.]/g,'').length === 10) lookupProfileNIP();
+      });
+    }
+
+    // ?rejestracja=1 — otwórz od razu zakładkę E-mail w trybie rejestracji
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('rejestracja') === '1') {
+      if (window.switchAuthTab) window.switchAuthTab('email');
+      if (window.toggleEmailMode && _emailMode === 'login') window.toggleEmailMode();
+    }
   });
 })();
 </script>
