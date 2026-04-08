@@ -1,5 +1,5 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
 if (!getApps().length) {
@@ -7,6 +7,27 @@ if (!getApps().length) {
 }
 const db = getFirestore();
 const auth = getAuth();
+
+// Dzienny globalny limit wywołań Claude — ustaw DAILY_API_LIMIT w Vercel env (domyślnie 300)
+const DAILY_API_LIMIT = parseInt(process.env.DAILY_API_LIMIT || '300');
+
+async function checkDailyLimit() {
+  if (!DAILY_API_LIMIT) return true; // 0 = wyłączony
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const ref = db.collection('globalUsage').doc(today);
+  try {
+    return await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const count = snap.exists ? (snap.data().count || 0) : 0;
+      if (count >= DAILY_API_LIMIT) return false;
+      tx.set(ref, { count: FieldValue.increment(1), date: today, updatedAt: Timestamp.now() }, { merge: true });
+      return true;
+    });
+  } catch(e) {
+    console.error('Daily limit check error:', e.message);
+    return true; // fail-open: nie blokuj jeśli Firestore chwilowo niedostępny
+  }
+}
 
 // Dozwolone kategorie dokumentów
 const ALLOWED_CATS = new Set(['hr','kariera','biznes','najem','sprzedaz','inne']);
@@ -83,6 +104,10 @@ export default async function handler(req, res) {
       aiUsageRef = await db.collection('users').doc(uid).collection('aiUsage').add({ ts: Timestamp.now(), type: freeType });
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+    }
+    if (!await checkDailyLimit()) {
+      if (aiUsageRef) aiUsageRef.delete().catch(() => {});
+      return res.status(503).json({ error: 'Dzienny limit API osiągnięty. Spróbuj jutro.' });
     }
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) return res.status(500).json({ error: 'Brak klucza API' });
@@ -223,6 +248,11 @@ export default async function handler(req, res) {
 
   if (!prompt) return res.status(400).json({ error: 'Brak zapytania' });
   if (typeof prompt !== 'string' || prompt.length > 20000) return res.status(400).json({ error: 'Zapytanie zbyt długie' });
+
+  if (!await checkDailyLimit()) {
+    if (rollbackUsage) rollbackUsage();
+    return res.status(503).json({ error: 'Dzienny limit API osiągnięty. Spróbuj jutro.' });
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' });
