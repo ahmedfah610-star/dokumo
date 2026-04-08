@@ -12,8 +12,16 @@ export default async function handler(req, res) {
     e.c++;
     handler._rl.set(ip, e);
   }
-  // Walidacja kodu rabatowego — kody z env: DISCOUNT_CODES=KOD1:50,KOD2:30
+  // Walidacja kodu rabatowego — osobny rate limit: 5 prób/min per IP
   if ('discount_code' in req.query) {
+    if (!handler._dcrl) handler._dcrl = new Map();
+    if (ip) {
+      const now2 = Date.now();
+      const dc = handler._dcrl.get(ip) || { c: 0, r: now2 + 60000 };
+      if (now2 > dc.r) { dc.c = 0; dc.r = now2 + 60000; }
+      if (dc.c >= 5) return res.status(429).json({ valid: false, error: 'Zbyt wiele prób' });
+      dc.c++; handler._dcrl.set(ip, dc);
+    }
     const CODES = (() => {
       const out = {};
       (process.env.DISCOUNT_CODES || '').split(',').forEach(entry => {

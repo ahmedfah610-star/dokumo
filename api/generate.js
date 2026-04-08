@@ -154,6 +154,10 @@ export default async function handler(req, res) {
       if (!requiredPlans.includes(sub.plan)) {
         return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
       }
+      // Start plan — serwer-side enforcement limitu 1 pobrania
+      if (sub.plan === 'start' && (sub.downloadsLeft ?? 0) <= 0) {
+        return res.status(403).json({ error: 'start_limit' });
+      }
     }
   } catch(e) {
     console.error('Subscription check error:', e.message);

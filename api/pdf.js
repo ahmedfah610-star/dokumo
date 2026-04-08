@@ -49,6 +49,25 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
   }
 
+  // Start plan — atomowy dekrement downloadsLeft (1 pobranie)
+  try {
+    const subRef = db.collection('users').doc(uid).collection('subscription').doc('current');
+    const blocked = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(subRef);
+      if (!snap.exists) return true;
+      const data = snap.data();
+      if (data.plan !== 'start') return false; // inne plany — bez limitu
+      const left = data.downloadsLeft ?? 0;
+      if (left <= 0) return true;
+      tx.update(subRef, { downloadsLeft: left - 1 });
+      return false;
+    });
+    if (blocked) return res.status(403).json({ error: 'Limit pobrań w pakiecie Start został wykorzystany. Wykup wyższy pakiet.' });
+  } catch(e) {
+    console.error('Start plan download check error:', e.message);
+    return res.status(500).json({ error: 'Błąd weryfikacji limitu pobrań' });
+  }
+
   // Rate limit PDF
   try {
     const count = await checkPdfRateLimit(uid);

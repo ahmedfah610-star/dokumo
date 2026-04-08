@@ -62,6 +62,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Błąd serwera. Spróbuj ponownie za chwilę.' });
   }
 
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
   // Opcjonalnie wyślij email przez Resend (jeśli klucz skonfigurowany)
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
@@ -75,7 +77,7 @@ export default async function handler(req, res) {
           reply_to: email,
           subject: `Wiadomość od ${name}`,
           text: `Od: ${name} <${email}>\n\n${message}`,
-          html: `<p><strong>Od:</strong> ${name} &lt;${email}&gt;</p><hr/><p>${message.replace(/\n/g, '<br>')}</p>`
+          html: `<p><strong>Od:</strong> ${esc(name)} &lt;${esc(email)}&gt;</p><hr/><p>${esc(message).replace(/\n/g, '<br>')}</p>`
         }),
         signal: AbortSignal.timeout(8000)
       });
