@@ -74,12 +74,13 @@ export default async function handler(req, res) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
     // Rate limit: 20 wywołań AI per uid per godzinę (CV + list łącznie)
+    let aiUsageRef = null;
     try {
       const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
       const aiCount = (await db.collection('users').doc(uid).collection('aiUsage')
         .where('ts', '>=', windowStart).count().get()).data().count;
       if (aiCount >= 20) return res.status(429).json({ error: 'Przekroczono limit AI (20/godz.). Spróbuj za chwilę.' });
-      await db.collection('users').doc(uid).collection('aiUsage').add({ ts: Timestamp.now(), type: freeType });
+      aiUsageRef = await db.collection('users').doc(uid).collection('aiUsage').add({ ts: Timestamp.now(), type: freeType });
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
@@ -95,11 +96,18 @@ export default async function handler(req, res) {
         signal: AbortSignal.timeout(30000)
       });
       const data = await r.json();
-      if (data.error) return res.status(500).json({ error: data.error.message });
+      if (data.error) {
+        if (aiUsageRef) aiUsageRef.delete().catch(() => {});
+        return res.status(500).json({ error: data.error.message });
+      }
       const text = data.content?.[0]?.text || '';
-      if (!text) return res.status(500).json({ error: 'Pusta odpowiedź AI' });
+      if (!text) {
+        if (aiUsageRef) aiUsageRef.delete().catch(() => {});
+        return res.status(500).json({ error: 'Pusta odpowiedź AI' });
+      }
       return res.status(200).json({ text });
     } catch(e) {
+      if (aiUsageRef) aiUsageRef.delete().catch(() => {});
       return res.status(500).json({ error: e.name === 'TimeoutError' ? 'Przekroczono czas — spróbuj ponownie.' : e.message });
     }
   }

@@ -112,10 +112,14 @@ export default async function handler(req, res) {
       }
     }
 
-    await db.collection('users').doc(uid).collection('subscription').doc('current').update({
-      cancelled: true,
-      cancelledAt: new Date(),
-    });
+    try {
+      await db.collection('users').doc(uid).collection('subscription').doc('current').update({
+        cancelled: true,
+        cancelledAt: new Date(),
+      });
+    } catch(e) {
+      // dokument może nie istnieć — ignoruj
+    }
     return res.status(200).json({ ok: true });
   }
 

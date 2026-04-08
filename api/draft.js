@@ -8,6 +8,16 @@ if (!getApps().length) {
 const db = getFirestore();
 const auth = getAuth();
 
+// In-memory rate limit: max 20 req/min per uid
+const _rl = new Map();
+function checkRl(uid) {
+  const now = Date.now();
+  const e = _rl.get(uid) || { c: 0, r: now + 60000 };
+  if (now > e.r) { e.c = 0; e.r = now + 60000; }
+  if (e.c >= 20) return false;
+  e.c++; _rl.set(uid, e); return true;
+}
+
 export default async function handler(req, res) {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
@@ -15,6 +25,8 @@ export default async function handler(req, res) {
   let uid;
   try { ({ uid } = await auth.verifyIdToken(token)); }
   catch(e) { return res.status(401).json({ error: 'Nieważny token' }); }
+
+  if (!checkRl(uid)) return res.status(429).json({ error: 'Zbyt wiele żądań. Spróbuj za chwilę.' });
 
   // POST – zapisz wersję roboczą
   if (req.method === 'POST') {
