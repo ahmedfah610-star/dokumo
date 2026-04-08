@@ -656,6 +656,17 @@ window.switchAuthTab = function(tab) {
   showEmailMsg('', '');
 };
 
+// ?rejestracja=1 → automatycznie zakładka E-mail + tryb rejestracji
+if (new URLSearchParams(window.location.search).get('rejestracja') === '1') {
+  window.switchAuthTab('email');
+  _emailMode = 'register';
+  document.getElementById('emailSubmitText').textContent = 'Zarejestruj się';
+  document.getElementById('emailToggleLabel').textContent = 'Masz już konto?';
+  document.querySelector('#authEmail .k-email-toggle button').textContent = 'Zaloguj się';
+  document.getElementById('authPasswordInput').autocomplete = 'new-password';
+  document.getElementById('forgotBtn').style.display = 'none';
+}
+
 window.toggleEmailMode = function() {
   _emailMode = _emailMode === 'login' ? 'register' : 'login';
   const isReg = _emailMode === 'register';
@@ -863,12 +874,6 @@ function setSyncBadge(text, ok) {
       });
     }
 
-    // ?rejestracja=1 — otwórz od razu zakładkę E-mail w trybie rejestracji
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('rejestracja') === '1') {
-      if (window.switchAuthTab) window.switchAuthTab('email');
-      if (window.toggleEmailMode && _emailMode === 'login') window.toggleEmailMode();
-    }
   });
 })();
 </script>
