@@ -251,25 +251,29 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Pusta odpowiedź AI' });
     }
 
-    // Zapisz dokument do Firestore (tylko dla subskrybentów — darmowi mogą nie mieć dashboardu)
-    if (!isFree) {
-      try {
-        const ref = db.collection('users').doc(uid).collection('documents').doc();
-        await ref.set({
-          id: ref.id,
-          typeId: docId || 'unknown',
-          name: docName || 'Dokument',
-          text,
-          cat,
-          icon: docIcon || '📄',
-          catLabel: docCatLabel || 'Inne',
-          status: 'generated',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-      } catch(e) {
-        console.error('Firestore save error:', e.message);
+    // Zapisz dokument do Firestore (subskrybenci + darmowi — żeby było widać co wygenerowano)
+    try {
+      const ref = db.collection('users').doc(uid).collection('documents').doc();
+      await ref.set({
+        id: ref.id,
+        typeId: docId || 'unknown',
+        name: docName || 'Dokument',
+        text,
+        cat,
+        icon: docIcon || '📄',
+        catLabel: docCatLabel || 'Inne',
+        status: 'generated',
+        isFree: isFree || false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      // Dla darmowych — zaktualizuj freeDocUsage z odniesieniem do dokumentu
+      if (isFree) {
+        const ip = getIp(req);
+        db.collection('freeDocUsage').doc(ip).update({ docRef: `users/${uid}/documents/${ref.id}`, docName: docName || 'Dokument' }).catch(() => {});
       }
+    } catch(e) {
+      console.error('Firestore save error:', e.message);
     }
 
     return res.status(200).json({ text });
