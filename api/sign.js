@@ -4,7 +4,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { createHash } from 'crypto';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://dokumoflow.com';
-const FROM = 'Dokumo Podpisy <onboarding@resend.dev>';
+const FROM = 'Dokumo Podpisy <noreply@dokumoflow.com>';
 
 async function sendEmail({ to, subject, html }) {
   const key = process.env.RESEND_API_KEY;
