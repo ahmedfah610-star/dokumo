@@ -131,6 +131,7 @@ export default async function handler(req, res) {
       status: d.status,
       party1Name: d.party1?.name,
       party1Date: d.party1?.date,
+      party1Sig: d.party1?.sig || null,
       party2: d.party2 ? { name: d.party2.name, date: d.party2.date } : null,
     });
   }

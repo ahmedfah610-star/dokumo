@@ -77,6 +77,7 @@ function render() {
     + (alreadySigned ? ' Dokument jest obustronnie podpisany.' : ' Twój podpis jest wymagany.')
     + '</div>'
     + '<div class="doc-preview">' + escHtml(d.docText || '') + '</div>'
+    + (d.party1Sig ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e5e5"><div style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:8px">Podpis strony 1</div><img src="' + d.party1Sig + '" style="height:50px;display:block;margin-bottom:4px"><div style="font-size:.8rem;font-weight:600">' + escHtml(d.party1Name || '') + '</div><div style="font-size:.75rem;color:#999">' + escHtml(d.party1Date || '') + ' · Prosty podpis elektroniczny (eIDAS)</div></div>' : '')
     + '</div>';
 
   if (alreadySigned) {
