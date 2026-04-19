@@ -284,6 +284,7 @@ const CV_TEMPLATES = [
   { id:'prism',        name:'Prism',        color1:'#7c3aed', color2:'#ec4899',  thumb:'linear-gradient(135deg,#7c3aed,#ec4899)' },
   { id:'oxford',       name:'Oxford',       color1:'#11355c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#11355c 28%,#f8f8f8 28%)' },
   { id:'linen',        name:'Linen',        color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#fef3c7,#fed7aa)' },
+  { id:'dynamic',      name:'Dynamic',      color1:'#1e56b0', color2:'#0d3875',  thumb:'linear-gradient(135deg,#fff 55%,#1e56b0 55%)' },
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
@@ -296,7 +297,7 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   const tpl = p.get('template');
   const mode = p.get('mode');
   const from = p.get('from');
-  const known = ['nova','oxford','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen','biznes','maroon'];
+  const known = ['nova','oxford','prestige','nordic','cascade','metro','sidebar','timeline','creative','bold','teal','midnight','coral','rose','ocean','shield','executive','athens','matrix','prism','linen','biznes','maroon','dynamic'];
   if (tpl && known.includes(tpl)) {
     cvTemplate = tpl; // Template chosen on picker page — continue to wizard
   } else if (mode === 'import' || mode === 'improve' || from === 'translate') {
@@ -1923,7 +1924,7 @@ function renderTplGrid() {
 
   const groups = [
     { label: 'Premium',      ids: ['nova', 'maroon', 'biznes', 'nordic', 'cascade', 'metro'] },
-    { label: 'Nowe 2026',    ids: ['executive', 'athens', 'matrix', 'prism', 'linen'] },
+    { label: 'Nowe 2026',    ids: ['dynamic', 'executive', 'athens', 'matrix', 'prism', 'linen'] },
     { label: 'Klasyczne',    ids: ['oxford', 'sidebar', 'timeline', 'bold', 'midnight'] },
     { label: 'Nowoczesne',   ids: ['teal', 'ocean'] },
     { label: 'Kreatywne',    ids: ['creative', 'coral', 'rose'] },
