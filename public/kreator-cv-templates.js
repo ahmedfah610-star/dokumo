@@ -1720,100 +1720,102 @@ function buildCVHTML(tpl) {
         ${icon}
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:${c1}"> / ${label}</span>
       </div>`;
-    const icoWork   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
-    const icoEdu    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
-    const icoSkill  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>`;
-    const icoLang   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
-    const icoCert   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`;
-    const icoInt    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 12 2a8 8 0 0 0-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg>`;
+    const icoWork  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
+    const icoEdu   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
+    const icoSkill = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>`;
+    const icoLang  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+    const icoCert  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`;
+    const icoInt   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 12 2a8 8 0 0 0-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg>`;
     return `
-    <div style="font-family:Arial,Helvetica,sans-serif;background:#fff;min-height:842px;position:relative;overflow:hidden">
-      <!-- geometric top-right -->
-      <div style="position:absolute;top:-8px;right:-18px;width:0;height:0;border-style:solid;border-width:0 180px 130px 0;border-color:transparent ${c1} transparent transparent;opacity:0.9;z-index:0"></div>
-      <div style="position:absolute;top:0;right:0;width:130px;height:90px;background:${c2};clip-path:polygon(100% 0,100% 100%,0 0);z-index:0;opacity:0.7"></div>
-      <!-- bottom-right decoration -->
-      <div style="position:absolute;bottom:20px;right:0;z-index:0">
-        <div style="width:90px;height:10px;background:${c1};transform:skewX(-20deg);margin-bottom:5px;margin-right:8px"></div>
-        <div style="width:58px;height:10px;background:${c2};transform:skewX(-20deg);margin-right:20px"></div>
-      </div>
-      <!-- HEADER -->
-      <div style="position:relative;z-index:1;padding:26px 36px 0">
-        <div style="display:flex;align-items:flex-start;gap:14px">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:28px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${d.imie||''}<br>${d.nazwisko||''}</div>
-            ${d.stanowisko?`<div style="font-size:11px;color:${c1};font-weight:700;margin-top:6px;letter-spacing:0.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-            <div style="margin-top:11px;display:flex;flex-wrap:wrap;gap:2px 0">
-              ${d.email?`<span style="font-size:10px;color:#555;margin-right:14px;margin-bottom:3px">✉ ${d.email}</span>`:''}
-              ${d.tel?`<span style="font-size:10px;color:#555;margin-right:14px;margin-bottom:3px">☎ ${d.tel}</span>`:''}
-              ${d.adres?`<span style="font-size:10px;color:#555;margin-right:14px;margin-bottom:3px">⊕ ${d.adres}</span>`:''}
-              ${d.linkedin?`<span style="font-size:10px;color:#555;margin-right:14px;margin-bottom:3px">in ${d.linkedin}</span>`:''}
+    <div style="font-family:Arial,Helvetica,sans-serif;background:#fff;width:595px;box-sizing:border-box;min-height:842px;display:flex;flex-direction:column;position:relative;overflow:hidden">
+      <!-- SVG decorations: behind everything via z-index:0 -->
+      <svg style="position:absolute;top:0;right:0;z-index:0;pointer-events:none" width="190" height="150" viewBox="0 0 190 150" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="190,0 190,150 40,0" fill="${c1}"/>
+        <polygon points="190,0 190,105 90,0" fill="${c2}" opacity="0.75"/>
+      </svg>
+      <svg style="position:absolute;bottom:14px;right:0;z-index:0;pointer-events:none" width="110" height="32" viewBox="0 0 110 32" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="95" height="11" fill="${c1}" transform="skewX(-20)"/>
+        <rect x="15" y="16" width="62" height="11" fill="${c2}" transform="skewX(-20)"/>
+      </svg>
+      <!-- ALL CONTENT in a single z-index:1 wrapper -->
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1">
+        <!-- HEADER -->
+        <div style="padding:26px 34px 16px">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:28px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${d.imie||''}</div>
+              <div style="font-size:28px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${d.nazwisko||''}</div>
+              ${d.stanowisko?`<div style="font-size:11px;color:${c1};font-weight:700;margin-top:5px;letter-spacing:0.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
+              <div style="margin-top:10px;display:flex;flex-wrap:wrap;row-gap:2px;column-gap:14px">
+                ${d.email?`<span style="font-size:10px;color:#555">✉ ${d.email}</span>`:''}
+                ${d.tel?`<span style="font-size:10px;color:#555">☎ ${d.tel}</span>`:''}
+                ${d.adres?`<span style="font-size:10px;color:#555">📍 ${d.adres}</span>`:''}
+                ${d.linkedin?`<span style="font-size:10px;color:#555">in ${d.linkedin}</span>`:''}
+              </div>
             </div>
+            ${d.zdjecie?`<div style="width:84px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0">${photo}</div>`:'<div style="width:84px;flex-shrink:0"></div>'}
           </div>
-          ${d.zdjecie?`<div style="width:86px;height:86px;border-radius:7px;overflow:hidden;flex-shrink:0;position:relative;z-index:2;border:2px solid rgba(255,255,255,0.8)">${photo}</div>`:''}
+          ${d.podsumowanie?`<div style="margin-top:12px;font-size:11px;color:#444;line-height:1.6">${d.podsumowanie}</div>`:''}
         </div>
-        ${d.podsumowanie?`<div style="margin-top:12px;font-size:11px;color:#444;line-height:1.65;max-width:460px">${d.podsumowanie}</div>`:''}
+        <!-- DIVIDER -->
+        <div style="height:3px;background:${c1};margin:0 34px 0"></div>
+        <!-- TWO-COLUMN BODY -->
+        <div style="display:flex;flex:1;padding:14px 0 40px">
+          <!-- LEFT COLUMN (200px fixed) -->
+          <div style="flex:0 0 200px;padding:0 14px 0 22px;box-sizing:border-box">
+            ${skills.length?`
+            <div style="margin-bottom:16px">
+              ${secHdr(icoSkill, L('skills'))}
+              ${skills.map(s=>`<div style="font-size:11px;color:#333;margin-bottom:5px;line-height:1.35;padding-left:7px;border-left:2px solid ${c1}">${s}</div>`).join('')}
+            </div>`:''}
+            ${d.jezyki.some(l=>l.jezyk)?`
+            <div style="margin-bottom:16px">
+              ${secHdr(icoLang, L('languages'))}
+              ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:11px;color:#333;margin-bottom:5px">${l.jezyk} <span style="color:#888">| ${l.poziom}</span></div>`).join('')}
+            </div>`:''}
+            ${certGroups.length?certGroups.map(({label,items})=>`
+            <div style="margin-bottom:16px">
+              ${secHdr(icoCert, label)}
+              ${items.map(c=>`<div style="font-size:10.5px;color:#444;margin-bottom:6px;line-height:1.4">${c}</div>`).join('')}
+            </div>`).join(''):''}
+            ${d.zainteresowania?`
+            <div style="margin-bottom:16px">
+              ${secHdr(icoInt, L('interests'))}
+              <div style="font-size:11px;color:#444;line-height:1.65">${d.zainteresowania}</div>
+            </div>`:''}
+            ${renderCustomSections(c1,c2)}
+          </div>
+          <!-- RIGHT COLUMN (flex:1) -->
+          <div style="flex:1;min-width:0;padding:0 22px 0 14px;border-left:1.5px solid #e0e4ea">
+            ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
+            <div style="margin-bottom:16px">
+              ${secHdr(icoWork, L('experience'))}
+              ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
+              <div style="margin-bottom:13px">
+                <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px">
+                  ${(e.od||e.do)?`<span style="font-size:10px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')} /</span>`:''}
+                  <span style="font-size:11.5px;font-weight:700;color:#111">${e.stanowisko||''}</span>
+                </div>
+                <div style="font-size:10px;color:#666;margin-top:2px">${e.firma||''}</div>
+                ${e.opis?`<div style="font-size:11px;color:#444;margin-top:4px;line-height:1.5">${e.opis}</div>`:''}
+              </div>`).join('')}
+            </div>`:''}
+            ${d.wyksztalcenie.some(e=>e.szkola)?`
+            <div style="margin-bottom:16px">
+              ${secHdr(icoEdu, L('education'))}
+              ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
+              <div style="margin-bottom:11px">
+                <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px">
+                  ${(e.od||e.do)?`<span style="font-size:10px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')} /</span>`:''}
+                  <span style="font-size:11.5px;font-weight:700;color:#111">${e.szkola||''}</span>
+                </div>
+                <div style="font-size:10px;color:#666;margin-top:2px">${e.kierunek||''}</div>
+              </div>`).join('')}
+            </div>`:''}
+          </div>
+        </div>
+        <div style="text-align:center;font-size:9px;color:#ccc;padding:6px 34px;border-top:1px solid #f0f0f0">${L("consent")}</div>
       </div>
-      <!-- divider -->
-      <div style="position:relative;z-index:1;height:3px;background:${c1};margin:14px 36px 0"></div>
-      <!-- TWO-COLUMN BODY -->
-      <div style="position:relative;z-index:1;display:flex;padding:14px 12px 44px;gap:0">
-        <!-- LEFT COLUMN -->
-        <div style="width:196px;flex-shrink:0;padding:0 14px 0 24px">
-          ${skills.length?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoSkill, L('skills'))}
-            ${skills.map(s=>`<div style="font-size:11px;color:#333;margin-bottom:5px;line-height:1.4;padding-left:8px;border-left:2px solid ${c1}">${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoLang, L('languages'))}
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:11px;color:#333;margin-bottom:5px">${l.jezyk} <span style="color:#888">| ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${certGroups.length?certGroups.map(({label,items})=>`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoCert, label)}
-            ${items.map(c=>`
-            <div style="margin-bottom:7px">
-              <div style="font-size:10.5px;color:#444;line-height:1.45">${c}</div>
-            </div>`).join('')}
-          </div>`).join(''):''}
-          ${d.zainteresowania?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoInt, L('interests'))}
-            <div style="font-size:11px;color:#444;line-height:1.65">${d.zainteresowania}</div>
-          </div>`:''}
-          ${renderCustomSections(c1,c2)}
-        </div>
-        <!-- RIGHT COLUMN -->
-        <div style="flex:1;padding:0 22px 0 16px;border-left:1.5px solid #e5e7eb">
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoWork, L('experience'))}
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-            <div style="margin-bottom:12px">
-              <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px">
-                ${(e.od||e.do)?`<span style="font-size:10px;color:${c1};font-weight:700;white-space:nowrap">${[e.od,e.do].filter(Boolean).join(' – ')} /</span>`:''}
-                <span style="font-size:11.5px;font-weight:700;color:#111">${e.stanowisko||''}</span>
-              </div>
-              <div style="font-size:10px;color:#666;margin-top:2px">${e.firma||''}</div>
-              ${e.opis?`<div style="font-size:11px;color:#444;margin-top:4px;line-height:1.55">${e.opis}</div>`:''}
-            </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoEdu, L('education'))}
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-            <div style="margin-bottom:11px">
-              <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px">
-                ${(e.od||e.do)?`<span style="font-size:10px;color:${c1};font-weight:700;white-space:nowrap">${[e.od,e.do].filter(Boolean).join(' – ')} /</span>`:''}
-                <span style="font-size:11.5px;font-weight:700;color:#111">${e.szkola||''}</span>
-              </div>
-              <div style="font-size:10px;color:#666;margin-top:2px">${e.kierunek||''}</div>
-            </div>`).join('')}
-          </div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:6px 36px;border-top:1px solid #f0f0f0;position:relative;z-index:1">${L("consent")}</div>
     </div>`;
   }
 

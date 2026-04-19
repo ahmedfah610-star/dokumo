@@ -914,38 +914,57 @@ function preview(id, c1, c2) {
       </div>`;
     })(),
 
-    dynamic: `<div style="width:595px;height:842px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;position:relative;background:#fff">
-      <div style="position:absolute;top:-8px;right:-18px;width:0;height:0;border-style:solid;border-width:0 180px 130px 0;border-color:transparent ${c1} transparent transparent;z-index:0"></div>
-      <div style="position:absolute;top:0;right:0;width:130px;height:90px;background:${c2};clip-path:polygon(100% 0,100% 100%,0 0);z-index:0;opacity:0.7"></div>
-      <div style="position:absolute;bottom:20px;right:0;z-index:0">
-        <div style="width:90px;height:10px;background:${c1};transform:skewX(-20deg);margin-bottom:5px;margin-right:8px"></div>
-        <div style="width:58px;height:10px;background:${c2};transform:skewX(-20deg);margin-right:20px"></div>
-      </div>
-      <div style="position:relative;z-index:1;padding:26px 36px 0">
-        <div style="font-size:26px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${S.name.split(' ')[0]||''}<br>${S.name.split(' ').slice(1).join(' ')||''}</div>
-        <div style="font-size:11px;color:${c1};font-weight:700;margin-top:5px;letter-spacing:0.5px;text-transform:uppercase">${S.role}</div>
-        <div style="margin-top:10px;font-size:10px;color:#555">✉ ${S.email} &nbsp; ☎ ${S.phone}</div>
-        <div style="margin-top:10px;font-size:10.5px;color:#444;line-height:1.6;max-width:420px">${S.sum.substring(0,120)}…</div>
-      </div>
-      <div style="position:relative;z-index:1;height:3px;background:${c1};margin:14px 36px 0"></div>
-      <div style="position:relative;z-index:1;display:flex;padding:14px 12px 0;gap:0">
-        <div style="width:196px;flex-shrink:0;padding:0 14px 0 24px">
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:9px"> / Umiejętności</div>
-          ${['Zarządzanie projektami','Analityka danych','Obsługa klienta','Microsoft Office'].map(s=>`<div style="font-size:10px;color:#333;margin-bottom:5px;padding-left:7px;border-left:2px solid ${c1}">${s}</div>`).join('')}
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin:12px 0 9px"> / Języki</div>
-          <div style="font-size:10px;color:#333;margin-bottom:5px">angielski <span style="color:#888">| C1</span></div>
-          <div style="font-size:10px;color:#333;margin-bottom:5px">niemiecki <span style="color:#888">| B2</span></div>
-        </div>
-        <div style="flex:1;padding:0 22px 0 16px;border-left:1.5px solid #e5e7eb">
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:4px;margin-bottom:10px"> / Doświadczenie</div>
-          ${[{f:S.exp1f,r:S.exp1r,d:S.exp1d},{f:S.exp2f,r:S.exp2r,d:S.exp2d}].filter(e=>e.f).map(e=>`
-          <div style="margin-bottom:11px">
-            <div style="display:flex;align-items:baseline;gap:4px">
-              <span style="font-size:9.5px;color:${c1};font-weight:700">${e.d} /</span>
-              <span style="font-size:10.5px;font-weight:700;color:#111">${e.r}</span>
+    dynamic: `<div style="width:595px;height:842px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:#fff;position:relative">
+      <svg style="position:absolute;top:0;right:0;z-index:0;pointer-events:none" width="190" height="150" viewBox="0 0 190 150"><polygon points="190,0 190,150 40,0" fill="${c1}"/><polygon points="190,0 190,105 90,0" fill="${c2}" opacity="0.75"/></svg>
+      <svg style="position:absolute;bottom:14px;right:0;z-index:0;pointer-events:none" width="110" height="32" viewBox="0 0 110 32"><rect x="0" y="0" width="95" height="11" fill="${c1}" transform="skewX(-20)"/><rect x="15" y="16" width="62" height="11" fill="${c2}" transform="skewX(-20)"/></svg>
+      <div style="position:relative;z-index:1">
+        <div style="padding:22px 30px 14px">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:24px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${S.name.split(' ')[0]||''}</div>
+              <div style="font-size:24px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${S.name.split(' ').slice(1).join(' ')||''}</div>
+              <div style="font-size:10px;color:${c1};font-weight:700;margin-top:5px;text-transform:uppercase">${S.role}</div>
+              <div style="margin-top:8px;font-size:9.5px;color:#555">✉ ${S.email} &nbsp; ☎ ${S.phone} &nbsp; 📍 ${S.city}</div>
             </div>
-            <div style="font-size:9.5px;color:#666;margin-top:1px">${e.f}</div>
-          </div>`).join('')}
+            <div style="width:70px;height:70px;border-radius:7px;background:#e5e7eb;flex-shrink:0"></div>
+          </div>
+          <div style="margin-top:10px;font-size:10px;color:#444;line-height:1.6">${S.sum}</div>
+        </div>
+        <div style="height:3px;background:${c1};margin:0 30px"></div>
+        <div style="display:flex;padding:12px 0 0">
+          <div style="flex:0 0 192px;padding:0 12px 0 18px;box-sizing:border-box">
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;margin-bottom:8px"> / Umiejętności</div>
+            ${[S.sk1,S.sk2,S.sk3,S.sk4,S.sk5,S.sk6].map(s=>`<div style="font-size:9.5px;color:#333;margin-bottom:4px;padding-left:6px;border-left:2px solid ${c1}">${s}</div>`).join('')}
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;margin:12px 0 8px"> / Języki</div>
+            <div style="font-size:9.5px;color:#333;margin-bottom:4px">${S.lang1} <span style="color:#888">| ${S.lang1l}</span></div>
+            <div style="font-size:9.5px;color:#333;margin-bottom:4px">${S.lang2} <span style="color:#888">| ${S.lang2l}</span></div>
+            <div style="font-size:9.5px;color:#333;margin-bottom:4px">${S.lang3} <span style="color:#888">| ${S.lang3l}</span></div>
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;margin:12px 0 8px"> / Certyfikaty</div>
+            ${[S.cert1,S.cert2,S.cert3].map(c=>`<div style="font-size:9px;color:#444;margin-bottom:5px;line-height:1.35">${c}</div>`).join('')}
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;margin:12px 0 8px"> / Zainteresowania</div>
+            <div style="font-size:9px;color:#444;line-height:1.55">${S.int}</div>
+          </div>
+          <div style="flex:1;min-width:0;padding:0 18px 0 12px;border-left:1.5px solid #e0e4ea">
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;margin-bottom:10px"> / Doświadczenie</div>
+            ${[{f:S.exp1f,r:S.exp1r,d:S.exp1d,desc:S.exp1desc},{f:S.exp2f,r:S.exp2r,d:S.exp2d,desc:S.exp2desc},{f:S.exp3f,r:S.exp3r,d:S.exp3d,desc:S.exp3desc}].map(e=>`
+            <div style="margin-bottom:11px">
+              <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:3px">
+                <span style="font-size:9px;color:${c1};font-weight:700;white-space:nowrap">${e.d} /</span>
+                <span style="font-size:10px;font-weight:700;color:#111">${e.r}</span>
+              </div>
+              <div style="font-size:9px;color:#666;margin-top:1px">${e.f}</div>
+              <div style="font-size:9px;color:#555;margin-top:3px;line-height:1.45">${e.desc}</div>
+            </div>`).join('')}
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};border-bottom:1.5px solid ${c1};padding-bottom:3px;margin:10px 0 8px"> / Wykształcenie</div>
+            ${[{s:S.edu1,d:S.edu1d,y:S.edu1y},{s:S.edu2,d:S.edu2d,y:S.edu2y}].map(e=>`
+            <div style="margin-bottom:9px">
+              <div style="display:flex;align-items:baseline;gap:3px;flex-wrap:wrap">
+                <span style="font-size:9px;color:${c1};font-weight:700">${e.y} /</span>
+                <span style="font-size:10px;font-weight:700;color:#111">${e.s}</span>
+              </div>
+              <div style="font-size:9px;color:#666;margin-top:1px">${e.d}</div>
+            </div>`).join('')}
+          </div>
         </div>
       </div>
     </div>`,
