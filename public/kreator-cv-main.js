@@ -363,7 +363,7 @@ let cvCustomSections = []; // [{id, title, content}]
 const CASCADE_SIDEBAR_DEFAULTS = ['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania'];
 let cvSidebarSections = new Set(CASCADE_SIDEBAR_DEFAULTS);
 const CASCADE_MOVABLE = new Set(['umiejetnosci','jezyki','certyfikaty','kursy','staze','zainteresowania']);
-const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens','timeline','oxford','biznes','maroon']);
+const SIDEBAR_TPLS = new Set(['cascade','sidebar','athens','timeline','oxford','biznes','maroon','dynamic']);
 function toggleCascadeSidebar(sec, e) {
   if (e) { e.stopPropagation(); }
   if (cvSidebarSections.has(sec)) cvSidebarSections.delete(sec);

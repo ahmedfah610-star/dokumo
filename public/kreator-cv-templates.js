@@ -1715,6 +1715,11 @@ function buildCVHTML(tpl) {
 
   // ── DYNAMIC ───────────────────────────────────────────────
   if (tpl === 'dynamic') {
+    const sb = cvSidebarSections;
+    const skillsInSb = sb.has('umiejetnosci') && skills.length;
+    const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
+    const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
+    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
     const secHdr = (icon, label) => `<div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;padding-bottom:4px;border-bottom:1.5px solid ${c1}">${icon}<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:${c1}">${label}</span></div>`;
     const icoWork  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
     const icoEdu   = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
@@ -1722,7 +1727,6 @@ function buildCVHTML(tpl) {
     const icoLang  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
     const icoCert  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`;
     const icoInt   = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 12 2a8 8 0 0 0-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg>`;
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
     return `
     <div style="font-family:Arial,Helvetica,sans-serif;width:595px;box-sizing:border-box;height:842px;overflow:hidden;display:flex;flex-direction:column">
       <div style="background:${c1};flex-shrink:0;padding:20px 28px 16px">
@@ -1744,15 +1748,20 @@ function buildCVHTML(tpl) {
       <div style="height:4px;background:${c2};flex-shrink:0"></div>
       <div style="display:flex;flex:1;overflow:hidden">
         <div style="width:185px;flex-shrink:0;overflow:hidden;background:#f5f7fb;border-right:1.5px solid #dde3ed;padding:13px 12px 13px 16px">
-          ${skills.length?`<div style="margin-bottom:12px">${secHdr(icoSkill,L('skills'))}${skills.map(s=>`<div style="font-size:9px;color:#333;margin-bottom:3px;line-height:1.3;padding-left:6px;border-left:2px solid ${c1}">${s}</div>`).join('')}</div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:12px">${secHdr(icoLang,L('languages'))}${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:3px"><span style="font-weight:600">${l.jezyk}</span> <span style="color:#888;font-size:8px">| ${l.poziom}</span></div>`).join('')}</div>`:''}
-          ${certGroups.length?certGroups.map(({label,items})=>`<div style="margin-bottom:12px">${secHdr(icoCert,label)}${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;line-height:1.4">${c}</div>`).join('')}</div>`).join(''):''}
-          ${d.zainteresowania?`<div style="margin-bottom:12px">${secHdr(icoInt,L('interests'))}<div style="font-size:9px;color:#444;line-height:1.55">${d.zainteresowania}</div></div>`:''}
-          ${customSects.map(s=>`<div style="margin-bottom:12px">${secHdr(icoWork,s.title||'')}<div style="font-size:9px;color:#444;line-height:1.55">${s.content||''}</div></div>`).join('')}
+          ${skillsInSb?`<div style="margin-bottom:12px">${secHdr(icoSkill,L('skills'))}${skills.map(s=>`<div style="font-size:9px;color:#333;margin-bottom:3px;line-height:1.3;padding-left:6px;border-left:2px solid ${c1}">${s}</div>`).join('')}</div>`:''}
+          ${jezykiInSb?`<div style="margin-bottom:12px">${secHdr(icoLang,L('languages'))}${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:3px"><span style="font-weight:600">${l.jezyk}</span> <span style="color:#888;font-size:8px">| ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certGroups.filter(cg=>sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:12px">${secHdr(icoCert,label)}${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;line-height:1.4">${c}</div>`).join('')}</div>`).join('')}
+          ${intInSb?`<div style="margin-bottom:12px">${secHdr(icoInt,L('interests'))}<div style="font-size:9px;color:#444;line-height:1.55">${d.zainteresowania}</div></div>`:''}
+          ${customSects.filter(s=>sb.has('custom-'+s.id)).map(s=>`<div style="margin-bottom:12px">${secHdr(icoWork,s.title||'')}<div style="font-size:9px;color:#444;line-height:1.55">${s.content||''}</div></div>`).join('')}
         </div>
         <div style="flex:1;min-width:0;overflow:hidden;padding:13px 18px 13px 14px">
           ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`<div style="margin-bottom:13px">${secHdr(icoWork,L('experience'))}${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`<div style="margin-bottom:10px"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:3px">${(e.od||e.do)?`<span style="font-size:8.5px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join('–')} /</span>`:''}<span style="font-size:10px;font-weight:700;color:#111">${e.stanowisko||''}</span></div><div style="font-size:8.5px;color:#666;margin-top:1px">${e.firma||''}</div>${e.opis?`<div style="font-size:9px;color:#444;margin-top:3px;line-height:1.5">${e.opis}</div>`:''}</div>`).join('')}</div>`:''}
           ${d.wyksztalcenie.some(e=>e.szkola)?`<div style="margin-bottom:13px">${secHdr(icoEdu,L('education'))}${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`<div style="margin-bottom:9px"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:3px">${(e.od||e.do)?`<span style="font-size:8.5px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join('–')} /</span>`:''}<span style="font-size:10px;font-weight:700;color:#111">${e.szkola||''}</span></div><div style="font-size:8.5px;color:#666;margin-top:1px">${e.kierunek||''}</div></div>`).join('')}</div>`:''}
+          ${!skillsInSb&&skills.length?`<div style="margin-bottom:13px">${secHdr(icoSkill,L('skills'))}${skills.map(s=>`<div style="font-size:9px;color:#333;margin-bottom:3px;line-height:1.3;padding-left:6px;border-left:2px solid ${c1}">${s}</div>`).join('')}</div>`:''}
+          ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:13px">${secHdr(icoLang,L('languages'))}${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:3px"><span style="font-weight:600">${l.jezyk}</span> <span style="color:#888;font-size:8px">| ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:13px">${secHdr(icoCert,label)}${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;line-height:1.4">${c}</div>`).join('')}</div>`).join('')}
+          ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:13px">${secHdr(icoInt,L('interests'))}<div style="font-size:9px;color:#444;line-height:1.55">${d.zainteresowania}</div></div>`:''}
+          ${customSects.filter(s=>!sb.has('custom-'+s.id)).map(s=>`<div style="margin-bottom:13px">${secHdr(icoWork,s.title||'')}<div style="font-size:9px;color:#444;line-height:1.55">${s.content||''}</div></div>`).join('')}
         </div>
       </div>
       <div style="flex-shrink:0;text-align:center;font-size:8px;color:#ccc;padding:4px 28px;border-top:1px solid #f0f0f0">${L("consent")}</div>
