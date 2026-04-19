@@ -72,7 +72,7 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         body: JSON.stringify({
-          from: 'Dokumo Kontakt <onboarding@resend.dev>',
+          from: 'Dokumo Kontakt <noreply@dokumoflow.com>',
           to: 'dokumoflow@gmail.com',
           reply_to: email,
           subject: `Wiadomość od ${name}`,
