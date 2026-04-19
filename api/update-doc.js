@@ -21,7 +21,7 @@ function checkMemRateLimit(uid, max, windowMs) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST' && req.method !== 'DELETE') return res.status(405).end();
 
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
@@ -30,6 +30,14 @@ export default async function handler(req, res) {
   try { ({ uid } = await auth.verifyIdToken(token)); }
   catch { return res.status(401).json({ error: 'Nieważny token' }); }
 
+  if (req.method === 'DELETE') {
+    const { docId } = req.body;
+    if (!docId) return res.status(400).json({ error: 'Brak docId' });
+    await db.collection('users').doc(uid).collection('documents').doc(docId).delete();
+    return res.status(200).json({ ok: true });
+  }
+
+  // POST — update
   if (!checkMemRateLimit(uid, 60, 60_000)) {
     return res.status(429).json({ error: 'Zbyt wiele żądań. Spróbuj za chwilę.' });
   }
@@ -37,7 +45,6 @@ export default async function handler(req, res) {
   const { docId, text, name, covDataJson, fakDataJson } = req.body;
   if (!docId) return res.status(400).json({ error: 'Brak docId' });
 
-  // Limity rozmiaru
   const MAX = 500000;
   if (typeof text === 'string' && text.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
   if (typeof covDataJson === 'string' && covDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });

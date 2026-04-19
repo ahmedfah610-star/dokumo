@@ -582,7 +582,7 @@ async function loadDocsFromAPI() {
 async function deleteDocAPI(docId) {
   var token = await getToken();
   if (!token) return;
-  await fetch('/api/delete-doc', {
+  await fetch('/api/update-doc', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
     body: JSON.stringify({ docId: docId })
@@ -1045,7 +1045,7 @@ async function doDeleteSelected() {
   if (!token) { showToast('Błąd autoryzacji.'); return; }
   showToast('Usuwanie ' + ids.length + ' dokumentów…');
   await Promise.all(ids.map(function(id) {
-    return fetch('/api/delete-doc', {
+    return fetch('/api/update-doc', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ docId: id })
