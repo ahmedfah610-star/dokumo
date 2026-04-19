@@ -2044,7 +2044,13 @@ async function downloadCV() {
     const resp = await fetch('/api/pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ html: el.innerHTML, filename: safeName, isCv: true })
+      body: JSON.stringify({
+        html: el.innerHTML,
+        filename: safeName,
+        isCv: true,
+        cvDocName: 'CV – ' + fullName,
+        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))
+      })
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));

@@ -52,8 +52,28 @@ export default async function handler(req, res) {
   if (!hasSub && isCv) {
     const freeRef = db.collection('users').doc(uid).collection('cvDownloads').doc('free');
     try {
-      await freeRef.create({ usedAt: Timestamp.now() });
-      // darmowy slot zajęty — pozwól na to pobranie
+      const { cvDocName, cvDataJson } = req.body || {};
+      await freeRef.create({ usedAt: Timestamp.now(), docName: cvDocName || 'CV' });
+      // Zapisz dokument do users/{uid}/documents żeby było widać co pobrano
+      try {
+        const docRef = db.collection('users').doc(uid).collection('documents').doc();
+        await docRef.set({
+          id: docRef.id,
+          typeId: 'cv',
+          name: cvDocName || 'CV',
+          text: '',
+          cat: 'kariera',
+          icon: '📋',
+          catLabel: 'Kariera',
+          status: 'generated',
+          isFree: true,
+          cvDataJson: typeof cvDataJson === 'string' && cvDataJson.length <= 500000 ? cvDataJson : '',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } catch(saveErr) {
+        console.error('Free CV doc save error:', saveErr.message);
+      }
     } catch(createErr) {
       if (createErr.code === 6) return res.status(403).json({ error: 'cv_free_used' });
       throw createErr;
