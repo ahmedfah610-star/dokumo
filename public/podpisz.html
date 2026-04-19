@@ -93,6 +93,7 @@ function render() {
       + '<button onclick="clearCanvas()" style="font-size:.72rem;color:#999;background:none;border:none;cursor:pointer;padding:4px 0;margin-top:4px">Wyczyść</button></div>'
       + '<div style="margin-bottom:20px"><label class="field-lbl">Imię i nazwisko</label>'
       + '<input class="field-in" id="signerName" type="text" placeholder="np. Anna Nowak"></div>'
+      + '<div style="margin-bottom:16px;padding:12px 14px;background:#f8f9fa;border-radius:12px;border:1px solid #e5e5e5"><p style="font-size:.72rem;color:#666;line-height:1.55;margin-bottom:6px">Klikając „Podpisz" składasz <strong>prosty podpis elektroniczny</strong> w rozumieniu art. 3 pkt 10 rozporządzenia eIDAS (UE 910/2014). Podpis jest prawnie wiążący dla umów cywilnoprawnych zgodnie z Kodeksem cywilnym.</p><p style="font-size:.72rem;color:#666;line-height:1.55">Twoje dane (imię i nazwisko, graficzny wzór podpisu, adres IP, znacznik czasu) są przetwarzane przez Dokumo wyłącznie w celu realizacji usługi podpisu elektronicznego, zgodnie z RODO art. 6 ust. 1 lit. b.</p></div>'
       + '<button class="btn-primary" onclick="submitSign()">✍ Podpisz dokument</button>'
       + '</div>';
   }
@@ -159,11 +160,11 @@ function generateAndDownloadPDF(data) {
     + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
     + '<img src="' + sig1.sig + '" style="height:54px;display:block;margin-bottom:6px">'
     + '<div style="font-size:10pt;font-weight:700">' + sig1.name + '</div>'
-    + '<div style="font-size:9pt;color:#666">' + sig1.date + ' · Podpis elektroniczny</div></div>'
+    + '<div style="font-size:9pt;color:#666">' + sig1.date + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
     + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'
     + '<img src="' + sig2.sig + '" style="height:54px;display:block;margin-bottom:6px">'
     + '<div style="font-size:10pt;font-weight:700">' + sig2.name + '</div>'
-    + '<div style="font-size:9pt;color:#666">' + sig2.date + ' · Podpis elektroniczny</div></div>'
+    + '<div style="font-size:9pt;color:#666">' + sig2.date + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
     + '</div>';
 
   var win = window.open('', '_blank');
