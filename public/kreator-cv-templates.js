@@ -1715,99 +1715,47 @@ function buildCVHTML(tpl) {
 
   // ── DYNAMIC ───────────────────────────────────────────────
   if (tpl === 'dynamic') {
-    const secHdr = (icon, label) => `
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:5px;border-bottom:1.5px solid ${c1}">
-        ${icon}
-        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:${c1}"> / ${label}</span>
-      </div>`;
-    const icoWork  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
-    const icoEdu   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
-    const icoSkill = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>`;
-    const icoLang  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
-    const icoCert  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`;
-    const icoInt   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 12 2a8 8 0 0 0-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg>`;
+    const secHdr = (icon, label) => `<div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;padding-bottom:4px;border-bottom:1.5px solid ${c1}">${icon}<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:${c1}">${label}</span></div>`;
+    const icoWork  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
+    const icoEdu   = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
+    const icoSkill = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>`;
+    const icoLang  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+    const icoCert  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`;
+    const icoInt   = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 12 2a8 8 0 0 0-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg>`;
+    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
     return `
-    <div style="font-family:Arial,Helvetica,sans-serif;background:#fff;width:595px;box-sizing:border-box;min-height:842px">
-      <!-- HEADER: position:relative scopes the SVG triangle decoration -->
-      <div style="position:relative;overflow:hidden;padding:26px 34px 16px">
-        <svg style="position:absolute;top:0;right:0;pointer-events:none" width="190" height="150" viewBox="0 0 190 150" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="190,0 190,150 40,0" fill="${c1}"/>
-          <polygon points="190,0 190,105 90,0" fill="${c2}" opacity="0.75"/>
-        </svg>
-        <div style="position:relative;z-index:1">
-          <div style="display:flex;align-items:flex-start;gap:14px">
-            <div style="flex:1;min-width:0">
-              <div style="font-size:28px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${d.imie||''}</div>
-              <div style="font-size:28px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${d.nazwisko||''}</div>
-              ${d.stanowisko?`<div style="font-size:11px;color:${c1};font-weight:700;margin-top:5px;letter-spacing:0.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
-              <div style="margin-top:10px;display:flex;flex-wrap:wrap;row-gap:2px;column-gap:14px">
-                ${d.email?`<span style="font-size:10px;color:#555">✉ ${d.email}</span>`:''}
-                ${d.tel?`<span style="font-size:10px;color:#555">☎ ${d.tel}</span>`:''}
-                ${d.adres?`<span style="font-size:10px;color:#555">📍 ${d.adres}</span>`:''}
-                ${d.linkedin?`<span style="font-size:10px;color:#555">in ${d.linkedin}</span>`:''}
-              </div>
+    <div style="font-family:Arial,Helvetica,sans-serif;width:595px;box-sizing:border-box;height:842px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="background:${c1};flex-shrink:0;padding:20px 28px 16px">
+        <div style="display:flex;align-items:flex-start;gap:14px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:25px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.04em;line-height:1.1">${d.imie||''} ${d.nazwisko||''}</div>
+            ${d.stanowisko?`<div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:600;margin-top:4px;letter-spacing:0.5px;text-transform:uppercase">${d.stanowisko}</div>`:''}
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;row-gap:2px;column-gap:14px">
+              ${d.email?`<span style="font-size:9px;color:rgba(255,255,255,0.85)">✉ ${d.email}</span>`:''}
+              ${d.tel?`<span style="font-size:9px;color:rgba(255,255,255,0.85)">☎ ${d.tel}</span>`:''}
+              ${d.adres?`<span style="font-size:9px;color:rgba(255,255,255,0.85)">${d.adres}</span>`:''}
+              ${d.linkedin?`<span style="font-size:9px;color:rgba(255,255,255,0.85)">in ${d.linkedin}</span>`:''}
             </div>
-            ${d.zdjecie?`<div style="width:84px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0">${photo}</div>`:'<div style="width:84px;flex-shrink:0"></div>'}
           </div>
-          ${d.podsumowanie?`<div style="margin-top:12px;font-size:11px;color:#444;line-height:1.6">${d.podsumowanie}</div>`:''}
+          ${d.zdjecie?`<div style="width:76px;height:76px;border-radius:6px;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.35)">${photo}</div>`:''}
+        </div>
+        ${d.podsumowanie?`<div style="margin-top:10px;font-size:9px;color:rgba(255,255,255,0.82);line-height:1.55;border-top:1px solid rgba(255,255,255,0.2);padding-top:8px">${d.podsumowanie}</div>`:''}
+      </div>
+      <div style="height:4px;background:${c2};flex-shrink:0"></div>
+      <div style="display:flex;flex:1;overflow:hidden">
+        <div style="width:185px;flex-shrink:0;overflow:hidden;background:#f5f7fb;border-right:1.5px solid #dde3ed;padding:13px 12px 13px 16px">
+          ${skills.length?`<div style="margin-bottom:12px">${secHdr(icoSkill,L('skills'))}${skills.map(s=>`<div style="font-size:9px;color:#333;margin-bottom:3px;line-height:1.3;padding-left:6px;border-left:2px solid ${c1}">${s}</div>`).join('')}</div>`:''}
+          ${d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:12px">${secHdr(icoLang,L('languages'))}${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:9px;color:#333;margin-bottom:3px"><span style="font-weight:600">${l.jezyk}</span> <span style="color:#888;font-size:8px">| ${l.poziom}</span></div>`).join('')}</div>`:''}
+          ${certGroups.length?certGroups.map(({label,items})=>`<div style="margin-bottom:12px">${secHdr(icoCert,label)}${items.map(c=>`<div style="font-size:8.5px;color:#444;margin-bottom:4px;line-height:1.4">${c}</div>`).join('')}</div>`).join(''):''}
+          ${d.zainteresowania?`<div style="margin-bottom:12px">${secHdr(icoInt,L('interests'))}<div style="font-size:9px;color:#444;line-height:1.55">${d.zainteresowania}</div></div>`:''}
+          ${customSects.map(s=>`<div style="margin-bottom:12px">${secHdr(icoWork,s.title||'')}<div style="font-size:9px;color:#444;line-height:1.55">${s.content||''}</div></div>`).join('')}
+        </div>
+        <div style="flex:1;min-width:0;overflow:hidden;padding:13px 18px 13px 14px">
+          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`<div style="margin-bottom:13px">${secHdr(icoWork,L('experience'))}${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`<div style="margin-bottom:10px"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:3px">${(e.od||e.do)?`<span style="font-size:8.5px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join('–')} /</span>`:''}<span style="font-size:10px;font-weight:700;color:#111">${e.stanowisko||''}</span></div><div style="font-size:8.5px;color:#666;margin-top:1px">${e.firma||''}</div>${e.opis?`<div style="font-size:9px;color:#444;margin-top:3px;line-height:1.5">${e.opis}</div>`:''}</div>`).join('')}</div>`:''}
+          ${d.wyksztalcenie.some(e=>e.szkola)?`<div style="margin-bottom:13px">${secHdr(icoEdu,L('education'))}${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`<div style="margin-bottom:9px"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:3px">${(e.od||e.do)?`<span style="font-size:8.5px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join('–')} /</span>`:''}<span style="font-size:10px;font-weight:700;color:#111">${e.szkola||''}</span></div><div style="font-size:8.5px;color:#666;margin-top:1px">${e.kierunek||''}</div></div>`).join('')}</div>`:''}
         </div>
       </div>
-      <!-- DIVIDER: plain block element, no positioning -->
-      <div style="height:3px;background:${c1};margin:0 34px"></div>
-      <!-- TWO-COLUMN BODY: pure flexbox, no position tricks -->
-      <div style="display:flex;padding:14px 0 30px">
-        <div style="flex:0 0 200px;padding:0 14px 0 22px;box-sizing:border-box">
-          ${skills.length?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoSkill, L('skills'))}
-            ${skills.map(s=>`<div style="font-size:11px;color:#333;margin-bottom:5px;line-height:1.35;padding-left:7px;border-left:2px solid ${c1}">${s}</div>`).join('')}
-          </div>`:''}
-          ${d.jezyki.some(l=>l.jezyk)?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoLang, L('languages'))}
-            ${d.jezyki.filter(l=>l.jezyk).map(l=>`<div style="font-size:11px;color:#333;margin-bottom:5px">${l.jezyk} <span style="color:#888">| ${l.poziom}</span></div>`).join('')}
-          </div>`:''}
-          ${certGroups.length?certGroups.map(({label,items})=>`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoCert, label)}
-            ${items.map(c=>`<div style="font-size:10.5px;color:#444;margin-bottom:6px;line-height:1.4">${c}</div>`).join('')}
-          </div>`).join(''):''}
-          ${d.zainteresowania?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoInt, L('interests'))}
-            <div style="font-size:11px;color:#444;line-height:1.65">${d.zainteresowania}</div>
-          </div>`:''}
-          ${renderCustomSections(c1,c2)}
-        </div>
-        <div style="flex:1;min-width:0;padding:0 22px 0 14px;border-left:1.5px solid #e0e4ea">
-          ${d.doswiadczenie.some(e=>e.firma||e.stanowisko)?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoWork, L('experience'))}
-            ${d.doswiadczenie.filter(e=>e.firma||e.stanowisko).map(e=>`
-            <div style="margin-bottom:13px">
-              <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px">
-                ${(e.od||e.do)?`<span style="font-size:10px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')} /</span>`:''}
-                <span style="font-size:11.5px;font-weight:700;color:#111">${e.stanowisko||''}</span>
-              </div>
-              <div style="font-size:10px;color:#666;margin-top:2px">${e.firma||''}</div>
-              ${e.opis?`<div style="font-size:11px;color:#444;margin-top:4px;line-height:1.5">${e.opis}</div>`:''}
-            </div>`).join('')}
-          </div>`:''}
-          ${d.wyksztalcenie.some(e=>e.szkola)?`
-          <div style="margin-bottom:16px">
-            ${secHdr(icoEdu, L('education'))}
-            ${d.wyksztalcenie.filter(e=>e.szkola).map(e=>`
-            <div style="margin-bottom:11px">
-              <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px">
-                ${(e.od||e.do)?`<span style="font-size:10px;color:${c1};font-weight:700;white-space:nowrap;flex-shrink:0">${[e.od,e.do].filter(Boolean).join(' – ')} /</span>`:''}
-                <span style="font-size:11.5px;font-weight:700;color:#111">${e.szkola||''}</span>
-              </div>
-              <div style="font-size:10px;color:#666;margin-top:2px">${e.kierunek||''}</div>
-            </div>`).join('')}
-          </div>`:''}
-        </div>
-      </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:6px 34px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div style="flex-shrink:0;text-align:center;font-size:8px;color:#ccc;padding:4px 28px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
   }
 
