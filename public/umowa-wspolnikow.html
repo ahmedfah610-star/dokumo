@@ -208,6 +208,18 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
 .faq-item.open .faq-chevron { transform: rotate(180deg); }
 .faq-item.open .faq-a { display: block; }
+
+/* ── SIGN MODAL ── */
+.sign-modal-bg{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
+.sign-modal-bg.open{display:flex}
+.sign-modal{background:#fff;border-radius:20px;max-width:460px;width:100%;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.22);animation:fadeUp .25s ease both}
+.sign-modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sign-modal-title{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.sign-modal-close{background:none;border:none;font-size:1.4rem;color:#999;cursor:pointer;line-height:1;padding:0}
+.sign-field-lbl{display:block;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:7px}
+.sign-field-in{width:100%;padding:11px 15px;font-family:'Figtree',sans-serif;font-size:.88rem;font-weight:500;color:var(--ink);background:var(--surface);border:1.5px solid transparent;border-radius:12px;outline:none;transition:border-color .2s}
+.sign-field-in:focus{background:#fff;border-color:var(--ink)}
+#signCanvas{width:100%;border:1.5px solid var(--border);border-radius:12px;cursor:crosshair;touch-action:none;background:#fafafa;display:block}
 </style>
 
 <script type="module">
@@ -286,6 +298,15 @@ onAuthStateChanged(getAuth(app),async u=>{
         <button class="act-btn secondary" onclick="copyDoc()">📋 Kopiuj tekst</button>
         <button class="act-btn secondary" onclick="downloadAs('rtf')">⬇ Pobierz Word (.rtf)</button>
         <button class="act-btn secondary" onclick="downloadAs('txt')">⬇ Pobierz TXT</button>
+        <button class="act-btn secondary" id="btnSign" onclick="openSignModal()">✍ Podpisz elektronicznie</button>
+      </div>
+      <div id="sigLinkWrap" style="display:none;margin-top:16px;padding:14px 16px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px">
+        <div style="font-size:.75rem;font-weight:700;color:#15803d;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Link dla drugiej strony</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="sigLinkInput" readonly style="flex:1;font-size:.78rem;padding:8px 12px;border:1.5px solid #bbf7d0;border-radius:10px;background:#fff;color:#111;font-family:'Figtree',sans-serif;outline:none" value="">
+          <button onclick="copySignLink()" style="padding:8px 14px;border-radius:10px;background:#15803d;color:#fff;font-size:.78rem;font-weight:700;border:none;cursor:pointer;white-space:nowrap">Kopiuj</button>
+        </div>
+        <div style="font-size:.72rem;color:#16a34a;margin-top:6px">Wyślij ten link drugiej stronie — podpisze bez rejestracji</div>
       </div>
     </div>
   </div>
@@ -631,6 +652,128 @@ function downloadAs(fmt){
 renderNavSteps();
 renderBar();
 renderForm();
+</script>
+
+<!-- SIGN MODAL -->
+<div class="sign-modal-bg" id="signModalBg">
+  <div class="sign-modal">
+    <div class="sign-modal-hd">
+      <div class="sign-modal-title">Podpisz dokument</div>
+      <button class="sign-modal-close" onclick="closeSignModal()">×</button>
+    </div>
+    <div style="margin-bottom:16px">
+      <label class="sign-field-lbl">Twój podpis — narysuj poniżej</label>
+      <canvas id="signCanvas" width="400" height="130"></canvas>
+      <button onclick="clearCanvas()" style="font-size:.72rem;color:var(--ink3);background:none;border:none;cursor:pointer;padding:4px 0;margin-top:4px">Wyczyść</button>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="sign-field-lbl">Twoje imię i nazwisko</label>
+      <input class="sign-field-in" id="signName" type="text" placeholder="np. Jan Kowalski">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="sign-field-lbl">Twój e-mail <span style="font-weight:400;text-transform:none;font-size:.68rem">(opcjonalnie — dostaniesz potwierdzenie)</span></label>
+      <input class="sign-field-in" id="signParty1Email" type="email" placeholder="np. jan.kowalski@example.com">
+    </div>
+    <div style="margin-bottom:22px">
+      <label class="sign-field-lbl">E-mail drugiej strony <span style="font-weight:400;text-transform:none;font-size:.68rem">(opcjonalnie — wyślemy link do podpisania)</span></label>
+      <input class="sign-field-in" id="signParty2" type="email" placeholder="np. anna.nowak@example.com">
+    </div>
+    <div style="margin-bottom:16px;padding:12px 14px;background:#f8f9fa;border-radius:12px;border:1px solid #e5e5e5">
+      <p style="font-size:.72rem;color:#666;line-height:1.55;margin-bottom:6px">Klikając „Podpisz" składasz <strong>prosty podpis elektroniczny</strong> w rozumieniu art. 3 pkt 10 rozporządzenia eIDAS (UE 910/2014). Podpis jest prawnie wiążący dla umów cywilnoprawnych zgodnie z Kodeksem cywilnym.</p>
+      <p style="font-size:.72rem;color:#666;line-height:1.55">Twoje dane (imię i nazwisko, graficzny wzór podpisu, adres IP, znacznik czasu) są przetwarzane przez Dokumo wyłącznie w celu realizacji usługi podpisu elektronicznego, zgodnie z <a href="generator-polityki-prywatnosci.html" style="color:#2563eb;text-decoration:none">Polityką prywatności</a> i art. 6 ust. 1 lit. b RODO.</p>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeSignModal()" style="flex:1;padding:13px;border-radius:var(--pill);font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:600;background:var(--surface);border:1.5px solid var(--border);cursor:pointer;color:var(--ink2)">Anuluj</button>
+      <button onclick="submitSign()" style="flex:2;padding:13px;border-radius:var(--pill);font-family:'Figtree',sans-serif;font-size:.88rem;font-weight:700;background:var(--ink);border:none;cursor:pointer;color:#fff">✍ Podpisz i pobierz PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── SIGNATURE PAD ── */
+var _sc, _sctx, _drawing = false;
+function initCanvas(){
+  _sc = document.getElementById('signCanvas');
+  _sctx = _sc.getContext('2d');
+  _sctx.strokeStyle = '#111'; _sctx.lineWidth = 2.2; _sctx.lineCap = 'round'; _sctx.lineJoin = 'round';
+  var on = function(el,ev,fn){ el.addEventListener(ev,fn); };
+  var pos = function(e){ var r=_sc.getBoundingClientRect(),sx=_sc.width/r.width,sy=_sc.height/r.height; return {x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy}; };
+  on(_sc,'mousedown',function(e){_drawing=true;var p=pos(e);_sctx.beginPath();_sctx.moveTo(p.x,p.y);});
+  on(_sc,'mousemove',function(e){if(!_drawing)return;var p=pos(e);_sctx.lineTo(p.x,p.y);_sctx.stroke();});
+  on(_sc,'mouseup',function(){_drawing=false;});
+  on(_sc,'mouseleave',function(){_drawing=false;});
+  on(_sc,'touchstart',function(e){e.preventDefault();_drawing=true;var p=pos(e.touches[0]);_sctx.beginPath();_sctx.moveTo(p.x,p.y);},{passive:false});
+  on(_sc,'touchmove',function(e){e.preventDefault();if(!_drawing)return;var p=pos(e.touches[0]);_sctx.lineTo(p.x,p.y);_sctx.stroke();},{passive:false});
+  on(_sc,'touchend',function(){_drawing=false;});
+}
+function clearCanvas(){ if(_sctx)_sctx.clearRect(0,0,_sc.width,_sc.height); }
+function canvasEmpty(){ if(!_sc)return true; var d=_sctx.getImageData(0,0,_sc.width,_sc.height).data; for(var i=3;i<d.length;i+=4)if(d[i]>10)return false; return true; }
+
+function openSignModal(){
+  if(!genText){alert('Najpierw wygeneruj dokument.');return;}
+  document.getElementById('signModalBg').classList.add('open');
+  if(!_sc) initCanvas();
+}
+function closeSignModal(){ document.getElementById('signModalBg').classList.remove('open'); }
+
+async function submitSign(){
+  if(canvasEmpty()){alert('Narysuj swój podpis.');return;}
+  var name=document.getElementById('signName').value.trim();
+  if(!name){alert('Wpisz imię i nazwisko.');document.getElementById('signName').focus();return;}
+  var sig=_sc.toDataURL('image/png');
+  var now=new Date();
+  var dateStr=now.toLocaleDateString('pl-PL')+' '+now.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+  downloadSignedPDF(sig,name,'',dateStr);
+  var p2=document.getElementById('signParty2').value.trim();
+  if(p2) await createSignSession(sig,name,p2,dateStr);
+  closeSignModal();
+}
+
+function downloadSignedPDF(sig1,name1,name2,date1){
+  if(!genText)return;
+  var form=FORMS[selDoc]||{},title=form.title||'dokument';
+  var safe=title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
+  var esc=genText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var sigHtml='<div style="margin-top:44px;padding-top:20px;border-top:1.5px solid #ccc;display:flex;gap:48px;flex-wrap:wrap">'
+    +'<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
+    +'<img src="'+sig1+'" style="height:54px;display:block;margin-bottom:6px">'
+    +'<div style="font-size:10pt;font-weight:700">'+name1+'</div>'
+    +'<div style="font-size:9pt;color:#666">'+date1+' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
+    +(name2?'<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'
+    +'<div style="height:54px;border-bottom:1.5px solid #999;width:180px;margin-bottom:6px"></div>'
+    +'<div style="font-size:10pt;font-weight:700">'+name2+'</div><div style="font-size:9pt;color:#666">Oczekuje na podpis</div></div>':'')
+    +'</div>';
+  var win=window.open('','_blank');
+  if(!win){alert('Zezwól na otwieranie okien pop-up dla tej strony.');return;}
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>'
+    +'<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>'
+    +'<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>'
+    +'</head><body><div><pre>'+esc+'</pre>'+sigHtml+'</div>'
+    +'<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"'+safe+'_podpisany.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close();},800);});}<\/scr'+'ipt>'
+    +'</body></html>');
+  win.document.close();
+}
+
+async function createSignSession(sig,name,party2Email,dateStr){
+  try{
+    var token=window._fbToken||'';
+    var r=await fetch('/api/sign',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({docText:genText,docName:FORMS[selDoc].title,party1Name:name,party1Sig:sig,party1Date:dateStr,party1Email:document.getElementById('signParty1Email').value.trim()||null,party2Email:party2Email})
+    });
+    var d=await r.json();
+    if(d.sessionId){
+      var link=window.location.origin+'/podpisz.html?id='+d.sessionId;
+      document.getElementById('sigLinkInput').value=link;
+      document.getElementById('sigLinkWrap').style.display='block';
+    }
+  }catch(e){console.error('sign session:',e);}
+}
+function copySignLink(){
+  var inp=document.getElementById('sigLinkInput');
+  if(inp.value){navigator.clipboard.writeText(inp.value).catch(function(){inp.select();document.execCommand('copy');});}
+}
 </script>
 
 <script src="plan-guard.js?v=2"></script>
