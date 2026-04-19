@@ -700,8 +700,12 @@ selectDoc('protokol');
       <label class="sign-field-lbl">Twoje imię i nazwisko</label>
       <input class="sign-field-in" id="signName" type="text" placeholder="np. Jan Kowalski">
     </div>
+    <div style="margin-bottom:14px">
+      <label class="sign-field-lbl">Twój e-mail <span style="font-weight:400;text-transform:none;font-size:.68rem">(opcjonalnie — dostaniesz potwierdzenie)</span></label>
+      <input class="sign-field-in" id="signParty1Email" type="email" placeholder="np. jan.kowalski@example.com">
+    </div>
     <div style="margin-bottom:22px">
-      <label class="sign-field-lbl">E-mail drugiej strony <span style="font-weight:400;text-transform:none;font-size:.68rem">(opcjonalnie — generuje link do podpisania)</span></label>
+      <label class="sign-field-lbl">E-mail drugiej strony <span style="font-weight:400;text-transform:none;font-size:.68rem">(opcjonalnie — wyślemy link do podpisania)</span></label>
       <input class="sign-field-in" id="signParty2" type="email" placeholder="np. anna.nowak@example.com">
     </div>
     <div style="margin-bottom:16px;padding:12px 14px;background:#f8f9fa;border-radius:12px;border:1px solid #e5e5e5">
@@ -786,7 +790,7 @@ async function createSignSession(sig,name,party2Email,dateStr){
     var r=await fetch('/api/sign',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({docText:genText,docName:FORMS[selDoc].title,party1Name:name,party1Sig:sig,party1Date:dateStr,party2Email:party2Email})
+      body:JSON.stringify({docText:genText,docName:FORMS[selDoc].title,party1Name:name,party1Sig:sig,party1Date:dateStr,party1Email:document.getElementById('signParty1Email').value.trim()||null,party2Email:party2Email})
     });
     var d=await r.json();
     if(d.sessionId){
