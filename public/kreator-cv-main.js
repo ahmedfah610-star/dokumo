@@ -276,6 +276,7 @@ const CV_TEMPLATES = [
   { id:'midnight',     name:'Midnight',     color1:'#0f172a', color2:'#334155',  thumb:'linear-gradient(135deg,#0f172a,#334155)' },
   { id:'coral',        name:'Coral',        color1:'#c2410c', color2:'#fb923c',  thumb:'linear-gradient(135deg,#c2410c,#fb923c)' },
   { id:'rose',         name:'Rose',         color1:'#9d174d', color2:'#ec4899',  thumb:'linear-gradient(135deg,#9d174d,#ec4899)' },
+  { id:'dynamic',      name:'Dynamic',      color1:'#1e56b0', color2:'#0d3875',  thumb:'linear-gradient(135deg,#fff 55%,#1e56b0 55%)' },
   { id:'ocean',        name:'Ocean',        color1:'#1e40af', color2:'#38bdf8',  thumb:'linear-gradient(135deg,#1e40af,#38bdf8)' },
   { id:'shield',       name:'Shield',       color1:'#1a2744', color2:'#e8e4dc',  thumb:'linear-gradient(160deg,#1a2744 55%,#e8e4dc 55%)' },
   { id:'executive',    name:'Executive',    color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#111 55%,#92400e 100%)' },
@@ -284,7 +285,6 @@ const CV_TEMPLATES = [
   { id:'prism',        name:'Prism',        color1:'#7c3aed', color2:'#ec4899',  thumb:'linear-gradient(135deg,#7c3aed,#ec4899)' },
   { id:'oxford',       name:'Oxford',       color1:'#11355c', color2:'#2980b9',  thumb:'linear-gradient(90deg,#11355c 28%,#f8f8f8 28%)' },
   { id:'linen',        name:'Linen',        color1:'#92400e', color2:'#d97706',  thumb:'linear-gradient(135deg,#fef3c7,#fed7aa)' },
-  { id:'dynamic',      name:'Dynamic',      color1:'#1e56b0', color2:'#0d3875',  thumb:'linear-gradient(135deg,#fff 55%,#1e56b0 55%)' },
 ];
 
 // ── DANE SEKCJI (kolejność drag&drop) ────────────────────────
