@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podpisz dokument — Dokumo</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Figtree',-apple-system,sans-serif;background:#f5f5f7;color:#111;min-height:100vh;-webkit-font-smoothing:antialiased}
+.nav{height:60px;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border-bottom:1px solid #e5e5e5;display:flex;align-items:center;padding:0 2rem;gap:10px}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.wrap{max-width:860px;margin:0 auto;padding:40px 1.5rem 80px}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:20px;padding:32px;margin-bottom:24px}
+.card-title{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.card-sub{font-size:.85rem;color:#666;margin-bottom:20px}
+.doc-preview{background:#fafafa;border:1px solid #e5e5e5;border-radius:12px;padding:28px 32px;font-family:Georgia,'Times New Roman',serif;font-size:.875rem;line-height:1.9;white-space:pre-wrap;word-break:break-word;max-height:400px;overflow-y:auto;color:#111}
+.field-lbl{display:block;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:7px}
+.field-in{width:100%;padding:11px 15px;font-family:'Figtree',sans-serif;font-size:.88rem;font-weight:500;color:#111;background:#f5f5f7;border:1.5px solid transparent;border-radius:12px;outline:none;transition:border-color .2s}
+.field-in:focus{background:#fff;border-color:#111}
+canvas{width:100%;border:1.5px solid #e5e5e5;border-radius:12px;cursor:crosshair;touch-action:none;background:#fafafa;display:block}
+.btn-primary{width:100%;padding:14px 20px;border-radius:50px;font-family:'Figtree',sans-serif;font-size:.9rem;font-weight:700;background:#111;color:#fff;border:none;cursor:pointer;transition:background .2s}
+.btn-primary:hover{background:#333}
+.btn-primary:disabled{background:#ccc;cursor:not-allowed}
+.signed-badge{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;font-size:.82rem;font-weight:600;color:#15803d}
+.error-state{text-align:center;padding:80px 2rem}
+.error-state h1{font-size:1.8rem;font-weight:800;margin-bottom:12px}
+.error-state p{color:#666;font-size:.95rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:32px;height:32px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <img src="logo2.png" alt="Dokumo logo" style="height:26px;width:auto">
+    <span style="font-size:17px;font-weight:800;color:#111827;letter-spacing:-.02em;font-family:'Inter',sans-serif">Dokumo</span>
+  </a>
+</nav>
+
+<div class="wrap" id="app">
+  <div style="text-align:center;padding:80px 0"><div class="spinner"></div><p style="margin-top:16px;color:#999;font-size:.9rem">Ładowanie dokumentu…</p></div>
+</div>
+
+<script>
+var SESSION_ID = new URLSearchParams(location.search).get('id');
+var sessionData = null;
+var _sc, _sctx, _drawing = false;
+
+async function loadSession() {
+  if (!SESSION_ID) { showError('Brak identyfikatora sesji.'); return; }
+  try {
+    var r = await fetch('/api/sign?id=' + SESSION_ID);
+    if (!r.ok) { showError('Nie znaleziono dokumentu. Link może być nieprawidłowy.'); return; }
+    sessionData = await r.json();
+    render();
+  } catch(e) {
+    showError('Błąd połączenia. Spróbuj ponownie.');
+  }
+}
+
+function showError(msg) {
+  document.getElementById('app').innerHTML = '<div class="error-state"><h1>Ups!</h1><p>' + msg + '</p></div>';
+}
+
+function render() {
+  var d = sessionData;
+  var alreadySigned = d.status === 'completed';
+
+  var html = '<div class="card">'
+    + '<div class="card-title">Podpisz dokument: ' + (d.docName || 'Dokument') + '</div>'
+    + '<div class="card-sub">'
+    + (d.party1Name ? '<strong>' + d.party1Name + '</strong> (' + (d.party1Date || '') + ') już podpisał(a).' : '')
+    + (alreadySigned ? ' Dokument jest obustronnie podpisany.' : ' Twój podpis jest wymagany.')
+    + '</div>'
+    + '<div class="doc-preview">' + escHtml(d.docText || '') + '</div>'
+    + '</div>';
+
+  if (alreadySigned) {
+    html += '<div class="card">'
+      + '<div class="signed-badge">✓ Dokument został podpisany przez obie strony</div>'
+      + '<div style="margin-top:16px"><button class="btn-primary" onclick="downloadBothSigs()">⬇ Pobierz podpisany PDF</button></div>'
+      + '</div>';
+  } else {
+    html += '<div class="card">'
+      + '<div class="card-title" style="margin-bottom:4px">Twój podpis</div>'
+      + '<div class="card-sub">Narysuj podpis myszką lub palcem i wpisz swoje dane.</div>'
+      + '<div style="margin-bottom:14px"><label class="field-lbl">Narysuj podpis</label>'
+      + '<canvas id="signCanvas" width="780" height="130"></canvas>'
+      + '<button onclick="clearCanvas()" style="font-size:.72rem;color:#999;background:none;border:none;cursor:pointer;padding:4px 0;margin-top:4px">Wyczyść</button></div>'
+      + '<div style="margin-bottom:20px"><label class="field-lbl">Imię i nazwisko</label>'
+      + '<input class="field-in" id="signerName" type="text" placeholder="np. Anna Nowak"></div>'
+      + '<button class="btn-primary" onclick="submitSign()">✍ Podpisz dokument</button>'
+      + '</div>';
+  }
+
+  document.getElementById('app').innerHTML = html;
+
+  if (!alreadySigned) {
+    _sc = document.getElementById('signCanvas');
+    _sctx = _sc.getContext('2d');
+    _sctx.strokeStyle = '#111'; _sctx.lineWidth = 2.2; _sctx.lineCap = 'round'; _sctx.lineJoin = 'round';
+    var pos = function(e){ var r=_sc.getBoundingClientRect(),sx=_sc.width/r.width,sy=_sc.height/r.height; return {x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy}; };
+    _sc.addEventListener('mousedown',function(e){_drawing=true;var p=pos(e);_sctx.beginPath();_sctx.moveTo(p.x,p.y);});
+    _sc.addEventListener('mousemove',function(e){if(!_drawing)return;var p=pos(e);_sctx.lineTo(p.x,p.y);_sctx.stroke();});
+    _sc.addEventListener('mouseup',function(){_drawing=false;});
+    _sc.addEventListener('mouseleave',function(){_drawing=false;});
+    _sc.addEventListener('touchstart',function(e){e.preventDefault();_drawing=true;var p=pos(e.touches[0]);_sctx.beginPath();_sctx.moveTo(p.x,p.y);},{passive:false});
+    _sc.addEventListener('touchmove',function(e){e.preventDefault();if(!_drawing)return;var p=pos(e.touches[0]);_sctx.lineTo(p.x,p.y);_sctx.stroke();},{passive:false});
+    _sc.addEventListener('touchend',function(){_drawing=false;});
+  }
+}
+
+function clearCanvas(){ if(_sctx) _sctx.clearRect(0,0,_sc.width,_sc.height); }
+function canvasEmpty(){ if(!_sc)return true; var d=_sctx.getImageData(0,0,_sc.width,_sc.height).data; for(var i=3;i<d.length;i+=4)if(d[i]>10)return false; return true; }
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function submitSign() {
+  if (canvasEmpty()) { alert('Narysuj swój podpis.'); return; }
+  var name = document.getElementById('signerName').value.trim();
+  if (!name) { alert('Wpisz imię i nazwisko.'); document.getElementById('signerName').focus(); return; }
+
+  var sig = _sc.toDataURL('image/png');
+  var btn = document.querySelector('.btn-primary');
+  btn.disabled = true; btn.textContent = 'Zapisywanie…';
+
+  try {
+    var r = await fetch('/api/sign', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: SESSION_ID, party2Name: name, party2Sig: sig })
+    });
+    var data = await r.json();
+    if (!r.ok) { alert(data.error || 'Błąd. Spróbuj ponownie.'); btn.disabled=false; btn.textContent='✍ Podpisz dokument'; return; }
+    generateAndDownloadPDF(data);
+    sessionData.status = 'completed';
+    sessionData.party2 = { name: name, date: data.party2.date };
+    render();
+  } catch(e) {
+    alert('Błąd połączenia. Spróbuj ponownie.');
+    btn.disabled = false; btn.textContent = '✍ Podpisz dokument';
+  }
+}
+
+function downloadBothSigs() {
+  // Re-fetch with full data isn't possible (security) - show info
+  alert('Pobierz PDF używając przycisku który pojawił się po podpisaniu. Jeśli nie widzisz PDF-a, skontaktuj się z drugą stroną.');
+}
+
+function generateAndDownloadPDF(data) {
+  var title = data.docName || 'Dokument';
+  var safe = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
+  var esc = escHtml(data.docText || '');
+  var sig1 = data.party1, sig2 = data.party2;
+  var sigHtml = '<div style="margin-top:44px;padding-top:20px;border-top:1.5px solid #ccc;display:flex;gap:48px;flex-wrap:wrap">'
+    + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
+    + '<img src="' + sig1.sig + '" style="height:54px;display:block;margin-bottom:6px">'
+    + '<div style="font-size:10pt;font-weight:700">' + sig1.name + '</div>'
+    + '<div style="font-size:9pt;color:#666">' + sig1.date + ' · Podpis elektroniczny</div></div>'
+    + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'
+    + '<img src="' + sig2.sig + '" style="height:54px;display:block;margin-bottom:6px">'
+    + '<div style="font-size:10pt;font-weight:700">' + sig2.name + '</div>'
+    + '<div style="font-size:9pt;color:#666">' + sig2.date + ' · Podpis elektroniczny</div></div>'
+    + '</div>';
+
+  var win = window.open('', '_blank');
+  if (!win) { alert('Zezwól na otwieranie okien pop-up.'); return; }
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + title + '</title>'
+    + '<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>'
+    + '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>'
+    + '</head><body><div><pre>' + esc + '</pre>' + sigHtml + '</div>'
+    + '<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"' + safe + '_podpisany.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close();},800);});}<\/scr'+'ipt>'
+    + '</body></html>');
+  win.document.close();
+}
+
+loadSession();
+</script>
+</body>
+</html>
