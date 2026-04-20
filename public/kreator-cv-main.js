@@ -2115,12 +2115,15 @@ async function _clientSidePDF(el, filename) {
 }
 
 async function _savePDF(blob, filename) {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const file = new File([blob], filename, { type: 'application/pdf' });
-  if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const url = URL.createObjectURL(blob);
+  if (isIOS) {
+    // navigator.share wymaga gestu — po async fetchu gest wygasa.
+    // window.location.href otwiera PDF w Safari PDF Viewer bez gestu.
+    // Użytkownik tapuje Share → "Zapisz do Pliki".
+    window.location.href = url;
+    // Nie cofaj blob URL — Safari potrzebuje go podczas przeglądania
   } else {
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
