@@ -16,7 +16,7 @@ async function hasActiveSubscription(uid) {
 }
 
 // Rate limit: max 20 PDF na godzinę per użytkownik
-const PDF_RATE_LIMIT = 20;
+const PDF_RATE_LIMIT = 30;
 const PDF_WINDOW_MS = 60 * 60 * 1000;
 
 async function checkPdfRateLimit(uid) {
