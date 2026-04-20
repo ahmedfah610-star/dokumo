@@ -54,6 +54,7 @@ async function loadSession() {
   if (!SESSION_ID) { showError('Brak identyfikatora sesji.'); return; }
   try {
     var r = await fetch('/api/sign?id=' + SESSION_ID);
+    if (r.status === 410) { showError('Link wygasł. Sesja podpisywania jest nieaktywna (ważność 30 dni).'); return; }
     if (!r.ok) { showError('Nie znaleziono dokumentu. Link może być nieprawidłowy.'); return; }
     sessionData = await r.json();
     render();
@@ -139,7 +140,8 @@ async function submitSign() {
     if (!r.ok) { alert(data.error || 'Błąd. Spróbuj ponownie.'); btn.disabled=false; btn.textContent='✍ Podpisz dokument'; return; }
     generateAndDownloadPDF(data);
     sessionData.status = 'completed';
-    sessionData.party2 = { name: name, date: data.party2.date };
+    sessionData.party1Sig = data.party1.sig;
+    sessionData.party2 = { name: data.party2.name, date: data.party2.date, sig: data.party2.sig };
     render();
   } catch(e) {
     alert('Błąd połączenia. Spróbuj ponownie.');
@@ -148,8 +150,18 @@ async function submitSign() {
 }
 
 function downloadBothSigs() {
-  // Re-fetch with full data isn't possible (security) - show info
-  alert('Pobierz PDF używając przycisku który pojawił się po podpisaniu. Jeśli nie widzisz PDF-a, skontaktuj się z drugą stroną.');
+  var d = sessionData;
+  if (!d || !d.party1Sig || !d.party2 || !d.party2.sig) {
+    alert('Brak danych podpisów. Odśwież stronę i spróbuj ponownie.');
+    return;
+  }
+  generateAndDownloadPDF({
+    docText: d.docText,
+    docName: d.docName,
+    docHash: d.docHash,
+    party1: { name: d.party1Name, sig: d.party1Sig, date: d.party1Date },
+    party2: d.party2,
+  });
 }
 
 function generateAndDownloadPDF(data) {

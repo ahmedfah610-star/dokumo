@@ -59,6 +59,7 @@ export default async function handler(req, res) {
     const ip = getIP(req);
     const docHash = hashDoc(docText);
     const ref = db.collection('signingSessions').doc();
+    const expiresAt = Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     await ref.set({
       id: ref.id,
@@ -67,6 +68,7 @@ export default async function handler(req, res) {
       docHash,
       createdBy: uid || null,
       createdAt: Timestamp.now(),
+      expiresAt,
       status: 'waiting_party2',
       party1: {
         name: party1Name,
@@ -124,6 +126,11 @@ export default async function handler(req, res) {
     if (!snap.exists) return res.status(404).json({ error: 'Sesja nie istnieje' });
 
     const d = snap.data();
+    if (d.expiresAt && d.expiresAt.toDate() < new Date() && d.status !== 'completed') {
+      return res.status(410).json({ error: 'Link wygasł. Sesja podpisywania jest nieaktywna.' });
+    }
+
+    const completed = d.status === 'completed';
     return res.status(200).json({
       docText: d.docText,
       docName: d.docName,
@@ -132,7 +139,11 @@ export default async function handler(req, res) {
       party1Name: d.party1?.name,
       party1Date: d.party1?.date,
       party1Sig: d.party1?.sig || null,
-      party2: d.party2 ? { name: d.party2.name, date: d.party2.date } : null,
+      party2: d.party2 ? {
+        name: d.party2.name,
+        date: d.party2.date,
+        ...(completed ? { sig: d.party2.sig } : {}),
+      } : null,
     });
   }
 
@@ -146,14 +157,18 @@ export default async function handler(req, res) {
     const ref = db.collection('signingSessions').doc(id);
     const snap = await ref.get();
     if (!snap.exists) return res.status(404).json({ error: 'Sesja nie istnieje' });
-    if (snap.data().status === 'completed') {
+    const snapData = snap.data();
+    if (snapData.status === 'completed') {
       return res.status(400).json({ error: 'Dokument już podpisany' });
+    }
+    if (snapData.expiresAt && snapData.expiresAt.toDate() < new Date()) {
+      return res.status(410).json({ error: 'Link wygasł. Sesja podpisywania jest nieaktywna.' });
     }
 
     const ip = getIP(req);
     const now = new Date();
     const dateStr = now.toLocaleDateString('pl-PL') + ' ' + now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-    const existing = snap.data();
+    const existing = snapData;
 
     await ref.update({
       status: 'completed',
