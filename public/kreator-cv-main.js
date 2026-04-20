@@ -2011,6 +2011,11 @@ async function downloadCV() {
 
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
+  const filename = safeName + '.pdf';
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // iOS blokuje window.open po async — otwieramy PRZED fetchem
+  const iosWin = isIOS ? window.open('', '_blank') : null;
 
   const overlay = document.getElementById('pdfLoadingOverlay');
   if (overlay) overlay.style.display = 'flex';
@@ -2027,6 +2032,7 @@ async function downloadCV() {
   if (!el) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    if (iosWin) iosWin.close();
     return;
   }
 
@@ -2053,6 +2059,7 @@ async function downloadCV() {
       if (resp.status === 403 && err.error === 'cv_free_used') {
         if (overlay) overlay.style.display = 'none';
         if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+        if (iosWin) iosWin.close();
         // Modal — darmowe pobranie CV już wykorzystane
         var _ov = document.createElement('div');
         _ov.id = 'pgOverlay';
@@ -2071,18 +2078,26 @@ async function downloadCV() {
       throw new Error(err.error || 'Błąd serwera: ' + resp.status);
     }
     const blob = await resp.blob();
-    const filename = safeName + '.pdf';
-    const file = new File([blob], filename, { type: 'application/pdf' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
+
+    if (isIOS && iosWin) {
+      // iOS: blob URL nie działa w nowym oknie — używamy data URL (base64)
+      const dataUrl = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+      iosWin.location.href = dataUrl;
     } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      if (iosWin) iosWin.close();
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      }
     }
   } catch(e) {
+    if (iosWin) iosWin.close();
     alert('Błąd generowania PDF: ' + e.message);
   } finally {
     if (overlay) overlay.style.display = 'none';
