@@ -2011,10 +2011,6 @@ async function downloadCV() {
 
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  // iOS blocks window.open after async — open tab before fetch
-  const mobileWin = isMobile ? window.open('', '_blank') : null;
 
   const overlay = document.getElementById('pdfLoadingOverlay');
   if (overlay) overlay.style.display = 'flex';
@@ -2031,7 +2027,6 @@ async function downloadCV() {
   if (!el) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-    if (mobileWin) mobileWin.close();
     return;
   }
 
@@ -2058,7 +2053,6 @@ async function downloadCV() {
       if (resp.status === 403 && err.error === 'cv_free_used') {
         if (overlay) overlay.style.display = 'none';
         if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-        if (mobileWin) mobileWin.close();
         // Modal — darmowe pobranie CV już wykorzystane
         var _ov = document.createElement('div');
         _ov.id = 'pgOverlay';
@@ -2078,16 +2072,11 @@ async function downloadCV() {
     }
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
-
-    if (isMobile && mobileWin) {
-      mobileWin.location.href = url;
-    } else {
-      const a = document.createElement('a');
-      a.href = url; a.download = safeName + '.pdf'; a.click();
-    }
+    const a = document.createElement('a');
+    a.href = url; a.download = safeName + '.pdf';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   } catch(e) {
-    if (mobileWin) mobileWin.close();
     alert('Błąd generowania PDF: ' + e.message);
   } finally {
     if (overlay) overlay.style.display = 'none';
