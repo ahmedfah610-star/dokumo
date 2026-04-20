@@ -2012,10 +2012,6 @@ async function downloadCV() {
   const fullName = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
   const safeName = 'CV_' + fullName.replace(/\s+/g, '_');
   const filename = safeName + '.pdf';
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-  // iOS blokuje window.open po async — otwieramy PRZED fetchem
-  const iosWin = isIOS ? window.open('', '_blank') : null;
 
   const overlay = document.getElementById('pdfLoadingOverlay');
   if (overlay) overlay.style.display = 'flex';
@@ -2032,7 +2028,6 @@ async function downloadCV() {
   if (!el) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-    if (iosWin) iosWin.close();
     return;
   }
 
@@ -2059,7 +2054,6 @@ async function downloadCV() {
       if (resp.status === 403 && err.error === 'cv_free_used') {
         if (overlay) overlay.style.display = 'none';
         if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-        if (iosWin) iosWin.close();
         // Modal — darmowe pobranie CV już wykorzystane
         var _ov = document.createElement('div');
         _ov.id = 'pgOverlay';
@@ -2078,34 +2072,20 @@ async function downloadCV() {
       throw new Error(err.error || 'Błąd serwera: ' + resp.status);
     }
     const blob = await resp.blob();
+    const file = new File([blob], filename, { type: 'application/pdf' });
 
-    if (isIOS && iosWin) {
-      // iOS: document.write do blank okna — omija popup blocker i ograniczenia nawigacji
-      const dataUrl = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
-      iosWin.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + filename + '</title>'
-        + '<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#525659;display:flex;flex-direction:column;height:100vh}'
-        + '.bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}'
-        + '.bar a{background:#111;color:#fff;padding:8px 18px;border-radius:20px;text-decoration:none;font-family:sans-serif;font-size:14px;font-weight:600}'
-        + 'embed{flex:1;width:100%}</style></head>'
-        + '<body><div class="bar"><span style="font-family:sans-serif;font-weight:700;font-size:15px">Twoje CV</span>'
-        + '<a href="' + dataUrl + '" download="' + filename + '">&#8659; Pobierz PDF</a></div>'
-        + '<embed src="' + dataUrl + '" type="application/pdf"></body></html>');
-      iosWin.document.close();
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      // iOS 14+ i Android: Share Sheet — zapisz do Pliki / Dysk itp.
+      try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
     } else {
-      if (iosWin) iosWin.close();
-      const file = new File([blob], filename, { type: 'application/pdf' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = filename;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-      }
+      // Desktop i starszy Android: bezpośrednie pobieranie
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
     }
   } catch(e) {
-    if (iosWin) iosWin.close();
     alert('Błąd generowania PDF: ' + e.message);
   } finally {
     if (overlay) overlay.style.display = 'none';
