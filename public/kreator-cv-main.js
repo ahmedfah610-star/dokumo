@@ -2072,19 +2072,7 @@ async function downloadCV() {
       throw new Error(err.error || 'Błąd serwera: ' + resp.status);
     }
     const blob = await resp.blob();
-    const file = new File([blob], filename, { type: 'application/pdf' });
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      // iOS 14+ i Android: Share Sheet — zapisz do Pliki / Dysk itp.
-      try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
-    } else {
-      // Desktop i starszy Android: bezpośrednie pobieranie
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    }
+    await _savePDF(blob, filename);
   } catch(e) {
     // Fallback: generuj PDF po stronie klienta gdy serwis PDF nie działa
     const el2 = document.getElementById('cvPreviewInner');
@@ -2120,18 +2108,23 @@ async function _clientSidePDF(el, filename) {
       html2canvas: { scale: 2, useCORS: true, logging: false, width: 595 },
       jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' },
     }).from(clone).outputPdf('blob');
-    const file = new File([blob], filename, { type: 'application/pdf' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
-    } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    }
+    await _savePDF(blob, filename);
   } finally {
     document.body.removeChild(clone);
+  }
+}
+
+async function _savePDF(blob, filename) {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const file = new File([blob], filename, { type: 'application/pdf' });
+  if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
+  } else {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 }
 
