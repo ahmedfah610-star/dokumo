@@ -2086,10 +2086,52 @@ async function downloadCV() {
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     }
   } catch(e) {
-    alert('Błąd generowania PDF: ' + e.message);
+    // Fallback: generuj PDF po stronie klienta gdy serwis PDF nie działa
+    const el2 = document.getElementById('cvPreviewInner');
+    if (el2 && typeof html2pdf !== 'undefined') {
+      try { await _clientSidePDF(el2, filename); return; } catch(e2) {}
+    }
+    if (el2 && typeof html2pdf === 'undefined') {
+      await new Promise((res2, rej2) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        s.onload = res2; s.onerror = rej2;
+        document.head.appendChild(s);
+      }).catch(() => {});
+      if (typeof html2pdf !== 'undefined') {
+        try { await _clientSidePDF(el2, filename); return; } catch(e3) {}
+      }
+    }
+    alert('Błąd generowania PDF. Spróbuj ponownie za chwilę.');
   } finally {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+  }
+}
+
+async function _clientSidePDF(el, filename) {
+  const clone = el.cloneNode(true);
+  clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;background:#fff';
+  document.body.appendChild(clone);
+  try {
+    const blob = await html2pdf().set({
+      margin: 0, filename,
+      image: { type: 'jpeg', quality: .95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, width: 595 },
+      jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' },
+    }).from(clone).outputPdf('blob');
+    const file = new File([blob], filename, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: filename }); } catch(e) { if (e.name !== 'AbortError') throw e; }
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+  } finally {
+    document.body.removeChild(clone);
   }
 }
 
