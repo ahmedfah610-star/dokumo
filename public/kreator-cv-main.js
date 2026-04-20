@@ -2080,9 +2080,17 @@ async function downloadCV() {
     const blob = await resp.blob();
 
     if (isIOS && iosWin) {
-      // iOS: blob URL nie działa w nowym oknie — używamy data URL (base64)
+      // iOS: document.write do blank okna — omija popup blocker i ograniczenia nawigacji
       const dataUrl = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
-      iosWin.location.href = dataUrl;
+      iosWin.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + filename + '</title>'
+        + '<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#525659;display:flex;flex-direction:column;height:100vh}'
+        + '.bar{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}'
+        + '.bar a{background:#111;color:#fff;padding:8px 18px;border-radius:20px;text-decoration:none;font-family:sans-serif;font-size:14px;font-weight:600}'
+        + 'embed{flex:1;width:100%}</style></head>'
+        + '<body><div class="bar"><span style="font-family:sans-serif;font-weight:700;font-size:15px">Twoje CV</span>'
+        + '<a href="' + dataUrl + '" download="' + filename + '">&#8659; Pobierz PDF</a></div>'
+        + '<embed src="' + dataUrl + '" type="application/pdf"></body></html>');
+      iosWin.document.close();
     } else {
       if (iosWin) iosWin.close();
       const file = new File([blob], filename, { type: 'application/pdf' });
