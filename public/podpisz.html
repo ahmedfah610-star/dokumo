@@ -7,6 +7,7 @@
 <title>Podpisz dokument — Dokumo</title>
 <meta name="robots" content="noindex, nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Figtree',-apple-system,sans-serif;background:#f5f5f7;color:#111;min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -169,7 +170,8 @@ function generateAndDownloadPDF(data) {
   var safe = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
   var esc = escHtml(data.docText || '');
   var sig1 = data.party1, sig2 = data.party2;
-  var sigHtml = '<div style="margin-top:44px;padding-top:20px;border-top:1.5px solid #ccc;display:flex;gap:48px;flex-wrap:wrap">'
+  var sigHtml = '<div style="margin-top:44px;padding-top:20px;border-top:1.5px solid #ccc;page-break-inside:avoid">'
+    + '<div style="display:flex;gap:48px;flex-wrap:wrap">'
     + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
     + '<img src="' + sig1.sig + '" style="height:54px;display:block;margin-bottom:6px">'
     + '<div style="font-size:10pt;font-weight:700">' + sig1.name + '</div>'
@@ -178,17 +180,22 @@ function generateAndDownloadPDF(data) {
     + '<img src="' + sig2.sig + '" style="height:54px;display:block;margin-bottom:6px">'
     + '<div style="font-size:10pt;font-weight:700">' + sig2.name + '</div>'
     + '<div style="font-size:9pt;color:#666">' + sig2.date + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
-    + '</div>';
+    + '</div></div>';
 
-  var win = window.open('', '_blank');
-  if (!win) { alert('Zezwól na otwieranie okien pop-up.'); return; }
-  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + title + '</title>'
-    + '<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>'
-    + '<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>'
-    + '</head><body><div><pre>' + esc + '</pre>' + sigHtml + '</div>'
-    + '<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"' + safe + '_podpisany.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close();},800);});}<\/scr'+'ipt>'
-    + '</body></html>');
-  win.document.close();
+  var el = document.createElement('div');
+  el.style.cssText = 'position:fixed;left:-9999px;top:0;width:160mm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
+  el.innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt">' + esc + '</pre>' + sigHtml;
+  document.body.appendChild(el);
+
+  html2pdf().set({
+    margin: 25,
+    filename: safe + '_podpisany.pdf',
+    image: { type: 'jpeg', quality: .95 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+  }).from(el).save().then(function() {
+    document.body.removeChild(el);
+  });
 }
 
 loadSession();
