@@ -72,6 +72,9 @@ export default async function handler(req, res) {
       } catch (_) {}
     }
 
+    // Email powitalny przy pierwszym logowaniu (fire-and-forget)
+    if (email) sendWelcomeIfNew(uid, email).catch(() => {});
+
     const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
     if (!snap.exists) return res.status(200).json({ active: false });
     const data = snap.data();
@@ -188,4 +191,51 @@ export default async function handler(req, res) {
   }
 
   return res.status(400).json({ error: 'Nieznana akcja' });
+}
+
+// ── Email powitalny przy pierwszym logowaniu ──
+async function sendWelcomeIfNew(uid, email) {
+  const metaRef = db.collection('userMeta').doc(uid);
+  const snap = await metaRef.get();
+  if (snap.exists && snap.data().welcomeSent) return; // już wysłany
+
+  await metaRef.set({
+    email,
+    registeredAt: Timestamp.now(),
+    welcomeSent: true,
+    firstDocSent: false,
+    reminderSent: false,
+  }, { merge: true });
+
+  const html = `<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f5f5f7;font-family:'Helvetica Neue',Arial,sans-serif">
+<div style="max-width:560px;margin:40px auto;padding:0 16px">
+<div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.07)">
+<div style="background:#111;padding:28px 32px;text-align:center"><span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-.02em">Dokumo</span></div>
+<div style="padding:36px 32px">
+<h1 style="font-size:22px;font-weight:800;color:#111;margin:0 0 10px">Witaj w Dokumo! 👋</h1>
+<p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">Masz <strong style="color:#111">jedno darmowe pobranie</strong> — wybierz dowolny dokument i wygeneruj go w 30 sekund.</p>
+<div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
+<p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:0 0 14px">Popularne dokumenty</p>
+<table style="width:100%;border-collapse:collapse">
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-umowy-b2b.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📝 Umowa B2B</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/umowa-najmu.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🏠 Umowa najmu</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-nda.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🔒 NDA — umowa o poufności</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-regulaminu-sklepu.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🛒 Regulamin sklepu</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/faktura.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🧾 Faktura</a></td></tr>
+</table></div>
+<a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Wygeneruj swój dokument →</a>
+<p style="font-size:12px;color:#bbb;margin:28px 0 0;text-align:center">© 2026 Dokumo · <a href="https://dokumoflow.com" style="color:#bbb;text-decoration:none">dokumoflow.com</a></p>
+</div></div></div></body></html>`;
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + process.env.RESEND_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'Dokumo <noreply@dokumoflow.com>',
+      to: email,
+      subject: 'Witaj w Dokumo! Twój darmowy dokument czeka 👋',
+      html,
+    }),
+  });
 }

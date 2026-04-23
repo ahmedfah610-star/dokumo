@@ -599,8 +599,6 @@ onAuthStateChanged(auth, async user => {
       const d = await r.json();
       if (d.expiresAt) localStorage.setItem('dokumo_sub', JSON.stringify({ plan: d.plan, expiresAt: d.expiresAt, cancelled: d.cancelled || false }));
       else localStorage.removeItem('dokumo_sub');
-      // Email powitalny przy pierwszym logowaniu (fire-and-forget)
-      fetch('/api/welcome', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(() => {});
     } catch(e) {}
     showProfile(user);
     // Wczytaj z Firestore
