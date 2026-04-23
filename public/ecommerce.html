@@ -712,7 +712,7 @@ function renderPreview(){
 
 /* ── GENERATE ── */
 async function doGenerate(){
-  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax'])) return;
+  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax','start'])) return;
   goTo(2);
   try {
     var form=FORMS[selDoc];

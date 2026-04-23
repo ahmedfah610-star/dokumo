@@ -13,12 +13,12 @@ const ALLOWED_CATS = new Set(['hr','kariera','biznes','najem','sprzedaz','inne']
 
 // Wymagane plany per kategoria (serwer-side)
 const CAT_REQUIRED_PLANS = {
-  hr:       ['kariera','biznes','promax'],
+  hr:       ['kariera','biznes','promax','start'],
   kariera:  ['kariera','biznes','promax','start'],
-  biznes:   ['biznes','promax'],
-  najem:    ['kariera','biznes','promax'],
-  sprzedaz: ['kariera','biznes','promax'],
-  inne:     ['kariera','biznes','promax'],
+  biznes:   ['biznes','promax','start'],
+  najem:    ['kariera','biznes','promax','start'],
+  sprzedaz: ['kariera','biznes','promax','start'],
+  inne:     ['kariera','biznes','promax','start'],
 };
 
 const RATE_LIMIT = 25;

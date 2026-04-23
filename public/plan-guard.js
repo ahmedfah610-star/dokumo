@@ -69,18 +69,9 @@
     // Niezalogowany → panel logowania
     if (!user) { window.location.href = 'konto.html'; return false; }
 
-    // Brak aktywnej subskrypcji
+    // Brak aktywnej subskrypcji — pozwól spróbować (serwer sprawdzi 1 darmowy slot per IP)
     var active = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
-    if (!active) {
-      // Jeśli wymagany jest jakikolwiek plan (włącznie z start) → wymagana subskrypcja
-      if (requiredPlans.indexOf('start') >= 0) {
-        sessionStorage.setItem('dokumo_after_sub', window.location.href);
-        window.location.href = 'subskrypcja.html';
-        return false;
-      }
-      // Dokumenty regularne — pozwól spróbować (serwer sprawdzi 1 darmowy slot per IP)
-      return true;
-    }
+    if (!active) return true;
 
     // Pakiet Start — jednorazowe pobranie
     if (sub.plan === 'start') {
