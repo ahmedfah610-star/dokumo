@@ -276,6 +276,9 @@ export default async function handler(req, res) {
       console.error('Firestore save error:', e.message);
     }
 
+    // Email cross-sell po pierwszym wygenerowanym dokumencie (fire-and-forget)
+    sendFirstDocEmail(uid, docName || 'Dokument', cat).catch(e => console.error('First-doc email:', e.message));
+
     return res.status(200).json({ text });
   } catch(e) {
     if (rollbackUsage) rollbackUsage();
@@ -284,4 +287,75 @@ export default async function handler(req, res) {
       : e.message;
     return res.status(500).json({ error: msg });
   }
+}
+
+// Powiązane dokumenty per kategoria
+const RELATED = {
+  hr:      [{ n: 'Umowa B2B', u: '/generator-umowy-b2b.html' }, { n: 'NDA — umowa o poufności', u: '/generator-nda.html' }, { n: 'Umowa o dzieło', u: '/generator-umowy-o-dzielo.html' }],
+  najem:   [{ n: 'Protokół zdawczo-odbiorczy', u: '/protokol-zdawczo-odbiorczy.html' }, { n: 'Wypowiedzenie najmu', u: '/wypowiedzenie-najmu.html' }],
+  biznes:  [{ n: 'Analiza SWOT', u: '/analiza-swot.html' }, { n: 'Umowa wspólników', u: '/umowa-wspolnikow.html' }, { n: 'Regulamin sklepu', u: '/generator-regulaminu-sklepu.html' }],
+  kariera: [{ n: 'List motywacyjny', u: '/list-motywacyjny.html' }, { n: 'Popraw CV', u: '/popraw-cv.html' }, { n: 'Generator wypowiedzenia', u: '/generator-wypowiedzenia.html' }],
+  sprzedaz:[{ n: 'Faktura', u: '/faktura.html' }, { n: 'Umowa B2B', u: '/generator-umowy-b2b.html' }],
+  inne:    [{ n: 'Analiza SWOT', u: '/analiza-swot.html' }, { n: 'Biznesplan', u: '/biznesplan-dla-banku.html' }],
+};
+
+async function sendFirstDocEmail(uid, docName, cat) {
+  const metaRef = db.collection('userMeta').doc(uid);
+  const metaSnap = await metaRef.get();
+  if (!metaSnap.exists || metaSnap.data().firstDocSent) return;
+
+  const email = metaSnap.data().email;
+  if (!email) return;
+
+  await metaRef.update({ firstDocSent: true });
+
+  const related = (RELATED[cat] || RELATED.inne).slice(0, 3);
+  const relatedRows = related.map(r =>
+    `<tr><td style="padding:5px 0"><a href="https://dokumoflow.com${r.u}" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📄 ${r.n}</a></td></tr>`
+  ).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="pl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f5f7;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased">
+<div style="max-width:560px;margin:40px auto;padding:0 16px">
+  <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.07)">
+    <div style="background:#111;padding:28px 32px;text-align:center">
+      <span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-.02em">Dokumo</span>
+    </div>
+    <div style="padding:36px 32px">
+      <h1 style="font-size:21px;font-weight:800;color:#111;margin:0 0 10px;letter-spacing:-.02em">Twój dokument jest gotowy ✅</h1>
+      <p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 8px">
+        Właśnie wygenerowałeś: <strong style="color:#111">${docName}</strong>.
+      </p>
+      <p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">
+        Użytkownicy, którzy pobierali ten dokument, często potrzebowali też:
+      </p>
+      <div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
+        <table style="width:100%;border-collapse:collapse">${relatedRows}</table>
+      </div>
+      <a href="https://dokumoflow.com/moje-dokumenty.html" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:16px">Zobacz moje dokumenty →</a>
+      <a href="https://dokumoflow.com/subskrypcja.html" style="display:block;background:#f5f5f7;color:#111;text-align:center;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none">Kup plan — generuj bez limitu</a>
+      <p style="font-size:12px;color:#bbb;margin:28px 0 0;text-align:center">
+        © 2026 Dokumo · <a href="https://dokumoflow.com" style="color:#bbb;text-decoration:none">dokumoflow.com</a>
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>`;
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + process.env.RESEND_API_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Dokumo <noreply@dokumoflow.com>',
+      to: email,
+      subject: `Twój dokument "${docName}" jest gotowy — co dalej?`,
+      html,
+    }),
+  });
 }
