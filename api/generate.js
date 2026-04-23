@@ -334,8 +334,7 @@ async function sendFirstDocEmail(uid, docName, cat) {
       <div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
         <table style="width:100%;border-collapse:collapse">${relatedRows}</table>
       </div>
-      <a href="https://dokumoflow.com/moje-dokumenty.html" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:16px">Zobacz moje dokumenty →</a>
-      <a href="https://dokumoflow.com/subskrypcja.html" style="display:block;background:#f5f5f7;color:#111;text-align:center;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none">Kup plan — generuj bez limitu</a>
+      <a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Wygeneruj kolejny dokument →</a>
       <p style="font-size:12px;color:#bbb;margin:28px 0 0;text-align:center">
         © 2026 Dokumo · <a href="https://dokumoflow.com" style="color:#bbb;text-decoration:none">dokumoflow.com</a>
       </p>
