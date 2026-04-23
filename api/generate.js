@@ -140,7 +140,7 @@ export default async function handler(req, res) {
       const ip = getIp(req);
       const freeRef = db.collection('freeDocUsage').doc(ip);
       try {
-        await freeRef.create({ usedAt: Timestamp.now(), uid });
+        await freeRef.create({ usedAt: Timestamp.now(), uid, docName: docName || 'Dokument', docCat: cat });
         isFree = true;
       } catch(createErr) {
         // gRPC ALREADY_EXISTS = kod 6
