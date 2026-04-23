@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -554,7 +554,7 @@ function renderPreview(){
 
 /* ── GENERATE ── */
 async function doGenerate(){
-  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax','pro'])) return;
+  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax'])) return;
   goTo(2);
   try {
     var prompt=FORM.prompt(wizVals);

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -809,7 +809,7 @@ function renderPreview(){
 
 /* ── GENERATE ── */
 async function doGenerate(){
-  if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','promax','pro'])) return;
+  if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','biznes','promax'])) return;
   goTo(2);
   var paper=document.getElementById('docPaper');
   paper.className='doc-paper loading';
