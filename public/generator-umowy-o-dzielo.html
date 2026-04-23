@@ -784,7 +784,7 @@ function downloadAs(fmt){
     win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
     win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}</style>');
     win.document.write('</head><body><pre>'+esc+'</pre>');
-    win.document.write('<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"'+safe+'.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){setTimeout(function(){window.close()},800)});}<\/scr'+'ipt>');
+    win.document.write('<scr'+'ipt>window.onload=function(){html2pdf().set({margin:25,filename:"'+safe+'.pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.body.firstElementChild).save().then(function(){var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);if(!isIOS){setTimeout(function(){window.close()},800);}});}<\/scr'+'ipt>');
     win.document.write('</body></html>'); win.document.close();
   } else if(fmt==='rtf'){
     var esc2=function(s){return s.replace(/\\/g,'\\\\').replace(/[{}]/g,function(c){return '\\'+c;}).replace(/[\u0080-\uFFFF]/g,function(c){var code=c.charCodeAt(0);return code>32767?'{\\uc1\\u'+(code-65536)+'?}':'\\u'+code+'?';});};
