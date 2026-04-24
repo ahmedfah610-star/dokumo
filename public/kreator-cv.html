@@ -672,11 +672,7 @@ window.addEventListener('_fbAuthReady', async ()=>{
     </a>
     <div style="flex:1;"></div>
     <div class="cv-nav-right">
-      <button onclick="downloadCVDocx()" title="Pobierz jako plik Word (.doc)" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:none;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.72rem;font-weight:700;color:#6b7280;cursor:pointer;letter-spacing:0.04em;transition:all .15s;font-family:inherit;" onmouseover="this.style.borderColor='#9ca3af';this.style.color='#374151'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <span class="cv-btn-label">Word</span>
-      </button>
-      <button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
+<button class="btn-choose-tpl btn-reset-cv" id="btnResetCV" onclick="confirmResetCV()" title="Zacznij od nowa" style="display:none">
         ↺ <span class="cv-btn-label">Zacznij od nowa</span>
       </button>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
