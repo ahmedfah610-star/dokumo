@@ -1776,7 +1776,6 @@ function updateCVPreview() {
   if (typeof triggerDraftSave === 'function') triggerDraftSave();
   if (typeof applyCvZoom === 'function') applyCvZoom();
   renderQuickColorPicker();
-  _cvGuestWarnOnChange();
 }
 
 // buildCVHTML → cv-templates.js
@@ -2336,26 +2335,50 @@ function downloadCVDocx() {
 }
 
 // ── OSTRZEŻENIE DLA NIEZALOGOWANYCH ───────────────────────────────────
-let _cvGuestWarnFired = false;
-let _cvGuestWarnTimer = null;
-function _cvGuestWarnOnChange() {
-  if (_cvGuestWarnFired) return;
-  const user = (function(){ try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e){ return null; } })();
-  if (user) { _cvGuestWarnFired = true; return; } // zalogowany — nie pokazuj
-  if (_cvGuestWarnTimer) return; // timer już uruchomiony
-  _cvGuestWarnTimer = setTimeout(function() {
-    const u2 = (function(){ try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e){ return null; } })();
-    if (u2 || _cvGuestWarnFired) return; // zalogował się w międzyczasie
-    _cvGuestWarnFired = true;
+(function() {
+  var _fired = false;
+  var _timer = null;
+
+  function _getUser() {
+    try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
+  }
+
+  function _showGuestBanner() {
+    if (_fired) return;
+    if (_getUser()) return; // zalogował się w międzyczasie
+    _fired = true;
+    var existing = document.getElementById('cvGuestBanner');
+    if (existing) return;
     var banner = document.createElement('div');
     banner.id = 'cvGuestBanner';
-    banner.style.cssText = 'position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:10000;background:#1e293b;color:#f1f5f9;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.3);max-width:calc(100vw - 32px);animation:cvBannerIn .25s ease;white-space:nowrap;';
+    banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10000;background:#1e293b;color:#f1f5f9;border-radius:12px;padding:12px 18px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);max-width:calc(100vw - 32px);';
     banner.innerHTML =
-      '<style>@keyframes cvBannerIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}</style>' +
-      '💾 <span>Postęp nie jest zapisywany — nie jesteś zalogowany/a.</span>' +
-      '<a href="konto.html" style="background:#2563eb;color:#fff;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap;flex-shrink:0;">Zaloguj się</a>' +
-      '<button onclick="document.getElementById(\'cvGuestBanner\').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0;line-height:1;">✕</button>';
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+      '<span style="flex:1;white-space:nowrap;">Postęp nie jest zapisywany\u00a0— nie jesteś zalogowany/a.</span>' +
+      '<a href="konto.html" style="background:#2563eb;color:#fff;padding:6px 14px;border-radius:7px;text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap;flex-shrink:0;">Zaloguj się</a>' +
+      '<button onclick="document.getElementById(\'cvGuestBanner\').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:18px;padding:0 2px;flex-shrink:0;line-height:1;" aria-label="Zamknij">\u00d7</button>';
     document.body.appendChild(banner);
-    setTimeout(function(){ var b = document.getElementById('cvGuestBanner'); if(b) b.remove(); }, 12000);
-  }, 90000); // 90 sekund po pierwszej zmianie
-}
+    setTimeout(function() {
+      var b = document.getElementById('cvGuestBanner');
+      if (b) b.style.transition = 'opacity .4s';
+      if (b) b.style.opacity = '0';
+      setTimeout(function() { var b2 = document.getElementById('cvGuestBanner'); if (b2) b2.remove(); }, 400);
+    }, 14000);
+  }
+
+  function _onFirstInput() {
+    if (_fired || _timer) return;
+    if (_getUser()) { _fired = true; return; } // zalogowany — nic nie rób
+    _timer = setTimeout(_showGuestBanner, 90000);
+  }
+
+  // Nasłuchuj na pierwsze wpisanie czegokolwiek w formularzu
+  document.addEventListener('input', _onFirstInput, { passive: true });
+  // Nasłuchuj też na kliknięcia (chipy umiejętności, języki, przyciski kroków)
+  document.addEventListener('click', function(e) {
+    var t = e.target;
+    if (t.closest('.cv-chip, .cv-lang-row, .cvw-btn-next, .cvw-btn-back, [data-chip]')) {
+      _onFirstInput();
+    }
+  }, { passive: true });
+})();
