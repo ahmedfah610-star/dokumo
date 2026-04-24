@@ -321,7 +321,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     <div class="success-btns">
       <button class="suc-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
       <button class="suc-btn outline" onclick="copyDoc()">📋 Kopiuj</button>
-      <button class="suc-btn outline" onclick="window.location.href='admin.html'">+ Nowy dokument</button>
+      <button class="suc-btn outline" onclick="window.location.href='administracja.html'">+ Nowy dokument</button>
     </div>
     <div class="metrics">
       <div class="metric">
@@ -468,7 +468,7 @@ function goBack(){
   if(mainStep===1){
     collectVals();
     if(subStep>0){ subStep--; renderForm(); renderBar(); }
-    else { window.location.href='admin.html'; }
+    else { window.location.href='administracja.html'; }
   } else if(mainStep===2){
     goTo(1); renderForm();
   } else if(mainStep===3){
@@ -810,7 +810,7 @@ function copySignLink(){
   <div class="seo-links">
     <a href="umowa-najmu.html" class="seo-link">🏠 Generator umowy najmu</a>
     <a href="protokol-zdawczo-odbiorczy.html" class="seo-link">📋 Protokół zdawczo-odbiorczy</a>
-    <a href="admin.html" class="seo-link">📄 Wszystkie generatory dokumentów</a>
+    <a href="administracja.html" class="seo-link">📄 Wszystkie generatory dokumentów</a>
   </div>
 </section>
 
