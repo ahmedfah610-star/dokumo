@@ -72,10 +72,13 @@ export default async function handler(req, res) {
       } catch (_) {}
     }
 
-    // Email powitalny przy pierwszym logowaniu (fire-and-forget)
-    if (email) sendWelcomeIfNew(uid, email).catch(() => {});
-
-    const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
+    // Email powitalny + sprawdzenie subskrypcji równolegle (gwarantuje ukończenie przed odpowiedzią)
+    const [, snapResult] = await Promise.allSettled([
+      email ? sendWelcomeIfNew(uid, email) : Promise.resolve(),
+      db.collection('users').doc(uid).collection('subscription').doc('current').get(),
+    ]);
+    if (snapResult.status === 'rejected') return res.status(200).json({ active: false });
+    const snap = snapResult.value;
     if (!snap.exists) return res.status(200).json({ active: false });
     const data = snap.data();
     const expiresAt = data.expiresAt?.toDate?.();
