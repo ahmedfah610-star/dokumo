@@ -2416,9 +2416,9 @@ function _cvDlChoice(type) {
   }
 
   function _onFirstInput() {
-    if (_fired || _timer) return;
+    if (_fired) return;
     if (_getUser()) { _fired = true; return; } // zalogowany — nic nie rób
-    _timer = setTimeout(_showGuestBanner, 90000);
+    _showGuestBanner();
   }
 
   // Nasłuchuj na pierwsze wpisanie czegokolwiek w formularzu
