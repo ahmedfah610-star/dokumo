@@ -902,7 +902,7 @@ function renderCVForm() {
       <button class="cvw-btn cvw-btn-preview" onclick="cvWizardTogglePreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Podgląd</button>
       ${cvWizardStep < totalSteps - 1
         ? `<button class="cvw-btn cvw-btn-next" onclick="cvWizardNext()">Dalej <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>`
-        : `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"><button class="cvw-btn cvw-btn-done" onclick="downloadCV()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button><button class="cvw-btn cvw-btn-back" onclick="downloadCVDocx()" title="Pobierz jako plik Word (.doc)" style="border-color:#9ca3af;color:#374151;font-size:0.78rem;padding:9px 14px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Word</button></div>`}
+        : `<button class="cvw-btn cvw-btn-done" id="cvWizardDlBtn" onclick="showDownloadMenu(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button>`}
     </div>`;
 
   panel.innerHTML = `
@@ -2332,6 +2332,55 @@ function downloadCVDocx() {
   a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+}
+
+// ── MENU POBIERANIA (PDF / Word) ──────────────────────────────────────
+function showDownloadMenu(btn) {
+  var existing = document.getElementById('cvDlMenu');
+  if (existing) { existing.remove(); return; }
+
+  var menu = document.createElement('div');
+  menu.id = 'cvDlMenu';
+  menu.style.cssText = 'position:fixed;z-index:10002;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.18);border:1px solid #e5e7eb;padding:6px;min-width:210px;';
+  menu.innerHTML =
+    '<button onclick="_cvDlChoice(\'pdf\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;border-radius:9px;font-size:13.5px;font-weight:600;color:#111827;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>' +
+      '<div><div>Pobierz PDF</div><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-top:1px;">Plik PDF gotowy do wysłania</div></div>' +
+    '</button>' +
+    '<button onclick="_cvDlChoice(\'word\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;border-radius:9px;font-size:13.5px;font-weight:600;color:#111827;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+      '<div><div>Pobierz Word (.doc)</div><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-top:1px;">Do edycji i systemów ATS</div></div>' +
+    '</button>';
+
+  // Pozycjonowanie: pojawia się NAD przyciskiem
+  var rect = btn.getBoundingClientRect();
+  var menuH = 114; // przybliżona wysokość menu
+  var top = rect.top - menuH - 10;
+  if (top < 8) top = rect.bottom + 8; // jeśli nie ma miejsca nad — pojawia się pod
+  var left = rect.left;
+  if (left + 210 > window.innerWidth - 8) left = window.innerWidth - 218;
+  menu.style.top = top + 'px';
+  menu.style.left = Math.max(8, left) + 'px';
+
+  document.body.appendChild(menu);
+
+  // Zamknij po kliknięciu poza menu
+  setTimeout(function() {
+    function _closeDlMenu(e) {
+      if (!document.getElementById('cvDlMenu')) { document.removeEventListener('click', _closeDlMenu); return; }
+      if (!document.getElementById('cvDlMenu').contains(e.target) && e.target !== btn) {
+        var m = document.getElementById('cvDlMenu'); if (m) m.remove();
+        document.removeEventListener('click', _closeDlMenu);
+      }
+    }
+    document.addEventListener('click', _closeDlMenu);
+  }, 10);
+}
+
+function _cvDlChoice(type) {
+  var m = document.getElementById('cvDlMenu'); if (m) m.remove();
+  if (type === 'pdf') downloadCV();
+  else downloadCVDocx();
 }
 
 // ── OSTRZEŻENIE DLA NIEZALOGOWANYCH ───────────────────────────────────

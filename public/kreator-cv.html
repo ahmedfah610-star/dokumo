@@ -722,11 +722,8 @@ window.addEventListener('_fbAuthReady', async ()=>{
   <button class="cv-tab-btn" id="tabPreview" onclick="switchCVTab('preview')">
     <span class="tab-icon">👁️</span>Podgląd
   </button>
-  <button class="cv-tab-btn" id="tabPdf" onclick="downloadCV()">
-    <span class="tab-icon">⬇️</span>PDF
-  </button>
-  <button class="cv-tab-btn" id="tabDocx" onclick="downloadCVDocx()">
-    <span class="tab-icon">📝</span>Word
+  <button class="cv-tab-btn" id="tabPdf" onclick="showDownloadMenu(this)">
+    <span class="tab-icon">⬇️</span>Pobierz
   </button>
 </div>
 
