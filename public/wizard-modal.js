@@ -27,6 +27,8 @@ var _wmTools = {
     { name:'Umowa zlecenie',          desc:'Współpraca na zasadach zlecenia',     href:'generator-umowy-zlecenie.html', bg:'#fef3c7', stroke:'#d97706', icon:'doc' }
   ],
   biznes_admin: [
+    { name:'Pełnomocnictwo',               desc:'Ogólne, rodzajowe lub szczególne — art. 98 KC', href:'generator-pelnomocnictwa.html', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' },
+    { name:'Wezwanie do zapłaty',          desc:'Z odsetkami ustawowymi i rygorem sądowym',       href:'wezwanie-do-zaplaty.html',      bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' },
     { name:'Umowa najmu mieszkania',       desc:'Najem na czas określony lub nieokreślony', href:'umowa-najmu.html',              bg:'#f0fdf4', stroke:'#16a34a', icon:'house' },
     { name:'Protokół zdawczo-odbiorczy',   desc:'Przy przekazaniu lub zwrocie lokalu',      href:'protokol-zdawczo-odbiorczy.html',           bg:'#eff6ff', stroke:'#2563eb', icon:'badge' },
     { name:'Wypowiedzenie umowy najmu',    desc:'Dla najemcy i wynajmującego',              href:'wypowiedzenie-najmu.html', bg:'#fef9c3', stroke:'#ca8a04', icon:'doc' },
