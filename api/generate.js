@@ -296,7 +296,7 @@ const RELATED = {
   biznes:  [{ n: 'Analiza SWOT', u: '/analiza-swot.html' }, { n: 'Umowa wspólników', u: '/umowa-wspolnikow.html' }, { n: 'Regulamin sklepu', u: '/generator-regulaminu-sklepu.html' }],
   kariera: [{ n: 'List motywacyjny', u: '/list-motywacyjny.html' }, { n: 'Popraw CV', u: '/popraw-cv.html' }, { n: 'Generator wypowiedzenia', u: '/generator-wypowiedzenia.html' }],
   sprzedaz:[{ n: 'Faktura', u: '/faktura.html' }, { n: 'Umowa B2B', u: '/generator-umowy-b2b.html' }],
-  inne:    [{ n: 'Analiza SWOT', u: '/analiza-swot.html' }, { n: 'Biznesplan', u: '/biznesplan-dla-banku.html' }],
+  inne:    [{ n: 'Pełnomocnictwo', u: '/generator-pelnomocnictwa.html' }, { n: 'Wezwanie do zapłaty', u: '/wezwanie-do-zaplaty.html' }, { n: 'Analiza SWOT', u: '/analiza-swot.html' }],
 };
 
 async function sendFirstDocEmail(uid, docName, cat) {
