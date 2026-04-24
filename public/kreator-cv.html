@@ -599,6 +599,8 @@ onAuthStateChanged(_cvAuth, async u=>{
     }catch(e){}
   } else {
     window._fbToken=null;
+    localStorage.removeItem('dokumo_user');
+    localStorage.removeItem('dokumo_sub');
   }
   window._fbReady=true;
   window.dispatchEvent(new Event('_fbAuthReady'));

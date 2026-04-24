@@ -2386,47 +2386,48 @@ function _cvDlChoice(type) {
 // ── OSTRZEŻENIE DLA NIEZALOGOWANYCH ───────────────────────────────────
 (function() {
   var _fired = false;
-  var _timer = null;
-
-  function _getUser() {
-    try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; }
-  }
+  var _triggered = false;
 
   function _showGuestBanner() {
     if (_fired) return;
-    if (_getUser()) return; // zalogował się w międzyczasie
     _fired = true;
-    var existing = document.getElementById('cvGuestBanner');
-    if (existing) return;
     var banner = document.createElement('div');
     banner.id = 'cvGuestBanner';
     banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10000;background:#1e293b;color:#f1f5f9;border-radius:12px;padding:12px 18px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);max-width:calc(100vw - 32px);';
     banner.innerHTML =
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
-      '<span style="flex:1;white-space:nowrap;">Postęp nie jest zapisywany\u00a0— nie jesteś zalogowany/a.</span>' +
-      '<a href="konto.html" style="background:#2563eb;color:#fff;padding:6px 14px;border-radius:7px;text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap;flex-shrink:0;">Zaloguj się</a>' +
+      '<span style="flex:1;white-space:nowrap;">Postęp nie jest zapisywany\u00a0\u2014 nie jeste\u015b zalogowany/a.</span>' +
+      '<a href="konto.html" style="background:#2563eb;color:#fff;padding:6px 14px;border-radius:7px;text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap;flex-shrink:0;">Zaloguj si\u0119</a>' +
       '<button onclick="document.getElementById(\'cvGuestBanner\').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:18px;padding:0 2px;flex-shrink:0;line-height:1;" aria-label="Zamknij">\u00d7</button>';
     document.body.appendChild(banner);
     setTimeout(function() {
       var b = document.getElementById('cvGuestBanner');
-      if (b) b.style.transition = 'opacity .4s';
-      if (b) b.style.opacity = '0';
+      if (b) { b.style.transition = 'opacity .4s'; b.style.opacity = '0'; }
       setTimeout(function() { var b2 = document.getElementById('cvGuestBanner'); if (b2) b2.remove(); }, 400);
     }, 14000);
   }
 
-  function _onFirstInput() {
+  function _maybeShow() {
     if (_fired) return;
-    if (_getUser()) { _fired = true; return; } // zalogowany — nic nie rób
+    if (!window._fbReady) {
+      // Firebase auth jeszcze się ładuje — poczekaj na zdarzenie
+      window.addEventListener('_fbAuthReady', function() { _maybeShow(); }, { once: true });
+      return;
+    }
+    // Auth załadowany — sprawdź rzeczywisty token (nie localStorage)
+    if (window._fbToken) { _fired = true; return; } // zalogowany
     _showGuestBanner();
   }
 
-  // Nasłuchuj na pierwsze wpisanie czegokolwiek w formularzu
+  function _onFirstInput() {
+    if (_fired || _triggered) return;
+    _triggered = true;
+    _maybeShow();
+  }
+
   document.addEventListener('input', _onFirstInput, { passive: true });
-  // Nasłuchuj też na kliknięcia (chipy umiejętności, języki, przyciski kroków)
   document.addEventListener('click', function(e) {
-    var t = e.target;
-    if (t.closest('.cv-chip, .cv-lang-row, .cvw-btn-next, .cvw-btn-back, [data-chip]')) {
+    if (e.target.closest('.cv-chip, .cv-lang-row, .cvw-btn-next, .cvw-btn-back, [data-chip]')) {
       _onFirstInput();
     }
   }, { passive: true });
