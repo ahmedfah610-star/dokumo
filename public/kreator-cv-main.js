@@ -902,7 +902,7 @@ function renderCVForm() {
       <button class="cvw-btn cvw-btn-preview" onclick="cvWizardTogglePreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Podgląd</button>
       ${cvWizardStep < totalSteps - 1
         ? `<button class="cvw-btn cvw-btn-next" onclick="cvWizardNext()">Dalej <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>`
-        : `<button class="cvw-btn cvw-btn-done" onclick="downloadCV()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button>`}
+        : `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"><button class="cvw-btn cvw-btn-done" onclick="downloadCV()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button><button class="cvw-btn cvw-btn-back" onclick="downloadCVDocx()" title="Pobierz jako plik Word (.doc)" style="border-color:#9ca3af;color:#374151;font-size:0.78rem;padding:9px 14px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Word</button></div>`}
     </div>`;
 
   panel.innerHTML = `
@@ -1776,6 +1776,7 @@ function updateCVPreview() {
   if (typeof triggerDraftSave === 'function') triggerDraftSave();
   if (typeof applyCvZoom === 'function') applyCvZoom();
   renderQuickColorPicker();
+  _cvGuestWarnOnChange();
 }
 
 // buildCVHTML → cv-templates.js
@@ -1873,13 +1874,13 @@ function setColorTheme(c1, c2) {
   renderColorPicker();
   renderTplGrid();
   renderQuickColorPicker();
-  document.getElementById('tplDot').style.background = c1;
+  const _dot1 = document.getElementById('tplDot'); if (_dot1) _dot1.style.background = c1;
 }
 
 function resetColorTheme() {
   cvCustomColor = null;
   const t = CV_TEMPLATES.find(x => x.id === cvTemplate);
-  if (t) document.getElementById('tplDot').style.background = t.color1;
+  if (t) { const _dot2 = document.getElementById('tplDot'); if (_dot2) _dot2.style.background = t.color1; }
   updateCVPreview();
   renderColorPicker();
   renderTplGrid();
@@ -1954,7 +1955,7 @@ function renderTplGrid() {
 function pickTemplate(id) {
   cvTemplate = id;
   const t = CV_TEMPLATES.find(x => x.id === id);
-  document.getElementById('tplDot').style.background = t.color1;
+  const _dot3 = document.getElementById('tplDot'); if (_dot3 && t) _dot3.style.background = t.color1;
   updateCVPreview();
   closeTplDrawer();
 }
@@ -2072,7 +2073,10 @@ async function downloadCV() {
       throw new Error(err.error || 'Błąd serwera: ' + resp.status);
     }
     const blob = await resp.blob();
-    await _savePDF(blob, filename);
+    if (overlay) overlay.style.display = 'none';
+    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    _showPDFPreview(blob, filename);
+    return;
   } catch(e) {
     // Fallback: generuj PDF po stronie klienta gdy serwis PDF nie działa
     const el2 = document.getElementById('cvPreviewInner');
@@ -2179,4 +2183,179 @@ function _showFreeAiLimitModal(type) {
     '</div>';
   overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
   document.body.appendChild(overlay);
+}
+
+// ── PDF PREVIEW PRZED POBRANIEM ────────────────────────────────────────
+function _showPDFPreview(blob, filename) {
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isIOS) { _savePDF(blob, filename); return; }
+
+  const url = URL.createObjectURL(blob);
+  const existing = document.getElementById('cvPdfPreviewModal');
+  if (existing) { existing.remove(); }
+
+  const modal = document.createElement('div');
+  modal.id = 'cvPdfPreviewModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;animation:pdfFadeIn .18s ease';
+  modal.innerHTML =
+    '<style>@keyframes pdfFadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}</style>' +
+    '<div style="background:#fff;border-radius:18px;width:100%;max-width:820px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.45);">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f3f4f6;flex-shrink:0;">' +
+        '<span style="font-size:13.5px;font-weight:700;color:#111827;">📄 Podgląd PDF — sprawdź przed pobraniem</span>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button id="_cvPdfDlBtn" style="background:#111827;color:#fff;border:none;padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz PDF</button>' +
+          '<button id="_cvPdfCloseBtn" style="background:#f3f4f6;color:#374151;border:none;padding:9px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;">Zamknij</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="flex:1;overflow:auto;background:#e5e7eb;display:flex;align-items:center;justify-content:center;min-height:420px;">' +
+        '<iframe id="_cvPdfFrame" src="' + url + '#toolbar=1&navpanes=0" style="width:100%;height:100%;min-height:420px;border:none;display:block;" title="Podgląd PDF"></iframe>' +
+        '<p id="_cvPdfFallback" style="display:none;color:#6b7280;font-size:13px;text-align:center;padding:24px;">Twoja przeglądarka nie obsługuje podglądu PDF.<br>Kliknij <strong>Pobierz PDF</strong>, żeby zapisać plik.</p>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(modal);
+
+  const frame = document.getElementById('_cvPdfFrame');
+  const fallback = document.getElementById('_cvPdfFallback');
+  frame.onerror = () => { frame.style.display='none'; if(fallback) fallback.style.display='block'; };
+
+  document.getElementById('_cvPdfDlBtn').onclick = function() {
+    _savePDF(blob, filename);
+    modal.remove();
+    URL.revokeObjectURL(url);
+  };
+  document.getElementById('_cvPdfCloseBtn').onclick = function() {
+    modal.remove();
+    URL.revokeObjectURL(url);
+  };
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) { modal.remove(); URL.revokeObjectURL(url); }
+  });
+}
+
+// ── DOCX (RTF) EXPORT ─────────────────────────────────────────────────
+function _buildCVRtf() {
+  const d = cvData;
+  const e = s => (s || '').replace(/\\/g, '\\\\').replace(/\{/g, '\\{').replace(/\}/g, '\\}').replace(/[^\x00-\x7E]/g, c => '\\u' + c.charCodeAt(0) + '?');
+  const hr = '\\pard\\brdrb\\brdrs\\brdrw8\\brdrcf3 \\par\\pard\n';
+  const sec = t => '\\pard\\sb200\\sa80{\\fs18\\b\\cf2 ' + e(t.toUpperCase()) + '\\b0}\\par\n' + hr;
+
+  let r = '{\\rtf1\\ansi\\ansicpg1250\\deff0\n';
+  r += '{\\fonttbl{\\f0\\froman\\fcharset238 Calibri;}{\\f1\\fswiss\\fcharset238 Arial;}}\n';
+  r += '{\\colortbl ;\\red17\\green24\\blue39;\\red37\\green99\\blue235;\\red229\\green231\\blue235;}\n';
+  r += '\\paperw11906\\paperh16838\\margl1800\\margr1800\\margt1400\\margb1400\\f0\\fs22\n';
+
+  // Imię i nazwisko
+  const fn = [d.imie, d.nazwisko].filter(Boolean).join(' ');
+  if (fn) r += '\\pard\\sa80{\\fs42\\b ' + e(fn) + '\\b0}\\par\n';
+  if (d.stanowisko) r += '\\pard\\sa60{\\fs24\\cf2 ' + e(d.stanowisko) + '}\\par\n';
+
+  // Kontakt
+  const contacts = [d.email, d.tel, d.adres, d.linkedin, d.www].filter(Boolean);
+  if (contacts.length) r += '\\pard\\sa120{\\fs20\\cf2 ' + e(contacts.join('  \\u183?  ')) + '}\\par\n';
+
+  r += hr;
+
+  // Podsumowanie
+  if (d.podsumowanie) {
+    r += sec('Podsumowanie zawodowe');
+    r += '\\pard\\sa160{\\fs22 ' + e(d.podsumowanie) + '}\\par\n';
+  }
+
+  // Doświadczenie
+  const dosw = (d.doswiadczenie || []).filter(x => x.firma || x.stanowisko);
+  if (dosw.length) {
+    r += sec('Do\u015bwiadczenie zawodowe');
+    dosw.forEach(x => {
+      r += '\\pard\\sb120\\sa40{\\fs22\\b ' + e(x.stanowisko || '') + '\\b0}\\par\n';
+      r += '\\pard\\sa40{\\fs20\\cf2 ' + e(x.firma || '') + (x.od || x.do ? '  |  ' + e([x.od,x.do].filter(Boolean).join(' \u2013 ')) : '') + '}\\par\n';
+      if (x.opis) r += '\\pard\\sa120{\\fs22 ' + e(x.opis) + '}\\par\n';
+    });
+  }
+
+  // Wykształcenie
+  const wyk = (d.wyksztalcenie || []).filter(x => x.szkola || x.kierunek);
+  if (wyk.length) {
+    r += sec('Wykszta\u0142cenie');
+    wyk.forEach(x => {
+      r += '\\pard\\sb120\\sa40{\\fs22\\b ' + e(x.kierunek || '') + '\\b0}\\par\n';
+      r += '\\pard\\sa120{\\fs20\\cf2 ' + e(x.szkola || '') + (x.od || x.do ? '  |  ' + e([x.od,x.do].filter(Boolean).join(' \u2013 ')) : '') + '}\\par\n';
+    });
+  }
+
+  // Umiejętności
+  if (d.umiejetnosci) {
+    r += sec('Umiej\u0119tno\u015bci');
+    (d.umiejetnosci.split(',').map(s=>s.trim()).filter(Boolean)).forEach(s => {
+      r += '\\pard\\sa40{\\fs22 \\bullet  ' + e(s) + '}\\par\n';
+    });
+  }
+
+  // Języki
+  const langs = (d.jezyki || []).filter(l => l.jezyk);
+  if (langs.length) {
+    r += sec('J\u0119zyki');
+    langs.forEach(l => {
+      r += '\\pard\\sa40{\\fs22 \\bullet  ' + e(l.jezyk) + (l.poziom ? ' \u2013 ' + e(l.poziom) : '') + '}\\par\n';
+    });
+  }
+
+  // Certyfikaty
+  const certs = (d.certyfikatyList || []).filter(c => c.name);
+  if (certs.length) {
+    r += sec('Certyfikaty');
+    certs.forEach(c => {
+      r += '\\pard\\sa40{\\fs22 \\bullet  ' + e(c.name) + (c.wydawca ? ' \u2013 ' + e(c.wydawca) : '') + (c.rok ? ' (' + e(String(c.rok)) + ')' : '') + '}\\par\n';
+    });
+  }
+
+  // Zainteresowania
+  if (d.zainteresowania) {
+    r += sec('Zainteresowania');
+    r += '\\pard\\sa80{\\fs22 ' + e(d.zainteresowania) + '}\\par\n';
+  }
+
+  r += '}';
+  return r;
+}
+
+function downloadCVDocx() {
+  const _user = (function(){ try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e){ return null; } })();
+  if (!_user) { window.location.href = 'konto.html'; return; }
+
+  const fn = [cvData.imie, cvData.nazwisko].filter(Boolean).join(' ') || 'CV';
+  const filename = 'CV_' + fn.replace(/\s+/g, '_') + '.doc';
+
+  const rtf = _buildCVRtf();
+  const blob = new Blob([rtf], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+}
+
+// ── OSTRZEŻENIE DLA NIEZALOGOWANYCH ───────────────────────────────────
+let _cvGuestWarnFired = false;
+let _cvGuestWarnTimer = null;
+function _cvGuestWarnOnChange() {
+  if (_cvGuestWarnFired) return;
+  const user = (function(){ try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e){ return null; } })();
+  if (user) { _cvGuestWarnFired = true; return; } // zalogowany — nie pokazuj
+  if (_cvGuestWarnTimer) return; // timer już uruchomiony
+  _cvGuestWarnTimer = setTimeout(function() {
+    const u2 = (function(){ try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e){ return null; } })();
+    if (u2 || _cvGuestWarnFired) return; // zalogował się w międzyczasie
+    _cvGuestWarnFired = true;
+    var banner = document.createElement('div');
+    banner.id = 'cvGuestBanner';
+    banner.style.cssText = 'position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:10000;background:#1e293b;color:#f1f5f9;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.3);max-width:calc(100vw - 32px);animation:cvBannerIn .25s ease;white-space:nowrap;';
+    banner.innerHTML =
+      '<style>@keyframes cvBannerIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}</style>' +
+      '💾 <span>Postęp nie jest zapisywany — nie jesteś zalogowany/a.</span>' +
+      '<a href="konto.html" style="background:#2563eb;color:#fff;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap;flex-shrink:0;">Zaloguj się</a>' +
+      '<button onclick="document.getElementById(\'cvGuestBanner\').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0;line-height:1;">✕</button>';
+    document.body.appendChild(banner);
+    setTimeout(function(){ var b = document.getElementById('cvGuestBanner'); if(b) b.remove(); }, 12000);
+  }, 90000); // 90 sekund po pierwszej zmianie
 }
