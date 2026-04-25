@@ -136,7 +136,8 @@ Zwróć TYLKO JSON, żadnego tekstu przed ani po. Format:
       "title": "krótki tytuł",
       "description": "opis 2-3 zdania po polsku",
       "legal": "np. Art. 29 §1 KP lub null",
-      "recommendation": "konkretna rekomendacja lub null jeśli severity=ok"
+      "recommendation": "konkretna rekomendacja lub null jeśli severity=ok",
+      "textRef": "dosłowny cytat (10-30 słów) z tekstu umowy którego dotyczy ten issue, lub null jeśli issue dotyczy brakującego elementu"
     }
   ]
 }

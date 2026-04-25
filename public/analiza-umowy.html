@@ -14,33 +14,18 @@
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="robots" content="index, follow">
-
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Dokumo","item":"https://dokumoflow.com"},{"@type":"ListItem","position":2,"name":"Analiza umowy z AI","item":"https://dokumoflow.com/analiza-umowy.html"}]}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Czy analiza umowy przez AI jest prawnie wiążąca?","acceptedAnswer":{"@type":"Answer","text":"Nie. Analiza ma charakter wyłącznie informacyjny i nie stanowi porady prawnej. W skomplikowanych sprawach skonsultuj się z radcą prawnym."}},{"@type":"Question","name":"Jakie formaty umów obsługuje narzędzie?","acceptedAnswer":{"@type":"Answer","text":"Obsługujemy pliki PDF i DOCX. Maksymalny rozmiar pliku to 10 MB. Pliki muszą zawierać tekst — zeskanowane obrazy nie są obsługiwane."}},{"@type":"Question","name":"Czy moje dane są bezpieczne?","acceptedAnswer":{"@type":"Answer","text":"Tak. Tekst umowy jest przetwarzany wyłącznie na potrzeby analizy i nie jest przechowywany na naszych serwerach po zakończeniu sesji."}}]}
-</script>
-
-<!-- Google Analytics -->
-<script>
-window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});
-if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Dokumo","item":"https://dokumoflow.com"},{"@type":"ListItem","position":2,"name":"Analiza umowy z AI","item":"https://dokumoflow.com/analiza-umowy.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Czy analiza umowy przez AI jest prawnie wiążąca?","acceptedAnswer":{"@type":"Answer","text":"Nie. Analiza ma charakter wyłącznie informacyjny i nie stanowi porady prawnej. W skomplikowanych sprawach skonsultuj się z radcą prawnym."}},{"@type":"Question","name":"Jakie formaty umów obsługuje narzędzie?","acceptedAnswer":{"@type":"Answer","text":"Obsługujemy pliki PDF i DOCX. Maksymalny rozmiar pliku to 10 MB. Pliki muszą zawierać tekst — zeskanowane obrazy nie są obsługiwane."}},{"@type":"Question","name":"Czy moje dane są bezpieczne?","acceptedAnswer":{"@type":"Answer","text":"Tak. Tekst umowy jest przetwarzany wyłącznie na potrzeby analizy i nie jest przechowywany na naszych serwerach po zakończeniu sesji."}}]}</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});}</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>gtag('js',new Date());gtag('config','G-61ETEPHJB7');</script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="style.css"></noscript>
-
-<!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<!-- Mammoth.js (DOCX) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 
 <style>
@@ -70,34 +55,135 @@ body{background:#f5f3ef;margin:0;padding:0;}
 .mobile-menu-link-name{font-size:13.5px;font-weight:600;color:#111827;}
 .mobile-menu-link-desc{font-size:11px;color:#6b7280;}
 
-/* UPLOAD ZONE */
+/* UPLOAD */
 .upload-zone{border:2px dashed #d1d5db;border-radius:20px;padding:52px 32px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;position:relative;}
 .upload-zone:hover,.upload-zone.drag{border-color:#2563eb;background:#eff6ff;}
 .upload-zone.drag{transform:scale(1.01);}
 .upload-zone.has-file{border-color:#16a34a;border-style:solid;background:#f0fdf4;}
 
 /* SCORE RING */
-.score-ring{width:96px;height:96px;position:relative;flex-shrink:0;}
+.score-ring{width:72px;height:72px;position:relative;flex-shrink:0;}
 .score-ring svg{transform:rotate(-90deg);}
-.score-ring-bg{fill:none;stroke:#e5e7eb;stroke-width:8;}
-.score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+.score-ring-bg{fill:none;stroke:#e5e7eb;stroke-width:7;}
+.score-ring-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease;}
 .score-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 
-/* ISSUE CARDS */
-.issue-card{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:18px 20px;transition:box-shadow .15s;}
-.issue-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
+/* SPLIT PANEL RESULTS */
+#splitResults{display:none;flex-direction:column;height:calc(100vh - 60px);}
+
+/* Summary bar */
+#summaryBar{
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+  padding:12px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-shrink:0;
+  flex-wrap:wrap;
+}
+
+/* Panels */
+#splitBody{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+}
+
+/* Left: contract text */
+#contractPanel{
+  overflow-y:auto;
+  background:#fafafa;
+  border-right:1px solid #e5e7eb;
+  padding:28px 32px;
+}
+#contractPanel p{
+  font-size:.84rem;
+  line-height:1.75;
+  color:#374151;
+  margin:0 0 10px;
+  font-family:'Inter',sans-serif;
+}
+#contractPanel p:empty{display:none;}
+
+/* Contract text highlight */
+.contract-highlight{
+  background:#fef08a;
+  border-radius:3px;
+  padding:1px 2px;
+  transition:background .3s;
+}
+.contract-highlight.active{
+  background:#fb923c;
+  color:#fff;
+  outline:2px solid #ea580c;
+  outline-offset:1px;
+}
+
+/* Right: issues */
+#issuesPanel{
+  overflow-y:auto;
+  background:#f5f3ef;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* Issue card */
+.issue-card{
+  background:#fff;
+  border:1.5px solid #e5e7eb;
+  border-radius:14px;
+  padding:16px 18px;
+  cursor:pointer;
+  transition:border-color .15s, box-shadow .15s, transform .1s;
+  position:relative;
+}
+.issue-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.08);transform:translateX(2px);}
+.issue-card.active-card{border-color:#2563eb !important;box-shadow:0 0 0 3px rgba(37,99,235,.12);transform:translateX(4px);}
 .issue-card.critical{border-left:4px solid #dc2626;}
 .issue-card.warning{border-left:4px solid #d97706;}
 .issue-card.ok{border-left:4px solid #16a34a;}
-.severity-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px;}
+
+/* Badges */
+.severity-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;border-radius:999px;}
 .badge-critical{background:#fef2f2;color:#dc2626;}
 .badge-warning{background:#fffbeb;color:#d97706;}
 .badge-ok{background:#f0fdf4;color:#16a34a;}
 
-/* BLUR PAYWALL */
-.issue-blurred{position:relative;}
-.issue-blurred .issue-card{filter:blur(4px);pointer-events:none;user-select:none;}
-.paywall-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:2;}
+/* No-highlight hint */
+#noRefHint{
+  display:none;
+  position:sticky;
+  top:8px;
+  z-index:5;
+  background:#1e3a8a;
+  color:#fff;
+  font-size:.75rem;
+  font-weight:600;
+  padding:8px 14px;
+  border-radius:10px;
+  margin-bottom:12px;
+  text-align:center;
+  animation:fadeUp .3s ease;
+}
+
+/* Mobile tabs */
+#mobileTabs{display:none;background:#fff;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
+#mobileTabs button{flex:1;padding:12px;border:none;background:none;font-size:.82rem;font-weight:700;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
+#mobileTabs button.active{color:#2563eb;border-bottom-color:#2563eb;}
+@media(max-width:768px){
+  #splitBody{grid-template-columns:1fr!important;}
+  #contractPanel{display:none;}
+  #contractPanel.tab-active{display:block;}
+  #issuesPanel{display:none;}
+  #issuesPanel.tab-active{display:flex;}
+  #mobileTabs{display:flex;}
+  #summaryBar{flex-wrap:wrap;}
+}
 
 /* FAQ */
 .faq-item{border-bottom:1px solid #e5e7eb;overflow:hidden;}
@@ -107,13 +193,11 @@ body{background:#f5f3ef;margin:0;padding:0;}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
 .faq-a p{font-size:.875rem;color:#6b7280;line-height:1.7;padding-bottom:16px;margin:0;}
 
-/* STEP CARDS */
 .step-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:14px;}
 .step-num{width:38px;height:38px;border-radius:10px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;letter-spacing:.04em;flex-shrink:0;}
 
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{animation:fadeUp .45s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 </style>
 
 <script type="module">
@@ -125,7 +209,7 @@ body{background:#f5f3ef;margin:0;padding:0;}
   onAuthStateChanged(auth, user => {
     if (user) {
       user.getIdToken().then(t => { window._fbToken = t; });
-      localStorage.setItem('dokumo_user', JSON.stringify({ name: user.displayName || '', email: user.email || '', photo: user.photoURL || '' }));
+      localStorage.setItem('dokumo_user', JSON.stringify({ name: user.displayName||'', email: user.email||'', photo: user.photoURL||'' }));
     } else {
       window._fbToken = null;
       localStorage.removeItem('dokumo_user');
@@ -197,10 +281,9 @@ body{background:#f5f3ef;margin:0;padding:0;}
     <div class="mobile-menu-section">Narzędzia</div>
     <a href="wybierz-szablon.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></span><span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz profesjonalne CV</div></span></a>
     <a href="analiza-umowy.html" class="mobile-menu-link" style="background:#eff6ff;border-radius:10px;"><span class="mobile-menu-link-icon" style="background:#dbeafe;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span><div class="mobile-menu-link-name">Analiza umowy AI</div><div class="mobile-menu-link-desc">Sprawdź swoją umowę</div></span></a>
-    <a href="kalkulator-wynagrodzen.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/></svg></span><span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div><div class="mobile-menu-link-desc">Brutto / netto / B2B</div></span></a>
+    <a href="kalkulator-wynagrodzen.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/></svg></span><span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div></span></a>
     <div style="height:1px;background:#f3f4f6;margin:4px;"></div>
-    <a href="hr.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></span><span><div class="mobile-menu-link-name">Dokumenty HR</div><div class="mobile-menu-link-desc">B2B, NDA, zlecenie</div></span></a>
-    <a href="faktura.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></span><span><div class="mobile-menu-link-name">Generator faktur</div><div class="mobile-menu-link-desc">Faktura VAT w PDF</div></span></a>
+    <a href="hr.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></span><span><div class="mobile-menu-link-name">Dokumenty HR</div></span></a>
     <div style="height:1px;background:#f3f4f6;margin:8px 4px;"></div>
     <a href="artykuly.html" style="display:flex;align-items:center;gap:10px;padding:12px 10px;margin-top:8px;background:#eff6ff;border-radius:12px;text-decoration:none;font-size:14px;font-weight:700;color:#2563eb;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -209,28 +292,23 @@ body{background:#f5f3ef;margin:0;padding:0;}
   </div>
 </div>
 
-<!-- HERO -->
+<!-- ══════════════════ HERO (upload) ══════════════════ -->
+<div id="heroSection">
 <section style="padding:56px 24px 48px;max-width:760px;margin:0 auto;">
-
-  <!-- Eyebrow -->
   <div style="display:flex;justify-content:center;margin-bottom:20px;">
     <span style="display:inline-flex;align-items:center;gap:7px;background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       Bezpłatna analiza AI
     </span>
   </div>
-
   <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:900;color:#0f172a;letter-spacing:-.04em;text-align:center;margin:0 0 18px;line-height:1.1;">Sprawdź swoją umowę<br><span style="color:#2563eb;">zanim ją podpiszesz</span></h1>
-  <p style="font-size:1.05rem;color:#6b7280;text-align:center;line-height:1.7;max-width:560px;margin:0 auto 36px;">Wgraj umowę w PDF lub DOCX — AI wykryje błędy, klauzule niedozwolone i ryzyka w ciągu 30 sekund. Zgodnie z polskim prawem 2026.</p>
+  <p style="font-size:1.05rem;color:#6b7280;text-align:center;line-height:1.7;max-width:560px;margin:0 auto 36px;">Wgraj umowę w PDF lub DOCX — AI wykryje błędy, klauzule niedozwolone i ryzyka. Zgodnie z polskim prawem 2026.</p>
 
-  <!-- UPLOAD CARD -->
   <div style="background:#fff;border-radius:24px;box-shadow:0 4px 32px rgba(0,0,0,.08);border:1px solid #e5e7eb;overflow:hidden;">
-
-    <!-- Upload zone -->
     <div id="uploadZone" class="upload-zone" onclick="document.getElementById('fileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" style="margin:20px;border-radius:16px;">
       <div id="uploadDefault">
         <div style="width:60px;height:60px;background:#eff6ff;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
         <p style="font-size:.95rem;font-weight:700;color:#111827;margin:0 0 6px;">Przeciągnij umowę tutaj</p>
         <p style="font-size:.82rem;color:#9ca3af;margin:0 0 16px;">lub kliknij aby wybrać plik</p>
@@ -238,7 +316,7 @@ body{background:#f5f3ef;margin:0;padding:0;}
       </div>
       <div id="uploadSelected" style="display:none;">
         <div style="width:56px;height:56px;background:#dcfce7;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
         <p id="selectedFileName" style="font-size:.9rem;font-weight:700;color:#111827;margin:0 0 4px;word-break:break-all;"></p>
         <p id="selectedFileSize" style="font-size:.78rem;color:#9ca3af;margin:0 0 14px;"></p>
@@ -246,91 +324,17 @@ body{background:#f5f3ef;margin:0;padding:0;}
       </div>
       <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt" style="display:none;" onchange="handleFileSelect(this)">
     </div>
-
-    <!-- Analyze button -->
     <div style="padding:0 20px 20px;">
       <button id="analyzeBtn" onclick="analyzeContract()" disabled style="width:100%;padding:15px;background:#d1d5db;color:#9ca3af;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:not-allowed;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         Analizuj umowę
       </button>
     </div>
-
-    <!-- Disclaimer -->
     <div style="display:flex;align-items:flex-start;gap:10px;padding:14px 20px;background:#fafafa;border-top:1px solid #f3f4f6;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p style="font-size:.73rem;color:#9ca3af;line-height:1.5;margin:0;">Analiza ma charakter <strong>wyłącznie informacyjny</strong> i nie stanowi porady prawnej. Tekst umowy jest przetwarzany jednorazowo i nie jest przechowywany.</p>
     </div>
-
   </div>
-
-</section>
-
-<!-- LOADING STATE -->
-<section id="loadingSection" style="display:none;padding:0 24px 64px;max-width:760px;margin:0 auto;">
-  <div style="background:#fff;border-radius:24px;box-shadow:0 4px 32px rgba(0,0,0,.08);border:1px solid #e5e7eb;padding:52px 32px;text-align:center;">
-    <div style="width:64px;height:64px;border:4px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 24px;"></div>
-    <p id="loadingTitle" style="font-size:1.05rem;font-weight:800;color:#111827;margin:0 0 6px;">Odczytuję plik…</p>
-    <p id="loadingSubtitle" style="font-size:.85rem;color:#9ca3af;margin:0;">To może potrwać chwilę</p>
-    <div style="margin-top:24px;background:#f9fafb;border-radius:12px;padding:16px;">
-      <div style="display:flex;flex-direction:column;gap:8px;" id="loadingSteps">
-        <div id="lStep1" style="display:flex;align-items:center;gap:10px;font-size:.8rem;color:#9ca3af;"><span id="lStep1Icon" style="width:20px;height:20px;border:2px solid #d1d5db;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;"></span> Odczyt pliku</div>
-        <div id="lStep2" style="display:flex;align-items:center;gap:10px;font-size:.8rem;color:#9ca3af;"><span id="lStep2Icon" style="width:20px;height:20px;border:2px solid #d1d5db;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;"></span> Analiza AI (prawo polskie 2026)</div>
-        <div id="lStep3" style="display:flex;align-items:center;gap:10px;font-size:.8rem;color:#9ca3af;"><span id="lStep3Icon" style="width:20px;height:20px;border:2px solid #d1d5db;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;"></span> Przygotowanie raportu</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- RESULTS -->
-<section id="resultsSection" style="display:none;padding:0 24px 72px;max-width:760px;margin:0 auto;">
-
-  <!-- Summary card -->
-  <div id="summaryCard" style="background:#fff;border-radius:20px;box-shadow:0 4px 32px rgba(0,0,0,.08);border:1px solid #e5e7eb;padding:28px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-    <div class="score-ring">
-      <svg width="96" height="96" viewBox="0 0 96 96">
-        <circle class="score-ring-bg" cx="48" cy="48" r="40"/>
-        <circle id="scoreArc" class="score-ring-fill" cx="48" cy="48" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
-      </svg>
-      <div class="score-ring-text">
-        <span id="scoreNum" style="font-size:1.5rem;font-weight:900;color:#111827;line-height:1;">—</span>
-        <span style="font-size:.62rem;color:#9ca3af;font-weight:600;letter-spacing:.05em;">/ 100</span>
-      </div>
-    </div>
-    <div style="flex:1;min-width:200px;">
-      <div id="contractTypeLabel" style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:4px;"></div>
-      <div id="scoreLabel" style="font-size:1.15rem;font-weight:800;color:#111827;margin-bottom:6px;"></div>
-      <div id="summaryText" style="font-size:.85rem;color:#6b7280;line-height:1.6;"></div>
-      <div id="countBadges" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"></div>
-    </div>
-    <button onclick="resetAnalysis()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:#f3f4f6;border:none;border-radius:10px;font-size:.78rem;font-weight:600;color:#374151;cursor:pointer;transition:background .15s;white-space:nowrap;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.02"/></svg>
-      Analizuj nową
-    </button>
-  </div>
-
-  <!-- Issues list -->
-  <div id="issuesList" style="display:flex;flex-direction:column;gap:12px;"></div>
-
-  <!-- Paywall (for guests) -->
-  <div id="paywallCard" style="display:none;margin-top:16px;background:linear-gradient(135deg,#1e3a8a,#2563eb);border-radius:20px;padding:32px;text-align:center;color:#fff;">
-    <div style="width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    </div>
-    <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Pełny raport dostępny po zalogowaniu</div>
-    <div id="paywallCount" style="font-size:.88rem;opacity:.85;margin-bottom:20px;"></div>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-      <a href="konto.html?rejestracja=1" style="padding:11px 24px;background:#fff;color:#1e3a8a;border-radius:12px;font-size:.88rem;font-weight:800;text-decoration:none;">Załóż darmowe konto</a>
-      <a href="konto.html" style="padding:11px 24px;background:rgba(255,255,255,.15);color:#fff;border-radius:12px;font-size:.88rem;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.3);">Zaloguj się</a>
-    </div>
-  </div>
-
-  <!-- Error state -->
-  <div id="errorCard" style="display:none;background:#fef2f2;border:1.5px solid #fecaca;border-radius:16px;padding:24px;text-align:center;">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" style="margin-bottom:12px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <div id="errorMsg" style="font-size:.9rem;font-weight:700;color:#dc2626;margin-bottom:8px;"></div>
-    <button onclick="resetAnalysis()" style="padding:8px 20px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;">Spróbuj ponownie</button>
-  </div>
-
 </section>
 
 <!-- JAK TO DZIAŁA -->
@@ -341,78 +345,26 @@ body{background:#f5f3ef;margin:0;padding:0;}
       <h2 style="font-size:1.75rem;font-weight:900;color:#0f172a;letter-spacing:-.03em;margin:0;">3 kroki do bezpiecznej umowy</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div>
-          <div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">Wgraj umowę</div>
-          <div style="font-size:.82rem;color:#6b7280;line-height:1.6;">Przeciągnij plik PDF lub DOCX do strefy upload. Tekst jest odczytywany lokalnie — plik nie opuszcza Twojego urządzenia.</div>
-        </div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div>
-          <div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">AI analizuje</div>
-          <div style="font-size:.82rem;color:#6b7280;line-height:1.6;">Model AI przeszukuje umowę pod kątem polskiego Kodeksu pracy, KC i aktualnych przepisów 2026. Wynik gotowy w ~30 sekund.</div>
-        </div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div>
-          <div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">Czytaj raport</div>
-          <div style="font-size:.82rem;color:#6b7280;line-height:1.6;">Każdy problem opisany po polsku z podstawą prawną i konkretną rekomendacją — co poprawić i jak.</div>
-        </div>
-      </div>
+      <div class="step-card"><div class="step-num">01</div><div><div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">Wgraj umowę</div><div style="font-size:.82rem;color:#6b7280;line-height:1.6;">Przeciągnij plik PDF lub DOCX. Tekst jest odczytywany lokalnie — plik nie opuszcza Twojego urządzenia.</div></div></div>
+      <div class="step-card"><div class="step-num">02</div><div><div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">AI analizuje</div><div style="font-size:.82rem;color:#6b7280;line-height:1.6;">Model AI przeszukuje umowę pod kątem polskiego KP, KC i przepisów 2026. Wynik gotowy w ~30 sekund.</div></div></div>
+      <div class="step-card"><div class="step-num">03</div><div><div style="font-size:.95rem;font-weight:700;color:#111827;margin-bottom:6px;">Klikaj wyniki</div><div style="font-size:.82rem;color:#6b7280;line-height:1.6;">Każdy problem podświetla odpowiednie miejsce w umowie — widzisz dokładnie co i gdzie wymaga poprawy.</div></div></div>
     </div>
     <style>@media(max-width:640px){.steps-grid{grid-template-columns:1fr!important;}}</style>
   </div>
 </section>
 
-<!-- TYPY UMÓW -->
-<section style="background:#f9fafb;padding:64px 24px;border-top:1px solid #f1f5f9;">
-  <div style="max-width:900px;margin:0 auto;text-align:center;">
-    <div style="font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;margin-bottom:10px;">Obsługiwane typy</div>
-    <h2 style="font-size:1.5rem;font-weight:900;color:#0f172a;letter-spacing:-.03em;margin:0 0 32px;">Analizujemy każdy rodzaj umowy</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa o pracę</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa B2B</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa zlecenie</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa o dzieło</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">NDA</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa najmu</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa sprzedaży</span>
-      <span style="background:#fff;border:1.5px solid #e5e7eb;border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;color:#374151;">Umowa wspólników</span>
-    </div>
-  </div>
-</section>
-
 <!-- FAQ -->
-<section style="background:#fff;padding:72px 24px;border-top:1px solid #f1f5f9;">
+<section style="background:#f9fafb;padding:72px 24px;border-top:1px solid #f1f5f9;">
   <div style="max-width:680px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:44px;">
       <div style="font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#2563eb;margin-bottom:10px;">FAQ</div>
       <h2 style="font-size:1.75rem;font-weight:900;color:#0f172a;letter-spacing:-.03em;margin:0;">Najczęstsze pytania</h2>
     </div>
-    <div id="faqList">
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span>Czy analiza jest prawnie wiążąca?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a"><p>Nie. Analiza ma charakter wyłącznie informacyjny i edukacyjny. Nie stanowi porady prawnej w rozumieniu ustawy o radcach prawnych i adwokatach. W skomplikowanych sprawach zawsze skonsultuj się z radcą prawnym lub adwokatem.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span>Czy moje dane są bezpieczne?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a"><p>Tak. Tekst umowy jest odczytywany lokalnie na Twoim urządzeniu (plik nigdy nie jest przesyłany na serwer — tylko wyekstrahowany tekst trafia do analizy AI). Po zakończeniu analizy tekst nie jest przechowywany. Nie zapisujemy treści Twoich umów.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span>Jakie formaty plików obsługuje narzędzie?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a"><p>Obsługujemy pliki PDF i DOCX (Word). Plik musi zawierać tekst cyfrowy — zeskanowane dokumenty (obrazy) nie są obsługiwane. Maksymalny rozmiar pliku to 10 MB, a maksymalna długość umowy to ~20 stron.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span>Czy narzędzie sprawdza polskie prawo?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a"><p>Tak. AI jest dostosowane do polskiego Kodeksu pracy (KP), Kodeksu cywilnego (KC) i aktualnych przepisów 2026, w tym minimalnego wynagrodzenia (4666 zł brutto) i minimalnej stawki godzinowej (30,50 zł).</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span>Ile kosztuje analiza umowy?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-        <div class="faq-a"><p>Podstawowa analiza jest bezpłatna — po zalogowaniu widzisz pełny raport ze wszystkimi wykrytymi problemami i rekomendacjami. Konto możesz założyć bezpłatnie w 30 sekund.</p></div>
-      </div>
+    <div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Czy analiza jest prawnie wiążąca?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Nie. Analiza ma charakter wyłącznie informacyjny i edukacyjny. Nie stanowi porady prawnej w rozumieniu ustawy o radcach prawnych i adwokatach. W skomplikowanych sprawach skonsultuj się z radcą prawnym lub adwokatem.</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Czy moje dane są bezpieczne?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Tak. Tekst umowy jest odczytywany lokalnie na Twoim urządzeniu — plik nigdy nie jest przesyłany na serwer. Po zakończeniu analizy tekst nie jest przechowywany.</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Jakie formaty obsługuje narzędzie?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Obsługujemy pliki PDF i DOCX (Word). Plik musi zawierać tekst cyfrowy — zeskanowane dokumenty nie są obsługiwane. Maksymalny rozmiar to 10 MB (~20 stron).</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Czy sprawdza polskie prawo?</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Tak. AI jest dostosowane do polskiego Kodeksu pracy (KP), Kodeksu cywilnego (KC) i aktualnych przepisów 2026, w tym minimalnego wynagrodzenia (4666 zł brutto) i minimalnej stawki godzinowej (30,50 zł).</p></div></div>
     </div>
   </div>
 </section>
@@ -420,76 +372,152 @@ body{background:#f5f3ef;margin:0;padding:0;}
 <!-- FOOTER -->
 <footer style="background:#fff;border-top:1px solid #f3f4f6;padding:32px 24px;">
   <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <img src="logo2.png" alt="Dokumo" width="28" height="28" style="height:28px;width:auto;">
-      <span style="font-size:14px;font-weight:800;color:#111827;">Dokumo</span>
-    </div>
+    <div style="display:flex;align-items:center;gap:8px;"><img src="logo2.png" alt="Dokumo" width="28" height="28" style="height:28px;width:auto;"><span style="font-size:14px;font-weight:800;color:#111827;">Dokumo</span></div>
     <p style="font-size:13px;color:#9ca3af;margin:0;">© 2026 Dokumo. Wszelkie prawa zastrzeżone.</p>
     <div style="display:flex;gap:24px;">
-      <a href="regulamin.html" style="font-size:13px;color:#9ca3af;text-decoration:none;" onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">Regulamin</a>
-      <a href="prywatnosc.html" style="font-size:13px;color:#9ca3af;text-decoration:none;" onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">Prywatność</a>
+      <a href="regulamin.html" style="font-size:13px;color:#9ca3af;text-decoration:none;">Regulamin</a>
+      <a href="prywatnosc.html" style="font-size:13px;color:#9ca3af;text-decoration:none;">Prywatność</a>
     </div>
   </div>
 </footer>
+</div><!-- /heroSection -->
+
+<!-- ══════════════════ LOADING ══════════════════ -->
+<div id="loadingSection" style="display:none;min-height:calc(100vh - 60px);display:none;align-items:center;justify-content:center;padding:40px 24px;">
+  <div style="background:#fff;border-radius:24px;box-shadow:0 4px 32px rgba(0,0,0,.08);border:1px solid #e5e7eb;padding:52px 40px;text-align:center;max-width:480px;width:100%;">
+    <div style="width:64px;height:64px;border:4px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 24px;"></div>
+    <p id="loadingTitle" style="font-size:1.05rem;font-weight:800;color:#111827;margin:0 0 6px;">Odczytuję plik…</p>
+    <p id="loadingSubtitle" style="font-size:.85rem;color:#9ca3af;margin:0 0 24px;">To może potrwać chwilę</p>
+    <div style="background:#f9fafb;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div id="lStep1" style="display:flex;align-items:center;gap:10px;font-size:.8rem;color:#9ca3af;"><span id="lStep1Icon" style="width:22px;height:22px;border:2px solid #d1d5db;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;"></span>Odczyt pliku</div>
+      <div id="lStep2" style="display:flex;align-items:center;gap:10px;font-size:.8rem;color:#9ca3af;"><span id="lStep2Icon" style="width:22px;height:22px;border:2px solid #d1d5db;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;"></span>Analiza AI (prawo polskie 2026)</div>
+      <div id="lStep3" style="display:flex;align-items:center;gap:10px;font-size:.8rem;color:#9ca3af;"><span id="lStep3Icon" style="width:22px;height:22px;border:2px solid #d1d5db;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;"></span>Przygotowanie raportu</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ SPLIT RESULTS ══════════════════ -->
+<div id="splitResults" style="display:none;flex-direction:column;height:calc(100vh - 60px);">
+
+  <!-- Summary bar -->
+  <div id="summaryBar" style="background:#fff;border-bottom:1px solid #e5e7eb;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:wrap;">
+    <div class="score-ring">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle class="score-ring-bg" cx="36" cy="36" r="30"/>
+        <circle id="scoreArc" class="score-ring-fill" cx="36" cy="36" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+      </svg>
+      <div class="score-ring-text">
+        <span id="scoreNum" style="font-size:1.1rem;font-weight:900;color:#111827;line-height:1;">—</span>
+        <span style="font-size:.52rem;color:#9ca3af;font-weight:600;">/100</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div id="contractTypeLabel" style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:2px;"></div>
+      <div id="scoreLabel" style="font-size:.95rem;font-weight:800;color:#111827;margin-bottom:4px;"></div>
+      <div id="countBadges" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <div id="highlightHint" style="display:none;font-size:.72rem;color:#6b7280;background:#f3f4f6;padding:5px 10px;border-radius:8px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:4px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Brak cytatu w umowie
+      </div>
+      <button onclick="resetAnalysis()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#f3f4f6;border:none;border-radius:10px;font-size:.78rem;font-weight:600;color:#374151;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.02"/></svg>
+        Nowa analiza
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile tabs -->
+  <div id="mobileTabs">
+    <button id="tabContractBtn" class="active" onclick="switchTab('contract')">📄 Umowa</button>
+    <button id="tabIssuesBtn" onclick="switchTab('issues')">⚠️ Wyniki</button>
+  </div>
+
+  <!-- Split body -->
+  <div id="splitBody">
+    <!-- LEFT: contract text -->
+    <div id="contractPanel" class="tab-active">
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Treść umowy — kliknij wynik aby podświetlić fragment
+      </div>
+      <div id="contractTextDisplay"></div>
+    </div>
+
+    <!-- RIGHT: issues -->
+    <div id="issuesPanel" style="display:flex;">
+      <div id="paywallCard" style="display:none;background:linear-gradient(135deg,#1e3a8a,#2563eb);border-radius:16px;padding:24px;text-align:center;color:#fff;margin-bottom:10px;">
+        <div style="font-size:.95rem;font-weight:800;margin-bottom:6px;">Pełny raport po zalogowaniu</div>
+        <div id="paywallCount" style="font-size:.8rem;opacity:.85;margin-bottom:16px;"></div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <a href="konto.html?rejestracja=1" style="padding:9px 18px;background:#fff;color:#1e3a8a;border-radius:10px;font-size:.82rem;font-weight:800;text-decoration:none;">Załóż konto</a>
+          <a href="konto.html" style="padding:9px 18px;background:rgba(255,255,255,.15);color:#fff;border-radius:10px;font-size:.82rem;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.3);">Zaloguj się</a>
+        </div>
+      </div>
+      <div id="issuesList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Error in split -->
+  <div id="errorCard" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1.5px solid #fecaca;border-radius:16px;padding:32px;text-align:center;max-width:400px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.12);">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" style="margin-bottom:12px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div id="errorMsg" style="font-size:.9rem;font-weight:700;color:#dc2626;margin-bottom:12px;"></div>
+    <button onclick="resetAnalysis()" style="padding:9px 22px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;">Spróbuj ponownie</button>
+  </div>
+</div>
 
 <!-- COOKIE BANNER -->
 <div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1714;color:#d6d2cc;font-size:.82rem;padding:14px 20px;z-index:9999;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
   <span>Używamy plików cookies. <a href="prywatnosc.html" style="color:#7ec8a0;text-decoration:underline;">Dowiedz się więcej</a>.</span>
-  <div style="display:flex;gap:8px;margin-top:8px;flex-shrink:0;">
-    <button onclick="acceptCookies()" style="background:#2d6b52;color:#fff;border:none;padding:9px 20px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;">Akceptuję</button>
-    <button onclick="rejectCookies()" style="background:transparent;color:#d6d2cc;border:1px solid rgba(255,255,255,.25);padding:9px 16px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;">Odrzuć</button>
-  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;"><button onclick="acceptCookies()" style="background:#2d6b52;color:#fff;border:none;padding:9px 20px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;">Akceptuję</button><button onclick="rejectCookies()" style="background:transparent;color:#d6d2cc;border:1px solid rgba(255,255,255,.25);padding:9px 16px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;">Odrzuć</button></div>
 </div>
 
 <script>
-// ── NAV ──
+// ══ GLOBALS ══
+let contractTextRaw = '';
+let currentIssues = [];
+let activeCardEl = null;
+
+// ══ NAV ══
 function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch{return null;}}
 function updateNavAuth(){
-  const u=getUser();
-  const lb=document.getElementById('navLoginBtn');
-  const rb=document.getElementById('navRegisterBtn');
-  const pr=document.getElementById('navProfile');
-  const av=document.getElementById('navAvatar');
-  const em=document.getElementById('navProfileEmail');
+  const u=getUser(),lb=document.getElementById('navLoginBtn'),rb=document.getElementById('navRegisterBtn'),pr=document.getElementById('navProfile'),av=document.getElementById('navAvatar'),em=document.getElementById('navProfileEmail');
   if(!lb)return;
   if(u){lb.style.display='none';rb.style.display='none';pr.style.display='flex';if(em)em.textContent=u.email||'';if(u.photo){av.innerHTML='<img src="'+u.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else{av.textContent=(u.email||'U')[0].toUpperCase();}}
   else{lb.style.display='';rb.style.display='';pr.style.display='none';}
 }
 function toggleNavDropdown(e){e.stopPropagation();const dd=document.getElementById('navDropdown');if(dd)dd.classList.toggle('open');}
-function toggleToolsDropdown(e){e.stopPropagation();const dd=document.getElementById('toolsDropdown');const ch=document.getElementById('toolsChevron');if(!dd)return;const open=dd.style.display==='block';dd.style.display=open?'none':'block';if(ch)ch.style.transform=open?'':'rotate(180deg)';}
+function toggleToolsDropdown(e){e.stopPropagation();const dd=document.getElementById('toolsDropdown'),ch=document.getElementById('toolsChevron');if(!dd)return;const open=dd.style.display==='block';dd.style.display=open?'none':'block';if(ch)ch.style.transform=open?'':'rotate(180deg)';}
 function toggleMobileMenu(){const m=document.getElementById('mobileMenu');if(!m)return;const open=m.classList.toggle('open');const h=document.getElementById('navHamburger');if(h)h.innerHTML=open?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';}
 function logoutUser(){localStorage.removeItem('dokumo_user');localStorage.removeItem('dokumo_sub');(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(()=>{window.location.href='index.html';});}
 document.addEventListener('click',()=>{const dd=document.getElementById('navDropdown');if(dd)dd.classList.remove('open');const tdd=document.getElementById('toolsDropdown');if(tdd)tdd.style.display='none';const ch=document.getElementById('toolsChevron');if(ch)ch.style.transform='';});
-document.addEventListener('DOMContentLoaded',()=>{updateNavAuth();});
+document.addEventListener('DOMContentLoaded',()=>updateNavAuth());
 
-// ── COOKIES ──
-(function(){var c=localStorage.getItem('dokumo_cookies');if(!c)document.getElementById('cookieBanner').style.display='flex';})();
+// ══ COOKIES ══
+(function(){if(!localStorage.getItem('dokumo_cookies'))document.getElementById('cookieBanner').style.display='flex';})();
 function acceptCookies(){localStorage.setItem('dokumo_cookies','accepted');document.getElementById('cookieBanner').style.display='none';gtag('consent','update',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});}
 function rejectCookies(){localStorage.setItem('dokumo_cookies','rejected');document.getElementById('cookieBanner').style.display='none';}
 
-// ── FAQ ──
-function toggleFaq(el){
-  const a=el.nextElementSibling;
-  const open=el.classList.toggle('open');
-  if(open){a.style.maxHeight=a.scrollHeight+'px';}
-  else{a.style.maxHeight='0';}
+// ══ FAQ ══
+function toggleFaq(el){const a=el.nextElementSibling;const open=el.classList.toggle('open');a.style.maxHeight=open?a.scrollHeight+'px':'0';}
+
+// ══ MOBILE TABS ══
+function switchTab(tab){
+  const cp=document.getElementById('contractPanel'),ip=document.getElementById('issuesPanel');
+  const cb=document.getElementById('tabContractBtn'),ib=document.getElementById('tabIssuesBtn');
+  if(tab==='contract'){cp.classList.add('tab-active');ip.style.display='none';cb.classList.add('active');ib.classList.remove('active');}
+  else{ip.style.display='flex';cp.classList.remove('tab-active');ib.classList.add('active');cb.classList.remove('active');}
 }
 
-// ── FILE UPLOAD ──
+// ══ FILE UPLOAD ══
 let selectedFile = null;
-
 function handleDragOver(e){e.preventDefault();document.getElementById('uploadZone').classList.add('drag');}
-function handleDragLeave(e){document.getElementById('uploadZone').classList.remove('drag');}
-function handleDrop(e){
-  e.preventDefault();
-  document.getElementById('uploadZone').classList.remove('drag');
-  const file=e.dataTransfer.files[0];
-  if(file)setFile(file);
-}
+function handleDragLeave(){document.getElementById('uploadZone').classList.remove('drag');}
+function handleDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)setFile(f);}
 function handleFileSelect(input){if(input.files[0])setFile(input.files[0]);}
 function resetFile(e){
-  e.stopPropagation();
-  selectedFile=null;
+  e.stopPropagation();selectedFile=null;
   document.getElementById('uploadDefault').style.display='block';
   document.getElementById('uploadSelected').style.display='none';
   document.getElementById('uploadZone').classList.remove('has-file');
@@ -498,11 +526,10 @@ function resetFile(e){
   btn.disabled=true;btn.style.background='#d1d5db';btn.style.color='#9ca3af';btn.style.cursor='not-allowed';
 }
 function setFile(file){
-  const maxSize=10*1024*1024;
   const allowed=['.pdf','.docx','.doc','.txt'];
   const ext='.'+file.name.split('.').pop().toLowerCase();
-  if(!allowed.includes(ext)){showUploadError('Nieobsługiwany format. Użyj PDF lub DOCX.');return;}
-  if(file.size>maxSize){showUploadError('Plik jest za duży (maks. 10 MB).');return;}
+  if(!allowed.includes(ext)){alert('Nieobsługiwany format. Użyj PDF lub DOCX.');return;}
+  if(file.size>10*1024*1024){alert('Plik jest za duży (maks. 10 MB).');return;}
   selectedFile=file;
   document.getElementById('uploadDefault').style.display='none';
   document.getElementById('uploadSelected').style.display='block';
@@ -512,12 +539,11 @@ function setFile(file){
   const btn=document.getElementById('analyzeBtn');
   btn.disabled=false;btn.style.background='#111827';btn.style.color='#fff';btn.style.cursor='pointer';
 }
-function formatSize(b){if(b<1024)return b+'B';if(b<1024*1024)return(b/1024).toFixed(1)+' KB';return(b/(1024*1024)).toFixed(1)+' MB';}
-function showUploadError(msg){alert(msg);}
+function formatSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
 
-// ── PDF EXTRACTION ──
+// ══ PDF EXTRACTION ══
 async function extractPDFText(file){
-  if(typeof pdfjsLib==='undefined')throw new Error('Biblioteka PDF.js nie jest załadowana.');
+  if(typeof pdfjsLib==='undefined')throw new Error('Biblioteka PDF.js nie załadowana.');
   pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const ab=await file.arrayBuffer();
   const pdf=await pdfjsLib.getDocument({data:ab}).promise;
@@ -526,223 +552,258 @@ async function extractPDFText(file){
   for(let i=1;i<=maxPages;i++){
     const page=await pdf.getPage(i);
     const content=await page.getTextContent();
-    text+=content.items.map(item=>item.str).join(' ')+'\n';
+    text+=content.items.map(it=>it.str).join(' ')+'\n';
   }
   return text;
 }
-
-// ── DOCX EXTRACTION ──
 async function extractDOCXText(file){
-  if(typeof mammoth==='undefined')throw new Error('Biblioteka mammoth.js nie jest załadowana.');
+  if(typeof mammoth==='undefined')throw new Error('Biblioteka mammoth.js nie załadowana.');
   const ab=await file.arrayBuffer();
   const result=await mammoth.extractRawText({arrayBuffer:ab});
   return result.value;
 }
 
-// ── LOADING STEPS ──
+// ══ LOADING STEPS ══
 function setStep(n,state){
-  const icon=document.getElementById('lStep'+n+'Icon');
-  const row=document.getElementById('lStep'+n);
-  if(state==='done'){icon.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';icon.style.border='2px solid #16a34a';row.style.color='#16a34a';}
-  else if(state==='active'){icon.style.borderTopColor='#2563eb';icon.style.borderRightColor='#2563eb';icon.style.animation='spin .7s linear infinite';row.style.color='#111827';row.style.fontWeight='600';}
+  const ic=document.getElementById('lStep'+n+'Icon'),rw=document.getElementById('lStep'+n);
+  if(state==='done'){ic.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';ic.style.border='2px solid #16a34a';rw.style.color='#16a34a';}
+  else if(state==='active'){ic.style.borderColor='#2563eb';ic.style.animation='spin .7s linear infinite';rw.style.color='#111827';rw.style.fontWeight='600';}
 }
 
-// ── MAIN ANALYZE ──
+// ══ MAIN ANALYZE ══
 async function analyzeContract(){
   if(!selectedFile)return;
-  // Show loading
-  document.getElementById('uploadZone').closest('section').style.display='none';
-  document.getElementById('loadingSection').style.display='block';
-  document.getElementById('resultsSection').style.display='none';
+  document.getElementById('heroSection').style.display='none';
+  document.getElementById('loadingSection').style.display='flex';
+  document.getElementById('splitResults').style.display='none';
 
   let text='';
   try{
     setStep(1,'active');
     document.getElementById('loadingTitle').textContent='Odczytuję plik…';
     const ext=selectedFile.name.split('.').pop().toLowerCase();
-    if(ext==='pdf'){text=await extractPDFText(selectedFile);}
-    else if(ext==='docx'||ext==='doc'){text=await extractDOCXText(selectedFile);}
-    else{text=await selectedFile.text();}
+    if(ext==='pdf')text=await extractPDFText(selectedFile);
+    else if(ext==='docx'||ext==='doc')text=await extractDOCXText(selectedFile);
+    else text=await selectedFile.text();
     setStep(1,'done');
-  }catch(e){
-    showError('Nie udało się odczytać pliku: '+e.message+'. Sprawdź czy plik nie jest zeskanowanym obrazem.');
-    return;
-  }
+  }catch(e){showError('Nie udało się odczytać pliku: '+e.message);return;}
 
-  if(!text||text.trim().length<80){
-    showError('Plik jest pusty lub zawiera tylko obrazy (skan). Wgraj umowę w formacie tekstowym PDF lub DOCX.');
-    return;
-  }
+  if(!text||text.trim().length<80){showError('Plik jest pusty lub zawiera tylko obrazy (skan). Wgraj umowę w formacie tekstowym.');return;}
 
-  // Call API
+  contractTextRaw=text;
+
   try{
     setStep(2,'active');
     document.getElementById('loadingTitle').textContent='Analiza AI…';
     document.getElementById('loadingSubtitle').textContent='Sprawdzam zgodność z polskim prawem 2026';
     const headers={'Content-Type':'application/json'};
     if(window._fbToken)headers['Authorization']='Bearer '+window._fbToken;
-    const resp=await fetch('/api/generate',{
-      method:'POST',
-      headers,
-      body:JSON.stringify({type:'analyze-contract',contractText:text})
-    });
-    setStep(2,'done');
-    setStep(3,'active');
+    const resp=await fetch('/api/generate',{method:'POST',headers,body:JSON.stringify({type:'analyze-contract',contractText:text})});
+    setStep(2,'done');setStep(3,'active');
     document.getElementById('loadingTitle').textContent='Przygotowuję raport…';
     const data=await resp.json();
     if(!resp.ok)throw new Error(data.error||'Błąd analizy');
     setStep(3,'done');
-    await new Promise(r=>setTimeout(r,400));
+    await new Promise(r=>setTimeout(r,350));
     showResults(data);
-  }catch(e){
-    showError(e.message||'Błąd połączenia. Sprawdź internet i spróbuj ponownie.');
+  }catch(e){showError(e.message||'Błąd połączenia. Spróbuj ponownie.');}
+}
+
+// ══ RENDER CONTRACT TEXT ══
+function renderContractText(highlightRef, activeClass){
+  const el=document.getElementById('contractTextDisplay');
+  const paras=contractTextRaw.split(/\n+/).filter(p=>p.trim());
+  if(!highlightRef){
+    el.innerHTML=paras.map(p=>'<p>'+escHtml(p.trim())+'</p>').join('');
+    return;
+  }
+  // Find best match: try full ref first, then first 6 words
+  const tryHighlight=(ref)=>{
+    const escaped=escHtml(ref).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const rx=new RegExp('('+escaped+')','gi');
+    let found=false;
+    const html=paras.map(p=>{
+      const esc=escHtml(p.trim());
+      const replaced=esc.replace(rx,'<mark class="contract-highlight'+(activeClass?' '+activeClass:'')+'">$1</mark>');
+      if(replaced!==esc)found=true;
+      return '<p>'+replaced+'</p>';
+    }).join('');
+    return {html,found};
+  };
+  let {html,found}=tryHighlight(highlightRef);
+  if(!found){
+    // Try first 5 words
+    const short=highlightRef.split(/\s+/).slice(0,5).join(' ');
+    if(short.length>8){const r2=tryHighlight(short);html=r2.html;found=r2.found;}
+  }
+  el.innerHTML=html;
+  return found;
+}
+
+// ══ HIGHLIGHT ISSUE ══
+function highlightIssue(issue, cardEl){
+  // Deactivate previous card
+  if(activeCardEl&&activeCardEl!==cardEl){activeCardEl.classList.remove('active-card');}
+  // Toggle if same card
+  if(activeCardEl===cardEl){
+    cardEl.classList.remove('active-card');
+    activeCardEl=null;
+    renderContractText(null);
+    document.getElementById('highlightHint').style.display='none';
+    return;
+  }
+  activeCardEl=cardEl;
+  cardEl.classList.add('active-card');
+
+  const ref=issue.textRef&&issue.textRef!=='null'&&issue.textRef.length>5?issue.textRef:null;
+  const hint=document.getElementById('highlightHint');
+
+  if(!ref){
+    renderContractText(null);
+    hint.style.display='flex';
+    setTimeout(()=>{hint.style.display='none';},2500);
+    return;
+  }
+
+  hint.style.display='none';
+  const found=renderContractText(ref,'active');
+  if(!found){
+    hint.style.display='flex';
+    setTimeout(()=>{hint.style.display='none';},2500);
+  } else {
+    // Scroll to mark in left panel
+    setTimeout(()=>{
+      const mark=document.getElementById('contractPanel').querySelector('mark');
+      if(mark)mark.scrollIntoView({behavior:'smooth',block:'center'});
+    },50);
+    // On mobile: switch to contract tab
+    if(window.innerWidth<=768)switchTab('contract');
   }
 }
 
-// ── SHOW RESULTS ──
+// ══ SHOW RESULTS ══
 function showResults(data){
   document.getElementById('loadingSection').style.display='none';
-  document.getElementById('resultsSection').style.display='block';
+  document.getElementById('splitResults').style.display='flex';
   document.getElementById('errorCard').style.display='none';
   document.getElementById('paywallCard').style.display='none';
 
-  const issues=data.issues||[];
+  currentIssues=data.issues||[];
   const score=Math.max(0,Math.min(100,data.score||50));
   const isLoggedIn=!!(getUser());
 
-  // Score ring
+  // Score ring (r=30, circumference=188.5)
   const arc=document.getElementById('scoreArc');
-  const circumference=251.2;
-  const offset=circumference-(score/100)*circumference;
-  arc.style.strokeDashoffset=circumference; // start hidden
   arc.style.stroke=score>=70?'#16a34a':score>=40?'#d97706':'#dc2626';
-  setTimeout(()=>{arc.style.strokeDashoffset=offset;},100);
+  arc.style.strokeDashoffset=188.5;
+  setTimeout(()=>{arc.style.strokeDashoffset=188.5-(score/100)*188.5;},100);
   document.getElementById('scoreNum').textContent=score;
 
-  // Score label
-  let label,labelColor;
-  if(score>=70){label='Umowa wygląda dobrze';labelColor='#16a34a';}
-  else if(score>=40){label='Umowa wymaga weryfikacji';labelColor='#d97706';}
-  else{label='Umowa wymaga poprawek';labelColor='#dc2626';}
-  document.getElementById('scoreLabel').innerHTML='<span style="color:'+labelColor+'">'+label+'</span>';
+  let lbl,col;
+  if(score>=70){lbl='Umowa wygląda dobrze';col='#16a34a';}
+  else if(score>=40){lbl='Umowa wymaga weryfikacji';col='#d97706';}
+  else{lbl='Umowa wymaga poprawek';col='#dc2626';}
+  document.getElementById('scoreLabel').innerHTML='<span style="color:'+col+'">'+lbl+'</span>';
   document.getElementById('contractTypeLabel').textContent=data.contractType||'';
-  document.getElementById('summaryText').textContent=data.summary||'';
 
-  // Count badges
-  const critical=issues.filter(i=>i.severity==='critical').length;
-  const warning=issues.filter(i=>i.severity==='warning').length;
-  const ok=issues.filter(i=>i.severity==='ok').length;
+  const critical=currentIssues.filter(i=>i.severity==='critical').length;
+  const warning=currentIssues.filter(i=>i.severity==='warning').length;
+  const ok=currentIssues.filter(i=>i.severity==='ok').length;
   const badges=document.getElementById('countBadges');
   badges.innerHTML='';
-  if(critical>0)badges.innerHTML+=`<span class="severity-badge badge-critical"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${critical} krytycz${critical===1?'ny':'nych'}</span>`;
-  if(warning>0)badges.innerHTML+=`<span class="severity-badge badge-warning"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>${warning} uwag${warning===1?'a':'i'}</span>`;
-  if(ok>0)badges.innerHTML+=`<span class="severity-badge badge-ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>${ok} ok</span>`;
+  if(critical>0)badges.innerHTML+=`<span class="severity-badge badge-critical">🔴 ${critical} krytycz${critical===1?'ny':'nych'}</span>`;
+  if(warning>0)badges.innerHTML+=`<span class="severity-badge badge-warning">⚠️ ${warning} uwag${warning===1?'a':'i'}</span>`;
+  if(ok>0)badges.innerHTML+=`<span class="severity-badge badge-ok">✓ ${ok} ok</span>`;
+
+  // Render contract text
+  renderContractText(null);
 
   // Render issues
   const list=document.getElementById('issuesList');
   list.innerHTML='';
-  const sorted=[...issues].sort((a,b)=>{const ord={critical:0,warning:1,ok:2};return(ord[a.severity]??3)-(ord[b.severity]??3);});
-
+  const sorted=[...currentIssues].sort((a,b)=>({critical:0,warning:1,ok:2}[a.severity]??3)-({critical:0,warning:1,ok:2}[b.severity]??3));
   const FREE_LIMIT=3;
-  const showAll=isLoggedIn;
 
   sorted.forEach((issue,i)=>{
-    const isBlurred=!showAll&&i>=FREE_LIMIT;
-    const wrapper=document.createElement('div');
-    wrapper.className='fade-up';
-    wrapper.style.animationDelay=(i*0.06)+'s';
-    wrapper.style.opacity='0';
-    if(isBlurred){
-      wrapper.classList.add('issue-blurred');
-      wrapper.innerHTML=`<div class="issue-card ${issue.severity}">${buildIssueInner(issue)}</div>`;
-    }else{
-      wrapper.innerHTML=`<div class="issue-card ${issue.severity}">${buildIssueInner(issue)}</div>`;
+    const isLocked=!isLoggedIn&&i>=FREE_LIMIT;
+    const card=document.createElement('div');
+    card.className='issue-card '+issue.severity+(isLocked?' issue-locked':'');
+    card.style.opacity='0';
+    card.style.animation='fadeUp .35s ease '+(i*0.05)+'s forwards';
+
+    if(isLocked){
+      card.style.filter='blur(3px)';
+      card.style.pointerEvents='none';
+      card.style.userSelect='none';
+    } else {
+      card.onclick=()=>highlightIssue(issue,card);
+      card.title='Kliknij aby podświetlić fragment w umowie';
     }
-    list.appendChild(wrapper);
+    card.innerHTML=buildIssueHTML(issue);
+    list.appendChild(card);
   });
 
   // Paywall
-  if(!showAll&&issues.length>FREE_LIMIT){
-    const hidden=issues.length-FREE_LIMIT;
+  if(!isLoggedIn&&currentIssues.length>FREE_LIMIT){
+    const hidden=currentIssues.length-FREE_LIMIT;
     document.getElementById('paywallCard').style.display='block';
-    document.getElementById('paywallCount').textContent='Ukryto jeszcze '+hidden+' wynik'+(hidden===1?'':'ów')+'. Zaloguj się aby zobaczyć pełny raport.';
+    document.getElementById('paywallCount').textContent='Ukryto jeszcze '+hidden+' wynik'+(hidden===1?'':'ów')+'. Zaloguj się aby zobaczyć wszystko.';
   }
 
-  // Scroll to results
-  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+  // Mobile: start on issues tab
+  if(window.innerWidth<=768)switchTab('issues');
+  else document.getElementById('issuesPanel').style.display='flex';
+
+  // Update mobile tab label
+  const ib=document.getElementById('tabIssuesBtn');
+  if(ib)ib.textContent='⚠️ Wyniki ('+currentIssues.length+')';
 }
 
-function buildIssueInner(issue){
-  const badgeClass=issue.severity==='critical'?'badge-critical':issue.severity==='warning'?'badge-warning':'badge-ok';
-  const badgeLabel=issue.severity==='critical'?'Krytyczny':issue.severity==='warning'?'Wymaga uwagi':'Poprawne';
-  const icon=issue.severity==='critical'
-    ?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-    :issue.severity==='warning'
-    ?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>'
-    :'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
-
-  let html=`
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
-      <span class="severity-badge ${badgeClass}">${icon}${badgeLabel}</span>
-      ${issue.category?`<span style="font-size:.72rem;color:#9ca3af;font-weight:500;">${esc(issue.category)}</span>`:''}
-    </div>
-    <div style="font-size:.92rem;font-weight:700;color:#111827;margin-bottom:7px;">${esc(issue.title)}</div>
-    <div style="font-size:.82rem;color:#6b7280;line-height:1.6;margin-bottom:${issue.legal||issue.recommendation?'12px':'0'};">${esc(issue.description)}</div>
-  `;
-  if(issue.legal){
-    html+=`<div style="display:inline-flex;align-items:center;gap:5px;background:#f3f4f6;border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;color:#6b7280;margin-bottom:${issue.recommendation?'10px':'0'};">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      ${esc(issue.legal)}
-    </div>`;
-  }
-  if(issue.recommendation&&issue.severity!=='ok'){
-    html+=`<div style="display:flex;align-items:flex-start;gap:8px;background:#f0fdf4;border-radius:10px;padding:10px 12px;margin-top:4px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <span style="font-size:.8rem;color:#15803d;font-weight:600;line-height:1.5;">${esc(issue.recommendation)}</span>
-    </div>`;
-  }
-  return html;
+function buildIssueHTML(issue){
+  const bc=issue.severity==='critical'?'badge-critical':issue.severity==='warning'?'badge-warning':'badge-ok';
+  const bl=issue.severity==='critical'?'Krytyczny':issue.severity==='warning'?'Uwaga':'Poprawne';
+  const hasRef=issue.textRef&&issue.textRef!=='null'&&issue.textRef.length>5;
+  let h=`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+    <span class="severity-badge ${bc}">${bl}</span>
+    <span style="font-size:.68rem;color:#9ca3af;font-weight:500;">${esc(issue.category||'')}</span>
+  </div>
+  <div style="font-size:.88rem;font-weight:700;color:#111827;margin-bottom:6px;">${esc(issue.title)}</div>
+  <div style="font-size:.79rem;color:#6b7280;line-height:1.6;margin-bottom:${issue.legal||issue.recommendation?'10px':'0'};">${esc(issue.description)}</div>`;
+  if(issue.legal){h+=`<div style="display:inline-flex;align-items:center;gap:4px;background:#f3f4f6;border-radius:6px;padding:3px 9px;font-size:.7rem;font-weight:600;color:#6b7280;margin-bottom:${issue.recommendation&&issue.severity!=='ok'?'8px':'0'};">📋 ${esc(issue.legal)}</div>`;}
+  if(issue.recommendation&&issue.severity!=='ok'){h+=`<div style="display:flex;align-items:flex-start;gap:7px;background:#f0fdf4;border-radius:9px;padding:9px 11px;">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    <span style="font-size:.77rem;color:#15803d;font-weight:600;line-height:1.5;">${esc(issue.recommendation)}</span>
+  </div>`;}
+  if(hasRef){h+=`<div style="margin-top:8px;font-size:.68rem;color:#9ca3af;display:flex;align-items:center;gap:4px;">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    Kliknij aby podświetlić fragment w umowie
+  </div>`;}
+  return h;
 }
 
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// ── RESET ──
+// ══ RESET ══
 function resetAnalysis(){
-  document.getElementById('resultsSection').style.display='none';
+  document.getElementById('splitResults').style.display='none';
   document.getElementById('loadingSection').style.display='none';
-  document.getElementById('uploadZone').closest('section').style.display='block';
-  // Reset steps
-  for(let i=1;i<=3;i++){
-    const icon=document.getElementById('lStep'+i+'Icon');
-    const row=document.getElementById('lStep'+i);
-    if(icon){icon.innerHTML='';icon.style.border='2px solid #d1d5db';icon.style.animation='';}
-    if(row){row.style.color='#9ca3af';row.style.fontWeight='';}
-  }
+  document.getElementById('heroSection').style.display='block';
+  contractTextRaw='';currentIssues=[];activeCardEl=null;
+  for(let i=1;i<=3;i++){const ic=document.getElementById('lStep'+i+'Icon'),rw=document.getElementById('lStep'+i);if(ic){ic.innerHTML='';ic.style.border='2px solid #d1d5db';ic.style.animation='';}if(rw){rw.style.color='#9ca3af';rw.style.fontWeight='';}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── SHOW ERROR ──
+// ══ SHOW ERROR ══
 function showError(msg){
   document.getElementById('loadingSection').style.display='none';
-  document.getElementById('resultsSection').style.display='block';
+  document.getElementById('splitResults').style.display='flex';
   document.getElementById('issuesList').innerHTML='';
-  document.getElementById('summaryCard').style.display='none';
   document.getElementById('paywallCard').style.display='none';
   document.getElementById('errorCard').style.display='block';
+  document.getElementById('summaryBar').style.display='none';
+  document.getElementById('splitBody').style.display='none';
   document.getElementById('errorMsg').textContent=msg;
-  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth'});
-}
-function resetAnalysis(){
-  document.getElementById('resultsSection').style.display='none';
-  document.getElementById('loadingSection').style.display='none';
-  document.getElementById('summaryCard').style.display='flex';
-  document.getElementById('uploadZone').closest('section').style.display='block';
-  for(let i=1;i<=3;i++){
-    const ic=document.getElementById('lStep'+i+'Icon');const rw=document.getElementById('lStep'+i);
-    if(ic){ic.innerHTML='';ic.style.border='2px solid #d1d5db';ic.style.animation='';}
-    if(rw){rw.style.color='#9ca3af';rw.style.fontWeight='';}
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
 </body>
