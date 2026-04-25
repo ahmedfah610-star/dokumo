@@ -166,11 +166,14 @@ ${truncated}`;
         headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
-          max_tokens: 3000,
-          system: 'Odpowiadasz wyłącznie poprawnym JSON. Żadnego tekstu poza JSON.',
-          messages: [{ role: 'user', content: userPrompt }]
+          max_tokens: 4000,
+          system: 'Odpowiadasz wyłącznie poprawnym JSON bez żadnych dodatkowych komentarzy.',
+          messages: [
+            { role: 'user', content: userPrompt },
+            { role: 'assistant', content: '{' }
+          ]
         }),
-        signal: AbortSignal.timeout(27000)
+        signal: AbortSignal.timeout(55000)
       });
       const data = await r.json();
       if (data.error) return res.status(500).json({ error: data.error.message });
@@ -179,10 +182,20 @@ ${truncated}`;
 
       let result;
       try {
-        const match = rawText.match(/\{[\s\S]*\}/);
-        result = JSON.parse(match ? match[0] : rawText);
+        // Prefill powoduje że odpowiedź zaczyna się BEZ '{', więc dodajemy je z powrotem
+        let cleaned = '{' + rawText;
+        // Na wszelki wypadek: usuń otoczki markdown ```json ... ```
+        cleaned = cleaned
+          .replace(/^```json\s*/i, '')
+          .replace(/^```\s*/i, '')
+          .replace(/```\s*$/i, '')
+          .trim();
+        // Wyodrębnij pierwszy kompletny obiekt JSON
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        result = JSON.parse(match ? match[0] : cleaned);
         if (!Array.isArray(result.issues)) throw new Error('Brak issues');
-      } catch {
+      } catch(parseErr) {
+        console.error('JSON parse error:', parseErr.message, '| raw snippet:', rawText.slice(0, 300));
         return res.status(500).json({ error: 'Błąd parsowania wyników — spróbuj ponownie' });
       }
 
