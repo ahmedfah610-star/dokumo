@@ -112,6 +112,89 @@ export default async function handler(req, res) {
     }
   }
 
+  // ── Analiza umowy — dostępna bez logowania ──
+  if (freeType === 'analyze-contract') {
+    const { contractText } = req.body;
+    if (!contractText || typeof contractText !== 'string' || contractText.trim().length < 80)
+      return res.status(400).json({ error: 'Tekst umowy jest zbyt krótki lub pusty' });
+
+    const truncated = contractText.slice(0, 30000);
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'Brak klucza API' });
+
+    const userPrompt = `Przeanalizuj poniższą polską umowę i zwróć wyniki jako JSON.
+
+Zwróć TYLKO JSON, żadnego tekstu przed ani po. Format:
+{
+  "contractType": "nazwa typu umowy po polsku",
+  "summary": "1-2 zdania podsumowania umowy",
+  "score": liczba_od_0_do_100,
+  "issues": [
+    {
+      "severity": "critical|warning|ok",
+      "category": "Strony umowy|Wynagrodzenie|Czas trwania|Klauzule|Elementy formalne|Prawa stron",
+      "title": "krótki tytuł",
+      "description": "opis 2-3 zdania po polsku",
+      "legal": "np. Art. 29 §1 KP lub null",
+      "recommendation": "konkretna rekomendacja lub null jeśli severity=ok"
+    }
+  ]
+}
+
+Sprawdź następujące aspekty:
+1. Kompletność danych stron (imię, adres, NIP/PESEL)
+2. Wynagrodzenie (dla UoP: min. 4666 zł brutto 2026; min. stawka godz. 30,50 zł)
+3. Elementy obowiązkowe (data zawarcia, zakres, czas trwania)
+4. Klauzule niedozwolone lub rażąco jednostronne
+5. Warunki i okres wypowiedzenia
+6. Klauzule konkurencji lub poufności
+
+Zasady oceny:
+- severity="critical": poważny błąd prawny lub brakujący obowiązkowy element
+- severity="warning": klauzula niekorzystna lub wymagająca doprecyzowania
+- severity="ok": element poprawny (maksymalnie 3-4 takie)
+
+Zwróć od 6 do 10 issues. Pisz po polsku. Bądź konkretny i praktyczny.
+
+UMOWA DO ANALIZY:
+${truncated}`;
+
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 3000,
+          system: 'Odpowiadasz wyłącznie poprawnym JSON. Żadnego tekstu poza JSON.',
+          messages: [{ role: 'user', content: userPrompt }]
+        }),
+        signal: AbortSignal.timeout(27000)
+      });
+      const data = await r.json();
+      if (data.error) return res.status(500).json({ error: data.error.message });
+      const rawText = data.content?.[0]?.text || '';
+      if (!rawText) return res.status(500).json({ error: 'Pusta odpowiedź AI' });
+
+      let result;
+      try {
+        const match = rawText.match(/\{[\s\S]*\}/);
+        result = JSON.parse(match ? match[0] : rawText);
+        if (!Array.isArray(result.issues)) throw new Error('Brak issues');
+      } catch {
+        return res.status(500).json({ error: 'Błąd parsowania wyników — spróbuj ponownie' });
+      }
+
+      return res.status(200).json(result);
+    } catch (e) {
+      return res.status(500).json({
+        error: e.name === 'TimeoutError'
+          ? 'Analiza trwała zbyt długo — spróbuj z krótszą umową.'
+          : 'Błąd analizy: ' + e.message
+      });
+    }
+  }
+
   // ── 1. Wymagane uwierzytelnienie ──
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
