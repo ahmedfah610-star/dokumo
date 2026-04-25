@@ -112,11 +112,42 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── Analiza umowy — dostępna bez logowania ──
+  // ── Analiza umowy — 1 raz za darmo, potem wymaga pakietu ──
   if (freeType === 'analyze-contract') {
     const { contractText } = req.body;
     if (!contractText || typeof contractText !== 'string' || contractText.trim().length < 80)
       return res.status(400).json({ error: 'Tekst umowy jest zbyt krótki lub pusty' });
+
+    // Opcjonalne sprawdzenie tokenu (użytkownik może być zalogowany)
+    const contractToken = (req.headers.authorization || '').replace('Bearer ', '').trim();
+    let contractUid = null;
+    if (contractToken) {
+      try { const decoded = await auth.verifyIdToken(contractToken); contractUid = decoded.uid; } catch {}
+    }
+
+    if (contractUid) {
+      // Zalogowany — wymaga subskrypcji start lub wyższej
+      try {
+        const sub = await checkSubscription(contractUid);
+        if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan)) {
+          return res.status(403).json({ error: 'contract_sub_required' });
+        }
+      } catch(e) {
+        return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+      }
+    } else {
+      // Gość — jeden bezpłatny użycie per IP
+      const ip = getIp(req);
+      const freeRef = db.collection('freeContractUsage').doc(ip);
+      try {
+        await freeRef.create({ usedAt: Timestamp.now() });
+      } catch(createErr) {
+        if (createErr.code === 6) {
+          return res.status(403).json({ error: 'contract_free_used' });
+        }
+        return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+      }
+    }
 
     const truncated = contractText.slice(0, 30000);
     const apiKey = process.env.ANTHROPIC_API_KEY;
