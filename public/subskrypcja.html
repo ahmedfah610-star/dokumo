@@ -634,6 +634,14 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     for(let i=0;i<20&&!window._fbReady;i++) await new Promise(r=>setTimeout(r,150));
     pollForPayment(pendingPlan);
   }
+
+  // Auto-start płatności gdy przyszedłeś z ?kupuj=PLAN (np. z cennika na index.html)
+  const kupujPlan=params.get('kupuj');
+  if(kupujPlan&&['start','kariera','promax','biznes'].includes(kupujPlan)){
+    history.replaceState({},'',window.location.pathname);
+    for(let i=0;i<20&&!window._fbReady;i++) await new Promise(r=>setTimeout(r,150));
+    kupPakiet(kupujPlan);
+  }
 });
 </script>
 
