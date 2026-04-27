@@ -31,6 +31,8 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
 <!-- Fonts non-blocking (eliminuje render-blocking) -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"></noscript>
 <!-- style.css non-blocking (nie jest potrzebny do above-fold na tej stronie) -->
 <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="style.css"></noscript>
@@ -321,328 +323,216 @@ body { background:#f5f3ef; }
 
 
 
-<!-- JAK TO DZIAŁA -->
-<section style="background:#f9fafb;padding-top:8px;padding-bottom:80px;">
-  <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
-    <div class="htd-header" style="text-align:center;margin-bottom:32px;">
-      <p style="font-size:2rem;font-weight:900;color:#0f172a;letter-spacing:-.04em;margin-bottom:12px;">Dokumo — Twój Prywatny Asystent</p>
-      <p style="font-size:1rem;font-weight:400;color:#4b5563;max-width:600px;margin:0 auto 20px;line-height:1.6;">W kilka sekund zamienia proste dane w gotowe, profesjonalne pliki. Wystarczy wypełnić formularz, a platforma automatycznie wygeneruje CV, umowę lub pismo — szybko, wygodnie i bez stresu.</p>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:stretch;" class="htd-grid">
-
-      <!-- LEFT: vertical timeline -->
-      <div id="htdTimeline" style="display:flex;flex-direction:column;padding:48px 0 72px;">
-
-        <!-- step 1 -->
-        <div class="tl-step" style="display:flex;gap:20px;align-items:flex-start;">
-          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-            <div class="tl-dot" data-n="01" style="width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#9ca3af;transition:background .4s,border-color .4s,color .4s,transform .4s;flex-shrink:0;letter-spacing:.04em;">01</div>
-            <div class="tl-line" style="width:2px;flex:1;min-height:48px;background:#e5e7eb;margin:6px 0;transform-origin:top;transform:scaleY(0);transition:transform .5s ease;"></div>
-          </div>
-          <div class="tl-text" style="padding-top:8px;opacity:0;transform:translateX(-10px);transition:opacity .4s ease,transform .4s ease;">
-            <h4 style="font-size:1rem;font-weight:700;color:#111827;margin:0 0 5px;">Wybierz dokument</h4>
-            <p style="font-size:.85rem;color:#9ca3af;line-height:1.6;margin:0;">Przeglądaj gotowe szablony w Strefie Kariery lub Biznesu i wybierz ten, który pasuje do Twojej sytuacji.</p>
-          </div>
-        </div>
-
-        <!-- step 2 -->
-        <div class="tl-step" style="display:flex;gap:20px;align-items:flex-start;">
-          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-            <div class="tl-dot" data-n="02" style="width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#9ca3af;transition:background .4s,border-color .4s,color .4s,transform .4s;flex-shrink:0;letter-spacing:.04em;">02</div>
-            <div class="tl-line" style="width:2px;flex:1;min-height:48px;background:#e5e7eb;margin:6px 0;transform-origin:top;transform:scaleY(0);transition:transform .5s ease;"></div>
-          </div>
-          <div class="tl-text" style="padding-top:8px;opacity:0;transform:translateX(-10px);transition:opacity .4s ease,transform .4s ease;">
-            <h4 style="font-size:1rem;font-weight:700;color:#111827;margin:0 0 5px;">Wypełnij kreator</h4>
-            <p style="font-size:.85rem;color:#9ca3af;line-height:1.6;margin:0;">Przejdź przez prosty formularz krok po kroku. Zero wiedzy prawniczej — AI zadaje tylko niezbędne pytania.</p>
-          </div>
-        </div>
-
-        <!-- step 3 (no line below) -->
-        <div class="tl-step" style="display:flex;gap:20px;align-items:flex-start;">
-          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-            <div class="tl-dot" data-n="03" style="width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#9ca3af;transition:background .4s,border-color .4s,color .4s,transform .4s;flex-shrink:0;letter-spacing:.04em;">03</div>
-          </div>
-          <div class="tl-text" style="padding-top:8px;opacity:0;transform:translateX(-10px);transition:opacity .4s ease,transform .4s ease;">
-            <h4 style="font-size:1rem;font-weight:700;color:#111827;margin:0 0 5px;">Pobierz gotowy plik</h4>
-            <p style="font-size:.85rem;color:#9ca3af;line-height:1.6;margin:0;">AI generuje kompletny dokument PDF lub DOCX — gotowy do podpisania i wysłania w kilka sekund.</p>
-          </div>
-        </div>
-
-        <!-- CTA button — desktop only -->
-        <div class="htd-cta-desktop" style="text-align:center;margin-top:auto;padding-top:32px;">
-          <button onclick="wizardModalOpen()" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;border:none;cursor:pointer;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Stwórz swój dokument →</button>
-        </div>
-
-      </div>
-
-      <!-- RIGHT: animated wizard demo -->
-      <div id="wizardDemo" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;user-select:none;height:520px;display:flex;flex-direction:column;transform:scale(0.82);transform-origin:top center;margin-bottom:-94px;">
-
-        <!-- step bar -->
-        <div style="display:flex;align-items:center;padding:11px 12px 0;gap:0;border-bottom:1px solid #f1f5f9;background:#fafafa;flex-shrink:0;">
-          <div class="wd-step-item" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-            <div id="wds0" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">1</div>
-            <span id="wdl0" style="font-size:.62rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zleceniodawca</span>
-          </div>
-          <div style="flex:1;min-width:8px;max-width:18px;height:1.5px;background:#e5e7eb;margin:0 4px;flex-shrink:1;" id="wdline0"></div>
-          <div class="wd-step-item" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-            <div id="wds1" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">2</div>
-            <span id="wdl1" style="font-size:.62rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zleceniobiorca</span>
-          </div>
-          <div style="flex:1;min-width:8px;max-width:18px;height:1.5px;background:#e5e7eb;margin:0 4px;flex-shrink:1;" id="wdline1"></div>
-          <div class="wd-step-item" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-            <div id="wds2" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">3</div>
-            <span id="wdl2" style="font-size:.62rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Zakres</span>
-          </div>
-          <div style="flex:1;min-width:8px;max-width:18px;height:1.5px;background:#e5e7eb;margin:0 4px;flex-shrink:1;" id="wdline2"></div>
-          <div class="wd-step-item" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-            <div id="wds3" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;border:1.5px solid #d1d5db;background:#fff;color:#6b7280;transition:all .3s;flex-shrink:0;">4</div>
-            <span id="wdl3" style="font-size:.62rem;font-weight:600;color:#6b7280;white-space:nowrap;transition:color .3s;">Wynagrodzenie</span>
-          </div>
-        </div>
-
-        <!-- progress bars -->
-        <div style="display:flex;gap:4px;padding:10px 18px 0;flex-shrink:0;">
-          <div id="wpb0" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
-          <div id="wpb1" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
-          <div id="wpb2" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
-          <div id="wpb3" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:background .4s;"></div>
-        </div>
-
-        <!-- form content area -->
-        <div id="wFormGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;min-height:0;">
-
-          <!-- left: form -->
-          <div id="wFormPanel" style="padding:16px 14px 16px 18px;border-right:1px solid #f1f5f9;position:relative;overflow-y:auto;min-height:0;">
-
-            <!-- STEP 1 -->
-            <div id="wStep0" style="display:block;">
-              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Zleceniodawca</div>
-              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Dane firmy lub osoby zlecającej</div>
-              <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">NIP firmy</label>
-                <input id="wNip" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" placeholder="np. 1234567890" value="">
-                <div id="wNipHint" style="font-size:.7rem;margin-top:4px;min-height:18px;color:#6b7280;display:none;"></div>
-              </div>
-              <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Nazwa firmy</label>
-                <input id="wFirma" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" placeholder="np. ABC Sp. z o.o." value="">
-              </div>
-              <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Adres siedziby</label>
-                <input id="wAdres" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" placeholder="ul. Przykładowa 1, Warszawa" value="">
-              </div>
-              <button id="wBtn0" style="width:100%;padding:9px;background:#111827;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Dalej →</button>
-            </div>
-
-            <!-- STEP 2 -->
-            <div id="wStep1" style="display:none;">
-              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Zleceniobiorca</div>
-              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Dane osoby wykonującej zlecenie</div>
-              <div style="margin-bottom:11px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Imię i nazwisko</label>
-                <input id="wImie" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
-              </div>
-              <div style="margin-bottom:11px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">PESEL</label>
-                <input id="wPesel" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
-              </div>
-              <div style="margin-bottom:11px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Student poniżej 26 lat?</label>
-                <div style="display:flex;gap:6px;">
-                  <button id="wStudentTak" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Tak</button>
-                  <button id="wStudentNie" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Nie</button>
-                </div>
-              </div>
-              <div style="margin-bottom:14px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Objęty ubezpieczeniem?</label>
-                <div style="display:flex;gap:6px;">
-                  <button id="wUbezpTak" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Tak</button>
-                  <button id="wUbezpNie" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Nie</button>
-                </div>
-              </div>
-              <button id="wBtn1" style="width:100%;padding:9px;background:#111827;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Dalej →</button>
-            </div>
-
-            <!-- STEP 3 -->
-            <div id="wStep2" style="display:none;">
-              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Zakres zlecenia</div>
-              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Co ma być wykonane i kiedy</div>
-              <div style="margin-bottom:11px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Zakres zlecenia</label>
-                <input id="wZakres" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
-              </div>
-              <div style="margin-bottom:11px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Data rozpoczęcia</label>
-                <input id="wDataOd" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
-              </div>
-              <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Data zakończenia</label>
-                <input id="wDataDo" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
-              </div>
-              <button id="wBtn2" style="width:100%;padding:9px;background:#111827;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Dalej →</button>
-            </div>
-
-            <!-- STEP 4 -->
-            <div id="wStep3" style="display:none;">
-              <div style="font-size:.95rem;font-weight:800;color:#111827;letter-spacing:-.03em;margin-bottom:3px;">Wynagrodzenie</div>
-              <div style="font-size:.73rem;color:#9ca3af;margin-bottom:14px;">Forma i warunki płatności</div>
-              <div style="margin-bottom:11px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Kwota wynagrodzenia</label>
-                <input id="wKwota" readonly style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.8rem;color:#111827;background:#fff;outline:none;box-sizing:border-box;" value="">
-              </div>
-              <div style="margin-bottom:10px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Forma płatności</label>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                  <button id="wPillRyczalt" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Ryczałt miesięczny</button>
-                  <button id="wPillGodzin" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Stawka godzinowa</button>
-                </div>
-              </div>
-              <div style="margin-bottom:10px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Termin płatności</label>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                  <button id="wPill14" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">14 dni od rachunku</button>
-                  <button id="wPill7" style="padding:5px 10px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.7rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">7 dni</button>
-                </div>
-              </div>
-              <div style="margin-bottom:14px;">
-                <label style="display:block;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:5px;">Ewidencja czasu?</label>
-                <div style="display:flex;gap:6px;">
-                  <button id="wEwidTak" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Tak</button>
-                  <button id="wEwidNie" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e5e7eb;font-size:.75rem;font-weight:600;background:#fff;color:#6b7280;cursor:pointer;transition:all .2s;">Nie</button>
-                </div>
-              </div>
-              <button id="wBtn3" style="width:100%;padding:9px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;">Generuj dokument ✨</button>
-            </div>
-
-            <!-- GENERATING -->
-            <div id="wStepGen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:280px;text-align:center;">
-              <div id="wSpinner" style="width:44px;height:44px;border:3px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:wSpin .8s linear infinite;will-change:transform;margin-bottom:16px;"></div>
-              <div style="font-size:.9rem;font-weight:700;color:#111827;margin-bottom:4px;">Generowanie dokumentu</div>
-              <div style="font-size:.73rem;color:#9ca3af;">AI przetwarza dane…</div>
-            </div>
-
-            <!-- DONE -->
-            <div id="wStepDone" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:280px;text-align:center;padding:10px;">
-              <div style="width:52px;height:52px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div style="font-size:.95rem;font-weight:800;color:#111827;margin-bottom:3px;">Dokument gotowy!</div>
-              <div style="font-size:.72rem;color:#9ca3af;margin-bottom:14px;">Umowa zlecenie — gotowa do pobrania</div>
-              <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;">
-                <button style="padding:7px 12px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;">Pobierz PDF</button>
-                <button style="padding:7px 12px;background:#fff;color:#111827;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;">Kopiuj</button>
-                <button style="padding:7px 12px;background:#fff;color:#111827;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;">Nowy dokument</button>
-              </div>
-              <div style="background:#f9fafb;border:1px solid #f1f5f9;border-radius:10px;padding:10px 14px;width:100%;box-sizing:border-box;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                  <span style="font-size:.68rem;color:#9ca3af;">Czas generowania</span>
-                  <span style="font-size:.68rem;font-weight:700;color:#111827;">~12s</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                  <span style="font-size:.68rem;color:#9ca3af;">Zgodność z prawem</span>
-                  <span style="font-size:.68rem;font-weight:700;color:#16a34a;">100%</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;">
-                  <span style="font-size:.68rem;color:#9ca3af;">Strony dokumentu</span>
-                  <span style="font-size:.68rem;font-weight:700;color:#111827;">4 strony</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- right: live preview panel -->
-          <div id="wPreviewPanel" style="padding:12px 14px 12px 12px;background:#fafafa;overflow-y:auto;min-height:0;">
-            <div style="font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Umowa zlecenie</div>
-            <div id="wPreview" style="display:flex;flex-direction:column;gap:4px;"></div>
-          </div>
-
-        </div>
-
-        <!-- animated SVG cursor -->
-        <svg id="wCursor" width="20" height="24" viewBox="0 0 20 24" style="position:absolute;top:0;left:0;pointer-events:none;z-index:100;transition:transform .45s cubic-bezier(.4,0,.2,1);display:none;">
-          <path d="M0 0 L0 20 L5 15 L9 23 L12 22 L8 14 L15 14 Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/>
-        </svg>
-
-        <!-- ripple container -->
-        <div id="wRipples" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99;overflow:hidden;"></div>
-
-      </div><!-- /wizardDemo -->
-
-      <!-- CTA button — mobile only, below animation -->
-      <div class="htd-cta-mobile" style="text-align:center;margin-top:20px;display:none;">
-        <button onclick="wizardModalOpen()" style="display:inline-block;padding:13px 28px;background:#111827;color:#fff;border-radius:12px;font-size:.875rem;font-weight:700;border:none;cursor:pointer;letter-spacing:-.01em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Stwórz swój dokument →</button>
-      </div>
-
-    </div>
-
-    <!-- Trust badges — below button + animation -->
-    <div id="trustBadges" style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:32px;">
-      <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;color:#374151;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block;animation:pulse 2s ease-in-out infinite;will-change:transform,opacity;flex-shrink:0;" aria-hidden="true"></span>
-        12 000+ wygenerowanych dokumentów
-      </div>
-      <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;color:#374151;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Zgodne z polskim prawem
-      </div>
-      <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;color:#374151;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        PDF &amp; DOCX
-      </div>
-      <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;color:#374151;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Bezpieczne i prywatne
-      </div>
-    </div>
-
-  </div>
-</section>
-
 <style>
-/* timeline */
-.tl-dot.lit { background:#111827 !important; border-color:#111827 !important; color:#fff !important; transform:scale(1.1); }
-.tl-line.lit { transform:scaleY(1) !important; }
-.tl-text.lit { opacity:1 !important; transform:translateX(0) !important; }
-
-@keyframes wSpin { to { transform: rotate(360deg); } }
-@keyframes wRippleAnim { from { transform:scale(0);opacity:.5; } to { transform:scale(4);opacity:0; } }
-@keyframes wFadeIn { from { opacity:0;transform:translateY(4px); } to { opacity:1;transform:none; } }
-.htd-grid { grid-template-columns: 1fr 1fr; }
-@media(max-width:860px){
-  .htd-grid { grid-template-columns:1fr !important; gap:0 !important; }
-  #wizardDemo {
-    display:block !important;
-    transform:scale(0.55) !important;
-    transform-origin:top center !important;
-    margin-top:-22px !important;
-    margin-bottom:-236px !important;
-  }
-  #htdTimeline { display:none !important; }
-  .opinie-grid { grid-template-columns:1fr !important; }
-  .htd-cta-desktop { display:none !important; }
-  .htd-cta-mobile { display:block !important; }
-  .htd-header { display:block !important; }
-  .htd-header p { font-size:1.45rem !important; margin-bottom:12px !important; }
-  #trustBadges { display:flex !important; }
-}
-@media(max-width:640px){
-  #wPreviewPanel { display:none !important; }
-  #wFormGrid { grid-template-columns:1fr !important; }
-  #wFormPanel { border-right:none !important; }
-}
-@media(max-width:390px){
-  #wizardDemo {
-    transform:scale(0.47) !important;
-    margin-top:-22px !important;
-    margin-bottom:-276px !important;
-  }
+:root{--dm:'DM Sans',-apple-system,sans-serif;--blue2:#0071e3;--ink2:#1d1d1f;--muted2:#6e6e73;--bg2:#f5f5f7;--border2:rgba(0,0,0,.08);}
+.dm{font-family:var(--dm);}
+/* HERO */
+.new-hero{min-height:calc(100svh - 60px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;background:#fbfbfd;position:relative;overflow:hidden;}
+.new-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(ellipse,rgba(0,113,227,.07) 0%,transparent 70%);pointer-events:none;}
+.new-hero-eye{font-size:13px;color:var(--blue2);margin-bottom:16px;font-family:var(--dm);}
+.new-hero h1{font-size:clamp(38px,5.5vw,72px);font-weight:600;line-height:1.05;letter-spacing:-.04em;color:var(--ink2);max-width:740px;margin-bottom:28px;font-family:var(--dm);}
+.new-hero h1 span{color:var(--blue2);}
+.new-hero-sub{font-size:clamp(17px,2vw,21px);font-weight:300;color:var(--muted2);line-height:1.5;max-width:520px;margin-bottom:32px;font-family:var(--dm);}
+.new-hero-cta{display:flex;gap:14px;align-items:center;justify-content:center;margin-bottom:48px;flex-wrap:wrap;}
+.btn-dm-fill{font-family:var(--dm);font-size:16px;font-weight:500;background:var(--blue2);color:#fff;border:none;padding:13px 28px;border-radius:24px;cursor:pointer;transition:background .2s;text-decoration:none;display:inline-block;}
+.btn-dm-fill:hover{background:#0077ed;}
+.btn-dm-ghost{font-family:var(--dm);font-size:16px;font-weight:400;color:var(--blue2);background:none;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.btn-dm-ghost::after{content:"›";font-size:20px;line-height:1;}
+.new-hero-stat{font-size:13px;color:#86868b;font-family:var(--dm);}
+/* TOOLS SCROLL */
+.tools-sc-wrap{width:100%;margin-top:48px;position:relative;}
+.tools-sc{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:8px 48px 24px;scrollbar-width:none;}
+.tools-sc::-webkit-scrollbar{display:none;}
+.tool-sc-c{flex:0 0 220px;background:#fff;border:1px solid var(--border2);border-radius:18px;padding:26px 22px;scroll-snap-align:start;cursor:pointer;transition:box-shadow .2s,border-color .2s;text-align:center;}
+.tool-sc-c:hover{box-shadow:0 6px 28px rgba(0,0,0,.08);border-color:#c7c7cc;}
+.tsc-tag2{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--blue2);margin-bottom:10px;font-family:var(--dm);}
+.tsc-title2{font-size:17px;font-weight:600;letter-spacing:-.02em;color:var(--ink2);margin-bottom:8px;font-family:var(--dm);}
+.tsc-desc2{font-size:13px;font-weight:300;color:var(--muted2);line-height:1.6;font-family:var(--dm);}
+.tsc-link2{display:inline-flex;align-items:center;gap:3px;font-size:13px;color:var(--blue2);text-decoration:none;margin-top:14px;font-family:var(--dm);}
+.tsc-link2::after{content:"›";font-size:17px;}
+/* SECTIONS */
+.new-section{padding:90px 24px;text-align:center;}
+.new-section.gray{background:var(--bg2);}
+.new-eye{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--blue2);margin-bottom:10px;font-family:var(--dm);}
+.new-h2{font-size:clamp(32px,4vw,52px);font-weight:600;letter-spacing:-.035em;line-height:1.08;color:var(--ink2);margin-bottom:12px;font-family:var(--dm);}
+.new-sub{font-size:18px;font-weight:300;color:var(--muted2);line-height:1.5;max-width:500px;margin:0 auto 52px;font-family:var(--dm);}
+/* BENTO GRID */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1060px;margin:0 auto;}
+.bento-card{background:#fff;border:1px solid var(--border2);border-radius:18px;padding:32px 28px;text-align:left;transition:box-shadow .25s;}
+.bento-card:hover{box-shadow:0 8px 40px rgba(0,0,0,.08);}
+.bento-card.wide{grid-column:span 2;}
+.bento-card.dark{background:#1d1d1f;border-color:transparent;}
+.bento-card.blue2{background:var(--blue2);border-color:transparent;}
+.bento-card.gray2{background:var(--bg2);border-color:transparent;}
+.bc-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:var(--dm);}
+.bc-title{font-size:21px;font-weight:600;letter-spacing:-.025em;margin-bottom:8px;line-height:1.2;color:var(--ink2);font-family:var(--dm);}
+.bc-desc{font-size:14px;font-weight:300;color:var(--muted2);line-height:1.6;font-family:var(--dm);}
+.bento-card.dark .bc-title,.bento-card.blue2 .bc-title{color:#fff;}
+.bento-card.dark .bc-tag{color:rgba(255,255,255,.4);}
+.bento-card.blue2 .bc-tag{color:rgba(255,255,255,.65);}
+.bento-card.dark .bc-desc{color:rgba(255,255,255,.5);}
+.bento-card.blue2 .bc-desc{color:rgba(255,255,255,.75);}
+/* SIGN SECTION */
+.sign-sec{background:#1d1d1f;padding:90px 24px;text-align:center;}
+.sign-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08);max-width:840px;margin:0 auto;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;}
+.sign-feat2{background:#1d1d1f;padding:34px 26px;text-align:left;}
+.sf-title2{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px;margin-top:12px;font-family:var(--dm);}
+.sf-desc2{font-size:14px;color:rgba(255,255,255,.45);line-height:1.6;font-weight:300;font-family:var(--dm);}
+/* FINAL CTA */
+.final-cta2{background:#fbfbfd;padding:110px 24px;text-align:center;border-top:1px solid var(--border2);}
+.final-cta2 h2{font-size:clamp(36px,5vw,60px);font-weight:600;letter-spacing:-.04em;line-height:1.06;color:var(--ink2);margin-bottom:14px;font-family:var(--dm);}
+.final-cta2 p{font-size:18px;font-weight:300;color:var(--muted2);margin-bottom:32px;font-family:var(--dm);}
+/* RESPONSIVE */
+@media(max-width:768px){
+  .bento{grid-template-columns:1fr;}
+  .bento-card.wide{grid-column:span 1;}
+  .sign-feats{grid-template-columns:1fr;}
+  .tools-sc{padding:8px 20px 20px;}
 }
 </style>
 
-<script defer src="wizard-demo.js"></script>
+<!-- ═══ HERO ═══ -->
+<section class="new-hero">
+  <p class="new-hero-eye">Generator dokumentów AI</p>
+  <h1>Dokumenty gotowe w <span>60 sekund.</span></h1>
+  <p class="new-hero-sub">CV, listy motywacyjne, faktury i umowy — wygenerowane przez AI, gotowe do wysyłki.</p>
+  <div class="new-hero-cta">
+    <button class="btn-dm-fill" onclick="wizardModalOpen()">Zacznij za darmo</button>
+    <a href="#kariera" class="btn-dm-ghost">Poznaj narzędzia</a>
+  </div>
+  <p class="new-hero-stat">Bezpłatnie · Bez karty kredytowej · 12 000+ wygenerowanych dokumentów</p>
 
+  <div class="tools-sc-wrap">
+    <div class="tools-sc" id="toolsScNew">
+      <div class="tool-sc-c"><div class="tsc-tag2">Kariera</div><div class="tsc-title2">Kreator CV</div><div class="tsc-desc2">CV zoptymalizowane pod ATS. 12 szablonów, AI w minutę.</div><a href="wybierz-szablon.html" class="tsc-link2">Stwórz CV</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Kariera</div><div class="tsc-title2">List motywacyjny</div><div class="tsc-desc2">Opisz siebie, AI generuje gotowy list w PDF.</div><a href="#" onclick="wmOpenLetter();return false;" class="tsc-link2">Wygeneruj list</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Kariera</div><div class="tsc-title2">Analiza CV</div><div class="tsc-desc2">AI oceni Twoje CV i przepisze je na wyższy poziom.</div><a href="popraw-cv.html" class="tsc-link2">Analizuj CV</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Prawne</div><div class="tsc-title2">Sprawdź umowę</div><div class="tsc-desc2">AI przeanalizuje klauzule i oznaczy te niekorzystne.</div><a href="#" onclick="wizardModalOpen();return false;" class="tsc-link2">Sprawdź umowę</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Biznes</div><div class="tsc-title2">Generator faktur</div><div class="tsc-desc2">Faktury VAT i proformy jednym kliknięciem.</div><a href="faktura.html" class="tsc-link2">Wystaw fakturę</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">HR</div><div class="tsc-title2">Dokumenty pracownicze</div><div class="tsc-desc2">40+ szablonów — umowy, zaświadczenia, wypowiedzenia.</div><a href="wypowiedzenia.html" class="tsc-link2">Przeglądaj</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Biznes</div><div class="tsc-title2">Dokumenty e-commerce</div><div class="tsc-desc2">Regulamin sklepu, RODO i polityka zwrotów.</div><a href="ecommerce.html" class="tsc-link2">Generuj</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Biznes</div><div class="tsc-title2">HR i Biznes</div><div class="tsc-desc2">NDA, umowy B2B, oferty handlowe.</div><a href="hr.html" class="tsc-link2">Przeglądaj</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Urzędowe</div><div class="tsc-title2">Pisma urzędowe</div><div class="tsc-desc2">Wnioski i odwołania — AI wypełnia formularz za Ciebie.</div><a href="admin.html" class="tsc-link2">Generuj pismo</a></div>
+      <div class="tool-sc-c"><div class="tsc-tag2">Narzędzia</div><div class="tsc-title2">Kalkulator wynagrodzeń</div><div class="tsc-desc2">Brutto → netto dla UoP, B2B i zlecenia.</div><a href="kalkulator-wynagrodzen.html" class="tsc-link2">Przelicz</a></div>
+    </div>
+  </div>
+</section>
+
+<hr style="border:none;border-top:1px solid var(--border2);margin:0;">
+
+<!-- ═══ KARIERA ═══ -->
+<section id="kariera" class="new-section">
+  <p class="new-eye fade-in">Kariera</p>
+  <h2 class="new-h2 fade-in">Zbuduj swoją karierę<br>z pomocą AI.</h2>
+  <p class="new-sub fade-in">Profesjonalne dokumenty rekrutacyjne, które wyróżnią Cię spośród setek kandydatów.</p>
+  <div class="bento fade-in">
+    <div class="bento-card wide" style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border:none;">
+      <div class="bc-tag" style="color:var(--blue2);">Kreator CV</div>
+      <div class="bc-title">CV, które przechodzi<br>przez systemy ATS.</div>
+      <div class="bc-desc">Wypełnij formularz — AI generuje profesjonalne CV w wybranym szablonie. 12 szablonów, optymalizacja słów kluczowych.</div>
+      <a href="wybierz-szablon.html" class="btn-dm-fill" style="margin-top:20px;font-size:14px;padding:10px 22px;display:inline-block;">Stwórz CV →</a>
+    </div>
+    <div class="bento-card dark">
+      <div class="bc-tag" style="color:rgba(255,255,255,.4);">List motywacyjny</div>
+      <div class="bc-title">Opisz siebie.<br>AI napisze resztę.</div>
+      <div class="bc-desc">Kilka zdań o sobie i stanowisko — AI generuje profesjonalny list gotowy do wysyłki.</div>
+      <a href="#" onclick="wmOpenLetter();return false;" style="color:rgba(255,255,255,.7);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Wygeneruj list →</a>
+    </div>
+    <div class="bento-card gray2">
+      <div class="bc-tag" style="color:var(--blue2);">Analiza CV</div>
+      <div class="bc-title">Popraw swoje CV z AI.</div>
+      <div class="bc-desc">Prześlij CV — AI wskaże słabości i przepisze je na wyższy poziom.</div>
+      <a href="popraw-cv.html" style="color:var(--blue2);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Analizuj CV →</a>
+    </div>
+    <div class="bento-card gray2">
+      <div class="bc-tag" style="color:#9333ea;">Sprawdź umowę z AI</div>
+      <div class="bc-title">AI wykryje ryzykowne klauzule.</div>
+      <div class="bc-desc">Wgraj umowę — AI przeanalizuje ją przed podpisaniem.</div>
+      <a href="#" onclick="wizardModalOpen();return false;" style="color:#9333ea;font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Sprawdź umowę →</a>
+    </div>
+    <div class="bento-card blue2">
+      <div class="bc-tag">Kalkulator</div>
+      <div class="bc-title">Oblicz wynagrodzenie netto.</div>
+      <div class="bc-desc">Brutto → netto dla UoP, B2B i zlecenia. W sekundy.</div>
+      <a href="kalkulator-wynagrodzen.html" style="color:rgba(255,255,255,.8);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Przelicz →</a>
+    </div>
+    <div class="bento-card wide gray2">
+      <div class="bc-tag" style="color:var(--blue2);">Dokumenty pracownicze</div>
+      <div class="bc-title">Umowy, zaświadczenia i pisma HR.</div>
+      <div class="bc-desc">Gotowe szablony dokumentów pracowniczych zgodnych z polskim Kodeksem Pracy. Uzupełnij dane — pobierz PDF.</div>
+      <a href="wypowiedzenia.html" style="color:var(--blue2);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Przeglądaj dokumenty →</a>
+    </div>
+  </div>
+</section>
+
+<hr style="border:none;border-top:1px solid var(--border2);margin:0;">
+
+<!-- ═══ BIZNES ═══ -->
+<section id="biznes" class="new-section gray">
+  <p class="new-eye fade-in">Biznes</p>
+  <h2 class="new-h2 fade-in">Automatyzacja dokumentów<br>dla Twojej firmy.</h2>
+  <p class="new-sub fade-in">Faktury, umowy handlowe, regulaminy e-commerce — generowane w sekundy.</p>
+  <div class="bento fade-in">
+    <div class="bento-card dark">
+      <div class="bc-tag" style="color:rgba(255,255,255,.4);">Generator faktur</div>
+      <div class="bc-title">Faktura gotowa<br>w 30 sekund.</div>
+      <div class="bc-desc">Faktury VAT, proformy i korekty jednym kliknięciem. Wysyłka PDF na email klienta.</div>
+      <a href="faktura.html" style="color:rgba(255,255,255,.7);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Wystaw fakturę →</a>
+    </div>
+    <div class="bento-card wide" style="background:#fff;border:1px solid var(--border2);">
+      <div class="bc-tag" style="color:var(--blue2);">Dokumenty e-commerce</div>
+      <div class="bc-title">Regulamin sklepu<br>i polityka zwrotów.</div>
+      <div class="bc-desc">Zgodne z RODO i dyrektywą Omnibus. Generator tworzy dokumenty prawne dla sklepu online na podstawie Twoich odpowiedzi.</div>
+      <a href="ecommerce.html" style="color:var(--blue2);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Generuj dokumenty →</a>
+    </div>
+    <div class="bento-card wide" style="background:#fff;border:1px solid var(--border2);">
+      <div class="bc-tag" style="color:var(--blue2);">HR i Biznes</div>
+      <div class="bc-title">Umowy handlowe,<br>NDA i oferty.</div>
+      <div class="bc-desc">Biblioteka gotowych szablonów biznesowych. Umowy B2B, NDA, oferty handlowe — edytowalne i gotowe do podpisu.</div>
+      <a href="hr.html" style="color:var(--blue2);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Przeglądaj szablony →</a>
+    </div>
+    <div class="bento-card dark">
+      <div class="bc-tag" style="color:rgba(255,255,255,.4);">Dokumenty administracyjne</div>
+      <div class="bc-title">Umowy najmu,<br>biznesplan i więcej.</div>
+      <div class="bc-desc">Umowy najmu, protokół zdawczo-odbiorczy, biznesplan, analiza SWOT, umowa wspólników.</div>
+      <a href="admin.html" style="color:rgba(255,255,255,.7);font-family:var(--dm);font-size:14px;text-decoration:none;display:inline-block;margin-top:16px;">Generuj dokument →</a>
+    </div>
+  </div>
+</section>
+
+<hr style="border:none;border-top:1px solid var(--border2);margin:0;">
+
+<!-- ═══ E-PODPIS ═══ -->
+<section id="podpis" class="sign-sec">
+  <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:10px;font-family:var(--dm);">Podpis elektroniczny</p>
+  <h2 class="new-h2 fade-in" style="color:#fff;margin-bottom:12px;">Prawnie ważny podpis.<br>Wbudowany w każdy dokument.</h2>
+  <p style="font-size:18px;font-weight:300;color:rgba(255,255,255,.5);max-width:500px;margin:0 auto 48px;font-family:var(--dm);">Podpisz dokumenty elektronicznie, zgodnie z europejskim rozporządzeniem eIDAS.</p>
+  <div class="sign-feats fade-in">
+    <div class="sign-feat2"><div style="font-size:26px;">🔒</div><div class="sf-title2">Zgodność z eIDAS</div><div class="sf-desc2">Podpis elektroniczny uznawany przez sądy i instytucje w całej UE.</div></div>
+    <div class="sign-feat2"><div style="font-size:26px;">⚡</div><div class="sf-title2">Jedno kliknięcie</div><div class="sf-desc2">Podpisz bezpośrednio w przeglądarce. Odbiorca dostaje link — podpisuje bez konta.</div></div>
+    <div class="sign-feat2"><div style="font-size:26px;">📋</div><div class="sf-title2">Audit log</div><div class="sf-desc2">Pełna historia: kiedy otwarto, podpisano i pobrano. Niemodyfikowalny zapis.</div></div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta2">
+  <h2>Pierwszy dokument<br>za darmo. Teraz.</h2>
+  <p>Dołącz do tysięcy specjalistów, którzy oszczędzają czas z Dokumo.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn-dm-fill" onclick="wizardModalOpen()">Zacznij za darmo</button>
+    <a href="#kariera" class="btn-dm-ghost">Poznaj narzędzia</a>
+  </div>
+</section>
+
+<script>
+// scroll animations
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.1});
+  document.querySelectorAll('.fade-in').forEach(function(el){ obs.observe(el); });
+})();
+</script>
 
 <!-- WIZARD MODAL -->
 <div id="wm-overlay" onclick="wizardModalClose(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
