@@ -381,9 +381,23 @@ a.tool-sc-c{text-decoration:none;}
 .sf-title2{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px;margin-top:12px;font-family:var(--dm);}
 .sf-desc2{font-size:14px;color:rgba(255,255,255,.45);line-height:1.6;font-weight:300;font-family:var(--dm);}
 /* FINAL CTA */
-.final-cta2{background:var(--bg2);padding:110px 24px;text-align:center;}
+.final-cta2{background:#fbfbfd;padding:110px 24px;text-align:center;}
 .final-cta2 h2{font-size:clamp(36px,5vw,60px);font-weight:600;letter-spacing:-.04em;line-height:1.06;color:var(--ink2);margin-bottom:14px;font-family:var(--dm);}
 .final-cta2 p{font-size:18px;font-weight:300;color:var(--muted2);margin-bottom:32px;font-family:var(--dm);}
+/* CV MOCK ANIMATION */
+.cv-card-inner{display:flex;align-items:center;gap:32px;height:100%;}
+.cv-mock{flex-shrink:0;width:176px;}
+.cv-paper{background:#fff;border-radius:10px;padding:15px 13px;box-shadow:0 2px 12px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);}
+.cv-mock-head{display:flex;gap:8px;align-items:center;margin-bottom:11px;}
+.cv-mock-av{width:24px;height:24px;border-radius:50%;background:#e2e8f0;flex-shrink:0;}
+.cv-mock-hlines{flex:1;display:flex;flex-direction:column;gap:4px;}
+.cv-mock-sec{height:4px;width:32%;background:#dbeafe;border-radius:4px;margin:8px 0 6px;}
+.cv-mock-line{height:6px;background:#f1f5f9;border-radius:99px;margin-bottom:5px;overflow:hidden;position:relative;}
+.cv-mock-line::after{content:'';position:absolute;left:0;top:0;height:100%;width:var(--w,82%);background:#cbd5e1;border-radius:99px;animation:cvLn .45s ease forwards var(--d,0s);opacity:0;}
+@keyframes cvLn{from{width:0;opacity:.3}to{width:var(--w,82%);opacity:1}}
+.cv-ats{display:flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;font-size:9px;font-weight:700;font-family:var(--dm);border-radius:5px;padding:4px 8px;margin-top:9px;width:fit-content;letter-spacing:.04em;animation:atsIn .35s ease forwards 2.5s;opacity:0;}
+@keyframes atsIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@media(max-width:600px){.cv-mock{display:none;}.cv-card-inner{display:block;}}
 /* RESPONSIVE */
 @media(max-width:768px){
   .bento{grid-template-columns:1fr;}
@@ -426,32 +440,65 @@ a.tool-sc-c{text-decoration:none;}
   <h2 class="new-h2 fade-in">Zbuduj swoją karierę<br>z pomocą AI.</h2>
   <p class="new-sub fade-in">Profesjonalne dokumenty rekrutacyjne, które wyróżnią Cię spośród setek kandydatów.</p>
   <div class="bento fade-in">
-    <a href="wybierz-szablon.html" class="bento-card wide" style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border:none;">
-      <div class="bc-tag" style="color:var(--blue2);">Kreator CV</div>
-      <div class="bc-title">CV, które przechodzi<br>przez systemy ATS.</div>
-      <div class="bc-desc">Wypełnij formularz — AI generuje profesjonalne CV w wybranym szablonie. 12 szablonów, optymalizacja słów kluczowych.</div>
+
+    <!-- CV card z animacją -->
+    <a href="wybierz-szablon.html" class="bento-card wide" style="background:#fff;border:1px solid var(--border2);">
+      <div class="cv-card-inner">
+        <div>
+          <div class="bc-tag" style="color:var(--blue2);">Kreator CV</div>
+          <div class="bc-title">CV, które przechodzi<br>przez systemy ATS.</div>
+          <div class="bc-desc">Wypełnij formularz — AI generuje profesjonalne CV w wybranym szablonie. 12 szablonów, optymalizacja słów kluczowych.</div>
+        </div>
+        <div class="cv-mock" aria-hidden="true">
+          <div class="cv-paper">
+            <div class="cv-mock-head">
+              <div class="cv-mock-av"></div>
+              <div class="cv-mock-hlines">
+                <div class="cv-mock-line" style="--w:70%;--d:.05s;height:7px;"></div>
+                <div class="cv-mock-line" style="--w:48%;--d:.2s;height:5px;background:#f8fafc;"></div>
+              </div>
+            </div>
+            <div class="cv-mock-sec"></div>
+            <div class="cv-mock-line" style="--w:92%;--d:.45s"></div>
+            <div class="cv-mock-line" style="--w:78%;--d:.7s"></div>
+            <div class="cv-mock-line" style="--w:55%;--d:.95s"></div>
+            <div class="cv-mock-sec" style="margin-top:10px;"></div>
+            <div class="cv-mock-line" style="--w:88%;--d:1.2s"></div>
+            <div class="cv-mock-line" style="--w:72%;--d:1.45s"></div>
+            <div class="cv-mock-line" style="--w:45%;--d:1.7s"></div>
+            <div class="cv-mock-sec" style="margin-top:10px;"></div>
+            <div class="cv-mock-line" style="--w:84%;--d:1.95s"></div>
+            <div class="cv-mock-line" style="--w:60%;--d:2.2s"></div>
+            <div class="cv-ats">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              ATS: Passed
+            </div>
+          </div>
+        </div>
+      </div>
     </a>
+
     <a href="#" onclick="wmOpenLetter();return false;" class="bento-card dark">
       <div class="bc-tag" style="color:rgba(255,255,255,.4);">List motywacyjny</div>
       <div class="bc-title">Opisz siebie.<br>AI napisze resztę.</div>
       <div class="bc-desc">Kilka zdań o sobie i stanowisko — AI generuje profesjonalny list gotowy do wysyłki.</div>
     </a>
-    <a href="popraw-cv.html" class="bento-card gray2">
+    <a href="popraw-cv.html" class="bento-card" style="background:#fff;border:1px solid var(--border2);">
       <div class="bc-tag" style="color:var(--blue2);">Analiza CV</div>
       <div class="bc-title">Popraw swoje CV z AI.</div>
       <div class="bc-desc">Prześlij CV — AI wskaże słabości i przepisze je na wyższy poziom.</div>
     </a>
-    <a href="analiza-umowy.html" class="bento-card gray2">
+    <a href="analiza-umowy.html" class="bento-card" style="background:#fff;border:1px solid var(--border2);">
       <div class="bc-tag" style="color:#9333ea;">Sprawdź umowę z AI</div>
       <div class="bc-title">AI wykryje ryzykowne klauzule.</div>
       <div class="bc-desc">Wgraj umowę — AI przeanalizuje ją przed podpisaniem.</div>
     </a>
-    <a href="kalkulator-wynagrodzen.html" class="bento-card blue2">
-      <div class="bc-tag">Kalkulator</div>
+    <a href="kalkulator-wynagrodzen.html" class="bento-card dark">
+      <div class="bc-tag" style="color:rgba(255,255,255,.4);">Kalkulator</div>
       <div class="bc-title">Oblicz wynagrodzenie netto.</div>
-      <div class="bc-desc">Brutto → netto dla UoP, B2B i zlecenia. W sekundy.</div>
+      <div class="bc-desc" style="color:rgba(255,255,255,.5);">Brutto → netto dla UoP, B2B i zlecenia. W sekundy.</div>
     </a>
-    <a href="wypowiedzenia.html" class="bento-card wide gray2">
+    <a href="wypowiedzenia.html" class="bento-card wide" style="background:#fff;border:1px solid var(--border2);">
       <div class="bc-tag" style="color:var(--blue2);">Dokumenty pracownicze</div>
       <div class="bc-title">Umowy, zaświadczenia i pisma HR.</div>
       <div class="bc-desc">Gotowe szablony dokumentów pracowniczych zgodnych z polskim Kodeksem Pracy. Uzupełnij dane — pobierz PDF.</div>
@@ -497,16 +544,6 @@ a.tool-sc-c{text-decoration:none;}
     <div class="sign-feat2"><div style="font-size:26px;">🔒</div><div class="sf-title2">Zgodność z eIDAS</div><div class="sf-desc2">Podpis elektroniczny uznawany przez sądy i instytucje w całej UE.</div></div>
     <div class="sign-feat2"><div style="font-size:26px;">⚡</div><div class="sf-title2">Jedno kliknięcie</div><div class="sf-desc2">Podpisz bezpośrednio w przeglądarce. Odbiorca dostaje link — podpisuje bez konta.</div></div>
     <div class="sign-feat2"><div style="font-size:26px;">📋</div><div class="sf-title2">Audit log</div><div class="sf-desc2">Pełna historia: kiedy otwarto, podpisano i pobrano. Niemodyfikowalny zapis.</div></div>
-  </div>
-</section>
-
-<!-- ═══ FINAL CTA ═══ -->
-<section class="final-cta2">
-  <h2>Pierwszy dokument<br>za darmo. Teraz.</h2>
-  <p>Dołącz do tysięcy specjalistów, którzy oszczędzają czas z Dokumo.</p>
-  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-    <button class="btn-dm-fill" onclick="wizardModalOpen()">Zacznij za darmo</button>
-    <a href="#kariera" class="btn-dm-ghost">Poznaj narzędzia</a>
   </div>
 </section>
 
@@ -908,9 +945,18 @@ a.tool-sc-c{text-decoration:none;}
 </section>
 <style>@media(max-width:720px){ .bezp-grid { grid-template-columns:1fr !important; } }</style>
 
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta2">
+  <h2>Pierwszy dokument<br>za darmo. Teraz.</h2>
+  <p>Dołącz do tysięcy specjalistów, którzy oszczędzają czas z Dokumo.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn-dm-fill" onclick="wizardModalOpen()">Zacznij za darmo</button>
+    <a href="#kariera" class="btn-dm-ghost">Poznaj narzędzia</a>
+  </div>
+</section>
 
 <!-- KONTAKT -->
-<section id="kontakt" style="background:#fbfbfd;padding:80px 0;">
+<section id="kontakt" style="background:var(--bg2);padding:80px 0;">
   <div style="max-width:560px;margin:0 auto;padding:0 24px;">
     <div style="text-align:center;margin-bottom:36px;">
       <div style="display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#16a34a;margin-bottom:10px;">Kontakt</div>
