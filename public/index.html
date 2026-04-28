@@ -384,18 +384,24 @@ a.tool-sc-c{text-decoration:none;}
 .final-cta2{background:#fbfbfd;padding:110px 24px;text-align:center;}
 .final-cta2 h2{font-size:clamp(36px,5vw,60px);font-weight:600;letter-spacing:-.04em;line-height:1.06;color:var(--ink2);margin-bottom:14px;font-family:var(--dm);}
 .final-cta2 p{font-size:18px;font-weight:300;color:var(--muted2);margin-bottom:32px;font-family:var(--dm);}
-/* CV MOCK ANIMATION */
+/* CV MOCK */
 .cv-card-inner{display:flex;align-items:center;gap:32px;height:100%;}
-.cv-mock{flex-shrink:0;width:176px;}
-.cv-paper{background:#fff;border-radius:10px;padding:15px 13px;box-shadow:0 2px 12px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);}
-.cv-mock-head{display:flex;gap:8px;align-items:center;margin-bottom:11px;}
-.cv-mock-av{width:24px;height:24px;border-radius:50%;background:#e2e8f0;flex-shrink:0;}
-.cv-mock-hlines{flex:1;display:flex;flex-direction:column;gap:4px;}
-.cv-mock-sec{height:4px;width:32%;background:#dbeafe;border-radius:4px;margin:8px 0 6px;}
-.cv-mock-line{height:6px;background:#f1f5f9;border-radius:99px;margin-bottom:5px;overflow:hidden;position:relative;}
-.cv-mock-line::after{content:'';position:absolute;left:0;top:0;height:100%;width:var(--w,82%);background:#cbd5e1;border-radius:99px;animation:cvLn .45s ease forwards var(--d,0s);opacity:0;}
-@keyframes cvLn{from{width:0;opacity:.3}to{width:var(--w,82%);opacity:1}}
-.cv-ats{display:flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;font-size:9px;font-weight:700;font-family:var(--dm);border-radius:5px;padding:4px 8px;margin-top:9px;width:fit-content;letter-spacing:.04em;animation:atsIn .35s ease forwards 2.5s;opacity:0;}
+.cv-mock{flex-shrink:0;width:198px;}
+.cv-paper{background:#fff;border-radius:10px;padding:14px 13px;box-shadow:0 2px 16px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.06);font-family:var(--dm);}
+.cv-mock-head{display:flex;gap:9px;align-items:flex-start;margin-bottom:11px;}
+.cv-mock-photo{flex-shrink:0;width:38px;height:38px;border-radius:5px;overflow:hidden;}
+.cv-mock-name{font-size:8.5px;font-weight:700;color:#0f172a;letter-spacing:-.01em;}
+.cv-mock-role{font-size:7px;color:#475569;font-weight:500;margin-top:1px;}
+.cv-mock-loc{font-size:6.5px;color:#94a3b8;margin-top:1px;}
+.cv-mock-sec-label{font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue2);border-bottom:1px solid #e2e8f0;padding-bottom:3px;margin:9px 0 5px;}
+.cv-mock-jobtitle{font-size:7px;font-weight:700;color:#0f172a;}
+.cv-mock-date{font-size:6.5px;color:#94a3b8;margin-top:1px;}
+.cv-mock-desc{font-size:6.5px;color:#64748b;margin-top:2px;line-height:1.4;}
+.cv-mock-chips{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px;}
+.cv-mock-chips span{font-size:6px;font-weight:600;background:#f1f5f9;color:#475569;border-radius:3px;padding:2px 5px;}
+.cvr{opacity:0;animation:cvTxt .35s ease forwards var(--d,0s);}
+@keyframes cvTxt{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.cv-ats{display:flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;font-size:9px;font-weight:700;font-family:var(--dm);border-radius:5px;padding:4px 8px;margin-top:10px;width:fit-content;letter-spacing:.04em;animation:atsIn .35s ease forwards 2.2s;opacity:0;}
 @keyframes atsIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
 @media(max-width:600px){.cv-mock{display:none;}.cv-card-inner{display:block;}}
 /* RESPONSIVE */
@@ -452,23 +458,32 @@ a.tool-sc-c{text-decoration:none;}
         <div class="cv-mock" aria-hidden="true">
           <div class="cv-paper">
             <div class="cv-mock-head">
-              <div class="cv-mock-av"></div>
-              <div class="cv-mock-hlines">
-                <div class="cv-mock-line" style="--w:70%;--d:.05s;height:7px;"></div>
-                <div class="cv-mock-line" style="--w:48%;--d:.2s;height:5px;background:#f8fafc;"></div>
+              <div class="cv-mock-photo">
+                <svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" width="38" height="38">
+                  <rect width="38" height="38" fill="#dde4f0"/>
+                  <circle cx="19" cy="14" r="8.5" fill="#a8b8cc"/>
+                  <ellipse cx="19" cy="36" rx="14" ry="9" fill="#a8b8cc"/>
+                </svg>
+              </div>
+              <div>
+                <div class="cv-mock-name cvr" style="--d:.05s">Anna Kowalska</div>
+                <div class="cv-mock-role cvr" style="--d:.18s">UX Designer</div>
+                <div class="cv-mock-loc cvr" style="--d:.3s">Warszawa · anna@email.com</div>
               </div>
             </div>
-            <div class="cv-mock-sec"></div>
-            <div class="cv-mock-line" style="--w:92%;--d:.45s"></div>
-            <div class="cv-mock-line" style="--w:78%;--d:.7s"></div>
-            <div class="cv-mock-line" style="--w:55%;--d:.95s"></div>
-            <div class="cv-mock-sec" style="margin-top:10px;"></div>
-            <div class="cv-mock-line" style="--w:88%;--d:1.2s"></div>
-            <div class="cv-mock-line" style="--w:72%;--d:1.45s"></div>
-            <div class="cv-mock-line" style="--w:45%;--d:1.7s"></div>
-            <div class="cv-mock-sec" style="margin-top:10px;"></div>
-            <div class="cv-mock-line" style="--w:84%;--d:1.95s"></div>
-            <div class="cv-mock-line" style="--w:60%;--d:2.2s"></div>
+            <div class="cv-mock-sec-label cvr" style="--d:.44s">Doświadczenie</div>
+            <div class="cv-mock-jobtitle cvr" style="--d:.56s">Senior UX Designer · Google</div>
+            <div class="cv-mock-date cvr" style="--d:.68s">2021 – obecnie · Warszawa</div>
+            <div class="cv-mock-desc cvr" style="--d:.8s">Projektowanie AI produktów dla milionów użytkowników.</div>
+            <div class="cv-mock-jobtitle cvr" style="--d:.95s">UX Designer · Allegro</div>
+            <div class="cv-mock-date cvr" style="--d:1.06s">2019 – 2021 · Warszawa</div>
+            <div class="cv-mock-sec-label cvr" style="--d:1.2s">Wykształcenie</div>
+            <div class="cv-mock-jobtitle cvr" style="--d:1.32s">Politechnika Warszawska</div>
+            <div class="cv-mock-date cvr" style="--d:1.44s">Informatyka, mgr inż. · 2019</div>
+            <div class="cv-mock-sec-label cvr" style="--d:1.58s">Umiejętności</div>
+            <div class="cv-mock-chips cvr" style="--d:1.7s">
+              <span>Figma</span><span>React</span><span>CSS</span><span>AI</span><span>SQL</span>
+            </div>
             <div class="cv-ats">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
               ATS: Passed
