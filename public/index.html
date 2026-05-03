@@ -86,9 +86,7 @@ body { background:#fbfbfd; }
 .nav-hamburger:hover { background:#f3f4f6; }
 @media (max-width:768px) { .nav-hamburger { display:flex; } }
 @media (max-width:768px) {
-  .nav-inner { display:flex !important; }
-  .nav-inner > a:first-child { order:2; flex:1; justify-content:center; }
-  #navAuth { order:1; }
+  .nav-inner { display:flex !important; justify-content:space-between !important; grid-template-columns:none !important; }
 }
 .mobile-menu { display:none; position:fixed; top:61px; left:0; right:0; z-index:49; }
 .mobile-menu.open { display:block; }
