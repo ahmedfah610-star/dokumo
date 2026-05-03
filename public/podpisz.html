@@ -183,7 +183,7 @@ function generateAndDownloadPDF(data) {
     + '</div></div>';
 
   var el = document.createElement('div');
-  el.style.cssText = 'position:fixed;left:-9999px;top:0;width:160mm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
+  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:160mm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
   el.innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt">' + esc + '</pre>' + sigHtml;
   document.body.appendChild(el);
 
