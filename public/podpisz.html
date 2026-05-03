@@ -191,9 +191,25 @@ function preloadImage(src) {
   });
 }
 
+function savePdfBlob(blob, filename) {
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var url = URL.createObjectURL(blob);
+  if (isIOS) {
+    // iOS Safari: gest wygasł po async fetch — `<a download>` nie zadziała.
+    // Otwórz PDF w Safari PDF Viewer; użytkownik tapuje Share → Zapisz do Pliki.
+    window.location.href = url;
+  } else {
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  }
+}
+
 async function generateAndDownloadPDF(data) {
   var title = data.docName || 'Dokument';
   var safe = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
+  var filename = safe + '_podpisany.pdf';
   var esc = escHtml(data.docText || '');
   var sig1 = data.party1, sig2 = data.party2;
 
@@ -217,14 +233,15 @@ async function generateAndDownloadPDF(data) {
   document.body.appendChild(el);
 
   try {
-    await html2pdf().set({
+    var blob = await html2pdf().set({
       margin: 25,
-      filename: safe + '_podpisany.pdf',
+      filename: filename,
       image: { type: 'jpeg', quality: .95 },
       html2canvas: { scale: 2, useCORS: true, logging: false, imageTimeout: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-    }).from(el).save();
+    }).from(el).outputPdf('blob');
+    savePdfBlob(blob, filename);
   } finally {
     if (el.parentNode) el.parentNode.removeChild(el);
   }
