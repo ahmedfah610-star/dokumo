@@ -131,6 +131,10 @@ async function submitSign() {
   var btn = document.querySelector('.btn-primary');
   btn.disabled = true; btn.textContent = 'Zapisywanie…';
 
+  // Pre-open PDF window inside the user-gesture so iOS Safari doesn't
+  // block it later (after the await fetch the gesture is gone).
+  var pdfWin = openPdfWindowPlaceholder();
+
   try {
     var r = await fetch('/api/sign', {
       method: 'PATCH',
@@ -138,109 +142,161 @@ async function submitSign() {
       body: JSON.stringify({ id: SESSION_ID, party2Name: name, party2Sig: sig })
     });
     var data = await r.json();
-    if (!r.ok) { alert(data.error || 'Błąd. Spróbuj ponownie.'); btn.disabled=false; btn.textContent='✍ Podpisz dokument'; return; }
+    if (!r.ok) {
+      if (pdfWin) { try { pdfWin.close(); } catch(e) {} }
+      alert(data.error || 'Błąd. Spróbuj ponownie.'); btn.disabled=false; btn.textContent='✍ Podpisz dokument'; return;
+    }
 
     sessionData.status = 'completed';
     sessionData.party1Sig = data.party1.sig;
     sessionData.party2 = { name: data.party2.name, date: data.party2.date, sig: data.party2.sig };
     render();
 
-    btn = document.querySelector('.btn-primary');
-    if (btn) { btn.disabled = true; btn.textContent = 'Generowanie PDF…'; }
-    try {
-      await generateAndDownloadPDF(data);
-    } catch(pdfErr) {
-      alert('Nie udało się wygenerować PDF. Kliknij „Pobierz podpisany PDF", aby spróbować ponownie.');
-    }
-    btn = document.querySelector('.btn-primary');
-    if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz podpisany PDF'; }
+    writePdfWindow(pdfWin, data);
   } catch(e) {
+    if (pdfWin) { try { pdfWin.close(); } catch(_){} }
     alert('Błąd połączenia. Spróbuj ponownie.');
     btn.disabled = false; btn.textContent = '✍ Podpisz dokument';
   }
 }
 
-async function downloadBothSigs() {
+function downloadBothSigs() {
   var d = sessionData;
   if (!d || !d.party1Sig || !d.party2 || !d.party2.sig) {
     alert('Brak danych podpisów. Odśwież stronę i spróbuj ponownie.');
     return;
   }
-  var btn = document.querySelector('.btn-primary');
-  if (btn) { btn.disabled = true; btn.textContent = 'Generowanie PDF…'; }
-  try {
-    await generateAndDownloadPDF({
-      docText: d.docText,
-      docName: d.docName,
-      docHash: d.docHash,
-      party1: { name: d.party1Name, sig: d.party1Sig, date: d.party1Date },
-      party2: d.party2,
-    });
-  } catch(e) {
-    alert('Nie udało się wygenerować PDF. Spróbuj ponownie.');
-  }
-  if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz podpisany PDF'; }
-}
-
-function preloadImage(src) {
-  return new Promise(function(resolve) {
-    var img = new Image();
-    img.onload = function(){ resolve(); };
-    img.onerror = function(){ resolve(); };
-    img.src = src;
+  // Direct user click — fresh gesture, no pre-open dance needed.
+  var pdfWin = openPdfWindowPlaceholder();
+  writePdfWindow(pdfWin, {
+    docText: d.docText,
+    docName: d.docName,
+    docHash: d.docHash,
+    party1: { name: d.party1Name, sig: d.party1Sig, date: d.party1Date },
+    party2: d.party2,
   });
 }
 
-function savePdfBlob(blob, filename) {
-  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var url = URL.createObjectURL(blob);
-  if (isIOS) {
-    // iOS Safari: gest wygasł po async fetch — `<a download>` nie zadziała.
-    // Otwórz PDF w Safari PDF Viewer; użytkownik tapuje Share → Zapisz do Pliki.
-    window.location.href = url;
-  } else {
-    var a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
-  }
+function openPdfWindowPlaceholder() {
+  var win;
+  try { win = window.open('', '_blank'); } catch(e) { win = null; }
+  if (!win) return null;
+  try {
+    win.document.open();
+    win.document.write('<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Generowanie PDF…</title>'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+      + '<style>body{margin:0;font-family:-apple-system,Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;color:#374151;background:#f5f5f7}'
+      + '.box{text-align:center;padding:24px}.spinner{width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#111;border-radius:50%;animation:s 0.7s linear infinite;margin:0 auto 14px}@keyframes s{to{transform:rotate(360deg)}}</style>'
+      + '</head><body><div class="box"><div class="spinner"></div><div>Generowanie podpisanego PDF…</div></div></body></html>');
+    win.document.close();
+  } catch(e) {}
+  return win;
 }
 
-async function generateAndDownloadPDF(data) {
+function writePdfWindow(win, data) {
   var title = data.docName || 'Dokument';
   var safe = title.toLowerCase().replace(/[\s\/\\:*?"<>|]+/g,'_');
   var filename = safe + '_podpisany.pdf';
   var esc = escHtml(data.docText || '');
   var sig1 = data.party1, sig2 = data.party2;
 
-  await Promise.all([preloadImage(sig1.sig), preloadImage(sig2.sig)]);
-
   var sigHtml = '<div style="margin-top:44px;padding-top:20px;border-top:1.5px solid #ccc;page-break-inside:avoid">'
-    + '<div style="display:flex;gap:48px;flex-wrap:wrap">'
-    + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
+    + '<table style="width:100%;border-collapse:collapse"><tr>'
+    + '<td style="vertical-align:top;width:50%;padding-right:24px">'
+    + '<div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
     + '<img src="' + sig1.sig + '" style="height:54px;display:block;margin-bottom:6px">'
-    + '<div style="font-size:10pt;font-weight:700">' + sig1.name + '</div>'
-    + '<div style="font-size:9pt;color:#666">' + sig1.date + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
-    + '<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'
+    + '<div style="font-size:10pt;font-weight:700">' + escHtml(sig1.name || '') + '</div>'
+    + '<div style="font-size:9pt;color:#666">' + escHtml(sig1.date || '') + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div>'
+    + '</td>'
+    + '<td style="vertical-align:top;width:50%;padding-left:24px">'
+    + '<div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'
     + '<img src="' + sig2.sig + '" style="height:54px;display:block;margin-bottom:6px">'
-    + '<div style="font-size:10pt;font-weight:700">' + sig2.name + '</div>'
-    + '<div style="font-size:9pt;color:#666">' + sig2.date + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
-    + '</div></div>';
+    + '<div style="font-size:10pt;font-weight:700">' + escHtml(sig2.name || '') + '</div>'
+    + '<div style="font-size:9pt;color:#666">' + escHtml(sig2.date || '') + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div>'
+    + '</td></tr></table></div>';
 
-  var el = document.createElement('div');
-  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:160mm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
-  el.innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt;margin:0">' + esc + '</pre>' + sigHtml;
-  document.body.appendChild(el);
+  var hashHtml = data.docHash ? '<div style="margin-top:18px;font-size:8pt;color:#999;word-break:break-all">SHA-256: ' + escHtml(data.docHash) + '</div>' : '';
+
+  // Fallback if popup was blocked: render in current page using same script.
+  var fallbackUrl = null;
+  if (!win) {
+    // Build a data: URL? Too long. Use blob.
+    // Actually if popup blocked, fall back to in-page blob generation.
+    inPageBlobFallback({ filename: filename, esc: esc, sigHtml: sigHtml, hashHtml: hashHtml });
+    return;
+  }
+
+  var inner = '<div id="pdfRoot" style="background:#fff;color:#111;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7">'
+    + '<pre style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt;margin:0">' + esc + '</pre>'
+    + sigHtml + hashHtml
+    + '</div>';
+
+  var script = '\n(function(){\n'
+    + '  var fname = ' + JSON.stringify(filename) + ';\n'
+    + '  function start() {\n'
+    + '    var el = document.getElementById("pdfRoot");\n'
+    + '    if (!el || typeof html2pdf === "undefined") { setTimeout(start, 80); return; }\n'
+    + '    var imgs = el.querySelectorAll("img");\n'
+    + '    var pending = imgs.length;\n'
+    + '    function go() {\n'
+    + '      html2pdf().set({\n'
+    + '        margin: [18,18,18,18],\n'
+    + '        filename: fname,\n'
+    + '        image: { type: "jpeg", quality: 0.95 },\n'
+    + '        html2canvas: { scale: 2, useCORS: true, logging: false },\n'
+    + '        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }\n'
+    + '      }).from(el).save().then(function(){\n'
+    + '        var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);\n'
+    + '        if (!isIOS) { setTimeout(function(){ try{window.close();}catch(e){} }, 1200); }\n'
+    + '      }).catch(function(err){\n'
+    + '        document.body.innerHTML = "<div style=\\"padding:40px;font-family:Arial;color:#b91c1c\\">Błąd generowania PDF: " + (err && err.message ? err.message : err) + "</div>";\n'
+    + '      });\n'
+    + '    }\n'
+    + '    if (!pending) { go(); return; }\n'
+    + '    imgs.forEach(function(img){\n'
+    + '      if (img.complete && img.naturalWidth > 0) { if (--pending === 0) go(); }\n'
+    + '      else {\n'
+    + '        img.addEventListener("load", function(){ if (--pending === 0) go(); });\n'
+    + '        img.addEventListener("error", function(){ if (--pending === 0) go(); });\n'
+    + '      }\n'
+    + '    });\n'
+    + '  }\n'
+    + '  if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(start, 0);\n'
+    + '  else window.addEventListener("DOMContentLoaded", start);\n'
+    + '})();\n';
+
+  var html = '<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>' + escHtml(title) + ' — podpisany</title>'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    + '<scr' + 'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></scr' + 'ipt>'
+    + '<style>html,body{margin:0;padding:0;background:#fff}body{padding:25mm}</style>'
+    + '</head><body>' + inner
+    + '<scr' + 'ipt>' + script + '</scr' + 'ipt>'
+    + '</body></html>';
 
   try {
-    var blob = await html2pdf().set({
-      margin: 25,
-      filename: filename,
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+  } catch(e) {
+    inPageBlobFallback({ filename: filename, esc: esc, sigHtml: sigHtml, hashHtml: hashHtml });
+  }
+}
+
+async function inPageBlobFallback(parts) {
+  var el = document.createElement('div');
+  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:160mm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
+  el.innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt;margin:0">' + parts.esc + '</pre>' + parts.sigHtml + parts.hashHtml;
+  document.body.appendChild(el);
+  try {
+    await html2pdf().set({
+      margin: 18,
+      filename: parts.filename,
       image: { type: 'jpeg', quality: .95 },
       html2canvas: { scale: 2, useCORS: true, logging: false },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    }).from(el).outputPdf('blob');
-    savePdfBlob(blob, filename);
+    }).from(el).save();
+  } catch(e) {
+    alert('Błąd generowania PDF: ' + (e && e.message ? e.message : e));
   } finally {
     if (el.parentNode) el.parentNode.removeChild(el);
   }
