@@ -228,7 +228,7 @@ async function generateAndDownloadPDF(data) {
     + '</div></div>';
 
   var el = document.createElement('div');
-  el.style.cssText = 'position:fixed;left:0;top:0;width:160mm;z-index:-1;opacity:0;pointer-events:none;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
+  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:160mm;font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;color:#111;background:#fff';
   el.innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt;margin:0">' + esc + '</pre>' + sigHtml;
   document.body.appendChild(el);
 
@@ -237,9 +237,8 @@ async function generateAndDownloadPDF(data) {
       margin: 25,
       filename: filename,
       image: { type: 'jpeg', quality: .95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, imageTimeout: 0 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
     }).from(el).outputPdf('blob');
     savePdfBlob(blob, filename);
   } finally {
