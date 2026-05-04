@@ -315,11 +315,11 @@ async function sendReengagementEmail(to, { broadcast = false } = {}) {
   if (!key) throw new Error('RESEND_API_KEY missing');
 
   const introLine = broadcast
-    ? 'Chcieliśmy Ci po prostu przypomnieć, co możesz u nas zrobić, kiedy tylko przyjdzie taka potrzeba — może się przyda dla Ciebie albo kogoś bliskiego.'
+    ? 'Niedawno zarejestrowałeś się w naszym serwisie — chcieliśmy Ci pokazać, jakie narzędzia masz do dyspozycji i zachęcić, żebyś z nich skorzystał kiedy tylko będzie taka potrzeba.'
     : 'Trzy dni temu założyłeś konto w Dokumo — chcieliśmy się tylko upewnić, że wiesz co możesz u nas zrobić, kiedy tylko przyjdzie taka potrzeba.';
 
   const subject = broadcast
-    ? 'Co znajdziesz w Dokumo — szybkie przypomnienie'
+    ? 'Skorzystaj z naszych narzędzi — Dokumo'
     : 'Co możesz zrobić w Dokumo — kilka pomysłów';
 
   const html = `<!DOCTYPE html>
