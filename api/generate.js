@@ -30,6 +30,16 @@ function getIp(req) {
     .trim().replace(/[^a-zA-Z0-9._:-]/g, '_').substring(0, 64);
 }
 
+// Prefix /24 dla IPv4 i /64 dla IPv6 — utrudnia rotację proxy do bypassowania limitów
+function getIpPrefix(req) {
+  const ip = getIp(req);
+  const v4 = ip.match(/^(\d+\.\d+\.\d+)\.\d+/);
+  if (v4) return 'v4_' + v4[1];
+  const v6 = ip.match(/^([0-9a-fA-F]+:[0-9a-fA-F]+:[0-9a-fA-F]+:[0-9a-fA-F]+):/);
+  if (v6) return 'v6_' + v6[1];
+  return 'raw_' + ip;
+}
+
 async function checkSubscription(uid) {
   const snap = await db.collection('users').doc(uid)
     .collection('subscription').doc('current').get();
@@ -40,16 +50,29 @@ async function checkSubscription(uid) {
   return data;
 }
 
-async function checkRateLimit(uid) {
-  const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
-  const snap = await db.collection('users').doc(uid)
-    .collection('usage').where('ts', '>=', windowStart).count().get();
-  return snap.data().count;
-}
-
-async function reserveUsage(uid) {
-  const ref = await db.collection('users').doc(uid).collection('usage').add({ ts: Timestamp.now() });
-  return () => ref.delete().catch(() => {});
+// Atomowa rezerwacja slotu w sliding window (transakcja Firestore — bez race condition).
+// Zwraca null jeśli limit przekroczony, lub funkcję rollback().
+async function tryReserveSlot(uid, type, limit) {
+  const ref = db.collection('users').doc(uid).collection('rateLimit').doc(type);
+  const slotId = await db.runTransaction(async (tx) => {
+    const doc = await tx.get(ref);
+    const now = Date.now();
+    const cutoff = now - RATE_WINDOW_MS;
+    const arr = (doc.exists && Array.isArray(doc.data().slots)) ? doc.data().slots : [];
+    const filtered = arr.filter(s => s && s.t > cutoff);
+    if (filtered.length >= limit) return null;
+    const id = `${now}-${Math.random().toString(36).slice(2, 10)}`;
+    filtered.push({ id, t: now });
+    tx.set(ref, { slots: filtered, updatedAt: Timestamp.now() }, { merge: true });
+    return id;
+  });
+  if (!slotId) return null;
+  return () => db.runTransaction(async (tx) => {
+    const doc = await tx.get(ref);
+    if (!doc.exists) return;
+    const slots = (doc.data().slots || []).filter(s => s && s.id !== slotId);
+    tx.set(ref, { slots }, { merge: true });
+  }).catch(() => {});
 }
 
 export default async function handler(req, res) {
@@ -73,14 +96,13 @@ export default async function handler(req, res) {
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
-    // Rate limit: 20 wywołań AI per uid per godzinę (CV + list łącznie)
-    let aiUsageRef = null;
+    // Rate limit: 20 wywołań AI per uid per godzinę — atomowa transakcja (bez TOCTOU)
+    let rollbackAi = null;
     try {
-      const windowStart = Timestamp.fromMillis(Date.now() - RATE_WINDOW_MS);
-      const aiCount = (await db.collection('users').doc(uid).collection('aiUsage')
-        .where('ts', '>=', windowStart).count().get()).data().count;
-      if (aiCount >= 20) return res.status(429).json({ error: 'Przekroczono limit AI (20/godz.). Spróbuj za chwilę.' });
-      aiUsageRef = await db.collection('users').doc(uid).collection('aiUsage').add({ ts: Timestamp.now(), type: freeType });
+      rollbackAi = await tryReserveSlot(uid, 'ai', 20);
+      if (!rollbackAi) {
+        return res.status(429).json({ error: 'Przekroczono limit AI (20/godz.). Spróbuj za chwilę.' });
+      }
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
@@ -97,17 +119,17 @@ export default async function handler(req, res) {
       });
       const data = await r.json();
       if (data.error) {
-        if (aiUsageRef) aiUsageRef.delete().catch(() => {});
+        if (rollbackAi) rollbackAi();
         return res.status(500).json({ error: data.error.message });
       }
       const text = data.content?.[0]?.text || '';
       if (!text) {
-        if (aiUsageRef) aiUsageRef.delete().catch(() => {});
+        if (rollbackAi) rollbackAi();
         return res.status(500).json({ error: 'Pusta odpowiedź AI' });
       }
       return res.status(200).json({ text });
     } catch(e) {
-      if (aiUsageRef) aiUsageRef.delete().catch(() => {});
+      if (rollbackAi) rollbackAi();
       return res.status(500).json({ error: e.name === 'TimeoutError' ? 'Przekroczono czas — spróbuj ponownie.' : e.message });
     }
   }
@@ -136,9 +158,9 @@ export default async function handler(req, res) {
         return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
       }
     } else {
-      // Gość — jeden bezpłatny użycie per IP
-      const ip = getIp(req);
-      const freeRef = db.collection('freeContractUsage').doc(ip);
+      // Gość — jeden bezpłatny użytek per /24 IP (utrudnia rotację proxy)
+      const ipKey = getIpPrefix(req);
+      const freeRef = db.collection('freeContractUsage').doc(ipKey);
       try {
         await freeRef.create({ usedAt: Timestamp.now() });
       } catch(createErr) {
@@ -146,6 +168,20 @@ export default async function handler(req, res) {
           return res.status(403).json({ error: 'contract_free_used' });
         }
         return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+      }
+      // Globalny dzienny cap — chroni przed atakiem rozproszonym (rotacja proxy)
+      const todayKey = new Date().toISOString().slice(0, 10);
+      const globalRef = db.collection('globalLimits').doc('contract_free_' + todayKey);
+      const allowed = await db.runTransaction(async (tx) => {
+        const doc = await tx.get(globalRef);
+        const count = doc.exists ? (doc.data().count || 0) : 0;
+        if (count >= 300) return false;
+        tx.set(globalRef, { count: count + 1, updatedAt: Timestamp.now() }, { merge: true });
+        return true;
+      }).catch(() => true); // przy błędzie transakcji — przepuść (fail-open)
+      if (!allowed) {
+        freeRef.delete().catch(() => {});
+        return res.status(429).json({ error: 'Dzienny limit darmowych analiz wyczerpany. Załóż konto, aby kontynuować.' });
       }
     }
 
@@ -175,7 +211,7 @@ Zwróć TYLKO JSON, żadnego tekstu przed ani po. Format:
 
 Sprawdź następujące aspekty:
 1. Kompletność danych stron (imię, adres, NIP/PESEL)
-2. Wynagrodzenie (dla UoP: min. 4666 zł brutto 2026; min. stawka godz. 30,50 zł)
+2. Wynagrodzenie (dla UoP: min. 4806 zł brutto 2026; min. stawka godz. 31,40 zł)
 3. Elementy obowiązkowe (data zawarcia, zakres, czas trwania)
 4. Klauzule niedozwolone lub rażąco jednostronne
 5. Warunki i okres wypowiedzenia
@@ -292,15 +328,14 @@ ${truncated}`;
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
   }
 
-  // ── 4. Rate limiting (tylko dla subskrybentów) ──
+  // ── 4. Rate limiting (tylko dla subskrybentów) — atomowa transakcja
   let rollbackUsage = null;
   if (!isFree) {
     try {
-      const count = await checkRateLimit(uid);
-      if (count >= RATE_LIMIT) {
+      rollbackUsage = await tryReserveSlot(uid, 'docs', RATE_LIMIT);
+      if (!rollbackUsage) {
         return res.status(429).json({ error: 'Przekroczono limit generowania dokumentów (25/godz.). Spróbuj za chwilę.' });
       }
-      rollbackUsage = await reserveUsage(uid);
     } catch(e) {
       console.error('Rate limit check error:', e.message);
       return res.status(503).json({ error: 'Chwilowy problem z serwerem. Spróbuj ponownie.' });
