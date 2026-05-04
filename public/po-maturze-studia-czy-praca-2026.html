@@ -97,7 +97,7 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
 .stat-val { font-size:2rem; font-weight:900; color:#111827; letter-spacing:-0.04em; margin-bottom:6px; }
 .stat-lbl { font-size:0.78rem; color:#6b7280; line-height:1.5; font-weight:500; }
 
-.article-toc { background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.06); border:1px solid #f3f4f6; position:sticky; top:88px; margin-top:40px; max-height:calc(100vh - 120px); overflow-y:auto; }
+.article-toc { background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.06); border:1px solid #f3f4f6; }
 .toc-title { font-size:0.75rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#9ca3af; margin-bottom:16px; }
 .toc-link { display:block; font-size:0.85rem; color:#6b7280; text-decoration:none; padding:6px 0; border-bottom:1px solid #f9fafb; transition:color 0.15s; font-weight:500; }
 .toc-link:last-child { border-bottom:none; }
@@ -497,6 +497,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
   <!-- SIDEBAR -->
   <aside>
+    <div style="position:sticky;top:88px;margin-top:40px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 100px);overflow-y:auto;">
     <div class="article-toc">
       <div class="toc-title">Spis treści</div>
       <a href="#liczby-zarobki" class="toc-link">Zarobki po maturze vs po studiach</a>
@@ -519,12 +520,13 @@ onAuthStateChanged(getAuth(app),async u=>{
       <a href="przejscie-na-b2b.html" class="ra-link">💼 Przejście na B2B — jak zacząć</a>
     </div>
 
-    <div class="related-articles" style="margin-top:16px;">
+    <div class="related-articles">
       <div class="ra-title">Narzędzia Dokumo</div>
       <a href="wybierz-szablon.html" class="ra-link">✏️ Kreator CV z AI</a>
       <a href="list-motywacyjny.html" class="ra-link">📝 Generator listu motywacyjnego</a>
       <a href="generator-umowy-b2b.html" class="ra-link">💼 Generator umowy B2B</a>
       <a href="generator-wypowiedzenia.html" class="ra-link">📋 Generator wypowiedzenia</a>
+    </div>
     </div>
   </aside>
 
