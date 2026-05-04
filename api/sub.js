@@ -251,6 +251,11 @@ async function sendWelcomeIfNew(uid, email) {
 
 // ── Cron: re-engagement email 3 dni po rejestracji ──
 async function runReengagementCron(req, res) {
+  // Tryb broadcast: ?mode=broadcast — jednorazowy mailing do wszystkich
+  // w bazie z reminderSent:false (bez okna 3-dniowego). Batch 100/run.
+  const url = new URL(req.url, 'https://dokumoflow.com');
+  const isBroadcast = url.searchParams.get('mode') === 'broadcast';
+
   const now = Date.now();
   const DAY = 24 * 60 * 60 * 1000;
   const windowStart = Timestamp.fromMillis(now - 4 * DAY);
@@ -258,12 +263,11 @@ async function runReengagementCron(req, res) {
 
   let snap;
   try {
-    snap = await db.collection('userMeta')
-      .where('registeredAt', '>=', windowStart)
-      .where('registeredAt', '<', windowEnd)
-      .where('reminderSent', '==', false)
-      .limit(500)
-      .get();
+    let q = db.collection('userMeta').where('reminderSent', '==', false);
+    if (!isBroadcast) {
+      q = q.where('registeredAt', '>=', windowStart).where('registeredAt', '<', windowEnd);
+    }
+    snap = await q.limit(isBroadcast ? 100 : 500).get();
   } catch (e) {
     console.error('Cron query error:', e.message);
     return res.status(500).json({ error: 'Query failed: ' + e.message });
@@ -293,7 +297,7 @@ async function runReengagementCron(req, res) {
     }
 
     try {
-      await sendReengagementEmail(email);
+      await sendReengagementEmail(email, { broadcast: isBroadcast });
       await doc.ref.update({ reminderSent: true, reminderSentAt: Timestamp.now() });
       sent++;
     } catch (e) {
@@ -302,12 +306,21 @@ async function runReengagementCron(req, res) {
     }
   }
 
-  return res.status(200).json({ total: snap.size, sent, skipped, errors });
+  const hasMore = isBroadcast && snap.size === 100;
+  return res.status(200).json({ mode: isBroadcast ? 'broadcast' : '3day', total: snap.size, sent, skipped, errors, hasMore });
 }
 
-async function sendReengagementEmail(to) {
+async function sendReengagementEmail(to, { broadcast = false } = {}) {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error('RESEND_API_KEY missing');
+
+  const introLine = broadcast
+    ? 'Chcieliśmy Ci po prostu przypomnieć, co możesz u nas zrobić, kiedy tylko przyjdzie taka potrzeba — może się przyda dla Ciebie albo kogoś bliskiego.'
+    : 'Trzy dni temu założyłeś konto w Dokumo — chcieliśmy się tylko upewnić, że wiesz co możesz u nas zrobić, kiedy tylko przyjdzie taka potrzeba.';
+
+  const subject = broadcast
+    ? 'Co znajdziesz w Dokumo — szybkie przypomnienie'
+    : 'Co możesz zrobić w Dokumo — kilka pomysłów';
 
   const html = `<!DOCTYPE html>
 <html lang="pl">
@@ -321,7 +334,7 @@ async function sendReengagementEmail(to) {
     <div style="padding:36px 32px">
       <h1 style="font-size:21px;font-weight:800;color:#111;margin:0 0 12px;letter-spacing:-.02em">Cześć! Mała przypominajka 👋</h1>
       <p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 14px">
-        Trzy dni temu założyłeś konto w Dokumo — chcieliśmy się tylko upewnić, że wiesz co możesz u nas zrobić, kiedy tylko przyjdzie taka potrzeba.
+        ${introLine}
       </p>
       <p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">
         Jesteśmy platformą, która łączy <strong style="color:#111">gotowe szablony dokumentów prawnych</strong> z <strong style="color:#111">analizą AI</strong> — pomagamy w sytuacjach, w których inaczej musiałbyś iść do prawnika lub spędzać godziny w Wordzie.
@@ -355,7 +368,7 @@ async function sendReengagementEmail(to) {
     body: JSON.stringify({
       from: 'Dokumo <noreply@dokumoflow.com>',
       to,
-      subject: 'Co możesz zrobić w Dokumo — kilka pomysłów',
+      subject,
       html,
     }),
     signal: AbortSignal.timeout(8000),
