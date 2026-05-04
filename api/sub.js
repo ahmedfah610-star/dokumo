@@ -319,24 +319,26 @@ async function sendReengagementEmail(to) {
       <span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-.02em">Dokumo</span>
     </div>
     <div style="padding:36px 32px">
-      <h1 style="font-size:21px;font-weight:800;color:#111;margin:0 0 12px;letter-spacing:-.02em">Hej, jeszcze tu jesteś? 👀</h1>
+      <h1 style="font-size:21px;font-weight:800;color:#111;margin:0 0 12px;letter-spacing:-.02em">Cześć! Mała przypominajka 👋</h1>
       <p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 14px">
-        Trzy dni temu założyłeś konto w Dokumo i nie zdążyłeś jeszcze niczego wygenerować. Wciąż masz <strong style="color:#111">jedno darmowe pobranie PDF</strong> — możesz go użyć kiedy chcesz.
+        Trzy dni temu założyłeś konto w Dokumo — chcieliśmy się tylko upewnić, że wiesz co możesz u nas zrobić, kiedy tylko przyjdzie taka potrzeba.
       </p>
       <p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">
-        Jeśli zastanawiasz się od czego zacząć — oto cztery dokumenty, które inni użytkownicy generowali w tym tygodniu najczęściej:
+        Jesteśmy platformą, która łączy <strong style="color:#111">gotowe szablony dokumentów prawnych</strong> z <strong style="color:#111">analizą AI</strong> — pomagamy w sytuacjach, w których inaczej musiałbyś iść do prawnika lub spędzać godziny w Wordzie.
       </p>
       <div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:0 0 14px">Co znajdziesz w Dokumo</p>
         <table style="width:100%;border-collapse:collapse">
-          <tr><td style="padding:6px 0"><a href="https://dokumoflow.com/kreator-cv.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📄 Kreator CV z AI</a><div style="color:#888;font-size:12px;margin-top:2px">Dopasowane do oferty pracy w 30 sekund</div></td></tr>
-          <tr><td style="padding:6px 0"><a href="https://dokumoflow.com/generator-umowy-b2b.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📝 Umowa B2B</a><div style="color:#888;font-size:12px;margin-top:2px">Gotowy szablon dla freelancera lub firmy</div></td></tr>
-          <tr><td style="padding:6px 0"><a href="https://dokumoflow.com/generator-wypowiedzenia.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📋 Wypowiedzenie umowy</a><div style="color:#888;font-size:12px;margin-top:2px">Z poprawnym okresem i podstawą prawną</div></td></tr>
-          <tr><td style="padding:6px 0"><a href="https://dokumoflow.com/analiza-umowy.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🔍 Analiza umowy AI</a><div style="color:#888;font-size:12px;margin-top:2px">Sprawdź, czy nie podpisujesz czegoś niekorzystnego</div></td></tr>
+          <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">📄 Generator umów i pism</span><div style="color:#888;font-size:12px;margin-top:2px">B2B, zlecenie, NDA, najem, wypowiedzenie — gotowe w 60 sekund</div></td></tr>
+          <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">🤖 Kreator CV i listu z AI</span><div style="color:#888;font-size:12px;margin-top:2px">Dopasowane do oferty pracy, profesjonalna stylistyka</div></td></tr>
+          <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">🔍 Analiza umowy AI</span><div style="color:#888;font-size:12px;margin-top:2px">Sprawdź czy nie podpisujesz czegoś niekorzystnego</div></td></tr>
+          <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">✍️ Podpisywanie dokumentów online</span><div style="color:#888;font-size:12px;margin-top:2px">Bezpieczny e-podpis bez wydruków i skanowania</div></td></tr>
+          <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">🧾 Faktury i kalkulator wynagrodzeń</span><div style="color:#888;font-size:12px;margin-top:2px">Praktyczne narzędzia dla freelancera i firmy</div></td></tr>
         </table>
       </div>
-      <a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Wróć do Dokumo →</a>
+      <a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Zobacz wszystko →</a>
       <p style="color:#888;font-size:13px;line-height:1.6;margin:28px 0 0;text-align:center">
-        Nie potrzebujesz dziś niczego? Bez stresu — Twoje konto czeka, a my nie spamujemy.
+        Trzymamy kciuki za wszystko czym aktualnie się zajmujesz. Gdyby coś było potrzebne — wiesz gdzie nas znaleźć.
       </p>
       <p style="font-size:12px;color:#bbb;margin:20px 0 0;text-align:center">
         © 2026 Dokumo · <a href="https://dokumoflow.com" style="color:#bbb;text-decoration:none">dokumoflow.com</a>
@@ -353,7 +355,7 @@ async function sendReengagementEmail(to) {
     body: JSON.stringify({
       from: 'Dokumo <noreply@dokumoflow.com>',
       to,
-      subject: 'Twoje darmowe pobranie wciąż czeka — co wygenerujesz?',
+      subject: 'Co możesz zrobić w Dokumo — kilka pomysłów',
       html,
     }),
     signal: AbortSignal.timeout(8000),
