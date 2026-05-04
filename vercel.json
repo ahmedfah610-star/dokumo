@@ -6,7 +6,7 @@
     }
   },
   "crons": [
-    { "path": "/api/cron-reengagement", "schedule": "0 10 * * *" }
+    { "path": "/api/sub", "schedule": "0 10 * * *" }
   ],
   "redirects": [
     {
