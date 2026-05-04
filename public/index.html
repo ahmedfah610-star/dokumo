@@ -466,8 +466,14 @@ a.tool-sc-c{text-decoration:none;}
     document.getElementById('tscNext').style.opacity=atEnd?'0.3':'1';
     document.getElementById('tscNext').style.pointerEvents=atEnd?'none':'auto';
   }
+  function center(){
+    var max=sc.scrollWidth-sc.clientWidth;
+    if(max>0) sc.scrollLeft=max/2;
+  }
   sc.addEventListener('scroll',upd,{passive:true});
-  upd();
+  // Centruj po pełnym layoucie (kafelki potrzebują policzonej szerokości)
+  if(document.readyState==='complete'){center();upd();}
+  else window.addEventListener('load',function(){center();upd();});
 })();
 </script>
 </section>
