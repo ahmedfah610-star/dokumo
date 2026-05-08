@@ -24,7 +24,8 @@ var _wmTools = {
     { name:'Umowa B2B',               desc:'Umowa współpracy między firmami',     href:'generator-umowy-b2b.html',    bg:'#fef9c3', stroke:'#ca8a04', icon:'handshake' },
     { name:'Umowa NDA (poufność)',    desc:'Ochrona informacji poufnych',         href:'generator-nda.html',    bg:'#fdf4ff', stroke:'#a855f7', icon:'shield' },
     { name:'Umowa o dzieło',          desc:'Jednorazowe zlecenie twórcze',        href:'generator-umowy-o-dzielo.html', bg:'#fff1f2', stroke:'#f43f5e', icon:'doc' },
-    { name:'Umowa zlecenie',          desc:'Współpraca na zasadach zlecenia',     href:'generator-umowy-zlecenie.html', bg:'#fef3c7', stroke:'#d97706', icon:'doc' }
+    { name:'Umowa zlecenie',          desc:'Współpraca na zasadach zlecenia',     href:'generator-umowy-zlecenie.html', bg:'#fef3c7', stroke:'#d97706', icon:'doc' },
+    { name:'Analiza umowy AI',        desc:'AI sprawdzi klauzule i niekorzystne zapisy', href:'analiza-umowy.html', bg:'#eff6ff', stroke:'#2563eb', icon:'match' }
   ],
   biznes_admin: [
     { name:'Pełnomocnictwo',               desc:'Ogólne, rodzajowe lub szczególne — art. 98 KC', href:'generator-pelnomocnictwa.html', bg:'#fdf4ff', stroke:'#a855f7', icon:'badge' },
