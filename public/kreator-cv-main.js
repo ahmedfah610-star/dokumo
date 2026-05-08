@@ -1674,20 +1674,21 @@ function _fixCVFullHeight(root) {
   const rootStyleStr = root.getAttribute('style') || '';
   const isHorizFlex = rootStyleStr.includes('display:flex') && !rootStyleStr.includes('flex-direction:column');
 
-  // Ensure full A4 page: height + overflow:hidden so background fills the entire page
+  // A4 page: pierwsza strona min. 842px (pełne tło), ale dłuższe CV mogą rozlewać
+  // się na kolejne strony — bez clipowania treści.
   root.style.minHeight = '842px';
-  root.style.maxHeight = '842px';
-  root.style.height    = '842px';
-  root.style.overflow  = 'hidden';
+  root.style.maxHeight = 'none';
+  root.style.height    = 'auto';
+  root.style.overflow  = 'visible';
 
   if (isHorizFlex) {
-    // Sidebar templates: force every direct child (sidebar + main) to fill the full height
+    // Sidebar templates: force every direct child (sidebar + main) to fill at least one page
     for (const child of root.children) {
       child.style.minHeight = '842px';
-      child.style.overflow  = 'hidden';
+      child.style.overflow  = 'visible';
       const cs = child.getAttribute('style') || '';
       if ((cs.includes('flex:1') || cs.includes('flex: 1')) && !cs.match(/width:\s*\d/)) {
-        // Main column: make it a flex column so margin-top:auto (consent) pins to bottom
+        // Main column: make it a flex column so margin-top:auto (consent) pins to bottom of last page
         child.style.display = 'flex';
         child.style.flexDirection = 'column';
         const last = child.lastElementChild;
@@ -1698,7 +1699,7 @@ function _fixCVFullHeight(root) {
     // Standard vertical layouts
     root.style.display = 'flex';
     root.style.flexDirection = 'column';
-    // Pin the last direct child (consent div) to the bottom
+    // Pin the last direct child (consent div) to the bottom of last page
     const last = root.lastElementChild;
     if (last) last.style.marginTop = 'auto';
     // Give the main content area flex:1 so it expands to fill space
@@ -2102,7 +2103,12 @@ async function downloadCV() {
 
 async function _clientSidePDF(el, filename) {
   const clone = el.cloneNode(true);
-  clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;background:#fff';
+  // Zachowaj inline style elementu (height:auto, flex layout itd.) i tylko dopisz pozycjonowanie offscreen
+  clone.style.position = 'fixed';
+  clone.style.left = '-9999px';
+  clone.style.top = '0';
+  clone.style.width = '595px';
+  clone.style.background = '#fff';
   document.body.appendChild(clone);
   try {
     const blob = await html2pdf().set({
@@ -2110,6 +2116,7 @@ async function _clientSidePDF(el, filename) {
       image: { type: 'jpeg', quality: .95 },
       html2canvas: { scale: 2, useCORS: true, logging: false, width: 595 },
       jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] },
     }).from(clone).outputPdf('blob');
     await _savePDF(blob, filename);
   } finally {
