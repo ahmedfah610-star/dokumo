@@ -122,11 +122,11 @@ export default async function handler(req, res) {
 
   if (!pdfServiceUrl) return res.status(500).json({ error: 'PDF_SERVICE_URL nie ustawiony' });
 
-  // Render at 595px szerokości; pozwól treści rozlewać się na kolejne strony jeśli potrzeba
-  // — Chrome/Puppeteer auto-paginuje gdy treść > 842px wysokości.
+  // Render at exactly 595px so PDF matches the kreator preview 1:1
   const cleanHtml = html
-    .replace(/max-height\s*:\s*842px/gi, 'max-height:none')
-    .replace(/height\s*:\s*842px/gi, 'min-height:842px');
+    .replace(/min-height\s*:\s*842px/gi, 'height:842px;min-height:0')
+    .replace(/min-height\s*:\s*\d+px/gi, 'min-height:0')
+    .replace(/max-height\s*:\s*842px/gi, 'max-height:none');
 
   const fullHtml = `<!DOCTYPE html>
 <html>
@@ -135,9 +135,8 @@ export default async function handler(req, res) {
 <meta name="viewport" content="width=595">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 595px !important; max-width: 595px !important; margin: 0 !important; padding: 0 !important; }
+  html, body { width: 595px !important; max-width: 595px !important; margin: 0 !important; padding: 0 !important; overflow: hidden; }
   body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  @page { size: 595px 842px; margin: 0; }
 </style>
 </head>
 <body>${cleanHtml}</body>

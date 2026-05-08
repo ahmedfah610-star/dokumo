@@ -576,18 +576,7 @@ body { overflow:hidden; }
 .cvw-btn-tpl { background:#fff; color:#374151; border:1.5px solid #e5e7eb; gap:6px; padding:9px 14px; font-size:0.78rem; }
 .cvw-btn-tpl:hover { background:#f9fafb; border-color:#d1d5db; }
 .cvw-preview-blur .cv-preview-doc { filter:blur(4px) brightness(0.97); transition:filter 0.5s ease; pointer-events:none; user-select:none; }
-.cv-preview-doc { transition:filter 0.5s ease; position:relative; }
-/* Wizualna linia granicy strony A4 co 842px — pokazuje gdzie PDF zrobi page break */
-.cv-preview-doc::after {
-  content:'';
-  position:absolute;
-  top:842px; left:0; right:0; bottom:0;
-  background-image:linear-gradient(to bottom, rgba(0,0,0,0.18) 0, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 842px);
-  background-size:100% 842px;
-  background-repeat:repeat-y;
-  pointer-events:none;
-  z-index:5;
-}
+.cv-preview-doc { transition:filter 0.5s ease; }
 
 </style>
 
