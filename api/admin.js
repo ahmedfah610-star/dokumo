@@ -25,6 +25,153 @@ async function verifyAdmin(req) {
   return decoded;
 }
 
+// Liczy count() z aggregation query; zwraca null przy błędzie (np. brak indeksu)
+async function cnt(query) {
+  try { return (await query.count().get()).data().count; }
+  catch { return null; }
+}
+
+// Agreguje dane z całego Firestore na potrzeby dashboardu
+async function buildStats() {
+  const T = Date.now();
+  const DAY = 86400000;
+  const tsSince = days => Timestamp.fromMillis(T - days * DAY);
+
+  // ── Płatności ──
+  const paySnap = await db.collection('payments').orderBy('ts', 'desc').limit(500).get();
+  const allPay = paySnap.docs.map(d => {
+    const x = d.data();
+    return { plan: x.plan, email: x.email, amount: x.amount, currency: x.currency,
+             stripeSessionId: x.stripeSessionId, id: d.id,
+             tsMs: x.ts?.toMillis?.() ?? null,
+             ts: x.ts?.toDate?.()?.toISOString() ?? null };
+  });
+  const revenue = { total: 0, d1: 0, d7: 0, d30: 0, prev30: 0, byPlan: {}, arpu: 0 };
+  const payerEmails = new Set();
+  for (const p of allPay) {
+    const zl = (p.amount || 0) / 100;
+    revenue.total += zl;
+    revenue.byPlan[p.plan || '?'] = (revenue.byPlan[p.plan || '?'] || 0) + zl;
+    if (p.email) payerEmails.add(p.email.toLowerCase());
+    if (p.tsMs != null) {
+      const age = T - p.tsMs;
+      if (age <= DAY) revenue.d1 += zl;
+      if (age <= 7 * DAY) revenue.d7 += zl;
+      if (age <= 30 * DAY) revenue.d30 += zl;
+      if (age > 30 * DAY && age <= 60 * DAY) revenue.prev30 += zl;
+    }
+  }
+  revenue.arpu = allPay.length ? revenue.total / allPay.length : 0;
+  revenue.count = await cnt(db.collection('payments')) ?? allPay.length;
+
+  // ── Użytkownicy / wzrost ──
+  const um = db.collection('userMeta');
+  const users = {
+    total: await cnt(um),
+    d1: await cnt(um.where('registeredAt', '>=', tsSince(1))),
+    d7: await cnt(um.where('registeredAt', '>=', tsSince(7))),
+    d30: await cnt(um.where('registeredAt', '>=', tsSince(30))),
+  };
+  const reminders = {
+    sent: await cnt(um.where('reminderSent', '==', true)),
+    pending: await cnt(um.where('reminderSent', '==', false)),
+  };
+  const conversionPct = users.total ? +(payerEmails.size / users.total * 100).toFixed(1) : 0;
+
+  // ── Subskrypcje ──
+  const subs = { active: 0, byPlan: {}, grantedByAdmin: 0, expiringSoon: [], pending: 0 };
+  try {
+    const subSnap = await db.collectionGroup('subscription').limit(3000).get();
+    for (const s of subSnap.docs) {
+      const x = s.data();
+      const exp = x.expiresAt?.toMillis?.() ?? 0;
+      if (exp > T) {
+        subs.active++;
+        subs.byPlan[x.plan || '?'] = (subs.byPlan[x.plan || '?'] || 0) + 1;
+        if (x.grantedByAdmin) subs.grantedByAdmin++;
+        if (exp - T <= 7 * DAY) {
+          subs.expiringSoon.push({ email: x.email || '—', plan: x.plan || '?',
+                                   expiresAt: new Date(exp).toISOString() });
+        }
+      }
+    }
+    subs.expiringSoon.sort((a, b) => a.expiresAt < b.expiresAt ? -1 : 1);
+  } catch (e) { subs.error = e.message; }
+  subs.pending = await cnt(db.collection('pending_subs'));
+
+  // ── Dokumenty / użycie produktu ──
+  const cgDocs = db.collectionGroup('documents');
+  const docs = {
+    total: await cnt(cgDocs),
+    d1: await cnt(cgDocs.where('createdAt', '>=', tsSince(1))),
+    d7: await cnt(cgDocs.where('createdAt', '>=', tsSince(7))),
+    d30: await cnt(cgDocs.where('createdAt', '>=', tsSince(30))),
+    byCat: {}, topTypes: [], daily: [],
+  };
+  try {
+    const sSnap = await cgDocs.orderBy('createdAt', 'desc').limit(1500).get();
+    const byType = {};
+    const dayBuckets = {};
+    for (let i = 13; i >= 0; i--) {
+      dayBuckets[new Date(T - i * DAY).toISOString().slice(0, 10)] = 0;
+    }
+    for (const d of sSnap.docs) {
+      const x = d.data();
+      const cat = x.catLabel || x.cat || 'Inne';
+      docs.byCat[cat] = (docs.byCat[cat] || 0) + 1;
+      const type = (x.icon ? x.icon + ' ' : '') + (x.typeId || x.name || 'inny');
+      byType[type] = (byType[type] || 0) + 1;
+      const ms = x.createdAt?.toMillis?.() ?? null;
+      if (ms != null) {
+        const key = new Date(ms).toISOString().slice(0, 10);
+        if (key in dayBuckets) dayBuckets[key]++;
+      }
+    }
+    docs.topTypes = Object.entries(byType).map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count).slice(0, 12);
+    docs.daily = Object.entries(dayBuckets).map(([date, count]) => ({ date, count }));
+    docs.sampleSize = sSnap.size;
+  } catch (e) { docs.error = e.message; }
+
+  // ── Darmowe użycie (zasięg / leady) ──
+  const free = {
+    docTotal: await cnt(db.collection('freeDocUsage')),
+    doc7d: await cnt(db.collection('freeDocUsage').where('usedAt', '>=', tsSince(7))),
+    doc30d: await cnt(db.collection('freeDocUsage').where('usedAt', '>=', tsSince(30))),
+    contractTotal: await cnt(db.collection('freeContractUsage')),
+    contract7d: await cnt(db.collection('freeContractUsage').where('usedAt', '>=', tsSince(7))),
+    recent: [],
+  };
+  try {
+    const fSnap = await db.collection('freeDocUsage').orderBy('usedAt', 'desc').limit(15).get();
+    free.recent = fSnap.docs.map(d => {
+      const x = d.data();
+      return { docName: x.docName || 'Dokument', docCat: x.docCat || '—',
+               usedAt: x.usedAt?.toDate?.()?.toISOString() ?? null };
+    });
+  } catch (e) { free.recentError = e.message; }
+
+  // ── Dzienny ruch gości: analizy umów (globalLimits) ──
+  let contractDaily = [];
+  try {
+    const glSnap = await db.collection('globalLimits').get();
+    glSnap.forEach(d => {
+      const m = d.id.match(/^contract_free_(\d{4}-\d{2}-\d{2})$/);
+      if (m) contractDaily.push({ date: m[1], count: d.data().count || 0 });
+    });
+    contractDaily.sort((a, b) => a.date < b.date ? -1 : 1);
+    contractDaily = contractDaily.slice(-14);
+  } catch (_) {}
+
+  return {
+    generatedAt: new Date().toISOString(),
+    revenue, users, reminders, conversionPct,
+    payers: payerEmails.size,
+    subs, docs, free, contractDaily,
+    payments: allPay.slice(0, 200),
+  };
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://dokumoflow.com');
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -67,12 +214,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // GET — statystyki (dawniej /api/analytics)
+    // GET — pełne statystyki dashboardu
     if (req.method === 'GET') {
       await verifyAdmin(req);
-      const paymentsSnap = await db.collection('payments').orderBy('ts', 'desc').limit(200).get();
-      const payments = paymentsSnap.docs.map(d => ({ ...d.data(), id: d.id, ts: d.data().ts?.toDate?.()?.toISOString() || null }));
-      return res.status(200).json({ payments });
+      const stats = await buildStats();
+      const { payments, ...rest } = stats;
+      return res.status(200).json({ payments, stats: rest });
     }
 
     if (req.method !== 'POST') return res.status(405).end();

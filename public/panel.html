@@ -12,35 +12,69 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#f5f3ef;font-family:'Inter',sans-serif;color:#1a1714;min-height:100vh;}
-.panel-wrap{max-width:1200px;margin:0 auto;padding:24px 20px;}
+.panel-wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
 h1{font-size:1.4rem;font-weight:800;margin-bottom:6px;}
-.panel-sub{font-size:.82rem;color:#6b6560;margin-bottom:28px;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px;}
-.stat-card{background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:14px;padding:18px 20px;}
-.stat-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#6b6560;margin-bottom:6px;}
-.stat-value{font-size:2rem;font-weight:800;color:#1a1714;line-height:1;}
-.stat-note{font-size:.7rem;color:#aaa;margin-top:4px;}
-.panel-section{background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:14px;margin-bottom:20px;overflow:hidden;}
-.panel-section-head{padding:14px 20px;border-bottom:1px solid rgba(26,23,20,.07);display:flex;align-items:center;justify-content:space-between;}
+.panel-sub{font-size:.82rem;color:#6b6560;margin-bottom:24px;}
+.panel-sub b{color:#1a1714;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:14px;padding:16px 18px;}
+.stat-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#6b6560;margin-bottom:6px;}
+.stat-value{font-size:1.7rem;font-weight:800;color:#1a1714;line-height:1.05;}
+.stat-note{font-size:.7rem;color:#9b948c;margin-top:5px;}
+.stat-up{color:#15803d;font-weight:700;}
+.stat-down{color:#b91c1c;font-weight:700;}
+
+.panel-section{background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:14px;margin-bottom:18px;overflow:hidden;}
+.panel-section-head{padding:13px 20px;border-bottom:1px solid rgba(26,23,20,.07);display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .panel-section-head h2{font-size:.9rem;font-weight:700;}
-.panel-section-head span{font-size:.75rem;color:#aaa;}
+.panel-section-head span{font-size:.72rem;color:#aaa;}
+.section-body{padding:18px 20px;}
+
+.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:720px){.cols-2{grid-template-columns:1fr;}}
+
+.chart-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b6560;margin-bottom:12px;}
+.bars{display:flex;align-items:flex-end;gap:4px;height:130px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;}
+.bar-val{font-size:.62rem;font-weight:700;color:#6b6560;}
+.bar{width:100%;max-width:30px;background:linear-gradient(180deg,#1a1714,#4a423c);border-radius:5px 5px 0 0;min-height:2px;transition:height .3s;}
+.bar.alt{background:linear-gradient(180deg,#2563eb,#60a5fa);}
+.bar-lbl{font-size:.58rem;color:#aaa;white-space:nowrap;}
+.chart-empty{height:130px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.78rem;}
+
+.mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;}
+.mini{}
+.mini-val{font-size:1.35rem;font-weight:800;}
+.mini-lbl{font-size:.68rem;color:#6b6560;margin-top:2px;}
+
+.rank-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.rank-name{font-size:.78rem;width:160px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-track{flex:1;background:#f0ede8;border-radius:6px;height:14px;overflow:hidden;}
+.rank-fill{height:100%;background:linear-gradient(90deg,#1a1714,#6b6560);border-radius:6px;}
+.rank-cnt{font-size:.74rem;font-weight:700;width:42px;text-align:right;flex-shrink:0;}
+
 table{width:100%;border-collapse:collapse;font-size:.78rem;}
-th{padding:10px 16px;text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa;border-bottom:1px solid rgba(26,23,20,.06);}
-td{padding:10px 16px;border-bottom:1px solid rgba(26,23,20,.04);color:#444;}
+th{padding:9px 16px;text-align:left;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#aaa;border-bottom:1px solid rgba(26,23,20,.06);}
+td{padding:9px 16px;border-bottom:1px solid rgba(26,23,20,.04);color:#444;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#faf8f4;}
-.badge{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;}
+.badge{font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;}
 .badge-kariera{background:#dbeafe;color:#1e40af;}
 .badge-biznes{background:#dcfce7;color:#15803d;}
 .badge-promax{background:#1a1714;color:#fff;}
-.loading{padding:40px;text-align:center;color:#aaa;font-size:.85rem;}
-.error-msg{padding:40px;text-align:center;color:#e05c5c;font-size:.85rem;}
+.badge-start{background:#fef9c3;color:#854d0e;}
+.badge-soon{background:#fee2e2;color:#b91c1c;}
+.loading{padding:36px;text-align:center;color:#aaa;font-size:.85rem;}
+.error-msg{padding:30px;text-align:center;color:#e05c5c;font-size:.82rem;}
+.empty-msg{padding:24px;text-align:center;color:#bbb;font-size:.8rem;}
+
 .login-wall{max-width:420px;margin:80px auto;background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:16px;padding:40px;text-align:center;}
 .login-wall h2{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
 .login-wall p{font-size:.82rem;color:#6b6560;margin-bottom:20px;}
 .btn-go{display:inline-block;padding:10px 24px;background:#1a1714;color:#fff;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:700;}
-.grant-form{padding:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
-.grant-form label{display:flex;flex-direction:column;gap:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b6560;}
+.grant-form{padding:18px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+.grant-form label{display:flex;flex-direction:column;gap:4px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b6560;}
 .grant-form input,.grant-form select{padding:8px 12px;border:1px solid rgba(26,23,20,.15);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;background:#fff;min-width:180px;}
 .grant-form input:focus,.grant-form select:focus{border-color:#1a1714;}
 .btn-grant{padding:9px 22px;background:#1a1714;color:#fff;border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;white-space:nowrap;}
@@ -63,14 +97,46 @@ tr:hover td{background:#faf8f4;}
 <div id="panelContent" style="display:none">
   <div class="panel-wrap">
     <h1>Panel administracyjny</h1>
-    <div class="panel-sub">Historia płatności · Dokumo</div>
+    <div class="panel-sub" id="panelSub">Dashboard · Dokumo</div>
 
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><div class="stat-label">Płatności łącznie</div><div class="stat-value" id="statPayments">—</div></div>
-      <div class="stat-card"><div class="stat-label">Przychód (zł)</div><div class="stat-value" id="statRevenue">—</div><div class="stat-note">suma z Stripe</div></div>
+    <div class="stats-grid" id="kpiGrid"></div>
+
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Ruch i aktywność</h2><span>ostatnie 14 dni</span></div>
+      <div class="section-body cols-2" id="activityBody"></div>
     </div>
 
-    <div class="panel-section" style="margin-bottom:20px">
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Wzrost i konwersja</h2></div>
+      <div class="section-body" id="growthBody"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Dokumenty — co generują użytkownicy</h2><span id="docsHint"></span></div>
+      <div class="section-body cols-2" id="docsBody"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Ostatnie darmowe pobrania</h2><span>sygnał popytu — użytkownicy bez subskrypcji</span></div>
+      <div id="freeRecentBody"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Subskrypcje i retencja</h2></div>
+      <div class="section-body" id="subsBody"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Subskrypcje wygasające w 7 dni</h2><span>do follow-upu</span></div>
+      <div id="expiringBody"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-head"><h2>Przychód</h2><span>z płatności Stripe</span></div>
+      <div class="section-body" id="revenueBody"></div>
+    </div>
+
+    <div class="panel-section">
       <div class="panel-section-head"><h2>Nadaj subskrypcję</h2><span>działa też dla kont które jeszcze nie istnieją</span></div>
       <div class="grant-form">
         <label>Email użytkownika
@@ -94,7 +160,7 @@ tr:hover td{background:#faf8f4;}
     </div>
 
     <div class="panel-section">
-      <div class="panel-section-head"><h2>Płatności</h2></div>
+      <div class="panel-section-head"><h2>Płatności</h2><span>ostatnie 200</span></div>
       <div id="paymentsContent" class="loading">Ładowanie...</div>
     </div>
   </div>
@@ -129,10 +195,10 @@ async function loadStats(token) {
       return;
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const { payments } = await res.json();
+    const { payments, stats } = await res.json();
     document.getElementById('panelContent').style.display = 'block';
-    renderStats(payments);
-    renderPayments(payments);
+    renderDashboard(stats);
+    renderPayments(payments || []);
   } catch(e) {
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('panelContent').style.display = 'block';
@@ -140,16 +206,151 @@ async function loadStats(token) {
   }
 }
 
-function renderStats(payments) {
-  document.getElementById('statPayments').textContent = payments.length;
-  const revenue = payments.reduce((s, p) => s + (p.amount || 0), 0);
-  document.getElementById('statRevenue').textContent = (revenue / 100).toFixed(2);
+// ── helpers ──
+const N = v => (v === null || v === undefined) ? 'n/d' : Number(v).toLocaleString('pl-PL');
+const ZL = v => (Number(v)||0).toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' zł';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmt(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  return d.toLocaleDateString('pl-PL')+' '+d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtDate(iso){ return iso?new Date(iso).toLocaleDateString('pl-PL'):'—'; }
+function planBadge(p){
+  const cls={kariera:'badge-kariera',biznes:'badge-biznes',promax:'badge-promax',start:'badge-start'}[p]||'';
+  return `<span class="badge ${cls}">${esc(p||'—')}</span>`;
+}
+function barChart(rows, alt){
+  if(!rows || !rows.length) return '<div class="chart-empty">Brak danych</div>';
+  const max=Math.max(1,...rows.map(r=>r.count||0));
+  return '<div class="bars">'+rows.map(r=>{
+    const h=Math.round((r.count||0)/max*100);
+    return `<div class="bar-col"><div class="bar-val">${r.count||0}</div>`
+      +`<div class="bar${alt?' alt':''}" style="height:${h}%"></div>`
+      +`<div class="bar-lbl">${esc(r.label)}</div></div>`;
+  }).join('')+'</div>';
+}
+function rankList(rows){
+  if(!rows || !rows.length) return '<div class="empty-msg">Brak danych</div>';
+  const max=Math.max(1,...rows.map(r=>r.count||0));
+  return rows.map(r=>{
+    const w=Math.round((r.count||0)/max*100);
+    return `<div class="rank-row"><div class="rank-name" title="${esc(r.name)}">${esc(r.name)}</div>`
+      +`<div class="rank-track"><div class="rank-fill" style="width:${w}%"></div></div>`
+      +`<div class="rank-cnt">${r.count||0}</div></div>`;
+  }).join('');
+}
+function delta(cur, prev){
+  if(!prev) return '';
+  const pct=Math.round((cur-prev)/prev*100);
+  if(pct===0) return ' <span style="color:#9b948c">0%</span>';
+  const cls=pct>0?'stat-up':'stat-down';
+  return ` <span class="${cls}">${pct>0?'▲':'▼'} ${Math.abs(pct)}%</span>`;
 }
 
-function fmt(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('pl-PL') + ' ' + d.toLocaleTimeString('pl-PL', {hour:'2-digit',minute:'2-digit'});
+function renderDashboard(s){
+  if(!s){ document.getElementById('kpiGrid').innerHTML=''; return; }
+  document.getElementById('panelSub').innerHTML =
+    'Dashboard · dane na <b>'+fmt(s.generatedAt)+'</b>';
+
+  // ── KPI ──
+  const kpi=[
+    {l:'Użytkownicy',v:N(s.users?.total),n:'+'+N(s.users?.d7)+' w 7 dni'},
+    {l:'Dokumenty wygenerowane',v:N(s.docs?.total),n:'+'+N(s.docs?.d7)+' w 7 dni'},
+    {l:'Darmowe pobrania (zasięg)',v:N(s.free?.docTotal),n:'+'+N(s.free?.doc7d)+' w 7 dni'},
+    {l:'Analizy umów — goście',v:N(s.free?.contractTotal),n:'+'+N(s.free?.contract7d)+' w 7 dni'},
+    {l:'Aktywne subskrypcje',v:N(s.subs?.active),n:N(s.subs?.pending)+' oczekujących'},
+    {l:'Przychód 30 dni',v:ZL(s.revenue?.d30),n:'łącznie '+ZL(s.revenue?.total)},
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpi.map(k=>
+    `<div class="stat-card"><div class="stat-label">${k.l}</div>`
+    +`<div class="stat-value">${k.v}</div><div class="stat-note">${k.n}</div></div>`
+  ).join('');
+
+  // ── Aktywność (wykresy 14 dni) ──
+  const docDaily=(s.docs?.daily||[]).map(d=>({label:d.date.slice(8,10)+'.'+d.date.slice(5,7),count:d.count}));
+  const cDaily=(s.contractDaily||[]).map(d=>({label:d.date.slice(8,10)+'.'+d.date.slice(5,7),count:d.count}));
+  document.getElementById('activityBody').innerHTML =
+    `<div><div class="chart-title">Dokumenty zapisane / dzień</div>${barChart(docDaily,false)}</div>`
+    +`<div><div class="chart-title">Analizy umów (goście) / dzień</div>${barChart(cDaily,true)}</div>`;
+
+  // ── Wzrost i konwersja ──
+  const g=[
+    {v:N(s.users?.d1),l:'Rejestracje 24 h'},
+    {v:N(s.users?.d7),l:'Rejestracje 7 dni'},
+    {v:N(s.users?.d30),l:'Rejestracje 30 dni'},
+    {v:(s.conversionPct!=null?s.conversionPct+'%':'n/d'),l:'Konwersja na płatność'},
+    {v:N(s.payers),l:'Płacących (unikalnych)'},
+    {v:N(s.reminders?.sent),l:'Wysłane reminder-maile'},
+    {v:N(s.reminders?.pending),l:'Oczekujące remindery'},
+  ];
+  document.getElementById('growthBody').innerHTML =
+    '<div class="mini-grid">'+g.map(x=>
+      `<div class="mini"><div class="mini-val">${x.v}</div><div class="mini-lbl">${x.l}</div></div>`
+    ).join('')+'</div>';
+
+  // ── Dokumenty ──
+  document.getElementById('docsHint').textContent =
+    s.docs?.sampleSize ? ('próbka '+N(s.docs.sampleSize)+' ostatnich') : '';
+  const types=(s.docs?.topTypes||[]).map(t=>({name:t.name,count:t.count}));
+  const cats=Object.entries(s.docs?.byCat||{}).map(([name,count])=>({name,count}))
+    .sort((a,b)=>b.count-a.count);
+  document.getElementById('docsBody').innerHTML =
+    `<div><div class="chart-title">Najczęstsze typy dokumentów</div>${rankList(types)}</div>`
+    +`<div><div class="chart-title">Wg kategorii</div>${rankList(cats)}</div>`;
+
+  // ── Ostatnie darmowe pobrania ──
+  const fr=s.free?.recent||[];
+  document.getElementById('freeRecentBody').innerHTML = fr.length
+    ? `<table><thead><tr><th>Data</th><th>Dokument</th><th>Kategoria</th></tr></thead><tbody>`
+      +fr.map(r=>`<tr><td>${fmt(r.usedAt)}</td><td>${esc(r.docName)}</td><td style="color:#888">${esc(r.docCat)}</td></tr>`).join('')
+      +`</tbody></table>`
+    : '<div class="empty-msg">Brak darmowych pobrań.</div>';
+
+  // ── Subskrypcje ──
+  const sb=s.subs||{};
+  const byPlan=Object.entries(sb.byPlan||{}).sort((a,b)=>b[1]-a[1]);
+  const subStats=[
+    {v:N(sb.active),l:'Aktywne łącznie'},
+    {v:N(sb.grantedByAdmin),l:'Nadane ręcznie'},
+    {v:N((sb.active||0)-(sb.grantedByAdmin||0)),l:'Z płatności'},
+    {v:N(sb.pending),l:'Oczekujące (pending)'},
+    {v:N((sb.expiringSoon||[]).length),l:'Wygasają w 7 dni'},
+  ];
+  document.getElementById('subsBody').innerHTML =
+    '<div class="mini-grid" style="margin-bottom:14px">'+subStats.map(x=>
+      `<div class="mini"><div class="mini-val">${x.v}</div><div class="mini-lbl">${x.l}</div></div>`
+    ).join('')+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+(byPlan.length
+      ? byPlan.map(([p,c])=>`${planBadge(p)} <b style="font-size:.8rem">${c}</b>`).join('&nbsp;&nbsp;')
+      : '<span style="color:#bbb;font-size:.8rem">Brak aktywnych planów</span>')+'</div>';
+
+  // ── Wygasające ──
+  const exp=sb.expiringSoon||[];
+  document.getElementById('expiringBody').innerHTML = exp.length
+    ? `<table><thead><tr><th>Email</th><th>Plan</th><th>Wygasa</th></tr></thead><tbody>`
+      +exp.map(e=>`<tr><td>${esc(e.email)}</td><td>${planBadge(e.plan)}</td>`
+        +`<td><span class="badge badge-soon">${fmtDate(e.expiresAt)}</span></td></tr>`).join('')
+      +`</tbody></table>`
+    : '<div class="empty-msg">Żadna subskrypcja nie wygasa w ciągu 7 dni.</div>';
+
+  // ── Przychód ──
+  const r=s.revenue||{};
+  const revStats=[
+    {v:ZL(r.total),l:'Łącznie'},
+    {v:ZL(r.d30),l:'30 dni'+delta(r.d30,r.prev30)},
+    {v:ZL(r.d7),l:'7 dni'},
+    {v:ZL(r.arpu),l:'Śr. transakcja'},
+    {v:N(r.count),l:'Liczba płatności'},
+  ];
+  const revByPlan=Object.entries(r.byPlan||{}).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('revenueBody').innerHTML =
+    '<div class="mini-grid" style="margin-bottom:14px">'+revStats.map(x=>
+      `<div class="mini"><div class="mini-val">${x.v}</div><div class="mini-lbl">${x.l}</div></div>`
+    ).join('')+'</div>'
+    +'<div style="display:flex;gap:14px;flex-wrap:wrap">'+(revByPlan.length
+      ? revByPlan.map(([p,v])=>`${planBadge(p)} <b style="font-size:.8rem">${ZL(v)}</b>`).join('&nbsp;&nbsp;')
+      : '<span style="color:#bbb;font-size:.8rem">Brak płatności</span>')+'</div>';
 }
 
 async function grantSub() {
@@ -190,20 +391,16 @@ window.grantSub = grantSub;
 
 function renderPayments(payments) {
   if (!payments.length) {
-    document.getElementById('paymentsContent').innerHTML = '<div class="loading">Brak płatności.</div>';
+    document.getElementById('paymentsContent').innerHTML = '<div class="empty-msg">Brak płatności.</div>';
     return;
   }
-  const planBadge = p => {
-    const cls = {kariera:'badge-kariera',biznes:'badge-biznes',promax:'badge-promax'}[p] || '';
-    return `<span class="badge ${cls}">${p||'—'}</span>`;
-  };
   let rows = payments.map(p => `
     <tr>
       <td>${fmt(p.ts)}</td>
       <td>${planBadge(p.plan)}</td>
-      <td style="color:#555">${p.email||'—'}</td>
+      <td style="color:#555">${esc(p.email||'—')}</td>
       <td style="font-weight:700">${p.amount ? (p.amount/100).toFixed(2)+' '+((p.currency||'pln').toUpperCase()) : '—'}</td>
-      <td style="color:#aaa;font-size:.7rem;font-family:monospace">${(p.stripeSessionId||'').slice(0,20)}</td>
+      <td style="color:#aaa;font-size:.7rem;font-family:monospace">${esc((p.stripeSessionId||'').slice(0,20))}</td>
     </tr>`).join('');
   document.getElementById('paymentsContent').innerHTML = `
     <table>
