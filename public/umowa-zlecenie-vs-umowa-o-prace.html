@@ -43,6 +43,24 @@ body { background:#f9fafb; margin:0; padding:0; color:#374151; }
 .nav-profile-dropdown { border-radius:14px !important; background:#fff !important; }
 @media (max-width: 768px) { .nav-center-links { display:none !important; } }
 
+
+.nav-hamburger { display:none; align-items:center; justify-content:center; width:36px; height:36px; border:none; background:none; cursor:pointer; border-radius:8px; padding:0; flex-shrink:0; }
+.nav-hamburger:hover { background:#f3f4f6; }
+@media (max-width:768px) { .nav-hamburger { display:flex; } }
+.mobile-menu { display:none; position:fixed; top:61px; left:0; right:0; z-index:49; }
+.mobile-menu.open { display:block; }
+.mobile-menu-overlay { position:fixed; inset:0; top:61px; background:rgba(0,0,0,.25); }
+.mobile-menu-panel { position:relative; background:#fff; padding:12px 12px 20px; box-shadow:0 8px 32px rgba(0,0,0,.15); border-bottom:1px solid #f3f4f6; }
+.mobile-menu-section { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#9ca3af; padding:6px 8px 6px; }
+.mobile-menu-link { display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:10px; text-decoration:none; }
+.mobile-menu-link:hover { background:#f9fafb; }
+.mobile-menu-link-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.mobile-menu-link-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Inter',sans-serif; }
+.mobile-menu-link-desc { font-size:11px; color:#6b7280; font-family:'Inter',sans-serif; }
+.mobile-menu-articles-btn { display:flex; align-items:center; gap:10px; padding:12px 10px; margin-top:8px; background:#eff6ff; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; color:#2563eb; font-family:'Inter',sans-serif; }
+.mobile-menu-articles-btn:hover { background:#dbeafe; }
+
+
 .article-page-wrap { max-width:1120px; margin:0 auto; padding:0 24px; display:grid; grid-template-columns:1fr 280px; gap:48px; align-items:start; }
 @media (max-width:960px) { .article-page-wrap { grid-template-columns:1fr; } .article-toc { display:none; } }
 
@@ -143,31 +161,141 @@ onAuthStateChanged(getAuth(app),async u=>{
 </head>
 <body>
 
-<!-- NAV -->
-<nav style="position:sticky;top:0;z-index:200;height:64px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid #f3f4f6;display:flex;align-items:center;padding:0 24px;gap:16px;">
-  <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;">
-    <img src="logo2.png" alt="DokumoFlow" style="height:28px;width:auto;display:block;">
-    <span style="font-size:17px;font-weight:800;color:#111827;letter-spacing:-0.02em;">DokumoFlow</span>
-  </a>
-  <div style="flex:1;"></div>
-  <a href="artykuly.html" style="font-size:13px;font-weight:600;color:#6b7280;text-decoration:none;padding:7px 14px;border-radius:8px;transition:background 0.15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">← Wszystkie artykuły</a>
-  <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-    <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
-    <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
-    <div class="nav-profile" id="navProfile" style="display:none;position:relative;">
-      <div class="nav-avatar" id="navAvatar" onclick="toggleDrop(event)" style="width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;">?</div>
-      <div id="navDropdown" class="nav-profile-dropdown" style="display:none;position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:1px solid #e5e7eb;border-radius:14px;min-width:200px;padding:8px 0;box-shadow:0 12px 40px rgba(0,0,0,.12);z-index:999;">
-        <div class="nav-profile-email" id="navEmail" style="padding:10px 16px;font-size:12px;color:#6b7280;"></div>
-        <a href="konto.html" class="nav-profile-link" style="display:block;padding:9px 16px;font-size:13px;color:#374151;text-decoration:none;font-weight:500;">Moje konto</a>
-        <a href="moje-dokumenty.html" class="nav-profile-link" style="display:block;padding:9px 16px;font-size:13px;color:#374151;text-decoration:none;font-weight:500;">Moje dokumenty</a>
-        <div style="height:1px;background:#f3f4f6;margin:4px 0;"></div>
-        <button onclick="logoutUser()" style="display:block;width:100%;padding:9px 16px;font-size:13px;color:#e05c5c;text-align:left;background:none;border:none;cursor:pointer;font-weight:500;">Wyloguj się</button>
-      </div>
+<a href="#main-content" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#fff;color:#111;padding:8px 16px;border-radius:8px;font-weight:600;text-decoration:none;border:2px solid #111;" onfocus="this.style.left='4px'" onblur="this.style.left='-9999px'">Przejdź do treści</a>
+
+<!-- NAVBAR -->
+<header style="background:rgba(255,255,255,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #f3f4f6;position:sticky;top:0;z-index:50;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;width:100%;max-width:1280px;margin:0 auto;">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+      <img src="logo2.png" style="height:28px;width:auto;display:block;">
+      <span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Inter',sans-serif;">DokumoFlow</span>
+    </a>
+
+    <div class="nav-center-links" style="display:flex;align-items:center;gap:4px;">
+      <div style="position:relative;">
+        <button onclick="toggleToolsDropdown(event)" aria-expanded="false" id="toolsMenuBtn" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="if(!document.getElementById('toolsDropdown2').style.display||document.getElementById('toolsDropdown2').style.display==='none')this.style.background='transparent'">
+          Narzędzia
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="toolsDropdown2" class="nav-tools-dropdown" style="display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid #f3f4f6;z-index:200;overflow:hidden;">
+  <div style="display:flex;">
+    <div style="padding:8px;min-width:230px;border-right:1px solid #f3f4f6;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Kariera</div>
+      <a href="wybierz-szablon.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
+      </a>
+      <a href="popraw-cv.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Popraw CV z AI</span><span class="nav-tool-desc">Analiza i wskazówki do Twojego CV</span></span>
+      </a>
+      <a href="index.html?open=letter" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">List motywacyjny</span><span class="nav-tool-desc">Napisz przekonujący list z AI</span></span>
+      </a>
+      <a href="kalkulator-wynagrodzen.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span>
+      </a>
+      <a href="wypowiedzenia.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty pracownicze</span><span class="nav-tool-desc">Urlop, wypowiedzenie, świadectwo</span></span>
+      </a>
+    </div>
+    <div style="padding:8px;min-width:230px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Biznes</div>
+      <a href="ecommerce.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty ecommerce</span><span class="nav-tool-desc">Regulamin, RODO, zwroty</span></span>
+      </a>
+      <a href="hr.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty HR i Biznes</span><span class="nav-tool-desc">B2B, NDA, zlecenie, umowa o pracę</span></span>
+      </a>
+      <a href="administracja.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Dokumenty administracyjne</span><span class="nav-tool-desc">Najem, biznesplan, SWOT</span></span>
+      </a>
+      <a href="faktura.html" class="nav-tool-item">
+        <span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+        <span class="nav-tool-text"><span class="nav-tool-name">Generator faktur</span><span class="nav-tool-desc">Faktura VAT i proforma w PDF</span></span>
+      </a>
     </div>
   </div>
-</nav>
+</div>
+      </div>
+      <a href="artykuly.html" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Inter',sans-serif;">Artykuły</a>
+    </div>
 
-<main>
+    <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;font-family:'Inter',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
+      <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(37,99,235,.3);" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
+      <div class="nav-profile" id="navProfile" style="display:none">
+        <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+        <div class="nav-profile-dropdown" id="navDropdown">
+          <div class="nav-profile-email" id="navProfileEmail"></div>
+          <a href="konto.html" class="nav-profile-link">Moje konto</a>
+          <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+          <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
+          <div class="nav-profile-sep"></div>
+          <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+        </div>
+      </div>
+      <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu-panel">
+    <div class="mobile-menu-section">Narzędzia</div>
+    <a href="wybierz-szablon.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+      <span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz profesjonalne CV z AI</div></span>
+    </a>
+    <a href="popraw-cv.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+      <span><div class="mobile-menu-link-name">Popraw CV z AI</div><div class="mobile-menu-link-desc">Analiza i wskazówki do Twojego CV</div></span>
+    </a>
+    <a href="index.html?open=letter" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+      <span><div class="mobile-menu-link-name">List motywacyjny</div><div class="mobile-menu-link-desc">Napisz przekonujący list z AI</div></span>
+    </a>
+    <a href="kalkulator-wynagrodzen.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span>
+      <span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div><div class="mobile-menu-link-desc">Brutto / netto / UoP / B2B</div></span>
+    </a>
+    <div style="height:1px;background:#f3f4f6;margin:4px 4px;"></div>
+    <a href="wypowiedzenia.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty pracownicze</div><div class="mobile-menu-link-desc">Urlop, wypowiedzenie, świadectwo</div></span>
+    </a>
+    <a href="ecommerce.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty ecommerce</div><div class="mobile-menu-link-desc">Regulamin, RODO, zwroty</div></span>
+    </a>
+    <a href="hr.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty HR i Biznes</div><div class="mobile-menu-link-desc">B2B, NDA, zlecenie, umowa o pracę</div></span>
+    </a>
+    <a href="administracja.html" class="mobile-menu-link">
+      <span class="mobile-menu-link-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span><div class="mobile-menu-link-name">Dokumenty administracyjne</div><div class="mobile-menu-link-desc">Najem, biznesplan, SWOT</div></span>
+    </a>
+    <div style="height:1px;background:#f3f4f6;margin:8px 4px;"></div>
+    <a href="artykuly.html" class="mobile-menu-articles-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Artykuły i poradniki
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:auto;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
+
+<main id="main-content">
 <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
 
   <!-- HEADER -->
@@ -498,26 +626,65 @@ onAuthStateChanged(getAuth(app),async u=>{
 </footer>
 
 <script>
-function getUser(){try{return JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return null;}}
-function updateNavAuth(){
-  var user=getUser();
-  var lb=document.getElementById('navLoginBtn');
-  var rb=document.getElementById('navRegisterBtn');
-  var pr=document.getElementById('navProfile');
-  var av=document.getElementById('navAvatar');
-  var em=document.getElementById('navEmail');
-  if(!lb)return;
-  if(user){
-    lb.style.display='none';rb.style.display='none';pr.style.display='flex';
-    if(em)em.textContent=user.email||'';
-    if(user.photo)av.innerHTML='<img src="'+user.photo+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
-    else av.textContent=(user.email||'U')[0].toUpperCase();
-  }else{lb.style.display='';rb.style.display='';pr.style.display='none';}
+function getUser() { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } }
+function updateNavAuth() {
+  var user = getUser();
+  var loginBtn = document.getElementById('navLoginBtn');
+  var registerBtn = document.getElementById('navRegisterBtn');
+  var profile = document.getElementById('navProfile');
+  var avatar = document.getElementById('navAvatar');
+  var emailEl = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display = 'none';
+    registerBtn.style.display = 'none';
+    profile.style.display = 'flex';
+    if (emailEl) emailEl.textContent = user.email || '';
+    if (user.photo) {
+      avatar.innerHTML = '<img src="'+user.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    } else {
+      avatar.textContent = (user.email||'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display = '';
+    registerBtn.style.display = '';
+    profile.style.display = 'none';
+  }
 }
-function toggleDrop(e){e.stopPropagation();var d=document.getElementById('navDropdown');if(d)d.style.display=d.style.display==='block'?'none':'block';}
-document.addEventListener('click',function(){var d=document.getElementById('navDropdown');if(d)d.style.display='none';});
-function logoutUser(){localStorage.removeItem('dokumo_user');localStorage.removeItem('dokumo_sub');(window._fbSignOut?window._fbSignOut():Promise.resolve()).finally(function(){window.location.href='index.html';});}
-updateNavAuth();window._renderNav=updateNavAuth;
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  var dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.toggle('open');
+}
+function toggleToolsDropdown(e) {
+  e.stopPropagation();
+  var dd = document.getElementById('toolsDropdown2');
+  var btn = document.getElementById('toolsMenuBtn');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', dd.style.display !== 'none' ? 'true' : 'false');
+}
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  if (!menu) return;
+  var open = menu.classList.toggle('open');
+  var ham = document.getElementById('navHamburger');
+  if (ham) ham.innerHTML = open
+    ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+}
+function logoutUser() {
+  localStorage.removeItem('dokumo_user');
+  localStorage.removeItem('dokumo_sub');
+  (window._fbSignOut ? window._fbSignOut() : Promise.resolve()).finally(function(){ window.location.href='index.html'; });
+}
+document.addEventListener('click', function() {
+  var dd = document.getElementById('navDropdown');
+  if (dd) dd.classList.remove('open');
+  var td = document.getElementById('toolsDropdown2');
+  if (td) td.style.display = 'none';
+});
+updateNavAuth();
+window._renderNav = updateNavAuth;
 </script>
 </body>
 </html>
