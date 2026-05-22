@@ -83,6 +83,29 @@ function extractPaymentDate(text) {
 }
 
 // Czytelny podgląd faktury z danych strukturalnych (fakDataJson).
+// Symbol waluty.
+function curSymbol(c) {
+  return ({ PLN: 'zł', EUR: '€', USD: '$', GBP: '£' })[c] || (c || 'zł');
+}
+// Formatuje kwotę z walutą.
+function fmtAmount(amount, currency) {
+  if (amount == null) return '';
+  return Number(amount).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    + ' ' + curSymbol(currency);
+}
+// Suma brutto faktury z pozycji: ilosc * cenaNetto * (1 + VAT).
+function fakTotal(fd) {
+  if (!Array.isArray(fd.items) || !fd.items.length) return null;
+  let gross = 0;
+  for (const it of fd.items) {
+    const netto = (Number(it.ilosc) || 0) * (Number(it.cenaNetto) || 0);
+    let vatRate = 0;
+    if (it.vat && it.vat !== 'zw.') vatRate = (parseFloat(it.vat) || 0) / 100;
+    gross += netto * (1 + vatRate);
+  }
+  return gross;
+}
+
 function fakReadable(fd) {
   const L = ['Faktura ' + (fd.numer || '')];
   if (fd.dataWyst) L.push('Data wystawienia: ' + fd.dataWyst);
@@ -93,7 +116,12 @@ function fakReadable(fd) {
   L.push('', 'Nabywca: ' + (fd.nNazwa || '—'));
   if (fd.nNip) L.push('NIP: ' + fd.nNip);
   if (fd.nEmail) L.push('E-mail: ' + fd.nEmail);
-  if (Array.isArray(fd.items) && fd.items.length) L.push('', 'Liczba pozycji: ' + fd.items.length);
+  if (Array.isArray(fd.items) && fd.items.length) {
+    L.push('', 'Liczba pozycji: ' + fd.items.length);
+    const t = fakTotal(fd);
+    if (t != null) L.push('Kwota brutto: ' + fmtAmount(t, fd.waluta));
+  }
+  if (fd.sKonto) L.push('Numer konta: ' + fd.sKonto);
   if (fd.uwagi) L.push('', 'Uwagi: ' + fd.uwagi);
   return L.join('\n');
 }
@@ -125,27 +153,36 @@ function suggestLevel(dueIso) {
   return 'sad';
 }
 
+// Buduje blok "Szczegóły płatności" (kwota + numer konta) wstawiany do treści.
+function buildPayInfo(e) {
+  const lines = [];
+  if (e.amount != null) lines.push('Kwota do zapłaty: ' + fmtAmount(e.amount, e.currency));
+  if (e.bankAccount) lines.push('Numer konta: ' + e.bankAccount);
+  return lines.length ? 'Szczegóły płatności:\n' + lines.join('\n') : '';
+}
+
 // Stałe treści wiadomości — identyczne dla wszystkich, tylko z podstawionymi danymi.
-function reminderTemplates({ docName, dueDateStr, fromName }) {
+function reminderTemplates({ docName, dueDateStr, fromName, payInfo }) {
   const name = docName || 'dokument';
   const due = dueDateStr || 'wskazany w dokumencie';
   const sig = fromName || 'Zespół';
+  const pay = payInfo ? '\n\n' + payInfo : '';
   return {
     przed: {
       subject: `Przypomnienie o zbliżającym się terminie płatności — ${name}`,
-      body: `Dzień dobry,\n\nUprzejmie przypominamy, że termin płatności dokumentu „${name}" przypada na ${due}.\n\nProsimy o uregulowanie należności w terminie. Jeśli płatność została już zrealizowana, prosimy potraktować tę wiadomość jako bezprzedmiotową.\n\nW razie pytań pozostajemy do dyspozycji.\n\nPozdrawiamy,\n${sig}`,
+      body: `Dzień dobry,\n\nUprzejmie przypominamy, że termin płatności dokumentu „${name}" przypada na ${due}.${pay}\n\nProsimy o uregulowanie należności w terminie. Jeśli płatność została już zrealizowana, prosimy potraktować tę wiadomość jako bezprzedmiotową.\n\nPozdrawiamy,\n${sig}`,
     },
     po1: {
       subject: `Przypomnienie o zaległej płatności — ${name}`,
-      body: `Dzień dobry,\n\nInformujemy, że minął termin płatności dokumentu „${name}" (termin: ${due}), a wpłata nie została jeszcze odnotowana.\n\nProsimy o uregulowanie należności w najbliższym możliwym terminie. Jeśli płatność jest już w realizacji, dziękujemy i prosimy o zignorowanie tej wiadomości.\n\nPozdrawiamy,\n${sig}`,
+      body: `Dzień dobry,\n\nInformujemy, że minął termin płatności dokumentu „${name}" (termin: ${due}), a wpłata nie została jeszcze odnotowana.${pay}\n\nProsimy o uregulowanie należności w najbliższym możliwym terminie. Jeśli płatność jest już w realizacji, dziękujemy i prosimy o zignorowanie tej wiadomości.\n\nPozdrawiamy,\n${sig}`,
     },
     po2: {
       subject: `Ponowne wezwanie do zapłaty — ${name}`,
-      body: `Dzień dobry,\n\nPomimo wcześniejszego przypomnienia należność z dokumentu „${name}" (termin płatności: ${due}) pozostaje nieuregulowana.\n\nProsimy o niezwłoczne dokonanie płatności. Jeśli wystąpiły przeszkody w jej realizacji, prosimy o kontakt w celu ustalenia rozwiązania.\n\nPozdrawiamy,\n${sig}`,
+      body: `Dzień dobry,\n\nPomimo wcześniejszego przypomnienia należność z dokumentu „${name}" (termin płatności: ${due}) pozostaje nieuregulowana.${pay}\n\nProsimy o niezwłoczne dokonanie płatności. Jeśli wystąpiły przeszkody w jej realizacji, prosimy o kontakt w celu ustalenia rozwiązania.\n\nPozdrawiamy,\n${sig}`,
     },
     sad: {
       subject: `Przedsądowe wezwanie do zapłaty — ${name}`,
-      body: `Dzień dobry,\n\nNiniejszym wzywamy do zapłaty zaległej należności wynikającej z dokumentu „${name}" (termin płatności: ${due}), która do dnia dzisiejszego nie została uregulowana.\n\nWyznaczamy ostateczny termin 7 dni od otrzymania niniejszej wiadomości na uregulowanie należności. Brak wpłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego.\n\nLiczymy na polubowne rozwiązanie sprawy.\n\n${sig}`,
+      body: `Dzień dobry,\n\nNiniejszym wzywamy do zapłaty zaległej należności wynikającej z dokumentu „${name}" (termin płatności: ${due}), która do dnia dzisiejszego nie została uregulowana.${pay}\n\nWyznaczamy ostateczny termin 7 dni od otrzymania niniejszej wiadomości na uregulowanie należności. Brak wpłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego.\n\nLiczymy na polubowne rozwiązanie sprawy.\n\n${sig}`,
     },
   };
 }
@@ -160,6 +197,7 @@ function enrichDoc(id, x) {
   let dueDate = toIso(x.dueDate);
   let recipientEmail = x.recipientEmail || '';
   let autoDue = false, autoEmail = false;
+  let amount = null, currency = '', bankAccount = '';
   let text = x.text || '';
   if (typeId === 'faktura') {
     let fd = null;
@@ -171,6 +209,9 @@ function enrichDoc(id, x) {
       text = fakReadable(fd);
       if (!dueDate) { const dd = fakDueDate(fd); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
       if (!recipientEmail && fd.nEmail) { recipientEmail = fd.nEmail; autoEmail = true; }
+      amount = fakTotal(fd);
+      currency = fd.waluta || 'PLN';
+      bankAccount = fd.sKonto || '';
     } else if (text.startsWith('__FAK_JSON__:')) {
       text = '(faktura — brak danych do podglądu)';
     }
@@ -181,6 +222,8 @@ function enrichDoc(id, x) {
   return {
     id, name: x.name || meta.label, typeId, catLabel: meta.label, icon: meta.icon,
     text, createdAt: toIso(x.createdAt), dueDate, recipientEmail, autoDue, autoEmail,
+    amount, currency, bankAccount,
+    paid: x.paid === true, paidAt: toIso(x.paidAt),
     lastSentAt: toIso(x.lastSentAt), lastReminderLevel: x.lastReminderLevel || null,
   };
 }
@@ -500,7 +543,12 @@ export default async function handler(req, res) {
         const e = enrichDoc(d.id, d.data());
         if (e) documents.push(e);
       }
-      return res.status(200).json({ documents, debug: DEBUG });
+      let remindersSent = null;
+      try {
+        remindersSent = (await db.collection('users').doc(uid).collection('dunningHistory')
+          .where('action', '==', 'reminder_sent').count().get()).data().count;
+      } catch { remindersSent = null; }
+      return res.status(200).json({ documents, remindersSent, debug: DEBUG });
     }
 
     if (req.method !== 'POST') return res.status(405).json({ error: 'Metoda niedozwolona' });
@@ -717,9 +765,9 @@ export default async function handler(req, res) {
       const suggested = suggestLevel(e.dueDate);
       const lvl = REMINDER_LEVELS.includes(level) ? level : suggested;
       const dueStr = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : '';
-      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName })[lvl];
+      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName, payInfo: buildPayInfo(e) })[lvl];
       return res.status(200).json({
-        ...tpl, level: lvl, suggested, toEmail: e.recipientEmail,
+        ...tpl, level: lvl, suggested, toEmail: e.recipientEmail, paid: e.paid,
         levels: REMINDER_LEVELS.map(l => ({ id: l, label: REMINDER_LABEL[l] })),
       });
     }
@@ -737,9 +785,10 @@ export default async function handler(req, res) {
       if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
       const e = enrichDoc(docId, dSnap.data());
       if (!e) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
+      if (e.paid) return res.status(409).json({ error: 'Dokument oznaczony jako zapłacony' });
 
       const dueStr = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : '';
-      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName })[lvl];
+      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName, payInfo: buildPayInfo(e) })[lvl];
       const finalSubject = (subject || tpl.subject).toString().slice(0, 200);
       const finalBody = (body || tpl.body).toString().slice(0, 5000);
 
@@ -759,6 +808,46 @@ export default async function handler(req, res) {
         metadata: { toEmail: dEmail, messageId, template: lvl },
       });
       return res.status(200).json({ ok: true, messageId, debug: DEBUG, level: lvl });
+    }
+
+    // ── POST: oznacz dokument jako zapłacony / cofnij ──
+    if (action === 'mark-doc-paid') {
+      const { docId, paid } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const isPaid = paid !== false;
+      try {
+        await db.collection('users').doc(uid).collection('documents').doc(docId).update({
+          paid: isPaid,
+          paidAt: isPaid ? Timestamp.now() : null,
+          updatedAt: Timestamp.now(),
+        });
+      } catch (e) {
+        return res.status(404).json({ error: 'Dokument nie istnieje' });
+      }
+      await logHistory(uid, {
+        invoiceId: docId, level: 0,
+        action: isPaid ? 'doc_marked_paid' : 'doc_marked_unpaid', metadata: {},
+      });
+      return res.status(200).json({ ok: true, paid: isPaid });
+    }
+
+    // ── POST: historia akcji dla dokumentu ──
+    if (action === 'doc-history') {
+      const { docId } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const snap = await db.collection('users').doc(uid).collection('dunningHistory')
+        .where('invoiceId', '==', docId).limit(50).get();
+      const entries = snap.docs.map(d => {
+        const x = d.data();
+        return {
+          action: x.action,
+          level: x.level,
+          timestamp: x.timestamp?.toDate?.()?.toISOString() || null,
+          template: x.metadata?.template || null,
+          toEmail: x.metadata?.toEmail || null,
+        };
+      }).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+      return res.status(200).json({ entries });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });
