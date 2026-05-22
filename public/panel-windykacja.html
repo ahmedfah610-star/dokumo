@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Windykator – Dokumo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
+body{background:#f5f3ef;color:#1a1714;min-height:100vh;}
+.wrap{max-width:920px;margin:0 auto;padding:24px 20px 60px;}
+h1{font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+.sub{font-size:.82rem;color:#6b6560;margin-bottom:18px;}
+.debug-banner{background:#fef9c3;color:#854d0e;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:.8rem;font-weight:600;margin-bottom:18px;}
+.count-pill{display:inline-block;background:#1a1714;color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;margin-left:8px;}
+.card{background:#fff;border:1px solid rgba(26,23,20,.1);border-radius:14px;padding:16px 18px;margin-bottom:12px;}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.card-client{font-size:.95rem;font-weight:700;}
+.card-meta{font-size:.78rem;color:#6b6560;margin-top:3px;}
+.tag{font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;}
+.tag-overdue{background:#fee2e2;color:#b91c1c;}
+.tag-ai{background:#dbeafe;color:#1e40af;}
+.tag-fallback{background:#fef9c3;color:#854d0e;}
+.btn{padding:8px 16px;border-radius:9px;border:none;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit;}
+.btn-dark{background:#1a1714;color:#fff;}
+.btn-dark:hover{background:#3a3330;}
+.btn-light{background:#f0ede8;color:#1a1714;}
+.btn-light:hover{background:#e5e1da;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.card-actions{margin-top:12px;}
+.empty,.loading,.error{padding:40px;text-align:center;color:#9b948c;font-size:.88rem;}
+.error{color:#b91c1c;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;padding:20px;overflow-y:auto;}
+.modal-bg.open{display:flex;align-items:flex-start;justify-content:center;}
+.modal{background:#fff;border-radius:16px;max-width:560px;width:100%;margin:auto;padding:22px;}
+.modal h2{font-size:1rem;font-weight:800;margin-bottom:14px;}
+.fld{margin-bottom:12px;}
+.fld label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b6560;margin-bottom:5px;}
+.fld input,.fld textarea{width:100%;padding:9px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.86rem;font-family:inherit;outline:none;}
+.fld input:focus,.fld textarea:focus{border-color:#1a1714;}
+.fld textarea{min-height:170px;resize:vertical;line-height:1.55;}
+.modal-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.msg{font-size:.8rem;padding:8px 12px;border-radius:8px;margin-top:10px;display:none;}
+.msg.ok{background:#dcfce7;color:#15803d;display:block;}
+.msg.err{background:#fee2e2;color:#b91c1c;display:block;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.link{font-size:.8rem;color:#1a1714;font-weight:600;text-decoration:none;border-bottom:1px solid #cfc9c0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>AI Windykator <span class="count-pill" id="countPill" style="display:none">0</span></h1>
+      <div class="sub">Propozycje przypomnień o płatności — do Twojej akceptacji</div>
+    </div>
+    <a class="link" href="/panel-faktury-test.html">Faktury testowe →</a>
+  </div>
+  <div class="debug-banner" id="debugBanner" style="display:none">⚠️ TRYB TESTOWY — maile NIE są wysyłane. Wszystko zapisuje się normalnie.</div>
+  <div id="content" class="loading">Ładowanie…</div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2>Propozycja przypomnienia</h2>
+    <div class="fld"><label>Do (e-mail)</label><input type="email" id="mEmail"></div>
+    <div class="fld"><label>Temat</label><input type="text" id="mSubject"></div>
+    <div class="fld"><label>Treść</label><textarea id="mBody"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn btn-dark" id="mSend">Wyślij</button>
+      <button class="btn btn-light" id="mTone">Inny ton</button>
+      <button class="btn btn-light" id="mSkip">Pomiń</button>
+      <button class="btn btn-light" id="mClose">Zamknij</button>
+    </div>
+    <div class="msg" id="mMsg"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
+const app = getApps().length ? getApps()[0] : initializeApp(__c);
+const auth = getAuth(app);
+let _user = null, _current = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const zl = g => ((g || 0) / 100).toLocaleString('pl-PL', {minimumFractionDigits:2}) + ' zł';
+
+async function token() { return _user ? await _user.getIdToken() : null; }
+async function api(path, opts = {}) {
+  const t = await token();
+  const r = await fetch(path, {
+    ...opts,
+    headers: { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json', ...(opts.headers||{}) },
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  return data;
+}
+
+onAuthStateChanged(auth, async u => {
+  if (!u) { $('content').className = 'error'; $('content').textContent = 'Zaloguj się, aby zobaczyć panel.'; return; }
+  _user = u;
+  loadList();
+});
+
+async function loadList() {
+  $('content').className = 'loading';
+  $('content').textContent = 'Ładowanie…';
+  try {
+    const { actions, debug } = await api('/api/dunning?action=list');
+    if (debug) $('debugBanner').style.display = 'block';
+    render(actions || []);
+  } catch (e) {
+    if (/feature_disabled/.test(e.message)) {
+      $('content').className = 'error';
+      $('content').textContent = 'Funkcja niedostępna na tym koncie.';
+      return;
+    }
+    $('content').className = 'error';
+    $('content').textContent = 'Błąd: ' + e.message;
+  }
+}
+
+function render(actions) {
+  const pill = $('countPill');
+  if (actions.length) { pill.style.display = 'inline-block'; pill.textContent = actions.length; }
+  else pill.style.display = 'none';
+
+  if (!actions.length) {
+    $('content').className = 'empty';
+    $('content').textContent = 'Brak propozycji. Uruchom monitor na stronie faktur testowych.';
+    return;
+  }
+  $('content').className = '';
+  $('content').innerHTML = actions.map(a => `
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <div class="card-client">${esc(a.clientName) || '—'}</div>
+          <div class="card-meta">Faktura ${esc(a.invoiceNumber)} · ${zl(a.amountGross)} · ${a.daysOverdue} dni po terminie</div>
+        </div>
+        <div style="text-align:right">
+          <span class="tag tag-overdue">przeterminowana</span><br>
+          <span class="tag ${a.usedFallback ? 'tag-fallback' : 'tag-ai'}" style="margin-top:5px;display:inline-block">
+            ${a.usedFallback ? 'szablon awaryjny' : 'AI · grzeczne przypomnienie'}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-dark" data-id="${a.id}">Pokaż propozycję</button>
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('.card-actions button').forEach(btn => {
+    btn.onclick = () => openModal(actions.find(x => x.id === btn.dataset.id));
+  });
+}
+
+function openModal(a) {
+  _current = a;
+  $('mEmail').value = a.draft?.toEmail || a.clientEmail || '';
+  $('mSubject').value = a.draft?.subject || '';
+  $('mBody').value = a.draft?.body || '';
+  $('mMsg').className = 'msg';
+  $('modalBg').classList.add('open');
+}
+function closeModal() { $('modalBg').classList.remove('open'); _current = null; }
+function showMsg(text, ok) { const m = $('mMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = text; }
+function busy(b) { ['mSend','mTone','mSkip'].forEach(id => $(id).disabled = b); }
+
+$('mClose').onclick = closeModal;
+$('modalBg').onclick = e => { if (e.target === $('modalBg')) closeModal(); };
+
+$('mSend').onclick = async () => {
+  if (!_current) return;
+  busy(true);
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'send', actionId: _current.id,
+      finalSubject: $('mSubject').value, finalBody: $('mBody').value, finalToEmail: $('mEmail').value,
+    })});
+    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Wysłano', true);
+    setTimeout(() => { closeModal(); loadList(); }, 1200);
+  } catch (e) { showMsg('✗ ' + e.message, false); }
+  busy(false);
+};
+
+$('mSkip').onclick = async () => {
+  if (!_current) return;
+  busy(true);
+  try {
+    await api('/api/dunning', { method: 'POST', body: JSON.stringify({ action: 'skip', actionId: _current.id }) });
+    closeModal(); loadList();
+  } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
+};
+
+$('mTone').onclick = async () => {
+  if (!_current) return;
+  busy(true);
+  const tones = ['friendly', 'neutral', 'formal'];
+  const next = tones[(tones.indexOf(_current._tone || 'neutral') + 1) % 3];
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'draft', invoiceId: _current.invoiceId, regenerateActionId: _current.id, tone: next,
+    })});
+    _current._tone = next;
+    $('mSubject').value = res.draft.subject;
+    $('mBody').value = res.draft.body;
+    showMsg('Przegenerowano (ton: ' + next + ')', true);
+  } catch (e) { showMsg('✗ ' + e.message, false); }
+  busy(false);
+};
+</script>
+</body>
+</html>

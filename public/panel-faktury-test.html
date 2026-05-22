@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faktury testowe – AI Windykator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
+body{background:#f5f3ef;color:#1a1714;min-height:100vh;}
+.wrap{max-width:820px;margin:0 auto;padding:24px 20px 60px;}
+h1{font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+.sub{font-size:.82rem;color:#6b6560;margin-bottom:18px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.link{font-size:.8rem;color:#1a1714;font-weight:600;text-decoration:none;border-bottom:1px solid #cfc9c0;}
+.box{background:#fff;border:1px solid rgba(26,23,20,.1);border-radius:14px;padding:18px;margin-bottom:16px;}
+.box h2{font-size:.92rem;font-weight:700;margin-bottom:14px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.grid{grid-template-columns:1fr;}}
+.fld label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b6560;margin-bottom:4px;}
+.fld input,.fld textarea{width:100%;padding:9px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.85rem;font-family:inherit;outline:none;}
+.fld input:focus,.fld textarea:focus{border-color:#1a1714;}
+.full{grid-column:1/-1;}
+.btn{padding:9px 18px;border-radius:9px;border:none;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit;}
+.btn-dark{background:#1a1714;color:#fff;}.btn-dark:hover{background:#3a3330;}
+.btn-light{background:#f0ede8;color:#1a1714;}.btn-light:hover{background:#e5e1da;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.row-actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+th{text-align:left;padding:8px 10px;font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;color:#9b948c;border-bottom:1px solid rgba(26,23,20,.08);}
+td{padding:8px 10px;border-bottom:1px solid rgba(26,23,20,.05);}
+.st{font-size:.64rem;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:uppercase;}
+.st-sent{background:#dbeafe;color:#1e40af;}.st-overdue{background:#fee2e2;color:#b91c1c;}
+.st-paid{background:#dcfce7;color:#15803d;}.st-other{background:#f0ede8;color:#6b6560;}
+.msg{font-size:.8rem;padding:8px 12px;border-radius:8px;margin-top:10px;display:none;}
+.msg.ok{background:#dcfce7;color:#15803d;display:block;}
+.msg.err{background:#fee2e2;color:#b91c1c;display:block;}
+.mini-btn{padding:4px 10px;font-size:.7rem;border-radius:7px;border:none;cursor:pointer;font-weight:700;background:#f0ede8;}
+.mini-btn:hover{background:#e5e1da;}
+.note{font-size:.74rem;color:#9b948c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>Faktury testowe</h1>
+      <div class="sub">Środowisko testowe Fazy A — twórz faktury i uruchamiaj monitor windykatora</div>
+    </div>
+    <a class="link" href="/panel-windykacja.html">← AI Windykator</a>
+  </div>
+
+  <div id="gate" style="display:none" class="box"><span class="note">Funkcja niedostępna na tym koncie.</span></div>
+
+  <div id="app" style="display:none">
+    <div class="box">
+      <h2>Nowa faktura testowa</h2>
+      <div class="grid">
+        <div class="fld"><label>Numer faktury</label><input id="fNumber" placeholder="FA/2026/0042"></div>
+        <div class="fld"><label>Kwota brutto (zł)</label><input id="fAmount" type="number" step="0.01" placeholder="5400"></div>
+        <div class="fld"><label>Klient — nazwa</label><input id="fClientName" placeholder="Marek Kowalski"></div>
+        <div class="fld"><label>Klient — e-mail</label><input id="fClientEmail" type="email" placeholder="marek@example.com"></div>
+        <div class="fld"><label>Data wystawienia</label><input id="fIssue" type="date"></div>
+        <div class="fld"><label>Termin płatności</label><input id="fDue" type="date"></div>
+        <div class="fld full"><label>Opis usługi</label><input id="fDesc" placeholder="Projekt strony internetowej"></div>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-dark" id="btnCreate">Utwórz fakturę</button>
+        <button class="btn btn-light" id="btnMonitor">Uruchom monitor windykatora</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <div class="note" style="margin-top:8px">Wskazówka: ustaw termin płatności w przeszłości, aby monitor wygenerował przypomnienie.</div>
+    </div>
+
+    <div class="box">
+      <h2>Faktury</h2>
+      <div id="invList" class="note">Ładowanie…</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
+const app = getApps().length ? getApps()[0] : initializeApp(__c);
+const auth = getAuth(app);
+let _user = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const zl = g => ((g || 0) / 100).toLocaleString('pl-PL', {minimumFractionDigits:2}) + ' zł';
+const fdate = iso => iso ? new Date(iso).toLocaleDateString('pl-PL') : '—';
+
+async function api(path, opts = {}) {
+  const t = await _user.getIdToken();
+  const r = await fetch(path, { ...opts, headers: { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json', ...(opts.headers||{}) } });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  return data;
+}
+function showMsg(text, ok) { const m = $('msg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = text; }
+
+onAuthStateChanged(auth, async u => {
+  if (!u) { $('gate').style.display = 'block'; $('gate').querySelector('.note').textContent = 'Zaloguj się, aby korzystać z panelu.'; return; }
+  _user = u;
+  try {
+    await loadInvoices();
+    $('app').style.display = 'block';
+  } catch (e) {
+    if (/feature_disabled/.test(e.message)) { $('gate').style.display = 'block'; }
+    else { $('gate').style.display = 'block'; $('gate').querySelector('.note').textContent = 'Błąd: ' + e.message; }
+  }
+});
+
+async function loadInvoices() {
+  const { invoices } = await api('/api/dunning?action=invoices');
+  if (!invoices || !invoices.length) { $('invList').textContent = 'Brak faktur.'; return; }
+  const stCls = s => ({sent:'st-sent',overdue:'st-overdue',paid:'st-paid'}[s] || 'st-other');
+  $('invList').innerHTML = `<table><thead><tr>
+      <th>Numer</th><th>Klient</th><th>Kwota</th><th>Termin</th><th>Status</th><th>Poz.</th><th></th>
+    </tr></thead><tbody>` + invoices.map(i => `
+      <tr>
+        <td>${esc(i.number)}</td>
+        <td>${esc(i.clientName)}</td>
+        <td>${zl(i.amountGross)}</td>
+        <td>${fdate(i.dueDate)}${i.daysOverdue > 0 ? ' <span class="note">(+' + i.daysOverdue + 'd)</span>' : ''}</td>
+        <td><span class="st ${stCls(i.status)}">${esc(i.status)}</span></td>
+        <td>${i.dunningLevel || 0}</td>
+        <td>${i.status === 'paid' ? '' : '<button class="mini-btn" data-paid="' + i.id + '">Zapłacone</button>'}</td>
+      </tr>`).join('') + '</tbody></table>';
+  document.querySelectorAll('[data-paid]').forEach(b => {
+    b.onclick = async () => {
+      b.disabled = true;
+      try { await api('/api/dunning', { method:'POST', body: JSON.stringify({ action:'mark-paid', invoiceId: b.dataset.paid }) }); loadInvoices(); }
+      catch (e) { showMsg('✗ ' + e.message, false); b.disabled = false; }
+    };
+  });
+}
+
+$('btnCreate').onclick = async () => {
+  $('btnCreate').disabled = true;
+  try {
+    await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'invoice-create',
+      number: $('fNumber').value.trim(),
+      amountZl: $('fAmount').value,
+      clientName: $('fClientName').value.trim(),
+      clientEmail: $('fClientEmail').value.trim(),
+      issueDate: $('fIssue').value || null,
+      dueDate: $('fDue').value || null,
+      description: $('fDesc').value.trim(),
+    })});
+    showMsg('✓ Faktura utworzona', true);
+    ['fNumber','fAmount','fClientName','fClientEmail','fDesc'].forEach(id => $(id).value = '');
+    loadInvoices();
+  } catch (e) { showMsg('✗ ' + e.message, false); }
+  $('btnCreate').disabled = false;
+};
+
+$('btnMonitor').onclick = async () => {
+  $('btnMonitor').disabled = true;
+  try {
+    const r = await api('/api/dunning', { method: 'POST', body: JSON.stringify({ action: 'monitor' }) });
+    showMsg(`✓ Monitor: wygenerowano ${r.generated}, pominięto ${r.skipped}, błędów ${r.failed}` + (r.debug ? ' · tryb testowy' : ''), true);
+  } catch (e) { showMsg('✗ ' + e.message, false); }
+  $('btnMonitor').disabled = false;
+};
+</script>
+</body>
+</html>
