@@ -109,6 +109,82 @@ function fakDueDate(fd) {
   return d;
 }
 
+// ── Szablony przypomnień (stałe, bez AI) ──
+const REMINDER_LEVELS = ['przed', 'po1', 'po2', 'sad'];
+const REMINDER_LEVEL_NUM = { przed: 0, po1: 1, po2: 2, sad: 3 };
+const REMINDER_LABEL = { przed: 'Przed terminem', po1: 'Po terminie', po2: 'Ponaglenie', sad: 'Przedsądowe' };
+
+// Sugeruje poziom przypomnienia na podstawie terminu płatności.
+function suggestLevel(dueIso) {
+  if (!dueIso) return 'przed';
+  const diff = Date.now() - new Date(dueIso).getTime();
+  if (diff < 0) return 'przed';
+  const days = Math.floor(diff / DAY);
+  if (days <= 14) return 'po1';
+  if (days <= 30) return 'po2';
+  return 'sad';
+}
+
+// Stałe treści wiadomości — identyczne dla wszystkich, tylko z podstawionymi danymi.
+function reminderTemplates({ docName, dueDateStr, fromName }) {
+  const name = docName || 'dokument';
+  const due = dueDateStr || 'wskazany w dokumencie';
+  const sig = fromName || 'Zespół';
+  return {
+    przed: {
+      subject: `Przypomnienie o zbliżającym się terminie płatności — ${name}`,
+      body: `Dzień dobry,\n\nUprzejmie przypominamy, że termin płatności dokumentu „${name}" przypada na ${due}.\n\nProsimy o uregulowanie należności w terminie. Jeśli płatność została już zrealizowana, prosimy potraktować tę wiadomość jako bezprzedmiotową.\n\nW razie pytań pozostajemy do dyspozycji.\n\nPozdrawiamy,\n${sig}`,
+    },
+    po1: {
+      subject: `Przypomnienie o zaległej płatności — ${name}`,
+      body: `Dzień dobry,\n\nInformujemy, że minął termin płatności dokumentu „${name}" (termin: ${due}), a wpłata nie została jeszcze odnotowana.\n\nProsimy o uregulowanie należności w najbliższym możliwym terminie. Jeśli płatność jest już w realizacji, dziękujemy i prosimy o zignorowanie tej wiadomości.\n\nPozdrawiamy,\n${sig}`,
+    },
+    po2: {
+      subject: `Ponowne wezwanie do zapłaty — ${name}`,
+      body: `Dzień dobry,\n\nPomimo wcześniejszego przypomnienia należność z dokumentu „${name}" (termin płatności: ${due}) pozostaje nieuregulowana.\n\nProsimy o niezwłoczne dokonanie płatności. Jeśli wystąpiły przeszkody w jej realizacji, prosimy o kontakt w celu ustalenia rozwiązania.\n\nPozdrawiamy,\n${sig}`,
+    },
+    sad: {
+      subject: `Przedsądowe wezwanie do zapłaty — ${name}`,
+      body: `Dzień dobry,\n\nNiniejszym wzywamy do zapłaty zaległej należności wynikającej z dokumentu „${name}" (termin płatności: ${due}), która do dnia dzisiejszego nie została uregulowana.\n\nWyznaczamy ostateczny termin 7 dni od otrzymania niniejszej wiadomości na uregulowanie należności. Brak wpłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego.\n\nLiczymy na polubowne rozwiązanie sprawy.\n\n${sig}`,
+    },
+  };
+}
+
+// Wzbogaca dokument o dane biznesowe (typ, termin, e-mail) — wspólne dla listy i przypomnień.
+function enrichDoc(id, x) {
+  const TYPES = { faktura: { label: 'Faktura', icon: '🧾' }, zlecenie: { label: 'Umowa zlecenie', icon: '📑' } };
+  const typeId = x.typeId || '';
+  const meta = TYPES[typeId];
+  if (!meta) return null;
+  const toIso = v => v?.toDate?.()?.toISOString() || (v ? new Date(v).toISOString() : null);
+  let dueDate = toIso(x.dueDate);
+  let recipientEmail = x.recipientEmail || '';
+  let autoDue = false, autoEmail = false;
+  let text = x.text || '';
+  if (typeId === 'faktura') {
+    let fd = null;
+    try { fd = x.fakDataJson ? JSON.parse(x.fakDataJson) : null; } catch { fd = null; }
+    if (!fd && text.startsWith('__FAK_JSON__:')) {
+      try { fd = JSON.parse(text.slice(13)); } catch { fd = null; }
+    }
+    if (fd) {
+      text = fakReadable(fd);
+      if (!dueDate) { const dd = fakDueDate(fd); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
+      if (!recipientEmail && fd.nEmail) { recipientEmail = fd.nEmail; autoEmail = true; }
+    } else if (text.startsWith('__FAK_JSON__:')) {
+      text = '(faktura — brak danych do podglądu)';
+    }
+  } else {
+    if (!recipientEmail) { const e = extractEmail(text); if (e) { recipientEmail = e; autoEmail = true; } }
+    if (!dueDate) { const dd = extractPaymentDate(text); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
+  }
+  return {
+    id, name: x.name || meta.label, typeId, catLabel: meta.label, icon: meta.icon,
+    text, createdAt: toIso(x.createdAt), dueDate, recipientEmail, autoDue, autoEmail,
+    lastSentAt: toIso(x.lastSentAt), lastReminderLevel: x.lastReminderLevel || null,
+  };
+}
+
 // ── Czarna lista zwrotów (Poziom 1) — walidator wyjścia AI ──
 const FORBIDDEN_PHRASES_LVL1 = [
   'sąd', 'sądow',
@@ -416,58 +492,13 @@ export default async function handler(req, res) {
     }
 
     // ── GET: dokumenty biznesowe — TYLKO faktury i umowy zlecenie ──
-    // Dla faktur termin i e-mail nabywcy pobierane są z fakDataJson;
-    // dla umów zlecenie best-effort z treści. Pozostałe typy są pomijane.
     if (req.method === 'GET' && action === 'documents') {
-      const TYPES = {
-        faktura: { label: 'Faktura', icon: '🧾' },
-        zlecenie: { label: 'Umowa zlecenie', icon: '📑' },
-      };
-      const toIso = v => v?.toDate?.()?.toISOString() || (v ? new Date(v).toISOString() : null);
       const snap = await db.collection('users').doc(uid).collection('documents')
         .orderBy('createdAt', 'desc').limit(200).get();
       const documents = [];
-
       for (const d of snap.docs) {
-        const x = d.data();
-        const typeId = x.typeId || '';
-        const meta = TYPES[typeId];
-        if (!meta) continue; // pomijamy pozostałe typy dokumentów
-
-        let dueDate = toIso(x.dueDate);
-        let recipientEmail = x.recipientEmail || '';
-        let autoDue = false, autoEmail = false;
-        let text = x.text || '';
-
-        if (typeId === 'faktura') {
-          let fd = null;
-          try { fd = x.fakDataJson ? JSON.parse(x.fakDataJson) : null; } catch { fd = null; }
-          if (!fd && text.startsWith('__FAK_JSON__:')) {
-            try { fd = JSON.parse(text.slice(13)); } catch { fd = null; }
-          }
-          if (fd) {
-            text = fakReadable(fd);
-            if (!dueDate) { const dd = fakDueDate(fd); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
-            if (!recipientEmail && fd.nEmail) { recipientEmail = fd.nEmail; autoEmail = true; }
-          } else if (text.startsWith('__FAK_JSON__:')) {
-            text = '(faktura — brak danych do podglądu)';
-          }
-        } else if (typeId === 'zlecenie') {
-          if (!recipientEmail) { const e = extractEmail(text); if (e) { recipientEmail = e; autoEmail = true; } }
-          if (!dueDate) { const dd = extractPaymentDate(text); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
-        }
-
-        documents.push({
-          id: d.id,
-          name: x.name || meta.label,
-          typeId,
-          catLabel: meta.label,
-          icon: meta.icon,
-          text,
-          createdAt: toIso(x.createdAt),
-          dueDate, recipientEmail, autoDue, autoEmail,
-          lastSentAt: toIso(x.lastSentAt),
-        });
+        const e = enrichDoc(d.id, d.data());
+        if (e) documents.push(e);
       }
       return res.status(200).json({ documents, debug: DEBUG });
     }
@@ -673,6 +704,61 @@ export default async function handler(req, res) {
         metadata: { toEmail: dEmail, messageId, docName },
       });
       return res.status(200).json({ ok: true, messageId, debug: DEBUG });
+    }
+
+    // ── POST: podgląd szablonu przypomnienia (stała treść, bez AI) ──
+    if (action === 'reminder-preview') {
+      const { docId, level } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const dSnap = await db.collection('users').doc(uid).collection('documents').doc(docId).get();
+      if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
+      const e = enrichDoc(docId, dSnap.data());
+      if (!e) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
+      const suggested = suggestLevel(e.dueDate);
+      const lvl = REMINDER_LEVELS.includes(level) ? level : suggested;
+      const dueStr = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : '';
+      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName })[lvl];
+      return res.status(200).json({
+        ...tpl, level: lvl, suggested, toEmail: e.recipientEmail,
+        levels: REMINDER_LEVELS.map(l => ({ id: l, label: REMINDER_LABEL[l] })),
+      });
+    }
+
+    // ── POST: wyślij przypomnienie wg szablonu ──
+    if (action === 'send-reminder') {
+      const { docId, level, subject, body, toEmail } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const dEmail = (toEmail || '').toString().trim();
+      if (!dEmail) return res.status(400).json({ error: 'Brak adresu e-mail' });
+      const lvl = REMINDER_LEVELS.includes(level) ? level : 'po1';
+
+      const dRef = db.collection('users').doc(uid).collection('documents').doc(docId);
+      const dSnap = await dRef.get();
+      if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
+      const e = enrichDoc(docId, dSnap.data());
+      if (!e) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
+
+      const dueStr = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : '';
+      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName })[lvl];
+      const finalSubject = (subject || tpl.subject).toString().slice(0, 200);
+      const finalBody = (body || tpl.body).toString().slice(0, 5000);
+
+      let messageId = null;
+      try {
+        messageId = await sendEmail({ to: dEmail, subject: finalSubject, body: finalBody, replyTo: email });
+      } catch (err) {
+        return res.status(502).json({ error: 'Wysyłka nie powiodła się: ' + err.message });
+      }
+
+      await dRef.update({
+        lastSentAt: Timestamp.now(), recipientEmail: dEmail, lastReminderLevel: lvl,
+      }).catch(() => {});
+      await logHistory(uid, {
+        invoiceId: docId, level: REMINDER_LEVEL_NUM[lvl], action: 'reminder_sent',
+        sentText: finalSubject + '\n\n' + finalBody,
+        metadata: { toEmail: dEmail, messageId, template: lvl },
+      });
+      return res.status(200).json({ ok: true, messageId, debug: DEBUG, level: lvl });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });

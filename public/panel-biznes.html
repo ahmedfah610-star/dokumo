@@ -40,17 +40,26 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .error{color:#b91c1c;}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;padding:20px;overflow-y:auto;}
 .modal-bg.open{display:flex;align-items:flex-start;justify-content:center;}
-.modal{background:#fff;border-radius:16px;max-width:600px;width:100%;margin:auto;padding:22px;}
+.modal{background:#fff;border-radius:16px;max-width:620px;width:100%;margin:auto;padding:22px;}
 .modal h2{font-size:1.05rem;font-weight:800;margin-bottom:2px;}
 .modal .mtype{font-size:.74rem;color:#9b948c;margin-bottom:14px;}
 .fld{margin-bottom:12px;}
 .fld label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b6560;margin-bottom:5px;}
 .fld input,.fld textarea{width:100%;padding:9px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.85rem;font-family:inherit;outline:none;}
 .fld input:focus,.fld textarea:focus{border-color:#1a1714;}
-.preview{background:#faf8f4;border:1px solid rgba(26,23,20,.1);border-radius:10px;padding:12px 14px;font-size:.8rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:230px;overflow-y:auto;font-family:ui-monospace,Menlo,Consolas,monospace;color:#3a3330;}
+.fld textarea{line-height:1.55;resize:vertical;}
+.preview{background:#faf8f4;border:1px solid rgba(26,23,20,.1);border-radius:10px;padding:12px 14px;font-size:.8rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:180px;overflow-y:auto;font-family:ui-monospace,Menlo,Consolas,monospace;color:#3a3330;}
 .row{display:flex;gap:10px;flex-wrap:wrap;}
 .row .fld{flex:1;min-width:160px;}
-.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.rem-sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:14px;}
+.rem-h{display:block;font-size:.82rem;font-weight:800;margin-bottom:4px;}
+.rem-hint{font-size:.72rem;color:#9b948c;margin-bottom:9px;}
+.tpl-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.tpl{padding:7px 12px;border-radius:9px;border:1px solid rgba(26,23,20,.18);background:#fff;font-size:.75rem;font-weight:700;cursor:pointer;color:#6b6560;font-family:inherit;}
+.tpl:hover{background:#f0ede8;}
+.tpl.active{background:#1a1714;color:#fff;border-color:#1a1714;}
+.tpl .star{color:#f59e0b;}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
 .btn{padding:9px 17px;border-radius:9px;border:none;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit;}
 .btn-dark{background:#1a1714;color:#fff;}.btn-dark:hover{background:#3a3330;}
 .btn-light{background:#f0ede8;color:#1a1714;}.btn-light:hover{background:#e5e1da;}
@@ -65,7 +74,7 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
   <div class="topbar">
     <div>
       <h1>Panel biznesu</h1>
-      <div class="sub">Twoje faktury i umowy zlecenie — terminy i wysyłka w jednym miejscu</div>
+      <div class="sub">Twoje faktury i umowy zlecenie — terminy i przypomnienia w jednym miejscu</div>
     </div>
     <div class="links">
       <a class="link" href="/panel-windykacja.html">AI Windykator →</a>
@@ -89,20 +98,33 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
     <h2 id="mName">—</h2>
     <div class="mtype" id="mType"></div>
     <div class="fld">
-      <label>Podgląd treści</label>
+      <label>Podgląd dokumentu</label>
       <div class="preview" id="mPreview"></div>
     </div>
     <div class="row">
       <div class="fld"><label id="mDueLbl">Termin</label><input type="date" id="mDue"></div>
       <div class="fld"><label id="mEmailLbl">E-mail odbiorcy</label><input type="email" id="mEmail" placeholder="klient@example.com"></div>
     </div>
-    <div class="fld">
-      <label>Wiadomość do odbiorcy (opcjonalnie)</label>
-      <textarea id="mNote" rows="2" placeholder="Krótka notka dołączona nad treścią dokumentu…"></textarea>
-    </div>
-    <div class="btns">
+    <div class="btns" style="margin-top:0;margin-bottom:4px">
       <button class="btn btn-light" id="mSaveDue">Zapisz termin</button>
-      <button class="btn btn-dark" id="mSend">Wyślij e-mailem</button>
+    </div>
+
+    <div class="rem-sec">
+      <label class="rem-h">Wyślij przypomnienie o płatności</label>
+      <div class="rem-hint">Wybierz etap — treść jest gotowa, możesz ją jeszcze edytować przed wysłaniem.</div>
+      <div class="tpl-row" id="tplRow">
+        <button class="tpl" data-lvl="przed">Przed terminem</button>
+        <button class="tpl" data-lvl="po1">Po terminie</button>
+        <button class="tpl" data-lvl="po2">Ponaglenie</button>
+        <button class="tpl" data-lvl="sad">Przedsądowe</button>
+      </div>
+      <div class="fld"><label>Temat</label><input type="text" id="mSubj"></div>
+      <div class="fld"><label>Treść wiadomości (podgląd)</label><textarea id="mBody" rows="9"></textarea></div>
+    </div>
+
+    <div class="btns">
+      <button class="btn btn-dark" id="mSend">Wyślij przypomnienie</button>
+      <button class="btn btn-light" id="mSendDoc">Wyślij sam dokument</button>
       <button class="btn btn-light" id="mClose">Zamknij</button>
     </div>
     <div class="msg" id="mMsg"></div>
@@ -116,7 +138,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
 const app = getApps().length ? getApps()[0] : initializeApp(__c);
 const auth = getAuth(app);
-let _user = null, _docs = [], _filter = 'all', _current = null;
+let _user = null, _docs = [], _filter = 'all', _current = null, _level = 'po1', _suggested = 'po1';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -130,7 +152,6 @@ async function api(path, opts = {}) {
   return data;
 }
 
-// Klasyfikacja terminu
 function dueInfo(iso) {
   if (!iso) return { cls: 'b-none', label: 'Brak terminu', rank: 3, ts: Infinity };
   const ms = new Date(iso).getTime();
@@ -160,12 +181,9 @@ async function load() {
     const { documents, debug } = await api('/api/dunning?action=documents');
     if (debug) $('debugBanner').style.display = 'block';
     _docs = documents || [];
-    // sort: po terminie / wkrótce / z terminem / bez terminu; w grupie wg daty
     _docs.forEach(d => { d._due = dueInfo(d.dueDate); });
     _docs.sort((a, b) => a._due.ts - b._due.ts || (b.createdAt || '').localeCompare(a.createdAt || ''));
-    renderAttn();
-    renderChips();
-    render();
+    renderAttn(); renderChips(); render();
   } catch (e) {
     $('content').className = 'error';
     $('content').textContent = /feature_disabled/.test(e.message)
@@ -174,10 +192,8 @@ async function load() {
 }
 
 function renderAttn() {
-  const over = _docs.filter(d => d._due.rank === 0).length;
-  const soon = _docs.filter(d => d._due.rank === 1).length;
-  $('cntOver').textContent = over;
-  $('cntSoon').textContent = soon;
+  $('cntOver').textContent = _docs.filter(d => d._due.rank === 0).length;
+  $('cntSoon').textContent = _docs.filter(d => d._due.rank === 1).length;
   $('cntAll').textContent = _docs.length;
   $('attn').style.display = 'flex';
 }
@@ -216,7 +232,7 @@ function render() {
   });
 }
 
-function openModal(d) {
+async function openModal(d) {
   _current = d;
   $('mName').textContent = d.name;
   $('mType').textContent = (d.catLabel || 'Inne') + (d.typeId ? ' · ' + d.typeId : '');
@@ -225,16 +241,43 @@ function openModal(d) {
   $('mEmail').value = d.recipientEmail || '';
   $('mDueLbl').textContent = 'Termin' + (d.autoDue ? ' · wykryto z dokumentu' : '');
   $('mEmailLbl').textContent = 'E-mail odbiorcy' + (d.autoEmail ? ' · wykryto z dokumentu' : '');
-  $('mNote').value = '';
+  $('mSubj').value = ''; $('mBody').value = 'Ładowanie szablonu…';
   $('mMsg').className = 'msg';
   $('modalBg').classList.add('open');
+  await loadTemplate(null); // załaduj sugerowany
 }
+
+async function loadTemplate(level) {
+  if (!_current) return;
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'reminder-preview', docId: _current.id, level: level || undefined,
+    })});
+    _level = res.level;
+    _suggested = res.suggested;
+    $('mSubj').value = res.subject || '';
+    $('mBody').value = res.body || '';
+    document.querySelectorAll('.tpl').forEach(t => {
+      const lvl = t.dataset.lvl;
+      t.classList.toggle('active', lvl === _level);
+      t.innerHTML = t.textContent.replace(/ ★$/, '') + (lvl === _suggested ? ' <span class="star">★</span>' : '');
+    });
+  } catch (e) {
+    $('mBody').value = '';
+    showMsg('✗ ' + e.message, false);
+  }
+}
+
 function closeModal() { $('modalBg').classList.remove('open'); _current = null; }
 function showMsg(t, ok) { const m = $('mMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = t; }
-function busy(b) { ['mSaveDue','mSend'].forEach(id => $(id).disabled = b); }
+function busy(b) { ['mSaveDue','mSend','mSendDoc'].forEach(id => $(id).disabled = b); }
 
 $('mClose').onclick = closeModal;
 $('modalBg').onclick = e => { if (e.target === $('modalBg')) closeModal(); };
+
+document.querySelectorAll('.tpl').forEach(t => {
+  t.onclick = () => loadTemplate(t.dataset.lvl);
+});
 
 $('mSaveDue').onclick = async () => {
   if (!_current) return;
@@ -256,9 +299,24 @@ $('mSend').onclick = async () => {
   busy(true);
   try {
     const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'send-document', docId: _current.id, toEmail, note: $('mNote').value.trim(),
+      action: 'send-reminder', docId: _current.id, level: _level,
+      subject: $('mSubj').value, body: $('mBody').value, toEmail,
     })});
-    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Wysłano na ' + toEmail, true);
+    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Przypomnienie wysłane na ' + toEmail, true);
+    setTimeout(() => { closeModal(); load(); }, 1300);
+  } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
+};
+
+$('mSendDoc').onclick = async () => {
+  if (!_current) return;
+  const toEmail = $('mEmail').value.trim();
+  if (!toEmail) { showMsg('Podaj e-mail odbiorcy.', false); return; }
+  busy(true);
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'send-document', docId: _current.id, toEmail,
+    })});
+    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Dokument wysłany na ' + toEmail, true);
     setTimeout(() => { closeModal(); load(); }, 1300);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 };
