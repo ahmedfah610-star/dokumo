@@ -252,6 +252,57 @@ function enrichDoc(id, x) {
   };
 }
 
+// ── Umowy: typy, ekstrakcja terminu zakończenia, szablon przedłużenia ──
+const CONTRACT_TYPES = {
+  b2b: { label: 'Umowa B2B', icon: '💼' },
+  zlecenie: { label: 'Umowa zlecenie', icon: '📑' },
+  uop: { label: 'Umowa o pracę', icon: '📋' },
+};
+
+// Best-effort ekstrakcja daty zakończenia umowy z treści.
+function extractEndDate(text) {
+  if (!text) return null;
+  const span = text.match(/\bod\b[\s\S]{0,40}?\bdo\b([\s\S]{0,30})/i);
+  if (span) { const d = parseLooseDate(span[1]); if (d) return d; }
+  const re = /(obowiązuje do|zawart[aey][^.]{0,40}do|termin\w* (?:zakończenia|obowiązywania)|data zakończenia|do dnia|na czas określony)/gi;
+  let m;
+  while ((m = re.exec(text))) {
+    const d = parseLooseDate(text.slice(m.index, m.index + 120));
+    if (d) return d;
+  }
+  return null;
+}
+
+// Wzbogaca umowę o termin zakończenia i e-mail (stałe pola lub best-effort z treści).
+function enrichContract(id, x) {
+  const meta = CONTRACT_TYPES[x.typeId || ''];
+  if (!meta) return null;
+  const toIso = v => v?.toDate?.()?.toISOString() || (v ? new Date(v).toISOString() : null);
+  const text = x.text || '';
+  let endDate = toIso(x.contractEndDate);
+  let recipientEmail = x.recipientEmail || '';
+  let autoEnd = false, autoEmail = false;
+  if (!endDate) { const d = extractEndDate(text); if (d) { endDate = d.toISOString(); autoEnd = true; } }
+  if (!recipientEmail) { const e = extractEmail(text); if (e) { recipientEmail = e; autoEmail = true; } }
+  return {
+    id, name: x.name || meta.label, typeId: x.typeId, catLabel: meta.label, icon: meta.icon,
+    text, createdAt: toIso(x.createdAt), endDate, recipientEmail, autoEnd, autoEmail,
+    lastSentAt: toIso(x.lastSentAt),
+  };
+}
+
+// Szablon e-maila z propozycją przedłużenia umowy.
+const EXTEND_DEFAULT = {
+  subject: 'Propozycja przedłużenia umowy — {nazwa}',
+  body: 'Dzień dobry,\n\nZwracamy uwagę, że umowa „{nazwa}" zbliża się do terminu zakończenia ({termin}). Zależy nam na dalszej współpracy i chcielibyśmy zaproponować jej przedłużenie na kolejny okres.\n\nProsimy o informację, czy są Państwo zainteresowani kontynuacją — chętnie ustalimy szczegóły i warunki.\n\nPozdrawiamy,\n{nadawca}',
+};
+
+function buildExtend(e, fromName) {
+  const term = e.endDate ? new Date(e.endDate).toLocaleDateString('pl-PL') : 'wskazany w umowie';
+  const ctx = { nazwa: e.name || 'umowa', termin: term, kwota: '', konto: '', platnosc: '', nadawca: fromName || 'Zespół' };
+  return { subject: fillTemplate(EXTEND_DEFAULT.subject, ctx), body: fillTemplate(EXTEND_DEFAULT.body, ctx) };
+}
+
 // ── Czarna lista zwrotów (Poziom 1) — walidator wyjścia AI ──
 const FORBIDDEN_PHRASES_LVL1 = [
   'sąd', 'sądow',
@@ -585,6 +636,18 @@ export default async function handler(req, res) {
       });
     }
 
+    // ── GET: umowy (B2B, zlecenie, o pracę) z terminem zakończenia ──
+    if (req.method === 'GET' && action === 'contracts') {
+      const snap = await db.collection('users').doc(uid).collection('documents')
+        .orderBy('createdAt', 'desc').limit(200).get();
+      const contracts = [];
+      for (const d of snap.docs) {
+        const c = enrichContract(d.id, d.data());
+        if (c) contracts.push(c);
+      }
+      return res.status(200).json({ contracts, debug: DEBUG });
+    }
+
     if (req.method !== 'POST') return res.status(405).json({ error: 'Metoda niedozwolona' });
 
     // ── POST: utwórz testową fakturę ──
@@ -901,6 +964,70 @@ export default async function handler(req, res) {
       prefs.templates = templates;
       await db.collection('users').doc(uid).set({ dunningPreferences: prefs }, { merge: true });
       return res.status(200).json({ ok: true });
+    }
+
+    // ── POST: ustaw termin zakończenia / e-mail dla umowy ──
+    if (action === 'set-contract') {
+      const { docId, endDate, recipientEmail } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const update = { updatedAt: Timestamp.now() };
+      if (endDate !== undefined) {
+        update.contractEndDate = endDate ? Timestamp.fromDate(new Date(endDate)) : null;
+      }
+      if (recipientEmail !== undefined) {
+        update.recipientEmail = (recipientEmail || '').toString().slice(0, 200).trim();
+      }
+      try {
+        await db.collection('users').doc(uid).collection('documents').doc(docId).update(update);
+      } catch (e) {
+        return res.status(404).json({ error: 'Dokument nie istnieje' });
+      }
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── POST: podgląd e-maila o przedłużenie umowy ──
+    if (action === 'extend-preview') {
+      const { docId } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const dSnap = await db.collection('users').doc(uid).collection('documents').doc(docId).get();
+      if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
+      const c = enrichContract(docId, dSnap.data());
+      if (!c) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
+      const tpl = buildExtend(c, fromName);
+      return res.status(200).json({ ...tpl, toEmail: c.recipientEmail });
+    }
+
+    // ── POST: wyślij e-mail z propozycją przedłużenia ──
+    if (action === 'send-extend') {
+      const { docId, subject, body, toEmail } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const dEmail = (toEmail || '').toString().trim();
+      if (!dEmail) return res.status(400).json({ error: 'Brak adresu e-mail' });
+
+      const dRef = db.collection('users').doc(uid).collection('documents').doc(docId);
+      const dSnap = await dRef.get();
+      if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
+      const c = enrichContract(docId, dSnap.data());
+      if (!c) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
+
+      const tpl = buildExtend(c, fromName);
+      const finalSubject = (subject || tpl.subject).toString().slice(0, 200);
+      const finalBody = (body || tpl.body).toString().slice(0, 5000);
+
+      let messageId = null;
+      try {
+        messageId = await sendEmail({ to: dEmail, subject: finalSubject, body: finalBody, replyTo: email });
+      } catch (err) {
+        return res.status(502).json({ error: 'Wysyłka nie powiodła się: ' + err.message });
+      }
+
+      await dRef.update({ lastSentAt: Timestamp.now(), recipientEmail: dEmail }).catch(() => {});
+      await logHistory(uid, {
+        invoiceId: docId, level: 0, action: 'extension_sent',
+        sentText: finalSubject + '\n\n' + finalBody,
+        metadata: { toEmail: dEmail, messageId },
+      });
+      return res.status(200).json({ ok: true, messageId, debug: DEBUG });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });

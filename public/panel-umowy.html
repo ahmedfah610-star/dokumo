@@ -5,7 +5,7 @@
 <link rel="icon" type="image/jpeg" href="logo2.png">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel biznesu – Dokumo</title>
+<title>Twoje umowy – Dokumo</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
 body{background:#f5f3ef;color:#1a1714;min-height:100vh;}
@@ -22,13 +22,11 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .attn-lbl{font-size:.7rem;color:#6b6560;margin-top:4px;}
 .attn-red .attn-num{color:#b91c1c;}
 .attn-amber .attn-num{color:#b45309;}
-.attn-green .attn-num{color:#15803d;}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
 .chip{padding:6px 13px;border-radius:999px;border:1px solid rgba(26,23,20,.15);background:#fff;font-size:.76rem;font-weight:600;cursor:pointer;color:#6b6560;}
 .chip.active{background:#1a1714;color:#fff;border-color:#1a1714;}
 .card{background:#fff;border:1px solid rgba(26,23,20,.1);border-radius:13px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:box-shadow .12s;}
 .card:hover{box-shadow:0 3px 14px rgba(0,0,0,.07);}
-.card.is-paid{opacity:.72;}
 .card-ico{font-size:1.5rem;flex-shrink:0;}
 .card-mid{flex:1;min-width:0;}
 .card-name{font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -38,7 +36,6 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .b-ok{background:#dcfce7;color:#15803d;}
 .b-soon{background:#fef3c7;color:#b45309;}
 .b-over{background:#fee2e2;color:#b91c1c;}
-.b-paid{background:#1a1714;color:#fff;}
 .empty,.loading,.error{padding:48px;text-align:center;color:#9b948c;font-size:.88rem;}
 .error{color:#b91c1c;}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;padding:20px;overflow-y:auto;}
@@ -54,15 +51,9 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .preview{background:#faf8f4;border:1px solid rgba(26,23,20,.1);border-radius:10px;padding:12px 14px;font-size:.8rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:160px;overflow-y:auto;font-family:ui-monospace,Menlo,Consolas,monospace;color:#3a3330;}
 .row{display:flex;gap:10px;flex-wrap:wrap;}
 .row .fld{flex:1;min-width:160px;}
-.paid-note{background:#1a1714;color:#fff;border-radius:10px;padding:11px 14px;font-size:.82rem;font-weight:600;margin:6px 0 12px;}
-.rem-sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:14px;}
-.rem-h{display:block;font-size:.82rem;font-weight:800;margin-bottom:4px;}
-.rem-hint{font-size:.72rem;color:#9b948c;margin-bottom:9px;}
-.tpl-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
-.tpl{padding:7px 12px;border-radius:9px;border:1px solid rgba(26,23,20,.18);background:#fff;font-size:.75rem;font-weight:700;cursor:pointer;color:#6b6560;font-family:inherit;}
-.tpl:hover{background:#f0ede8;}
-.tpl.active{background:#1a1714;color:#fff;border-color:#1a1714;}
-.tpl .star{color:#f59e0b;}
+.ext-sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:14px;}
+.ext-h{display:block;font-size:.82rem;font-weight:800;margin-bottom:4px;}
+.ext-hint{font-size:.72rem;color:#9b948c;margin-bottom:9px;}
 .hist-sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:12px;}
 .hist-h{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#6b6560;margin-bottom:8px;}
 .hist-row{font-size:.78rem;color:#3a3330;padding:5px 0;border-bottom:1px solid #f0ede8;display:flex;justify-content:space-between;gap:10px;}
@@ -73,7 +64,6 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .btn{padding:9px 17px;border-radius:9px;border:none;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit;}
 .btn-dark{background:#1a1714;color:#fff;}.btn-dark:hover{background:#3a3330;}
 .btn-light{background:#f0ede8;color:#1a1714;}.btn-light:hover{background:#e5e1da;}
-.btn-green{background:#15803d;color:#fff;}.btn-green:hover{background:#136b34;}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
 .msg{font-size:.8rem;padding:8px 12px;border-radius:8px;margin-top:10px;display:none;}
 .msg.ok{background:#dcfce7;color:#15803d;display:block;}
@@ -84,23 +74,19 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 <div class="wrap">
   <div class="topbar">
     <div>
-      <h1>Panel biznesu</h1>
-      <div class="sub">Twoje faktury i umowy zlecenie — terminy, przypomnienia i płatności</div>
+      <h1>Twoje umowy</h1>
+      <div class="sub">Umowy B2B, zlecenie i o pracę — terminy zakończenia i przedłużanie</div>
     </div>
     <div class="links">
-      <a class="link" href="/panel-umowy.html">Twoje umowy →</a>
-      <a class="link" href="/panel-ustawienia.html">⚙ Ustawienia</a>
-      <a class="link" href="/panel-windykacja.html">AI Windykator →</a>
-      <a class="link" href="/panel-faktury-test.html">Faktury testowe →</a>
+      <a class="link" href="/panel-biznes.html">← Panel biznesu</a>
     </div>
   </div>
   <div class="debug-banner" id="debugBanner" style="display:none">⚠️ TRYB TESTOWY — maile NIE są wysyłane (zmień DUNNING_DEBUG_MODE, by włączyć wysyłkę).</div>
 
   <div class="attn" id="attn" style="display:none">
-    <div class="attn-card attn-red"><div class="attn-num" id="cntOver">0</div><div class="attn-lbl">po terminie</div></div>
-    <div class="attn-card attn-amber"><div class="attn-num" id="cntSoon">0</div><div class="attn-lbl">termin w 7 dni</div></div>
-    <div class="attn-card attn-green"><div class="attn-num" id="cntPaid">0</div><div class="attn-lbl">zapłacone</div></div>
-    <div class="attn-card"><div class="attn-num" id="cntRem">0</div><div class="attn-lbl">wysłane przypomnienia</div></div>
+    <div class="attn-card attn-red"><div class="attn-num" id="cntEnded">0</div><div class="attn-lbl">zakończone</div></div>
+    <div class="attn-card attn-amber"><div class="attn-num" id="cntSoon">0</div><div class="attn-lbl">kończą się w 30 dni</div></div>
+    <div class="attn-card"><div class="attn-num" id="cntAll">0</div><div class="attn-lbl">umów łącznie</div></div>
   </div>
 
   <div class="chips" id="chips"></div>
@@ -111,30 +97,23 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
   <div class="modal">
     <h2 id="mName">—</h2>
     <div class="mtype" id="mType"></div>
-    <div class="paid-note" id="mPaidNote" style="display:none">✓ Dokument oznaczony jako zapłacony</div>
     <div class="fld">
-      <label>Podgląd dokumentu</label>
+      <label>Podgląd umowy</label>
       <div class="preview" id="mPreview"></div>
     </div>
     <div class="row">
-      <div class="fld"><label id="mDueLbl">Termin</label><input type="date" id="mDue"></div>
-      <div class="fld"><label id="mEmailLbl">E-mail odbiorcy</label><input type="email" id="mEmail" placeholder="klient@example.com"></div>
+      <div class="fld"><label id="mEndLbl">Termin zakończenia</label><input type="date" id="mEnd"></div>
+      <div class="fld"><label id="mEmailLbl">E-mail drugiej strony</label><input type="email" id="mEmail" placeholder="kontrahent@example.com"></div>
     </div>
     <div class="btns" style="margin-top:0">
-      <button class="btn btn-light" id="mSaveDue">Zapisz termin</button>
+      <button class="btn btn-light" id="mSaveEnd">Zapisz termin</button>
     </div>
 
-    <div class="rem-sec" id="mRemSec">
-      <label class="rem-h">Wyślij przypomnienie o płatności</label>
-      <div class="rem-hint">Wybierz etap — treść jest gotowa, możesz ją jeszcze edytować przed wysłaniem.</div>
-      <div class="tpl-row" id="tplRow">
-        <button class="tpl" data-lvl="przed">Przed terminem</button>
-        <button class="tpl" data-lvl="po1">Po terminie</button>
-        <button class="tpl" data-lvl="po2">Ponaglenie</button>
-        <button class="tpl" data-lvl="sad">Przedsądowe</button>
-      </div>
+    <div class="ext-sec">
+      <label class="ext-h">Wyślij propozycję przedłużenia</label>
+      <div class="ext-hint">Gotowa treść — możesz ją edytować przed wysłaniem.</div>
       <div class="fld"><label>Temat</label><input type="text" id="mSubj"></div>
-      <div class="fld"><label>Treść wiadomości (podgląd)</label><textarea id="mBody" rows="9"></textarea></div>
+      <div class="fld"><label>Treść wiadomości (podgląd)</label><textarea id="mBody" rows="8"></textarea></div>
     </div>
 
     <div class="hist-sec">
@@ -143,10 +122,7 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
     </div>
 
     <div class="btns">
-      <button class="btn btn-dark" id="mSend">Wyślij przypomnienie</button>
-      <button class="btn btn-light" id="mSendDoc">Wyślij sam dokument</button>
-      <button class="btn btn-green" id="mPaid">Oznacz jako zapłacone</button>
-      <button class="btn btn-light" id="mUnpaid" style="display:none">Cofnij oznaczenie</button>
+      <button class="btn btn-dark" id="mSend">Wyślij propozycję przedłużenia</button>
       <button class="btn btn-light" id="mClose">Zamknij</button>
     </div>
     <div class="msg" id="mMsg"></div>
@@ -160,16 +136,15 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
 const app = getApps().length ? getApps()[0] : initializeApp(__c);
 const auth = getAuth(app);
-let _user = null, _docs = [], _filter = 'all', _current = null, _level = 'po1', _suggested = 'po1', _remindersSent = 0;
+let _user = null, _items = [], _filter = 'all', _current = null;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DAY = 86400000;
 const HIST_LABEL = {
-  reminder_sent: 'Wysłano przypomnienie', document_sent: 'Wysłano dokument',
-  doc_marked_paid: 'Oznaczono jako zapłacone', doc_marked_unpaid: 'Cofnięto oznaczenie zapłaty',
+  extension_sent: 'Wysłano propozycję przedłużenia', reminder_sent: 'Wysłano przypomnienie',
+  document_sent: 'Wysłano dokument', doc_marked_paid: 'Oznaczono jako zapłacone',
 };
-const TPL_LABEL = { przed: 'Przed terminem', po1: 'Po terminie', po2: 'Ponaglenie', sad: 'Przedsądowe' };
 
 async function api(path, opts = {}) {
   const t = await _user.getIdToken();
@@ -179,20 +154,20 @@ async function api(path, opts = {}) {
   return data;
 }
 
-function dueInfo(iso) {
+function endInfo(iso) {
   if (!iso) return { cls: 'b-none', label: 'Brak terminu', rank: 3, ts: Infinity };
   const ms = new Date(iso).getTime();
   const diff = ms - Date.now();
   const d = new Date(ms).toLocaleDateString('pl-PL');
   if (diff < 0) {
     const days = Math.ceil(-diff / DAY);
-    return { cls: 'b-over', label: `Po terminie: ${d} (${days} dni)`, rank: 0, ts: ms };
+    return { cls: 'b-over', label: `Zakończona: ${d} (${days} dni temu)`, rank: 0, ts: ms };
   }
-  if (diff <= 7 * DAY) {
+  if (diff <= 30 * DAY) {
     const days = Math.max(1, Math.ceil(diff / DAY));
-    return { cls: 'b-soon', label: `Termin: ${d} (za ${days} dni)`, rank: 1, ts: ms };
+    return { cls: 'b-soon', label: `Kończy się: ${d} (za ${days} dni)`, rank: 1, ts: ms };
   }
-  return { cls: 'b-ok', label: `Termin: ${d}`, rank: 2, ts: ms };
+  return { cls: 'b-ok', label: `Do: ${d}`, rank: 2, ts: ms };
 }
 
 onAuthStateChanged(auth, async u => {
@@ -205,15 +180,11 @@ async function load() {
   $('content').className = 'loading';
   $('content').textContent = 'Ładowanie…';
   try {
-    const { documents, remindersSent, debug } = await api('/api/dunning?action=documents');
+    const { contracts, debug } = await api('/api/dunning?action=contracts');
     if (debug) $('debugBanner').style.display = 'block';
-    _docs = documents || [];
-    _remindersSent = remindersSent || 0;
-    _docs.forEach(d => { d._due = dueInfo(d.dueDate); });
-    _docs.sort((a, b) => {
-      if (!!a.paid !== !!b.paid) return a.paid ? 1 : -1;
-      return a._due.ts - b._due.ts || (b.createdAt || '').localeCompare(a.createdAt || '');
-    });
+    _items = contracts || [];
+    _items.forEach(c => { c._end = endInfo(c.endDate); });
+    _items.sort((a, b) => a._end.ts - b._end.ts || (b.createdAt || '').localeCompare(a.createdAt || ''));
     renderAttn(); renderChips(); render();
   } catch (e) {
     $('content').className = 'error';
@@ -223,15 +194,14 @@ async function load() {
 }
 
 function renderAttn() {
-  $('cntOver').textContent = _docs.filter(d => !d.paid && d._due.rank === 0).length;
-  $('cntSoon').textContent = _docs.filter(d => !d.paid && d._due.rank === 1).length;
-  $('cntPaid').textContent = _docs.filter(d => d.paid).length;
-  $('cntRem').textContent = _remindersSent;
+  $('cntEnded').textContent = _items.filter(c => c._end.rank === 0).length;
+  $('cntSoon').textContent = _items.filter(c => c._end.rank === 1).length;
+  $('cntAll').textContent = _items.length;
   $('attn').style.display = 'flex';
 }
 
 function renderChips() {
-  const cats = [...new Set(_docs.map(d => d.catLabel || 'Inne'))].sort();
+  const cats = [...new Set(_items.map(c => c.catLabel || 'Inne'))].sort();
   const chips = [['all', 'Wszystkie'], ...cats.map(c => [c, c])];
   $('chips').innerHTML = chips.map(([v, l]) =>
     `<div class="chip${v === _filter ? ' active' : ''}" data-f="${esc(v)}">${esc(l)}</div>`).join('');
@@ -241,79 +211,49 @@ function renderChips() {
 }
 
 function render() {
-  const list = _filter === 'all' ? _docs : _docs.filter(d => (d.catLabel || 'Inne') === _filter);
+  const list = _filter === 'all' ? _items : _items.filter(c => (c.catLabel || 'Inne') === _filter);
   if (!list.length) {
     $('content').className = 'empty';
-    $('content').textContent = 'Brak faktur i umów zlecenie. Wygeneruj je w Dokumo, a pojawią się tutaj.';
+    $('content').textContent = 'Brak umów B2B, zlecenie ani o pracę. Wygeneruj je w Dokumo, a pojawią się tutaj.';
     return;
   }
   $('content').className = '';
-  $('content').innerHTML = list.map(d => {
-    const created = d.createdAt ? new Date(d.createdAt).toLocaleDateString('pl-PL') : '—';
-    const amt = (d.amount != null)
-      ? ' · ' + Number(d.amount).toLocaleString('pl-PL', {minimumFractionDigits:2}) + ' ' + (d.currency || 'zł')
-      : '';
-    const badge = d.paid ? { cls: 'b-paid', label: 'Zapłacone ✓' } : d._due;
-    return `<div class="card${d.paid ? ' is-paid' : ''}" data-id="${d.id}">
-      <div class="card-ico">${esc(d.icon || '📄')}</div>
+  $('content').innerHTML = list.map(c => {
+    const created = c.createdAt ? new Date(c.createdAt).toLocaleDateString('pl-PL') : '—';
+    return `<div class="card" data-id="${c.id}">
+      <div class="card-ico">${esc(c.icon || '📄')}</div>
       <div class="card-mid">
-        <div class="card-name">${esc(d.name)}</div>
-        <div class="card-meta">${esc(d.catLabel || 'Inne')} · ${created}${amt}${d.lastSentAt ? ' · wysłano' : ''}</div>
+        <div class="card-name">${esc(c.name)}</div>
+        <div class="card-meta">${esc(c.catLabel || 'Inne')} · utworzono ${created}${c.lastSentAt ? ' · wysłano' : ''}</div>
       </div>
-      <div class="badge ${badge.cls}">${esc(badge.label)}</div>
+      <div class="badge ${c._end.cls}">${esc(c._end.label)}</div>
     </div>`;
   }).join('');
-  document.querySelectorAll('.card').forEach(c => {
-    c.onclick = () => openModal(_docs.find(x => x.id === c.dataset.id));
+  document.querySelectorAll('.card').forEach(el => {
+    el.onclick = () => openModal(_items.find(x => x.id === el.dataset.id));
   });
 }
 
-async function openModal(d) {
-  _current = d;
-  $('mName').textContent = d.name;
-  $('mType').textContent = (d.catLabel || 'Inne') + (d.typeId ? ' · ' + d.typeId : '');
-  $('mPreview').textContent = d.text || '(dokument nie zawiera treści tekstowej)';
-  $('mDue').value = d.dueDate ? d.dueDate.slice(0, 10) : '';
-  $('mEmail').value = d.recipientEmail || '';
-  $('mDueLbl').textContent = 'Termin' + (d.autoDue ? ' · wykryto z dokumentu' : '');
-  $('mEmailLbl').textContent = 'E-mail odbiorcy' + (d.autoEmail ? ' · wykryto z dokumentu' : '');
+async function openModal(c) {
+  _current = c;
+  $('mName').textContent = c.name;
+  $('mType').textContent = (c.catLabel || 'Inne') + (c.typeId ? ' · ' + c.typeId : '');
+  $('mPreview').textContent = c.text || '(umowa nie zawiera treści tekstowej)';
+  $('mEnd').value = c.endDate ? c.endDate.slice(0, 10) : '';
+  $('mEmail').value = c.recipientEmail || '';
+  $('mEndLbl').textContent = 'Termin zakończenia' + (c.autoEnd ? ' · wykryto z umowy' : '');
+  $('mEmailLbl').textContent = 'E-mail drugiej strony' + (c.autoEmail ? ' · wykryto z umowy' : '');
+  $('mSubj').value = ''; $('mBody').value = 'Ładowanie szablonu…';
   $('mMsg').className = 'msg';
-
-  // tryb zapłacony vs niezapłacony
-  $('mPaidNote').style.display = d.paid ? 'block' : 'none';
-  $('mRemSec').style.display = d.paid ? 'none' : 'block';
-  $('mSend').style.display = d.paid ? 'none' : '';
-  $('mSendDoc').style.display = d.paid ? 'none' : '';
-  $('mPaid').style.display = d.paid ? 'none' : '';
-  $('mUnpaid').style.display = d.paid ? '' : 'none';
-
   $('modalBg').classList.add('open');
-  loadHistory(d.id);
-  if (!d.paid) {
-    $('mSubj').value = ''; $('mBody').value = 'Ładowanie szablonu…';
-    await loadTemplate(null);
-  }
-}
-
-async function loadTemplate(level) {
-  if (!_current) return;
+  loadHistory(c.id);
   try {
     const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'reminder-preview', docId: _current.id, level: level || undefined,
+      action: 'extend-preview', docId: c.id,
     })});
-    _level = res.level;
-    _suggested = res.suggested;
     $('mSubj').value = res.subject || '';
     $('mBody').value = res.body || '';
-    document.querySelectorAll('.tpl').forEach(t => {
-      const lvl = t.dataset.lvl;
-      t.classList.toggle('active', lvl === _level);
-      t.innerHTML = (TPL_LABEL[lvl] || lvl) + (lvl === _suggested ? ' <span class="star">★</span>' : '');
-    });
-  } catch (e) {
-    $('mBody').value = '';
-    showMsg('✗ ' + e.message, false);
-  }
+  } catch (e) { $('mBody').value = ''; showMsg('✗ ' + e.message, false); }
 }
 
 async function loadHistory(docId) {
@@ -325,13 +265,12 @@ async function loadHistory(docId) {
     })});
     if (!entries || !entries.length) {
       $('mHist').className = 'hist-empty';
-      $('mHist').textContent = 'Brak akcji dla tego dokumentu.';
+      $('mHist').textContent = 'Brak akcji dla tej umowy.';
       return;
     }
     $('mHist').className = '';
     $('mHist').innerHTML = entries.map(e => {
-      let label = HIST_LABEL[e.action] || e.action;
-      if (e.action === 'reminder_sent' && e.template) label += ' — ' + (TPL_LABEL[e.template] || e.template);
+      const label = HIST_LABEL[e.action] || e.action;
       const dt = e.timestamp ? new Date(e.timestamp).toLocaleString('pl-PL', {dateStyle:'short',timeStyle:'short'}) : '';
       return `<div class="hist-row"><span>${esc(label)}</span><span class="hist-date">${esc(dt)}</span></div>`;
     }).join('');
@@ -343,19 +282,18 @@ async function loadHistory(docId) {
 
 function closeModal() { $('modalBg').classList.remove('open'); _current = null; }
 function showMsg(t, ok) { const m = $('mMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = t; }
-function busy(b) { ['mSaveDue','mSend','mSendDoc','mPaid','mUnpaid'].forEach(id => $(id).disabled = b); }
+function busy(b) { ['mSaveEnd','mSend'].forEach(id => $(id).disabled = b); }
 
 $('mClose').onclick = closeModal;
 $('modalBg').onclick = e => { if (e.target === $('modalBg')) closeModal(); };
-document.querySelectorAll('.tpl').forEach(t => { t.onclick = () => loadTemplate(t.dataset.lvl); });
 
-$('mSaveDue').onclick = async () => {
+$('mSaveEnd').onclick = async () => {
   if (!_current) return;
   busy(true);
   try {
     await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'set-deadline', docId: _current.id,
-      dueDate: $('mDue').value || null, recipientEmail: $('mEmail').value.trim(),
+      action: 'set-contract', docId: _current.id,
+      endDate: $('mEnd').value || null, recipientEmail: $('mEmail').value.trim(),
     })});
     showMsg('✓ Termin zapisany', true);
     setTimeout(() => { closeModal(); load(); }, 900);
@@ -365,45 +303,17 @@ $('mSaveDue').onclick = async () => {
 $('mSend').onclick = async () => {
   if (!_current) return;
   const toEmail = $('mEmail').value.trim();
-  if (!toEmail) { showMsg('Podaj e-mail odbiorcy.', false); return; }
+  if (!toEmail) { showMsg('Podaj e-mail drugiej strony.', false); return; }
   busy(true);
   try {
     const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'send-reminder', docId: _current.id, level: _level,
+      action: 'send-extend', docId: _current.id,
       subject: $('mSubj').value, body: $('mBody').value, toEmail,
     })});
-    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Przypomnienie wysłane na ' + toEmail, true);
+    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Wysłano na ' + toEmail, true);
     setTimeout(() => { closeModal(); load(); }, 1300);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 };
-
-$('mSendDoc').onclick = async () => {
-  if (!_current) return;
-  const toEmail = $('mEmail').value.trim();
-  if (!toEmail) { showMsg('Podaj e-mail odbiorcy.', false); return; }
-  busy(true);
-  try {
-    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'send-document', docId: _current.id, toEmail,
-    })});
-    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Dokument wysłany na ' + toEmail, true);
-    setTimeout(() => { closeModal(); load(); }, 1300);
-  } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
-};
-
-async function setPaid(paid) {
-  if (!_current) return;
-  busy(true);
-  try {
-    await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'mark-doc-paid', docId: _current.id, paid,
-    })});
-    showMsg(paid ? '✓ Oznaczono jako zapłacone' : '✓ Cofnięto oznaczenie', true);
-    setTimeout(() => { closeModal(); load(); }, 900);
-  } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
-}
-$('mPaid').onclick = () => setPaid(true);
-$('mUnpaid').onclick = () => setPaid(false);
 </script>
 </body>
 </html>
