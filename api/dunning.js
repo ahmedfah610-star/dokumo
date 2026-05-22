@@ -153,38 +153,62 @@ function suggestLevel(dueIso) {
   return 'sad';
 }
 
-// Buduje blok "Szczegóły płatności" (kwota + numer konta) wstawiany do treści.
-function buildPayInfo(e) {
-  const lines = [];
-  if (e.amount != null) lines.push('Kwota do zapłaty: ' + fmtAmount(e.amount, e.currency));
-  if (e.bankAccount) lines.push('Numer konta: ' + e.bankAccount);
-  return lines.length ? 'Szczegóły płatności:\n' + lines.join('\n') : '';
+// Domyślne szablony z placeholderami: {nazwa} {termin} {kwota} {konto} {platnosc} {nadawca}
+const DEFAULT_TEMPLATES = {
+  przed: {
+    subject: 'Przypomnienie o zbliżającym się terminie płatności — {nazwa}',
+    body: 'Dzień dobry,\n\nUprzejmie przypominamy, że termin płatności dokumentu „{nazwa}" przypada na {termin}.\n\n{platnosc}\n\nProsimy o uregulowanie należności w terminie. Jeśli płatność została już zrealizowana, prosimy potraktować tę wiadomość jako bezprzedmiotową.\n\nPozdrawiamy,\n{nadawca}',
+  },
+  po1: {
+    subject: 'Przypomnienie o zaległej płatności — {nazwa}',
+    body: 'Dzień dobry,\n\nInformujemy, że minął termin płatności dokumentu „{nazwa}" (termin: {termin}), a wpłata nie została jeszcze odnotowana.\n\n{platnosc}\n\nProsimy o uregulowanie należności w najbliższym możliwym terminie. Jeśli płatność jest już w realizacji, dziękujemy i prosimy o zignorowanie tej wiadomości.\n\nPozdrawiamy,\n{nadawca}',
+  },
+  po2: {
+    subject: 'Ponowne wezwanie do zapłaty — {nazwa}',
+    body: 'Dzień dobry,\n\nPomimo wcześniejszego przypomnienia należność z dokumentu „{nazwa}" (termin płatności: {termin}) pozostaje nieuregulowana.\n\n{platnosc}\n\nProsimy o niezwłoczne dokonanie płatności. Jeśli wystąpiły przeszkody w jej realizacji, prosimy o kontakt w celu ustalenia rozwiązania.\n\nPozdrawiamy,\n{nadawca}',
+  },
+  sad: {
+    subject: 'Przedsądowe wezwanie do zapłaty — {nazwa}',
+    body: 'Dzień dobry,\n\nNiniejszym wzywamy do zapłaty zaległej należności wynikającej z dokumentu „{nazwa}" (termin płatności: {termin}), która do dnia dzisiejszego nie została uregulowana.\n\n{platnosc}\n\nWyznaczamy ostateczny termin 7 dni od otrzymania niniejszej wiadomości na uregulowanie należności. Brak wpłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego.\n\nLiczymy na polubowne rozwiązanie sprawy.\n\n{nadawca}',
+  },
+};
+const TEMPLATE_PLACEHOLDERS = ['{nazwa}', '{termin}', '{kwota}', '{konto}', '{platnosc}', '{nadawca}'];
+
+// Buduje kontekst podstawień dla wzbogaconego dokumentu.
+function tplCtx(e, fromName) {
+  const due = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : 'wskazany w dokumencie';
+  const kwota = e.amount != null ? fmtAmount(e.amount, e.currency) : '';
+  const konto = e.bankAccount || '';
+  const payLines = [];
+  if (kwota) payLines.push('Kwota do zapłaty: ' + kwota);
+  if (konto) payLines.push('Numer konta: ' + konto);
+  const platnosc = payLines.length ? 'Szczegóły płatności:\n' + payLines.join('\n') : '';
+  return { nazwa: e.name || 'dokument', termin: due, kwota, konto, platnosc, nadawca: fromName || 'Zespół' };
 }
 
-// Stałe treści wiadomości — identyczne dla wszystkich, tylko z podstawionymi danymi.
-function reminderTemplates({ docName, dueDateStr, fromName, payInfo }) {
-  const name = docName || 'dokument';
-  const due = dueDateStr || 'wskazany w dokumencie';
-  const sig = fromName || 'Zespół';
-  const pay = payInfo ? '\n\n' + payInfo : '';
-  return {
-    przed: {
-      subject: `Przypomnienie o zbliżającym się terminie płatności — ${name}`,
-      body: `Dzień dobry,\n\nUprzejmie przypominamy, że termin płatności dokumentu „${name}" przypada na ${due}.${pay}\n\nProsimy o uregulowanie należności w terminie. Jeśli płatność została już zrealizowana, prosimy potraktować tę wiadomość jako bezprzedmiotową.\n\nPozdrawiamy,\n${sig}`,
-    },
-    po1: {
-      subject: `Przypomnienie o zaległej płatności — ${name}`,
-      body: `Dzień dobry,\n\nInformujemy, że minął termin płatności dokumentu „${name}" (termin: ${due}), a wpłata nie została jeszcze odnotowana.${pay}\n\nProsimy o uregulowanie należności w najbliższym możliwym terminie. Jeśli płatność jest już w realizacji, dziękujemy i prosimy o zignorowanie tej wiadomości.\n\nPozdrawiamy,\n${sig}`,
-    },
-    po2: {
-      subject: `Ponowne wezwanie do zapłaty — ${name}`,
-      body: `Dzień dobry,\n\nPomimo wcześniejszego przypomnienia należność z dokumentu „${name}" (termin płatności: ${due}) pozostaje nieuregulowana.${pay}\n\nProsimy o niezwłoczne dokonanie płatności. Jeśli wystąpiły przeszkody w jej realizacji, prosimy o kontakt w celu ustalenia rozwiązania.\n\nPozdrawiamy,\n${sig}`,
-    },
-    sad: {
-      subject: `Przedsądowe wezwanie do zapłaty — ${name}`,
-      body: `Dzień dobry,\n\nNiniejszym wzywamy do zapłaty zaległej należności wynikającej z dokumentu „${name}" (termin płatności: ${due}), która do dnia dzisiejszego nie została uregulowana.${pay}\n\nWyznaczamy ostateczny termin 7 dni od otrzymania niniejszej wiadomości na uregulowanie należności. Brak wpłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego.\n\nLiczymy na polubowne rozwiązanie sprawy.\n\n${sig}`,
-    },
-  };
+// Podstawia placeholdery i czyści puste linie.
+function fillTemplate(str, ctx) {
+  return String(str || '')
+    .replace(/\{nazwa\}/g, ctx.nazwa)
+    .replace(/\{termin\}/g, ctx.termin)
+    .replace(/\{kwota\}/g, ctx.kwota)
+    .replace(/\{konto\}/g, ctx.konto)
+    .replace(/\{platnosc\}/g, ctx.platnosc)
+    .replace(/\{nadawca\}/g, ctx.nadawca)
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+// Buduje wiadomość dla poziomu: szablon użytkownika lub domyślny, z podstawieniami.
+function buildReminder(level, e, fromName, prefs) {
+  const def = DEFAULT_TEMPLATES[level] || DEFAULT_TEMPLATES.po1;
+  const custom = prefs?.templates?.[level];
+  const tpl = (custom && (custom.subject || custom.body)) ? {
+    subject: custom.subject || def.subject,
+    body: custom.body || def.body,
+  } : def;
+  const ctx = tplCtx(e, fromName);
+  return { subject: fillTemplate(tpl.subject, ctx), body: fillTemplate(tpl.body, ctx) };
 }
 
 // Wzbogaca dokument o dane biznesowe (typ, termin, e-mail) — wspólne dla listy i przypomnień.
@@ -551,6 +575,16 @@ export default async function handler(req, res) {
       return res.status(200).json({ documents, remindersSent, debug: DEBUG });
     }
 
+    // ── GET: ustawienia nadawcy i szablony ──
+    if (req.method === 'GET' && action === 'settings') {
+      const prefs = userDoc?.dunningPreferences || {};
+      return res.status(200).json({
+        settings: { fromName: prefs.fromName || '', templates: prefs.templates || {} },
+        defaults: DEFAULT_TEMPLATES,
+        placeholders: TEMPLATE_PLACEHOLDERS,
+      });
+    }
+
     if (req.method !== 'POST') return res.status(405).json({ error: 'Metoda niedozwolona' });
 
     // ── POST: utwórz testową fakturę ──
@@ -764,8 +798,7 @@ export default async function handler(req, res) {
       if (!e) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
       const suggested = suggestLevel(e.dueDate);
       const lvl = REMINDER_LEVELS.includes(level) ? level : suggested;
-      const dueStr = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : '';
-      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName, payInfo: buildPayInfo(e) })[lvl];
+      const tpl = buildReminder(lvl, e, fromName, userDoc?.dunningPreferences);
       return res.status(200).json({
         ...tpl, level: lvl, suggested, toEmail: e.recipientEmail, paid: e.paid,
         levels: REMINDER_LEVELS.map(l => ({ id: l, label: REMINDER_LABEL[l] })),
@@ -787,8 +820,7 @@ export default async function handler(req, res) {
       if (!e) return res.status(400).json({ error: 'Nieobsługiwany typ dokumentu' });
       if (e.paid) return res.status(409).json({ error: 'Dokument oznaczony jako zapłacony' });
 
-      const dueStr = e.dueDate ? new Date(e.dueDate).toLocaleDateString('pl-PL') : '';
-      const tpl = reminderTemplates({ docName: e.name, dueDateStr: dueStr, fromName, payInfo: buildPayInfo(e) })[lvl];
+      const tpl = buildReminder(lvl, e, fromName, userDoc?.dunningPreferences);
       const finalSubject = (subject || tpl.subject).toString().slice(0, 200);
       const finalBody = (body || tpl.body).toString().slice(0, 5000);
 
@@ -848,6 +880,27 @@ export default async function handler(req, res) {
         };
       }).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
       return res.status(200).json({ entries });
+    }
+
+    // ── POST: zapisz ustawienia nadawcy i szablony ──
+    if (action === 'save-settings') {
+      const b = req.body || {};
+      const prefs = { fromName: (b.fromName || '').toString().slice(0, 120).trim() };
+      const templates = {};
+      const inTpl = b.templates || {};
+      for (const lvl of REMINDER_LEVELS) {
+        const t = inTpl[lvl];
+        if (!t) continue;
+        const subject = (t.subject || '').toString().slice(0, 300);
+        const body = (t.body || '').toString().slice(0, 5000);
+        const def = DEFAULT_TEMPLATES[lvl];
+        // Jeśli identyczne z domyślnym — nie zapisujemy (szablon będzie podążał za domyślnym).
+        if (subject === def.subject && body === def.body) continue;
+        if (subject || body) templates[lvl] = { subject, body };
+      }
+      prefs.templates = templates;
+      await db.collection('users').doc(uid).set({ dunningPreferences: prefs }, { merge: true });
+      return res.status(200).json({ ok: true });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });

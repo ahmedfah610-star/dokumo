@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ustawienia przypomnień – Dokumo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
+body{background:#f5f3ef;color:#1a1714;min-height:100vh;}
+.wrap{max-width:760px;margin:0 auto;padding:24px 20px 60px;}
+h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
+.sub{font-size:.82rem;color:#6b6560;margin-bottom:16px;}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.link{font-size:.8rem;color:#1a1714;font-weight:600;text-decoration:none;border-bottom:1px solid #cfc9c0;}
+.box{background:#fff;border:1px solid rgba(26,23,20,.1);border-radius:14px;padding:18px;margin-bottom:14px;}
+.box h2{font-size:.95rem;font-weight:800;margin-bottom:3px;}
+.box .h-sub{font-size:.74rem;color:#9b948c;margin-bottom:12px;}
+.fld{margin-bottom:12px;}
+.fld label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b6560;margin-bottom:5px;}
+.fld input,.fld textarea{width:100%;padding:9px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.85rem;font-family:inherit;outline:none;}
+.fld input:focus,.fld textarea:focus{border-color:#1a1714;}
+.fld textarea{line-height:1.55;resize:vertical;min-height:150px;}
+.ph{background:#faf8f4;border:1px solid rgba(26,23,20,.1);border-radius:9px;padding:10px 13px;font-size:.76rem;color:#6b6560;line-height:1.7;margin-bottom:14px;}
+.ph code{background:#1a1714;color:#fff;border-radius:5px;padding:1px 6px;font-size:.72rem;}
+.tpl-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;}
+.tpl-name{font-size:.88rem;font-weight:800;}
+.btn{padding:9px 17px;border-radius:9px;border:none;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit;}
+.btn-dark{background:#1a1714;color:#fff;}.btn-dark:hover{background:#3a3330;}
+.btn-light{background:#f0ede8;color:#1a1714;}.btn-light:hover{background:#e5e1da;}
+.btn-mini{padding:5px 11px;font-size:.71rem;border-radius:7px;border:none;cursor:pointer;font-weight:700;background:#f0ede8;color:#6b6560;}
+.btn-mini:hover{background:#e5e1da;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.savebar{position:sticky;bottom:0;background:#f5f3ef;padding:12px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.msg{font-size:.8rem;padding:8px 12px;border-radius:8px;display:none;}
+.msg.ok{background:#dcfce7;color:#15803d;display:inline-block;}
+.msg.err{background:#fee2e2;color:#b91c1c;display:inline-block;}
+.loading,.error{padding:48px;text-align:center;color:#9b948c;font-size:.88rem;}
+.error{color:#b91c1c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>Ustawienia przypomnień</h1>
+      <div class="sub">Dane nadawcy i treść szablonów wiadomości</div>
+    </div>
+    <a class="link" href="/panel-biznes.html">← Panel biznesu</a>
+  </div>
+
+  <div id="content" class="loading">Ładowanie…</div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
+const app = getApps().length ? getApps()[0] : initializeApp(__c);
+const auth = getAuth(app);
+let _user = null, _defaults = {};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LEVELS = [['przed','Przed terminem'],['po1','Po terminie'],['po2','Ponaglenie'],['sad','Przedsądowe wezwanie']];
+
+async function api(path, opts = {}) {
+  const t = await _user.getIdToken();
+  const r = await fetch(path, { ...opts, headers: { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json', ...(opts.headers||{}) } });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  return data;
+}
+
+onAuthStateChanged(auth, async u => {
+  if (!u) { $('content').className = 'error'; $('content').textContent = 'Zaloguj się, aby zobaczyć ustawienia.'; return; }
+  _user = u;
+  try {
+    const { settings, defaults, placeholders } = await api('/api/dunning?action=settings');
+    _defaults = defaults || {};
+    render(settings || {}, placeholders || []);
+  } catch (e) {
+    $('content').className = 'error';
+    $('content').textContent = /feature_disabled/.test(e.message)
+      ? 'Funkcja niedostępna na tym koncie.' : 'Błąd: ' + e.message;
+  }
+});
+
+function render(settings, placeholders) {
+  const tpls = settings.templates || {};
+  const phHtml = placeholders.map(p => `<code>${esc(p)}</code>`).join(' ');
+  let html = `
+    <div class="box">
+      <h2>Dane nadawcy</h2>
+      <div class="h-sub">Podpis i nazwa widoczna w przypomnieniach (placeholder <code>{nadawca}</code>).</div>
+      <div class="fld">
+        <label>Nazwa nadawcy / firma</label>
+        <input type="text" id="fromName" placeholder="np. Jan Kowalski / Firma ABC" value="${esc(settings.fromName || '')}">
+      </div>
+    </div>
+    <div class="box">
+      <h2>Szablony wiadomości</h2>
+      <div class="h-sub">Treść 4 etapów przypomnień. Możesz użyć placeholderów — zostaną podstawione przy wysyłce:</div>
+      <div class="ph">${phHtml}</div>`;
+
+  for (const [lvl, label] of LEVELS) {
+    const cur = tpls[lvl] || {};
+    const def = _defaults[lvl] || { subject: '', body: '' };
+    html += `
+      <div class="tpl-block" data-lvl="${lvl}" style="border-top:1px solid rgba(26,23,20,.1);padding-top:14px;margin-top:14px;">
+        <div class="tpl-head">
+          <span class="tpl-name">${esc(label)}</span>
+          <button class="btn-mini" data-reset="${lvl}">Przywróć domyślny</button>
+        </div>
+        <div class="fld">
+          <label>Temat</label>
+          <input type="text" data-subj="${lvl}" value="${esc(cur.subject || def.subject)}">
+        </div>
+        <div class="fld">
+          <label>Treść</label>
+          <textarea data-body="${lvl}">${esc(cur.body || def.body)}</textarea>
+        </div>
+      </div>`;
+  }
+
+  html += `</div>
+    <div class="savebar">
+      <button class="btn btn-dark" id="saveBtn">Zapisz ustawienia</button>
+      <span class="msg" id="msg"></span>
+    </div>`;
+  $('content').className = '';
+  $('content').innerHTML = html;
+
+  document.querySelectorAll('[data-reset]').forEach(b => {
+    b.onclick = () => {
+      const lvl = b.dataset.reset;
+      const def = _defaults[lvl] || { subject: '', body: '' };
+      document.querySelector(`[data-subj="${lvl}"]`).value = def.subject;
+      document.querySelector(`[data-body="${lvl}"]`).value = def.body;
+    };
+  });
+  $('saveBtn').onclick = save;
+}
+
+async function save() {
+  const btn = $('saveBtn'), msg = $('msg');
+  msg.className = 'msg';
+  btn.disabled = true;
+  const templates = {};
+  for (const [lvl] of LEVELS) {
+    templates[lvl] = {
+      subject: document.querySelector(`[data-subj="${lvl}"]`).value,
+      body: document.querySelector(`[data-body="${lvl}"]`).value,
+    };
+  }
+  try {
+    await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'save-settings', fromName: $('fromName').value, templates,
+    })});
+    msg.className = 'msg ok'; msg.textContent = '✓ Zapisano';
+  } catch (e) {
+    msg.className = 'msg err'; msg.textContent = '✗ ' + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
