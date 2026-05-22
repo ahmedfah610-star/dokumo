@@ -2,26 +2,39 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
+// Połączony endpoint dokumentów — scala dawne get-docs.js (GET) i update-doc.js (POST/DELETE).
+// Routing po metodzie HTTP; stare ścieżki /api/get-docs i /api/update-doc działają
+// dalej dzięki rewrite'om w vercel.json. Zachowanie obu endpointów bez zmian.
+
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
 }
 const db = getFirestore();
 const auth = getAuth();
 
-// In-memory rate limit: max 60 zapisów/min per uid
-const _rlMap = new Map();
-function checkMemRateLimit(uid, max, windowMs) {
+// Rate limit GET (lista) — 30 req/min per uid
+const _rlGet = new Map();
+function checkRlGet(uid) {
   const now = Date.now();
-  const entry = _rlMap.get(uid) || { count: 0, reset: now + windowMs };
-  if (now > entry.reset) { entry.count = 0; entry.reset = now + windowMs; }
-  if (entry.count >= max) return false;
-  entry.count++;
-  _rlMap.set(uid, entry);
-  return true;
+  const e = _rlGet.get(uid) || { c: 0, r: now + 60000 };
+  if (now > e.r) { e.c = 0; e.r = now + 60000; }
+  if (e.c >= 30) return false;
+  e.c++; _rlGet.set(uid, e); return true;
+}
+
+// Rate limit POST (update) — 60 req/min per uid
+const _rlPost = new Map();
+function checkRlPost(uid) {
+  const now = Date.now();
+  const e = _rlPost.get(uid) || { count: 0, reset: now + 60000 };
+  if (now > e.reset) { e.count = 0; e.reset = now + 60000; }
+  if (e.count >= 60) return false;
+  e.count++; _rlPost.set(uid, e); return true;
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST' && req.method !== 'DELETE') return res.status(405).end();
+  const method = req.method;
+  if (method !== 'GET' && method !== 'POST' && method !== 'DELETE') return res.status(405).end();
 
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Brak tokenu' });
@@ -30,15 +43,29 @@ export default async function handler(req, res) {
   try { ({ uid } = await auth.verifyIdToken(token)); }
   catch { return res.status(401).json({ error: 'Nieważny token' }); }
 
-  if (req.method === 'DELETE') {
+  // ── GET — lista dokumentów (dawniej get-docs.js) ──
+  if (method === 'GET') {
+    if (!checkRlGet(uid)) return res.status(429).json({ error: 'Zbyt wiele żądań.' });
+    const snap = await db.collection('users').doc(uid).collection('documents')
+      .orderBy('createdAt', 'desc').limit(100).get();
+    const docs = snap.docs.map(d => ({
+      ...d.data(), id: d.id,
+      createdAt: d.data().createdAt?.toDate?.()?.toISOString() || null,
+      updatedAt:  d.data().updatedAt?.toDate?.()?.toISOString()  || null,
+    }));
+    return res.status(200).json({ docs });
+  }
+
+  // ── DELETE — usuń dokument (dawniej update-doc.js) ──
+  if (method === 'DELETE') {
     const { docId } = req.body;
     if (!docId) return res.status(400).json({ error: 'Brak docId' });
     await db.collection('users').doc(uid).collection('documents').doc(docId).delete();
     return res.status(200).json({ ok: true });
   }
 
-  // POST — update
-  if (!checkMemRateLimit(uid, 60, 60_000)) {
+  // ── POST — aktualizuj dokument (dawniej update-doc.js) ──
+  if (!checkRlPost(uid)) {
     return res.status(429).json({ error: 'Zbyt wiele żądań. Spróbuj za chwilę.' });
   }
 
