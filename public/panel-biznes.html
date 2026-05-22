@@ -65,7 +65,7 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
   <div class="topbar">
     <div>
       <h1>Panel biznesu</h1>
-      <div class="sub">Twoje dokumenty, terminy i wysyłka — w jednym miejscu</div>
+      <div class="sub">Twoje faktury i umowy zlecenie — terminy i wysyłka w jednym miejscu</div>
     </div>
     <div class="links">
       <a class="link" href="/panel-windykacja.html">AI Windykator →</a>
@@ -93,8 +93,8 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
       <div class="preview" id="mPreview"></div>
     </div>
     <div class="row">
-      <div class="fld"><label>Termin</label><input type="date" id="mDue"></div>
-      <div class="fld"><label>E-mail odbiorcy</label><input type="email" id="mEmail" placeholder="klient@example.com"></div>
+      <div class="fld"><label id="mDueLbl">Termin</label><input type="date" id="mDue"></div>
+      <div class="fld"><label id="mEmailLbl">E-mail odbiorcy</label><input type="email" id="mEmail" placeholder="klient@example.com"></div>
     </div>
     <div class="fld">
       <label>Wiadomość do odbiorcy (opcjonalnie)</label>
@@ -196,7 +196,7 @@ function render() {
   const list = _filter === 'all' ? _docs : _docs.filter(d => (d.catLabel || 'Inne') === _filter);
   if (!list.length) {
     $('content').className = 'empty';
-    $('content').textContent = 'Brak dokumentów. Wygeneruj dokument w Dokumo, a pojawi się tutaj.';
+    $('content').textContent = 'Brak faktur i umów zlecenie. Wygeneruj je w Dokumo, a pojawią się tutaj.';
     return;
   }
   $('content').className = '';
@@ -223,6 +223,8 @@ function openModal(d) {
   $('mPreview').textContent = d.text || '(dokument nie zawiera treści tekstowej)';
   $('mDue').value = d.dueDate ? d.dueDate.slice(0, 10) : '';
   $('mEmail').value = d.recipientEmail || '';
+  $('mDueLbl').textContent = 'Termin' + (d.autoDue ? ' · wykryto z dokumentu' : '');
+  $('mEmailLbl').textContent = 'E-mail odbiorcy' + (d.autoEmail ? ' · wykryto z dokumentu' : '');
   $('mNote').value = '';
   $('mMsg').className = 'msg';
   $('modalBg').classList.add('open');

@@ -53,6 +53,62 @@ function daysOverdueOf(invoice) {
   return Math.floor((Date.now() - due) / DAY);
 }
 
+// ── Auto-pobieranie danych z dokumentów (faktury / umowy zlecenie) ──
+
+// Wyciąga pierwszy adres e-mail z tekstu (best-effort).
+function extractEmail(text) {
+  const m = (text || '').match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+  return m ? m[0] : '';
+}
+
+// Parsuje datę z fragmentu tekstu: YYYY-MM-DD albo DD.MM.YYYY / DD-MM-YYYY / DD/MM/YYYY.
+function parseLooseDate(s) {
+  let m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) { const d = new Date(+m[1], +m[2] - 1, +m[3]); return isNaN(d) ? null : d; }
+  m = s.match(/\b(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})\b/);
+  if (m) { const d = new Date(+m[3], +m[2] - 1, +m[1]); return isNaN(d) ? null : d; }
+  return null;
+}
+
+// Szuka daty płatności w pobliżu słów-kluczy (best-effort dla umów zlecenie).
+function extractPaymentDate(text) {
+  if (!text) return null;
+  const re = /(płatn|zapłat|wynagrodzeni|termin)/gi;
+  let m;
+  while ((m = re.exec(text))) {
+    const d = parseLooseDate(text.slice(m.index, m.index + 100));
+    if (d) return d;
+  }
+  return null;
+}
+
+// Czytelny podgląd faktury z danych strukturalnych (fakDataJson).
+function fakReadable(fd) {
+  const L = ['Faktura ' + (fd.numer || '')];
+  if (fd.dataWyst) L.push('Data wystawienia: ' + fd.dataWyst);
+  if (fd.dataSprzed) L.push('Data sprzedaży: ' + fd.dataSprzed);
+  if (fd.termin) L.push('Termin płatności: ' + fd.termin + ' dni od wystawienia');
+  L.push('', 'Sprzedawca: ' + (fd.sNazwa || '—'));
+  if (fd.sNip) L.push('NIP: ' + fd.sNip);
+  L.push('', 'Nabywca: ' + (fd.nNazwa || '—'));
+  if (fd.nNip) L.push('NIP: ' + fd.nNip);
+  if (fd.nEmail) L.push('E-mail: ' + fd.nEmail);
+  if (Array.isArray(fd.items) && fd.items.length) L.push('', 'Liczba pozycji: ' + fd.items.length);
+  if (fd.uwagi) L.push('', 'Uwagi: ' + fd.uwagi);
+  return L.join('\n');
+}
+
+// Termin płatności faktury = data wystawienia (lub sprzedaży) + termin w dniach.
+function fakDueDate(fd) {
+  const base = fd.dataWyst || fd.dataSprzed;
+  if (!base) return null;
+  const d = new Date(base);
+  if (isNaN(d)) return null;
+  const days = parseInt(fd.termin, 10);
+  d.setDate(d.getDate() + (isNaN(days) ? 0 : days));
+  return d;
+}
+
 // ── Czarna lista zwrotów (Poziom 1) — walidator wyjścia AI ──
 const FORBIDDEN_PHRASES_LVL1 = [
   'sąd', 'sądow',
@@ -359,27 +415,60 @@ export default async function handler(req, res) {
       return res.status(200).json({ invoices });
     }
 
-    // ── GET: dokumenty biznesowe (faktury, umowy itd. zapisane na koncie) ──
+    // ── GET: dokumenty biznesowe — TYLKO faktury i umowy zlecenie ──
+    // Dla faktur termin i e-mail nabywcy pobierane są z fakDataJson;
+    // dla umów zlecenie best-effort z treści. Pozostałe typy są pomijane.
     if (req.method === 'GET' && action === 'documents') {
+      const TYPES = {
+        faktura: { label: 'Faktura', icon: '🧾' },
+        zlecenie: { label: 'Umowa zlecenie', icon: '📑' },
+      };
+      const toIso = v => v?.toDate?.()?.toISOString() || (v ? new Date(v).toISOString() : null);
       const snap = await db.collection('users').doc(uid).collection('documents')
-        .orderBy('createdAt', 'desc').limit(100).get();
-      const documents = snap.docs.map(d => {
+        .orderBy('createdAt', 'desc').limit(200).get();
+      const documents = [];
+
+      for (const d of snap.docs) {
         const x = d.data();
-        const toIso = v => v?.toDate?.()?.toISOString() || (v ? new Date(v).toISOString() : null);
-        return {
+        const typeId = x.typeId || '';
+        const meta = TYPES[typeId];
+        if (!meta) continue; // pomijamy pozostałe typy dokumentów
+
+        let dueDate = toIso(x.dueDate);
+        let recipientEmail = x.recipientEmail || '';
+        let autoDue = false, autoEmail = false;
+        let text = x.text || '';
+
+        if (typeId === 'faktura') {
+          let fd = null;
+          try { fd = x.fakDataJson ? JSON.parse(x.fakDataJson) : null; } catch { fd = null; }
+          if (!fd && text.startsWith('__FAK_JSON__:')) {
+            try { fd = JSON.parse(text.slice(13)); } catch { fd = null; }
+          }
+          if (fd) {
+            text = fakReadable(fd);
+            if (!dueDate) { const dd = fakDueDate(fd); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
+            if (!recipientEmail && fd.nEmail) { recipientEmail = fd.nEmail; autoEmail = true; }
+          } else if (text.startsWith('__FAK_JSON__:')) {
+            text = '(faktura — brak danych do podglądu)';
+          }
+        } else if (typeId === 'zlecenie') {
+          if (!recipientEmail) { const e = extractEmail(text); if (e) { recipientEmail = e; autoEmail = true; } }
+          if (!dueDate) { const dd = extractPaymentDate(text); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
+        }
+
+        documents.push({
           id: d.id,
-          name: x.name || 'Dokument',
-          typeId: x.typeId || '',
-          cat: x.cat || '',
-          catLabel: x.catLabel || 'Inne',
-          icon: x.icon || '📄',
-          text: x.text || '',
+          name: x.name || meta.label,
+          typeId,
+          catLabel: meta.label,
+          icon: meta.icon,
+          text,
           createdAt: toIso(x.createdAt),
-          dueDate: toIso(x.dueDate),
-          recipientEmail: x.recipientEmail || '',
+          dueDate, recipientEmail, autoDue, autoEmail,
           lastSentAt: toIso(x.lastSentAt),
-        };
-      });
+        });
+      }
       return res.status(200).json({ documents, debug: DEBUG });
     }
 
