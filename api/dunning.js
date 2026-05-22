@@ -359,6 +359,30 @@ export default async function handler(req, res) {
       return res.status(200).json({ invoices });
     }
 
+    // ── GET: dokumenty biznesowe (faktury, umowy itd. zapisane na koncie) ──
+    if (req.method === 'GET' && action === 'documents') {
+      const snap = await db.collection('users').doc(uid).collection('documents')
+        .orderBy('createdAt', 'desc').limit(100).get();
+      const documents = snap.docs.map(d => {
+        const x = d.data();
+        const toIso = v => v?.toDate?.()?.toISOString() || (v ? new Date(v).toISOString() : null);
+        return {
+          id: d.id,
+          name: x.name || 'Dokument',
+          typeId: x.typeId || '',
+          cat: x.cat || '',
+          catLabel: x.catLabel || 'Inne',
+          icon: x.icon || '📄',
+          text: x.text || '',
+          createdAt: toIso(x.createdAt),
+          dueDate: toIso(x.dueDate),
+          recipientEmail: x.recipientEmail || '',
+          lastSentAt: toIso(x.lastSentAt),
+        };
+      });
+      return res.status(200).json({ documents, debug: DEBUG });
+    }
+
     if (req.method !== 'POST') return res.status(405).json({ error: 'Metoda niedozwolona' });
 
     // ── POST: utwórz testową fakturę ──
@@ -510,6 +534,56 @@ export default async function handler(req, res) {
       for (const d of pend.docs) await d.ref.update({ status: 'skipped', reviewedAt: Timestamp.now() });
       await logHistory(uid, { invoiceId, level: 0, action: 'marked_paid', metadata: {} });
       return res.status(200).json({ ok: true });
+    }
+
+    // ── POST: ustaw/zmień termin i odbiorcę dokumentu ──
+    if (action === 'set-deadline') {
+      const { docId, dueDate, recipientEmail } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const update = { updatedAt: Timestamp.now() };
+      if (dueDate !== undefined) {
+        update.dueDate = dueDate ? Timestamp.fromDate(new Date(dueDate)) : null;
+      }
+      if (recipientEmail !== undefined) {
+        update.recipientEmail = (recipientEmail || '').toString().slice(0, 200).trim();
+      }
+      try {
+        await db.collection('users').doc(uid).collection('documents').doc(docId).update(update);
+      } catch (e) {
+        return res.status(404).json({ error: 'Dokument nie istnieje' });
+      }
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── POST: wyślij dokument e-mailem (z podglądem treści) ──
+    if (action === 'send-document') {
+      const { docId, toEmail, note } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const dEmail = (toEmail || '').toString().trim();
+      if (!dEmail) return res.status(400).json({ error: 'Brak adresu e-mail' });
+
+      const dRef = db.collection('users').doc(uid).collection('documents').doc(docId);
+      const dSnap = await dRef.get();
+      if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
+      const doc = dSnap.data();
+      const docName = doc.name || 'Dokument';
+      const noteText = (note || '').toString().slice(0, 1000);
+      const body = (noteText ? noteText + '\n\n――――――\n\n' : '')
+        + (doc.text || '(dokument nie zawiera treści tekstowej)');
+
+      let messageId = null;
+      try {
+        messageId = await sendEmail({ to: dEmail, subject: docName, body, replyTo: email });
+      } catch (e) {
+        return res.status(502).json({ error: 'Wysyłka nie powiodła się: ' + e.message });
+      }
+
+      await dRef.update({ lastSentAt: Timestamp.now(), recipientEmail: dEmail }).catch(() => {});
+      await logHistory(uid, {
+        invoiceId: docId, level: 0, action: 'document_sent',
+        metadata: { toEmail: dEmail, messageId, docName },
+      });
+      return res.status(200).json({ ok: true, messageId, debug: DEBUG });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });
