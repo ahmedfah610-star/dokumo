@@ -160,6 +160,20 @@ tr:hover td{background:#faf8f4;}
     </div>
 
     <div class="panel-section">
+      <div class="panel-section-head"><h2>Dostęp do AI Windykatora</h2><span>beta — feature flag</span></div>
+      <div class="grant-form">
+        <label>Email użytkownika
+          <input type="email" id="dunEmail" placeholder="jan@example.com" autocomplete="off">
+        </label>
+        <button class="btn-grant" id="dunOnBtn" onclick="setDunning(true)">Nadaj dostęp</button>
+        <button class="btn-grant" id="dunOffBtn" onclick="setDunning(false)" style="background:#6b6560">Odbierz</button>
+      </div>
+      <div style="padding:0 20px 16px">
+        <div class="grant-result" id="dunResult"></div>
+      </div>
+    </div>
+
+    <div class="panel-section">
       <div class="panel-section-head"><h2>Płatności</h2><span>ostatnie 200</span></div>
       <div id="paymentsContent" class="loading">Ładowanie...</div>
     </div>
@@ -388,6 +402,36 @@ async function grantSub() {
   }
 }
 window.grantSub = grantSub;
+
+async function setDunning(enabled) {
+  const email = document.getElementById('dunEmail').value.trim();
+  const res = document.getElementById('dunResult');
+  const onBtn = document.getElementById('dunOnBtn');
+  const offBtn = document.getElementById('dunOffBtn');
+  res.className = 'grant-result'; res.style.display = 'none'; res.textContent = '';
+  if (!email) { res.className = 'grant-result err'; res.textContent = 'Wpisz email.'; return; }
+  onBtn.disabled = true; offBtn.disabled = true;
+  try {
+    const token = await window._getAdminToken();
+    const r = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'dunning-flag', email, enabled })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Błąd ' + r.status);
+    res.className = 'grant-result ok';
+    res.textContent = enabled
+      ? '✓ Włączono AI Windykator dla ' + email
+      : '✓ Wyłączono AI Windykator dla ' + email;
+  } catch(e) {
+    res.className = 'grant-result err';
+    res.textContent = '✗ ' + e.message;
+  } finally {
+    onBtn.disabled = false; offBtn.disabled = false;
+  }
+}
+window.setDunning = setDunning;
 
 function renderPayments(payments) {
   if (!payments.length) {

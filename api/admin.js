@@ -256,6 +256,26 @@ export default async function handler(req, res) {
       }
     }
 
+    // POST action=dunning-flag — włącz/wyłącz dostęp do AI Windykatora (beta)
+    if (action === 'dunning-flag') {
+      if (!email || typeof email !== 'string') return res.status(400).json({ error: 'Podaj email' });
+      const enabled = req.body?.enabled !== false; // domyślnie true
+      const emailClean = email.trim().toLowerCase();
+      try {
+        const user = await auth.getUserByEmail(emailClean);
+        await db.collection('users').doc(user.uid).set(
+          { featureFlags: { dunning: enabled } },
+          { merge: true }
+        );
+        return res.status(200).json({ ok: true, uid: user.uid, enabled });
+      } catch (e) {
+        if (e.code === 'auth/user-not-found') {
+          return res.status(404).json({ error: 'Konto o tym e-mailu nie istnieje' });
+        }
+        throw e;
+      }
+    }
+
     return res.status(400).json({ error: 'Nieznana akcja' });
 
   } catch (e) {
