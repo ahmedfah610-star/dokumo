@@ -20,8 +20,8 @@ const db = getFirestore();
 const auth = getAuth();
 
 const DAY = 86400000;
-// Domyślnie tryb debug WŁĄCZONY — maile nie wychodzą, dopóki ktoś świadomie nie ustawi 'false'.
-const DEBUG = process.env.DUNNING_DEBUG_MODE !== 'false';
+// Wysyłka maili WŁĄCZONA. Tryb testowy (maile nie wychodzą) tylko gdy DUNNING_DEBUG_MODE === 'true'.
+const DEBUG = process.env.DUNNING_DEBUG_MODE === 'true';
 
 function err(status, message) { return Object.assign(new Error(message), { status }); }
 
