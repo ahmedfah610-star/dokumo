@@ -239,6 +239,10 @@ function enrichDoc(id, x) {
     } else if (text.startsWith('__FAK_JSON__:')) {
       text = '(faktura — brak danych do podglądu)';
     }
+    // Fallback dla ręcznie dodanych faktur (bez fakDataJson) — bezpośrednie pola
+    if (amount == null && typeof x.amount === 'number') amount = x.amount;
+    if (!currency && x.currency) currency = x.currency;
+    if (!bankAccount && x.bankAccount) bankAccount = x.bankAccount;
   } else {
     if (!recipientEmail) { const e = extractEmail(text); if (e) { recipientEmail = e; autoEmail = true; } }
     if (!dueDate) { const dd = extractPaymentDate(text); if (dd) { dueDate = dd.toISOString(); autoDue = true; } }
@@ -249,6 +253,8 @@ function enrichDoc(id, x) {
     amount, currency, bankAccount,
     paid: x.paid === true, paidAt: toIso(x.paidAt),
     lastSentAt: toIso(x.lastSentAt), lastReminderLevel: x.lastReminderLevel || null,
+    selfReminderDays: Array.isArray(x.selfReminderDays) ? x.selfReminderDays : [],
+    source: x.source || 'generated',
   };
 }
 
@@ -288,6 +294,8 @@ function enrichContract(id, x) {
     id, name: x.name || meta.label, typeId: x.typeId, catLabel: meta.label, icon: meta.icon,
     text, createdAt: toIso(x.createdAt), endDate, recipientEmail, autoEnd, autoEmail,
     lastSentAt: toIso(x.lastSentAt),
+    selfReminderDays: Array.isArray(x.selfReminderDays) ? x.selfReminderDays : [],
+    source: x.source || 'generated',
   };
 }
 
@@ -473,6 +481,56 @@ async function logHistory(uid, entry) {
   }
 }
 
+// ── Samoprzypomnienia: dla każdego dokumentu z selfReminderDays wysyła mail do
+// właściciela, gdy do terminu pozostaje dokładnie N dni. Idempotentne dzięki
+// selfReminderSent (lista dni, na które już wysłano).
+async function processSelfReminders(uid, ownerEmail) {
+  if (!ownerEmail) return 0;
+  const snap = await db.collection('users').doc(uid).collection('documents').get();
+  let sent = 0;
+  for (const d of snap.docs) {
+    const x = d.data();
+    const days = Array.isArray(x.selfReminderDays) ? x.selfReminderDays : [];
+    if (!days.length) continue;
+    if (x.paid) continue;
+    const deadlineMs = x.dueDate?.toMillis?.() ?? x.contractEndDate?.toMillis?.() ?? null;
+    if (deadlineMs == null) continue;
+    const diffDays = Math.ceil((deadlineMs - Date.now()) / DAY);
+    const sentArr = Array.isArray(x.selfReminderSent) ? x.selfReminderSent : [];
+    for (const N of days) {
+      if (diffDays !== N) continue;
+      if (sentArr.includes(N)) continue;
+      const isContract = !!x.contractEndDate;
+      const dStr = new Date(deadlineMs).toLocaleDateString('pl-PL');
+      const docName = x.name || (isContract ? 'umowa' : 'dokument');
+      const subject = isContract
+        ? `Przypomnienie: „${docName}" — termin zakończenia za ${N} dni (${dStr})`
+        : `Przypomnienie: „${docName}" — termin płatności za ${N} dni (${dStr})`;
+      const body =
+`To samoprzypomnienie z Twojego panelu biznesu w Dokumo.
+
+Dokument: ${docName}
+${isContract ? 'Termin zakończenia' : 'Termin płatności'}: ${dStr}
+Pozostało: ${N} ${N === 1 ? 'dzień' : 'dni'}
+
+Otwórz panel: https://dokumoflow.com/panel-biznes.html`;
+      try {
+        await sendEmail({ to: ownerEmail, subject, body });
+        await d.ref.update({ selfReminderSent: [...sentArr, N] });
+        sentArr.push(N);
+        await logHistory(uid, {
+          invoiceId: d.id, level: 0, action: 'self_reminder_sent',
+          metadata: { daysBefore: N, toEmail: ownerEmail },
+        });
+        sent++;
+      } catch (e) {
+        console.error('self-reminder send failed:', e.message);
+      }
+    }
+  }
+  return sent;
+}
+
 // ── Monitor: dla jednego usera generuje propozycje Poziomu 1 ──
 async function monitorUser(uid, fromName, tone) {
   const summary = { generated: 0, skipped: 0, failed: 0 };
@@ -567,6 +625,28 @@ export default async function handler(req, res) {
         totals.users++; totals.generated += s.generated; totals.skipped += s.skipped; totals.failed += s.failed;
       }
       return res.status(200).json({ ok: true, debug: DEBUG, ...totals });
+    }
+
+    // ── Cron: codzienne samoprzypomnienia (wysyłka do właścicieli kont) ──
+    // Vercel Cron przekazuje "Authorization: Bearer <CRON_SECRET>" gdy zmienna jest ustawiona.
+    // Akceptujemy też custom header "x-cron-secret" (dla zewnętrznych cron-job.org itp.).
+    const cronSecret = process.env.CRON_SECRET;
+    const cronAuthed = cronSecret && (
+      req.headers.authorization === 'Bearer ' + cronSecret ||
+      req.headers['x-cron-secret'] === cronSecret
+    );
+    if (action === 'self-reminder-check' && cronAuthed) {
+      const usersSnap = await db.collection('users').where('featureFlags.dunning', '==', true).limit(500).get();
+      let processed = 0, totalSent = 0;
+      for (const u of usersSnap.docs) {
+        try {
+          const auser = await auth.getUser(u.id);
+          if (!auser.email) continue;
+          totalSent += await processSelfReminders(u.id, auser.email);
+          processed++;
+        } catch (e) { /* skip */ }
+      }
+      return res.status(200).json({ ok: true, processed, sent: totalSent });
     }
 
     // ── Wszystkie pozostałe akcje: wymagają flagi ──
@@ -803,7 +883,7 @@ export default async function handler(req, res) {
 
     // ── POST: ustaw/zmień termin i odbiorcę dokumentu ──
     if (action === 'set-deadline') {
-      const { docId, dueDate, recipientEmail } = req.body || {};
+      const { docId, dueDate, recipientEmail, selfReminderDays } = req.body || {};
       if (!docId) return res.status(400).json({ error: 'Brak docId' });
       const update = { updatedAt: Timestamp.now() };
       if (dueDate !== undefined) {
@@ -811,6 +891,10 @@ export default async function handler(req, res) {
       }
       if (recipientEmail !== undefined) {
         update.recipientEmail = (recipientEmail || '').toString().slice(0, 200).trim();
+      }
+      if (Array.isArray(selfReminderDays)) {
+        update.selfReminderDays = selfReminderDays.filter(d => Number.isInteger(d) && d >= 0 && d <= 60).slice(0, 8);
+        update.selfReminderSent = []; // reset historii wysyłek przy zmianie ustawień
       }
       try {
         await db.collection('users').doc(uid).collection('documents').doc(docId).update(update);
@@ -968,7 +1052,7 @@ export default async function handler(req, res) {
 
     // ── POST: ustaw termin zakończenia / e-mail dla umowy ──
     if (action === 'set-contract') {
-      const { docId, endDate, recipientEmail } = req.body || {};
+      const { docId, endDate, recipientEmail, selfReminderDays } = req.body || {};
       if (!docId) return res.status(400).json({ error: 'Brak docId' });
       const update = { updatedAt: Timestamp.now() };
       if (endDate !== undefined) {
@@ -976,6 +1060,10 @@ export default async function handler(req, res) {
       }
       if (recipientEmail !== undefined) {
         update.recipientEmail = (recipientEmail || '').toString().slice(0, 200).trim();
+      }
+      if (Array.isArray(selfReminderDays)) {
+        update.selfReminderDays = selfReminderDays.filter(d => Number.isInteger(d) && d >= 0 && d <= 60).slice(0, 8);
+        update.selfReminderSent = [];
       }
       try {
         await db.collection('users').doc(uid).collection('documents').doc(docId).update(update);
@@ -1028,6 +1116,55 @@ export default async function handler(req, res) {
         metadata: { toEmail: dEmail, messageId },
       });
       return res.status(200).json({ ok: true, messageId, debug: DEBUG });
+    }
+
+    // ── POST: dodaj własną fakturę / umowę ręcznie ──
+    if (action === 'add-doc') {
+      const KIND = {
+        faktura: { typeId: 'faktura', catLabel: 'Faktura', icon: '🧾', cat: 'biznes' },
+        zlecenie: { typeId: 'zlecenie', catLabel: 'Umowa zlecenie', icon: '📑', cat: 'hr' },
+        b2b: { typeId: 'b2b', catLabel: 'Umowa B2B', icon: '💼', cat: 'hr' },
+        uop: { typeId: 'uop', catLabel: 'Umowa o pracę', icon: '📋', cat: 'hr' },
+      };
+      const b = req.body || {};
+      const meta = KIND[b.kind];
+      if (!meta) return res.status(400).json({ error: 'Nieprawidłowy typ dokumentu' });
+      if (!b.name) return res.status(400).json({ error: 'Brak nazwy dokumentu' });
+      try {
+        const cntSnap = await db.collection('users').doc(uid).collection('documents').count().get();
+        if (cntSnap.data().count >= 500) return res.status(429).json({ error: 'Limit dokumentów osiągnięty' });
+      } catch { /* ignore */ }
+      const payload = {
+        typeId: meta.typeId, catLabel: meta.catLabel, icon: meta.icon, cat: meta.cat,
+        name: String(b.name).slice(0, 200),
+        text: (b.text || '').toString().slice(0, 500000),
+        source: 'manual',
+        status: 'generated',
+        createdAt: Timestamp.now(), updatedAt: Timestamp.now(),
+      };
+      if (b.recipientEmail) payload.recipientEmail = b.recipientEmail.toString().slice(0, 200).trim();
+      if (b.kind === 'faktura') {
+        if (b.dueDate) payload.dueDate = Timestamp.fromDate(new Date(b.dueDate));
+        const amt = parseFloat(b.amount);
+        if (!isNaN(amt) && amt > 0) payload.amount = amt;
+        if (b.currency) payload.currency = String(b.currency).slice(0, 6);
+        else if (!isNaN(amt) && amt > 0) payload.currency = 'PLN';
+        if (b.bankAccount) payload.bankAccount = b.bankAccount.toString().slice(0, 100);
+      } else {
+        if (b.endDate) payload.contractEndDate = Timestamp.fromDate(new Date(b.endDate));
+      }
+      if (Array.isArray(b.selfReminderDays)) {
+        payload.selfReminderDays = b.selfReminderDays.filter(d => Number.isInteger(d) && d >= 0 && d <= 60).slice(0, 8);
+      }
+      const ref = await db.collection('users').doc(uid).collection('documents').add(payload);
+      return res.status(200).json({ ok: true, id: ref.id });
+    }
+
+    // ── POST: uruchom samoprzypomnienia dla bieżącego użytkownika (ręczny test) ──
+    if (action === 'self-reminder-check') {
+      if (!email) return res.status(400).json({ error: 'Brak e-maila konta' });
+      const sent = await processSelfReminders(uid, email);
+      return res.status(200).json({ ok: true, sent });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });

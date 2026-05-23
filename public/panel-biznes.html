@@ -86,6 +86,13 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .msg{font-size:.8rem;padding:8px 12px;border-radius:8px;margin-top:10px;display:none;}
 .msg.ok{background:#dcfce7;color:#15803d;display:block;}
 .msg.err{background:#fee2e2;color:#b91c1c;display:block;}
+
+.actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.rem-row{display:flex;gap:12px;flex-wrap:wrap;}
+.cb{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;color:#3a3330;cursor:pointer;padding:5px 10px;border:1px solid rgba(26,23,20,.15);border-radius:8px;background:#fff;}
+.cb input{margin:0;cursor:pointer;}
+.cb:hover{background:#faf8f4;}
+.cb-info{font-size:.72rem;color:#9b948c;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -113,6 +120,9 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
       <div class="attn-card attn-green"><div class="attn-num" id="cntPaid">0</div><div class="attn-lbl">zapłacone</div></div>
       <div class="attn-card"><div class="attn-num" id="cntRem">0</div><div class="attn-lbl">wysłane przypomnienia</div></div>
     </div>
+    <div class="actions-row">
+      <button class="btn btn-light" id="addPayBtn">+ Dodaj fakturę</button>
+    </div>
     <div class="chips" id="payChips"></div>
     <div id="payContent" class="loading">Ładowanie…</div>
   </div>
@@ -122,6 +132,9 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
       <div class="attn-card attn-red"><div class="attn-num" id="cntEnded">0</div><div class="attn-lbl">zakończone</div></div>
       <div class="attn-card attn-amber"><div class="attn-num" id="cntEndSoon">0</div><div class="attn-lbl">kończą się w 30 dni</div></div>
       <div class="attn-card"><div class="attn-num" id="cntCAll">0</div><div class="attn-lbl">umów łącznie</div></div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-light" id="addContractBtn">+ Dodaj umowę</button>
     </div>
     <div class="chips" id="contractChips"></div>
     <div id="contractContent" class="loading">Ładowanie…</div>
@@ -140,6 +153,16 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
     <div class="row">
       <div class="fld"><label id="mDueLbl">Termin</label><input type="date" id="mDue"></div>
       <div class="fld"><label id="mEmailLbl">E-mail odbiorcy</label><input type="email" id="mEmail" placeholder="klient@example.com"></div>
+    </div>
+    <div class="fld">
+      <label>Wyślij mi przypomnienie przed terminem</label>
+      <div class="rem-row">
+        <label class="cb"><input type="checkbox" data-rd="14"> 14 dni</label>
+        <label class="cb"><input type="checkbox" data-rd="7"> 7 dni</label>
+        <label class="cb"><input type="checkbox" data-rd="3"> 3 dni</label>
+        <label class="cb"><input type="checkbox" data-rd="1"> 1 dzień</label>
+      </div>
+      <div class="cb-info">Otrzymasz e-mail na swój adres dokładnie w wybranym dniu przed terminem. Zapisuje się razem z „Zapisz termin".</div>
     </div>
     <div class="btns" style="margin-top:0"><button class="btn btn-light" id="mSaveDue">Zapisz termin</button></div>
 
@@ -183,6 +206,51 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
   </div>
 </div>
 
+<!-- Modal dodawania własnego dokumentu -->
+<div class="modal-bg" id="addModalBg">
+  <div class="modal">
+    <h2 id="addTitle">Dodaj fakturę</h2>
+    <div class="mtype" id="addSubtitle">Wpisz dane — pojawi się w panelu razem z dokumentami z Dokumo.</div>
+    <div class="fld" id="addKindRow" style="display:none">
+      <label>Typ umowy</label>
+      <select id="addKind" style="width:100%;padding:9px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.85rem;font-family:inherit;outline:none;">
+        <option value="b2b">Umowa B2B</option>
+        <option value="zlecenie">Umowa zlecenie</option>
+        <option value="uop">Umowa o pracę</option>
+      </select>
+    </div>
+    <div class="fld"><label>Nazwa / numer</label><input id="addName" placeholder="np. FA/2026/0042"></div>
+    <div class="row">
+      <div class="fld"><label id="addDateLbl">Termin płatności</label><input type="date" id="addDate"></div>
+      <div class="fld"><label>E-mail odbiorcy</label><input type="email" id="addEmail" placeholder="klient@example.com"></div>
+    </div>
+    <div id="addInvoiceFields">
+      <div class="row">
+        <div class="fld"><label>Kwota (zł)</label><input type="number" id="addAmount" step="0.01" placeholder="np. 5400"></div>
+        <div class="fld"><label>Numer konta</label><input id="addBank" placeholder="opcjonalnie"></div>
+      </div>
+    </div>
+    <div class="fld">
+      <label>Treść / notatka (opcjonalnie)</label>
+      <textarea id="addText" rows="4" placeholder="Krótka notatka, opis lub treść dokumentu…" style="line-height:1.55;resize:vertical;"></textarea>
+    </div>
+    <div class="fld">
+      <label>Wyślij mi przypomnienie przed terminem</label>
+      <div class="rem-row">
+        <label class="cb"><input type="checkbox" data-ard="14"> 14 dni</label>
+        <label class="cb"><input type="checkbox" data-ard="7"> 7 dni</label>
+        <label class="cb"><input type="checkbox" data-ard="3"> 3 dni</label>
+        <label class="cb"><input type="checkbox" data-ard="1"> 1 dzień</label>
+      </div>
+    </div>
+    <div class="btns">
+      <button class="btn btn-dark" id="addSave">Dodaj</button>
+      <button class="btn btn-light" id="addClose">Anuluj</button>
+    </div>
+    <div class="msg" id="addMsg"></div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -203,6 +271,7 @@ const HIST_LABEL = {
   reminder_sent: 'Wysłano przypomnienie', document_sent: 'Wysłano dokument',
   doc_marked_paid: 'Oznaczono jako zapłacone', doc_marked_unpaid: 'Cofnięto oznaczenie zapłaty',
   extension_sent: 'Wysłano propozycję przedłużenia',
+  self_reminder_sent: 'Wysłano samoprzypomnienie',
 };
 const TPL_LABEL = { przed: 'Przed terminem', po1: 'Po terminie', po2: 'Ponaglenie', sad: 'Przedsądowe' };
 
@@ -385,7 +454,7 @@ async function openPayModal(d) {
   _current = d; _kind = 'pay';
   resetModalButtons();
   $('mName').textContent = d.name;
-  $('mType').textContent = (d.catLabel || 'Inne') + (d.typeId ? ' · ' + d.typeId : '');
+  $('mType').textContent = (d.catLabel || 'Inne') + (d.typeId ? ' · ' + d.typeId : '') + (d.source === 'manual' ? ' · dodane ręcznie' : '');
   $('mPrevLbl').textContent = 'Podgląd dokumentu';
   $('mPreview').textContent = d.text || '(dokument nie zawiera treści tekstowej)';
   $('mDue').value = d.dueDate ? d.dueDate.slice(0, 10) : '';
@@ -393,6 +462,7 @@ async function openPayModal(d) {
   $('mDueLbl').textContent = 'Termin' + (d.autoDue ? ' · wykryto z dokumentu' : '');
   $('mEmailLbl').textContent = 'E-mail odbiorcy' + (d.autoEmail ? ' · wykryto z dokumentu' : '');
   $('mMsg').className = 'msg';
+  setReminderCheckboxes(d.selfReminderDays || []);
 
   $('mPaidNote').style.display = d.paid ? 'block' : 'none';
   if (!d.paid) {
@@ -414,7 +484,7 @@ async function openContractModal(c) {
   _current = c; _kind = 'contract';
   resetModalButtons();
   $('mName').textContent = c.name;
-  $('mType').textContent = (c.catLabel || 'Inne') + (c.typeId ? ' · ' + c.typeId : '');
+  $('mType').textContent = (c.catLabel || 'Inne') + (c.typeId ? ' · ' + c.typeId : '') + (c.source === 'manual' ? ' · dodane ręcznie' : '');
   $('mPrevLbl').textContent = 'Podgląd umowy';
   $('mPreview').textContent = c.text || '(umowa nie zawiera treści tekstowej)';
   $('mDue').value = c.endDate ? c.endDate.slice(0, 10) : '';
@@ -422,6 +492,7 @@ async function openContractModal(c) {
   $('mDueLbl').textContent = 'Termin zakończenia' + (c.autoEnd ? ' · wykryto z umowy' : '');
   $('mEmailLbl').textContent = 'E-mail drugiej strony' + (c.autoEmail ? ' · wykryto z umowy' : '');
   $('mMsg').className = 'msg';
+  setReminderCheckboxes(c.selfReminderDays || []);
 
   $('extSec').style.display = 'block';
   $('mSendExt').style.display = '';
@@ -485,22 +556,32 @@ function busy(b) {
   ['mSaveDue','mSendPay','mSendDoc','mPaid','mUnpaid','mSendExt'].forEach(id => $(id).disabled = b);
 }
 
+function getReminderCheckboxes() {
+  return [...document.querySelectorAll('[data-rd]')].filter(c => c.checked).map(c => parseInt(c.dataset.rd, 10));
+}
+function setReminderCheckboxes(days) {
+  document.querySelectorAll('[data-rd]').forEach(c => { c.checked = days.includes(parseInt(c.dataset.rd, 10)); });
+}
+
 $('mSaveDue').onclick = async () => {
   if (!_current) return;
   busy(true);
   try {
     const dueVal = $('mDue').value || null;
     const emailVal = $('mEmail').value.trim();
+    const remDays = getReminderCheckboxes();
     if (_kind === 'pay') {
       await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-        action: 'set-deadline', docId: _current.id, dueDate: dueVal, recipientEmail: emailVal,
+        action: 'set-deadline', docId: _current.id, dueDate: dueVal,
+        recipientEmail: emailVal, selfReminderDays: remDays,
       })});
     } else {
       await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-        action: 'set-contract', docId: _current.id, endDate: dueVal, recipientEmail: emailVal,
+        action: 'set-contract', docId: _current.id, endDate: dueVal,
+        recipientEmail: emailVal, selfReminderDays: remDays,
       })});
     }
-    showMsg('✓ Termin zapisany', true);
+    showMsg('✓ Zapisano termin i przypomnienia', true);
     setTimeout(() => { closeModal(); _kind === 'pay' ? loadPay() : loadContracts(); }, 900);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 };
@@ -562,6 +643,62 @@ async function setPaid(paid) {
 }
 $('mPaid').onclick = () => setPaid(true);
 $('mUnpaid').onclick = () => setPaid(false);
+
+// ── Modal dodawania własnej faktury / umowy ──
+let _addKind = 'faktura';
+
+function openAdd(target) {
+  _addKind = target; // 'faktura' lub 'umowa'
+  const isInvoice = target === 'faktura';
+  $('addTitle').textContent = isInvoice ? 'Dodaj fakturę' : 'Dodaj umowę';
+  $('addKindRow').style.display = isInvoice ? 'none' : 'block';
+  $('addInvoiceFields').style.display = isInvoice ? 'block' : 'none';
+  $('addDateLbl').textContent = isInvoice ? 'Termin płatności' : 'Termin zakończenia';
+  ['addName','addEmail','addAmount','addBank','addText','addDate'].forEach(id => { if ($(id)) $(id).value = ''; });
+  document.querySelectorAll('[data-ard]').forEach(c => { c.checked = false; });
+  $('addKind').value = 'b2b';
+  $('addMsg').className = 'msg';
+  $('addModalBg').classList.add('open');
+}
+function closeAdd() { $('addModalBg').classList.remove('open'); }
+function showAddMsg(t, ok) { const m = $('addMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = t; }
+
+$('addPayBtn').onclick = () => openAdd('faktura');
+$('addContractBtn').onclick = () => openAdd('umowa');
+$('addClose').onclick = closeAdd;
+$('addModalBg').onclick = e => { if (e.target === $('addModalBg')) closeAdd(); };
+
+$('addSave').onclick = async () => {
+  const name = $('addName').value.trim();
+  if (!name) { showAddMsg('Podaj nazwę.', false); return; }
+  const isInvoice = _addKind === 'faktura';
+  const kind = isInvoice ? 'faktura' : $('addKind').value;
+  const remDays = [...document.querySelectorAll('[data-ard]')].filter(c => c.checked).map(c => parseInt(c.dataset.ard, 10));
+  const body = {
+    action: 'add-doc', kind, name,
+    text: $('addText').value,
+    recipientEmail: $('addEmail').value.trim(),
+    selfReminderDays: remDays,
+  };
+  if (isInvoice) {
+    if ($('addDate').value) body.dueDate = $('addDate').value;
+    const amt = parseFloat($('addAmount').value);
+    if (!isNaN(amt) && amt > 0) body.amount = amt;
+    if ($('addBank').value.trim()) body.bankAccount = $('addBank').value.trim();
+  } else {
+    if ($('addDate').value) body.endDate = $('addDate').value;
+  }
+  $('addSave').disabled = true;
+  try {
+    await api('/api/dunning', { method: 'POST', body: JSON.stringify(body) });
+    showAddMsg('✓ Dodano', true);
+    setTimeout(() => { closeAdd(); isInvoice ? loadPay() : loadContracts(); }, 700);
+  } catch (e) {
+    showAddMsg('✗ ' + e.message, false);
+  } finally {
+    $('addSave').disabled = false;
+  }
+};
 </script>
 </body>
 </html>
