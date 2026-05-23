@@ -16,6 +16,14 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .links{display:flex;gap:14px;flex-wrap:wrap;}
 .link{font-size:.8rem;color:#1a1714;font-weight:600;text-decoration:none;border-bottom:1px solid #cfc9c0;}
 .debug-banner{background:#fef9c3;color:#854d0e;border:1px solid #fde68a;border-radius:10px;padding:9px 13px;font-size:.78rem;font-weight:600;margin-bottom:14px;}
+
+.tabs{display:flex;gap:6px;background:#ebe7df;padding:4px;border-radius:12px;margin-bottom:18px;width:fit-content;}
+.tab-btn{padding:8px 18px;border-radius:9px;border:none;cursor:pointer;font-size:.83rem;font-weight:700;font-family:inherit;background:transparent;color:#6b6560;transition:background .12s,color .12s;}
+.tab-btn:hover{color:#1a1714;}
+.tab-btn.active{background:#fff;color:#1a1714;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
 .attn{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
 .attn-card{background:#fff;border:1px solid rgba(26,23,20,.1);border-radius:12px;padding:12px 16px;flex:1;min-width:140px;}
 .attn-num{font-size:1.5rem;font-weight:800;line-height:1;}
@@ -41,6 +49,7 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .b-paid{background:#1a1714;color:#fff;}
 .empty,.loading,.error{padding:48px;text-align:center;color:#9b948c;font-size:.88rem;}
 .error{color:#b91c1c;}
+
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;padding:20px;overflow-y:auto;}
 .modal-bg.open{display:flex;align-items:flex-start;justify-content:center;}
 .modal{background:#fff;border-radius:16px;max-width:620px;width:100%;margin:auto;padding:22px;}
@@ -55,15 +64,14 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .row{display:flex;gap:10px;flex-wrap:wrap;}
 .row .fld{flex:1;min-width:160px;}
 .paid-note{background:#1a1714;color:#fff;border-radius:10px;padding:11px 14px;font-size:.82rem;font-weight:600;margin:6px 0 12px;}
-.rem-sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:14px;}
-.rem-h{display:block;font-size:.82rem;font-weight:800;margin-bottom:4px;}
-.rem-hint{font-size:.72rem;color:#9b948c;margin-bottom:9px;}
+.sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:14px;}
+.sec-h{display:block;font-size:.82rem;font-weight:800;margin-bottom:4px;}
+.sec-hint{font-size:.72rem;color:#9b948c;margin-bottom:9px;}
 .tpl-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
 .tpl{padding:7px 12px;border-radius:9px;border:1px solid rgba(26,23,20,.18);background:#fff;font-size:.75rem;font-weight:700;cursor:pointer;color:#6b6560;font-family:inherit;}
 .tpl:hover{background:#f0ede8;}
 .tpl.active{background:#1a1714;color:#fff;border-color:#1a1714;}
 .tpl .star{color:#f59e0b;}
-.hist-sec{border-top:1px solid rgba(26,23,20,.12);margin-top:14px;padding-top:12px;}
 .hist-h{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#6b6560;margin-bottom:8px;}
 .hist-row{font-size:.78rem;color:#3a3330;padding:5px 0;border-bottom:1px solid #f0ede8;display:flex;justify-content:space-between;gap:10px;}
 .hist-row:last-child{border-bottom:none;}
@@ -85,26 +93,39 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
   <div class="topbar">
     <div>
       <h1>Panel biznesu</h1>
-      <div class="sub">Twoje faktury i umowy zlecenie — terminy, przypomnienia i płatności</div>
+      <div class="sub">Płatności i umowy w jednym miejscu — terminy, przypomnienia, przedłużenia</div>
     </div>
     <div class="links">
-      <a class="link" href="/panel-umowy.html">Twoje umowy →</a>
       <a class="link" href="/panel-ustawienia.html">⚙ Ustawienia</a>
-      <a class="link" href="/panel-windykacja.html">AI Windykator →</a>
-      <a class="link" href="/panel-faktury-test.html">Faktury testowe →</a>
     </div>
   </div>
   <div class="debug-banner" id="debugBanner" style="display:none">⚠️ TRYB TESTOWY — maile NIE są wysyłane (zmień DUNNING_DEBUG_MODE, by włączyć wysyłkę).</div>
 
-  <div class="attn" id="attn" style="display:none">
-    <div class="attn-card attn-red"><div class="attn-num" id="cntOver">0</div><div class="attn-lbl">po terminie</div></div>
-    <div class="attn-card attn-amber"><div class="attn-num" id="cntSoon">0</div><div class="attn-lbl">termin w 7 dni</div></div>
-    <div class="attn-card attn-green"><div class="attn-num" id="cntPaid">0</div><div class="attn-lbl">zapłacone</div></div>
-    <div class="attn-card"><div class="attn-num" id="cntRem">0</div><div class="attn-lbl">wysłane przypomnienia</div></div>
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="pay" role="tab">Płatności</button>
+    <button class="tab-btn" data-tab="contract" role="tab">Umowy</button>
   </div>
 
-  <div class="chips" id="chips"></div>
-  <div id="content" class="loading">Ładowanie…</div>
+  <div class="tab-pane active" id="payPane">
+    <div class="attn" id="payAttn" style="display:none">
+      <div class="attn-card attn-red"><div class="attn-num" id="cntOver">0</div><div class="attn-lbl">po terminie</div></div>
+      <div class="attn-card attn-amber"><div class="attn-num" id="cntSoon">0</div><div class="attn-lbl">termin w 7 dni</div></div>
+      <div class="attn-card attn-green"><div class="attn-num" id="cntPaid">0</div><div class="attn-lbl">zapłacone</div></div>
+      <div class="attn-card"><div class="attn-num" id="cntRem">0</div><div class="attn-lbl">wysłane przypomnienia</div></div>
+    </div>
+    <div class="chips" id="payChips"></div>
+    <div id="payContent" class="loading">Ładowanie…</div>
+  </div>
+
+  <div class="tab-pane" id="contractPane">
+    <div class="attn" id="contractAttn" style="display:none">
+      <div class="attn-card attn-red"><div class="attn-num" id="cntEnded">0</div><div class="attn-lbl">zakończone</div></div>
+      <div class="attn-card attn-amber"><div class="attn-num" id="cntEndSoon">0</div><div class="attn-lbl">kończą się w 30 dni</div></div>
+      <div class="attn-card"><div class="attn-num" id="cntCAll">0</div><div class="attn-lbl">umów łącznie</div></div>
+    </div>
+    <div class="chips" id="contractChips"></div>
+    <div id="contractContent" class="loading">Ładowanie…</div>
+  </div>
 </div>
 
 <div class="modal-bg" id="modalBg">
@@ -113,40 +134,49 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
     <div class="mtype" id="mType"></div>
     <div class="paid-note" id="mPaidNote" style="display:none">✓ Dokument oznaczony jako zapłacony</div>
     <div class="fld">
-      <label>Podgląd dokumentu</label>
+      <label id="mPrevLbl">Podgląd</label>
       <div class="preview" id="mPreview"></div>
     </div>
     <div class="row">
       <div class="fld"><label id="mDueLbl">Termin</label><input type="date" id="mDue"></div>
       <div class="fld"><label id="mEmailLbl">E-mail odbiorcy</label><input type="email" id="mEmail" placeholder="klient@example.com"></div>
     </div>
-    <div class="btns" style="margin-top:0">
-      <button class="btn btn-light" id="mSaveDue">Zapisz termin</button>
-    </div>
+    <div class="btns" style="margin-top:0"><button class="btn btn-light" id="mSaveDue">Zapisz termin</button></div>
 
-    <div class="rem-sec" id="mRemSec">
-      <label class="rem-h">Wyślij przypomnienie o płatności</label>
-      <div class="rem-hint">Wybierz etap — treść jest gotowa, możesz ją jeszcze edytować przed wysłaniem.</div>
+    <!-- Sekcja PŁATNOŚCI: 4 szablony przypomnień -->
+    <div class="sec" id="paySec" style="display:none">
+      <label class="sec-h">Wyślij przypomnienie o płatności</label>
+      <div class="sec-hint">Wybierz etap — treść jest gotowa, możesz ją jeszcze edytować przed wysłaniem.</div>
       <div class="tpl-row" id="tplRow">
         <button class="tpl" data-lvl="przed">Przed terminem</button>
         <button class="tpl" data-lvl="po1">Po terminie</button>
         <button class="tpl" data-lvl="po2">Ponaglenie</button>
         <button class="tpl" data-lvl="sad">Przedsądowe</button>
       </div>
-      <div class="fld"><label>Temat</label><input type="text" id="mSubj"></div>
-      <div class="fld"><label>Treść wiadomości (podgląd)</label><textarea id="mBody" rows="9"></textarea></div>
+      <div class="fld"><label>Temat</label><input type="text" id="mSubjPay"></div>
+      <div class="fld"><label>Treść wiadomości (podgląd)</label><textarea id="mBodyPay" rows="9"></textarea></div>
     </div>
 
-    <div class="hist-sec">
+    <!-- Sekcja UMOWY: jeden szablon przedłużenia -->
+    <div class="sec" id="extSec" style="display:none">
+      <label class="sec-h">Wyślij propozycję przedłużenia</label>
+      <div class="sec-hint">Gotowa treść — możesz ją edytować przed wysłaniem.</div>
+      <div class="fld"><label>Temat</label><input type="text" id="mSubjExt"></div>
+      <div class="fld"><label>Treść wiadomości (podgląd)</label><textarea id="mBodyExt" rows="8"></textarea></div>
+    </div>
+
+    <!-- Historia (wspólna) -->
+    <div class="sec">
       <div class="hist-h">Historia</div>
       <div id="mHist" class="hist-empty">—</div>
     </div>
 
     <div class="btns">
-      <button class="btn btn-dark" id="mSend">Wyślij przypomnienie</button>
-      <button class="btn btn-light" id="mSendDoc">Wyślij sam dokument</button>
-      <button class="btn btn-green" id="mPaid">Oznacz jako zapłacone</button>
+      <button class="btn btn-dark" id="mSendPay" style="display:none">Wyślij przypomnienie</button>
+      <button class="btn btn-light" id="mSendDoc" style="display:none">Wyślij sam dokument</button>
+      <button class="btn btn-green" id="mPaid" style="display:none">Oznacz jako zapłacone</button>
       <button class="btn btn-light" id="mUnpaid" style="display:none">Cofnij oznaczenie</button>
+      <button class="btn btn-dark" id="mSendExt" style="display:none">Wyślij propozycję przedłużenia</button>
       <button class="btn btn-light" id="mClose">Zamknij</button>
     </div>
     <div class="msg" id="mMsg"></div>
@@ -160,7 +190,11 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
 const app = getApps().length ? getApps()[0] : initializeApp(__c);
 const auth = getAuth(app);
-let _user = null, _docs = [], _filter = 'all', _current = null, _level = 'po1', _suggested = 'po1', _remindersSent = 0;
+
+let _user = null;
+let _payDocs = [], _payRemSent = 0, _payFilter = 'all';
+let _contractDocs = [], _contractFilter = 'all';
+let _current = null, _kind = null, _level = 'po1', _suggested = 'po1';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -168,6 +202,7 @@ const DAY = 86400000;
 const HIST_LABEL = {
   reminder_sent: 'Wysłano przypomnienie', document_sent: 'Wysłano dokument',
   doc_marked_paid: 'Oznaczono jako zapłacone', doc_marked_unpaid: 'Cofnięto oznaczenie zapłaty',
+  extension_sent: 'Wysłano propozycję przedłużenia',
 };
 const TPL_LABEL = { przed: 'Przed terminem', po1: 'Po terminie', po2: 'Ponaglenie', sad: 'Przedsądowe' };
 
@@ -184,71 +219,82 @@ function dueInfo(iso) {
   const ms = new Date(iso).getTime();
   const diff = ms - Date.now();
   const d = new Date(ms).toLocaleDateString('pl-PL');
-  if (diff < 0) {
-    const days = Math.ceil(-diff / DAY);
-    return { cls: 'b-over', label: `Po terminie: ${d} (${days} dni)`, rank: 0, ts: ms };
-  }
-  if (diff <= 7 * DAY) {
-    const days = Math.max(1, Math.ceil(diff / DAY));
-    return { cls: 'b-soon', label: `Termin: ${d} (za ${days} dni)`, rank: 1, ts: ms };
-  }
+  if (diff < 0) return { cls: 'b-over', label: `Po terminie: ${d} (${Math.ceil(-diff/DAY)} dni)`, rank: 0, ts: ms };
+  if (diff <= 7 * DAY) return { cls: 'b-soon', label: `Termin: ${d} (za ${Math.max(1, Math.ceil(diff/DAY))} dni)`, rank: 1, ts: ms };
   return { cls: 'b-ok', label: `Termin: ${d}`, rank: 2, ts: ms };
+}
+function endInfo(iso) {
+  if (!iso) return { cls: 'b-none', label: 'Brak terminu', rank: 3, ts: Infinity };
+  const ms = new Date(iso).getTime();
+  const diff = ms - Date.now();
+  const d = new Date(ms).toLocaleDateString('pl-PL');
+  if (diff < 0) return { cls: 'b-over', label: `Zakończona: ${d} (${Math.ceil(-diff/DAY)} dni temu)`, rank: 0, ts: ms };
+  if (diff <= 30 * DAY) return { cls: 'b-soon', label: `Kończy się: ${d} (za ${Math.max(1, Math.ceil(diff/DAY))} dni)`, rank: 1, ts: ms };
+  return { cls: 'b-ok', label: `Do: ${d}`, rank: 2, ts: ms };
 }
 
 onAuthStateChanged(auth, async u => {
-  if (!u) { $('content').className = 'error'; $('content').textContent = 'Zaloguj się, aby zobaczyć panel.'; return; }
+  if (!u) { $('payContent').className = 'error'; $('payContent').textContent = 'Zaloguj się, aby zobaczyć panel.'; return; }
   _user = u;
-  load();
+  loadPay();
+  loadContracts();
 });
 
-async function load() {
-  $('content').className = 'loading';
-  $('content').textContent = 'Ładowanie…';
+// ── Tabs ──
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x === b));
+    const t = b.dataset.tab;
+    $('payPane').classList.toggle('active', t === 'pay');
+    $('contractPane').classList.toggle('active', t === 'contract');
+  };
+});
+
+// ── PŁATNOŚCI ──
+async function loadPay() {
+  $('payContent').className = 'loading';
+  $('payContent').textContent = 'Ładowanie…';
   try {
     const { documents, remindersSent, debug } = await api('/api/dunning?action=documents');
     if (debug) $('debugBanner').style.display = 'block';
-    _docs = documents || [];
-    _remindersSent = remindersSent || 0;
-    _docs.forEach(d => { d._due = dueInfo(d.dueDate); });
-    _docs.sort((a, b) => {
+    _payDocs = documents || [];
+    _payRemSent = remindersSent || 0;
+    _payDocs.forEach(d => { d._due = dueInfo(d.dueDate); });
+    _payDocs.sort((a, b) => {
       if (!!a.paid !== !!b.paid) return a.paid ? 1 : -1;
       return a._due.ts - b._due.ts || (b.createdAt || '').localeCompare(a.createdAt || '');
     });
-    renderAttn(); renderChips(); render();
+    renderPayAttn(); renderPayChips(); renderPay();
   } catch (e) {
-    $('content').className = 'error';
-    $('content').textContent = /feature_disabled/.test(e.message)
+    $('payContent').className = 'error';
+    $('payContent').textContent = /feature_disabled/.test(e.message)
       ? 'Funkcja niedostępna na tym koncie.' : 'Błąd: ' + e.message;
   }
 }
-
-function renderAttn() {
-  $('cntOver').textContent = _docs.filter(d => !d.paid && d._due.rank === 0).length;
-  $('cntSoon').textContent = _docs.filter(d => !d.paid && d._due.rank === 1).length;
-  $('cntPaid').textContent = _docs.filter(d => d.paid).length;
-  $('cntRem').textContent = _remindersSent;
-  $('attn').style.display = 'flex';
+function renderPayAttn() {
+  $('cntOver').textContent = _payDocs.filter(d => !d.paid && d._due.rank === 0).length;
+  $('cntSoon').textContent = _payDocs.filter(d => !d.paid && d._due.rank === 1).length;
+  $('cntPaid').textContent = _payDocs.filter(d => d.paid).length;
+  $('cntRem').textContent = _payRemSent;
+  $('payAttn').style.display = 'flex';
 }
-
-function renderChips() {
-  const cats = [...new Set(_docs.map(d => d.catLabel || 'Inne'))].sort();
-  const chips = [['all', 'Wszystkie'], ...cats.map(c => [c, c])];
-  $('chips').innerHTML = chips.map(([v, l]) =>
-    `<div class="chip${v === _filter ? ' active' : ''}" data-f="${esc(v)}">${esc(l)}</div>`).join('');
-  document.querySelectorAll('.chip').forEach(c => {
-    c.onclick = () => { _filter = c.dataset.f; renderChips(); render(); };
+function renderPayChips() {
+  const cats = [...new Set(_payDocs.map(d => d.catLabel || 'Inne'))].sort();
+  $('payChips').innerHTML = [['all','Wszystkie'], ...cats.map(c => [c,c])]
+    .map(([v,l]) => `<div class="chip${v === _payFilter ? ' active' : ''}" data-f="${esc(v)}">${esc(l)}</div>`).join('');
+  document.querySelectorAll('#payChips .chip').forEach(c => {
+    c.onclick = () => { _payFilter = c.dataset.f; renderPayChips(); renderPay(); };
   });
 }
-
-function render() {
-  const list = _filter === 'all' ? _docs : _docs.filter(d => (d.catLabel || 'Inne') === _filter);
+function renderPay() {
+  const list = _payFilter === 'all' ? _payDocs : _payDocs.filter(d => (d.catLabel || 'Inne') === _payFilter);
   if (!list.length) {
-    $('content').className = 'empty';
-    $('content').textContent = 'Brak faktur i umów zlecenie. Wygeneruj je w Dokumo, a pojawią się tutaj.';
+    $('payContent').className = 'empty';
+    $('payContent').textContent = 'Brak faktur i umów zlecenie. Wygeneruj je w Dokumo, a pojawią się tutaj.';
     return;
   }
-  $('content').className = '';
-  $('content').innerHTML = list.map(d => {
+  $('payContent').className = '';
+  $('payContent').innerHTML = list.map(d => {
     const created = d.createdAt ? new Date(d.createdAt).toLocaleDateString('pl-PL') : '—';
     const amt = (d.amount != null)
       ? ' · ' + Number(d.amount).toLocaleString('pl-PL', {minimumFractionDigits:2}) + ' ' + (d.currency || 'zł')
@@ -263,15 +309,84 @@ function render() {
       <div class="badge ${badge.cls}">${esc(badge.label)}</div>
     </div>`;
   }).join('');
-  document.querySelectorAll('.card').forEach(c => {
-    c.onclick = () => openModal(_docs.find(x => x.id === c.dataset.id));
+  document.querySelectorAll('#payContent .card').forEach(c => {
+    c.onclick = () => openPayModal(_payDocs.find(x => x.id === c.dataset.id));
   });
 }
 
-async function openModal(d) {
-  _current = d;
+// ── UMOWY ──
+async function loadContracts() {
+  $('contractContent').className = 'loading';
+  $('contractContent').textContent = 'Ładowanie…';
+  try {
+    const { contracts, debug } = await api('/api/dunning?action=contracts');
+    if (debug) $('debugBanner').style.display = 'block';
+    _contractDocs = contracts || [];
+    _contractDocs.forEach(c => { c._end = endInfo(c.endDate); });
+    _contractDocs.sort((a, b) => a._end.ts - b._end.ts || (b.createdAt || '').localeCompare(a.createdAt || ''));
+    renderContractAttn(); renderContractChips(); renderContract();
+  } catch (e) {
+    $('contractContent').className = 'error';
+    $('contractContent').textContent = /feature_disabled/.test(e.message)
+      ? 'Funkcja niedostępna na tym koncie.' : 'Błąd: ' + e.message;
+  }
+}
+function renderContractAttn() {
+  $('cntEnded').textContent = _contractDocs.filter(c => c._end.rank === 0).length;
+  $('cntEndSoon').textContent = _contractDocs.filter(c => c._end.rank === 1).length;
+  $('cntCAll').textContent = _contractDocs.length;
+  $('contractAttn').style.display = 'flex';
+}
+function renderContractChips() {
+  const cats = [...new Set(_contractDocs.map(c => c.catLabel || 'Inne'))].sort();
+  $('contractChips').innerHTML = [['all','Wszystkie'], ...cats.map(c => [c,c])]
+    .map(([v,l]) => `<div class="chip${v === _contractFilter ? ' active' : ''}" data-f="${esc(v)}">${esc(l)}</div>`).join('');
+  document.querySelectorAll('#contractChips .chip').forEach(c => {
+    c.onclick = () => { _contractFilter = c.dataset.f; renderContractChips(); renderContract(); };
+  });
+}
+function renderContract() {
+  const list = _contractFilter === 'all' ? _contractDocs : _contractDocs.filter(c => (c.catLabel || 'Inne') === _contractFilter);
+  if (!list.length) {
+    $('contractContent').className = 'empty';
+    $('contractContent').textContent = 'Brak umów B2B, zlecenie ani o pracę. Wygeneruj je w Dokumo, a pojawią się tutaj.';
+    return;
+  }
+  $('contractContent').className = '';
+  $('contractContent').innerHTML = list.map(c => {
+    const created = c.createdAt ? new Date(c.createdAt).toLocaleDateString('pl-PL') : '—';
+    return `<div class="card" data-id="${c.id}">
+      <div class="card-ico">${esc(c.icon || '📄')}</div>
+      <div class="card-mid">
+        <div class="card-name">${esc(c.name)}</div>
+        <div class="card-meta">${esc(c.catLabel || 'Inne')} · utworzono ${created}${c.lastSentAt ? ' · wysłano' : ''}</div>
+      </div>
+      <div class="badge ${c._end.cls}">${esc(c._end.label)}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#contractContent .card').forEach(el => {
+    el.onclick = () => openContractModal(_contractDocs.find(x => x.id === el.dataset.id));
+  });
+}
+
+// ── Modal: wspólny dla obu rodzajów ──
+function resetModalButtons() {
+  ['mSendPay','mSendDoc','mPaid','mUnpaid','mSendExt'].forEach(id => $(id).style.display = 'none');
+  $('paySec').style.display = 'none';
+  $('extSec').style.display = 'none';
+  $('mPaidNote').style.display = 'none';
+}
+function showMsg(t, ok) { const m = $('mMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = t; }
+function closeModal() { $('modalBg').classList.remove('open'); _current = null; _kind = null; }
+$('mClose').onclick = closeModal;
+$('modalBg').onclick = e => { if (e.target === $('modalBg')) closeModal(); };
+
+async function openPayModal(d) {
+  _current = d; _kind = 'pay';
+  resetModalButtons();
   $('mName').textContent = d.name;
   $('mType').textContent = (d.catLabel || 'Inne') + (d.typeId ? ' · ' + d.typeId : '');
+  $('mPrevLbl').textContent = 'Podgląd dokumentu';
   $('mPreview').textContent = d.text || '(dokument nie zawiera treści tekstowej)';
   $('mDue').value = d.dueDate ? d.dueDate.slice(0, 10) : '';
   $('mEmail').value = d.recipientEmail || '';
@@ -279,42 +394,67 @@ async function openModal(d) {
   $('mEmailLbl').textContent = 'E-mail odbiorcy' + (d.autoEmail ? ' · wykryto z dokumentu' : '');
   $('mMsg').className = 'msg';
 
-  // tryb zapłacony vs niezapłacony
   $('mPaidNote').style.display = d.paid ? 'block' : 'none';
-  $('mRemSec').style.display = d.paid ? 'none' : 'block';
-  $('mSend').style.display = d.paid ? 'none' : '';
-  $('mSendDoc').style.display = d.paid ? 'none' : '';
-  $('mPaid').style.display = d.paid ? 'none' : '';
-  $('mUnpaid').style.display = d.paid ? '' : 'none';
+  if (!d.paid) {
+    $('paySec').style.display = 'block';
+    $('mSendPay').style.display = '';
+    $('mSendDoc').style.display = '';
+    $('mPaid').style.display = '';
+    $('mSubjPay').value = ''; $('mBodyPay').value = 'Ładowanie szablonu…';
+  } else {
+    $('mUnpaid').style.display = '';
+  }
 
   $('modalBg').classList.add('open');
   loadHistory(d.id);
-  if (!d.paid) {
-    $('mSubj').value = ''; $('mBody').value = 'Ładowanie szablonu…';
-    await loadTemplate(null);
-  }
+  if (!d.paid) await loadPayTemplate(null);
 }
 
-async function loadTemplate(level) {
-  if (!_current) return;
+async function openContractModal(c) {
+  _current = c; _kind = 'contract';
+  resetModalButtons();
+  $('mName').textContent = c.name;
+  $('mType').textContent = (c.catLabel || 'Inne') + (c.typeId ? ' · ' + c.typeId : '');
+  $('mPrevLbl').textContent = 'Podgląd umowy';
+  $('mPreview').textContent = c.text || '(umowa nie zawiera treści tekstowej)';
+  $('mDue').value = c.endDate ? c.endDate.slice(0, 10) : '';
+  $('mEmail').value = c.recipientEmail || '';
+  $('mDueLbl').textContent = 'Termin zakończenia' + (c.autoEnd ? ' · wykryto z umowy' : '');
+  $('mEmailLbl').textContent = 'E-mail drugiej strony' + (c.autoEmail ? ' · wykryto z umowy' : '');
+  $('mMsg').className = 'msg';
+
+  $('extSec').style.display = 'block';
+  $('mSendExt').style.display = '';
+  $('mSubjExt').value = ''; $('mBodyExt').value = 'Ładowanie szablonu…';
+
+  $('modalBg').classList.add('open');
+  loadHistory(c.id);
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'extend-preview', docId: c.id,
+    })});
+    $('mSubjExt').value = res.subject || '';
+    $('mBodyExt').value = res.body || '';
+  } catch (e) { $('mBodyExt').value = ''; showMsg('✗ ' + e.message, false); }
+}
+
+async function loadPayTemplate(level) {
+  if (!_current || _kind !== 'pay') return;
   try {
     const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
       action: 'reminder-preview', docId: _current.id, level: level || undefined,
     })});
-    _level = res.level;
-    _suggested = res.suggested;
-    $('mSubj').value = res.subject || '';
-    $('mBody').value = res.body || '';
+    _level = res.level; _suggested = res.suggested;
+    $('mSubjPay').value = res.subject || '';
+    $('mBodyPay').value = res.body || '';
     document.querySelectorAll('.tpl').forEach(t => {
       const lvl = t.dataset.lvl;
       t.classList.toggle('active', lvl === _level);
       t.innerHTML = (TPL_LABEL[lvl] || lvl) + (lvl === _suggested ? ' <span class="star">★</span>' : '');
     });
-  } catch (e) {
-    $('mBody').value = '';
-    showMsg('✗ ' + e.message, false);
-  }
+  } catch (e) { $('mBodyPay').value = ''; showMsg('✗ ' + e.message, false); }
 }
+document.querySelectorAll('.tpl').forEach(t => { t.onclick = () => loadPayTemplate(t.dataset.lvl); });
 
 async function loadHistory(docId) {
   $('mHist').className = 'hist-empty';
@@ -341,44 +481,47 @@ async function loadHistory(docId) {
   }
 }
 
-function closeModal() { $('modalBg').classList.remove('open'); _current = null; }
-function showMsg(t, ok) { const m = $('mMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = t; }
-function busy(b) { ['mSaveDue','mSend','mSendDoc','mPaid','mUnpaid'].forEach(id => $(id).disabled = b); }
-
-$('mClose').onclick = closeModal;
-$('modalBg').onclick = e => { if (e.target === $('modalBg')) closeModal(); };
-document.querySelectorAll('.tpl').forEach(t => { t.onclick = () => loadTemplate(t.dataset.lvl); });
+function busy(b) {
+  ['mSaveDue','mSendPay','mSendDoc','mPaid','mUnpaid','mSendExt'].forEach(id => $(id).disabled = b);
+}
 
 $('mSaveDue').onclick = async () => {
   if (!_current) return;
   busy(true);
   try {
-    await api('/api/dunning', { method: 'POST', body: JSON.stringify({
-      action: 'set-deadline', docId: _current.id,
-      dueDate: $('mDue').value || null, recipientEmail: $('mEmail').value.trim(),
-    })});
+    const dueVal = $('mDue').value || null;
+    const emailVal = $('mEmail').value.trim();
+    if (_kind === 'pay') {
+      await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+        action: 'set-deadline', docId: _current.id, dueDate: dueVal, recipientEmail: emailVal,
+      })});
+    } else {
+      await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+        action: 'set-contract', docId: _current.id, endDate: dueVal, recipientEmail: emailVal,
+      })});
+    }
     showMsg('✓ Termin zapisany', true);
-    setTimeout(() => { closeModal(); load(); }, 900);
+    setTimeout(() => { closeModal(); _kind === 'pay' ? loadPay() : loadContracts(); }, 900);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 };
 
-$('mSend').onclick = async () => {
-  if (!_current) return;
+$('mSendPay').onclick = async () => {
+  if (!_current || _kind !== 'pay') return;
   const toEmail = $('mEmail').value.trim();
   if (!toEmail) { showMsg('Podaj e-mail odbiorcy.', false); return; }
   busy(true);
   try {
     const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
       action: 'send-reminder', docId: _current.id, level: _level,
-      subject: $('mSubj').value, body: $('mBody').value, toEmail,
+      subject: $('mSubjPay').value, body: $('mBodyPay').value, toEmail,
     })});
     showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Przypomnienie wysłane na ' + toEmail, true);
-    setTimeout(() => { closeModal(); load(); }, 1300);
+    setTimeout(() => { closeModal(); loadPay(); }, 1300);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 };
 
 $('mSendDoc').onclick = async () => {
-  if (!_current) return;
+  if (!_current || _kind !== 'pay') return;
   const toEmail = $('mEmail').value.trim();
   if (!toEmail) { showMsg('Podaj e-mail odbiorcy.', false); return; }
   busy(true);
@@ -387,19 +530,34 @@ $('mSendDoc').onclick = async () => {
       action: 'send-document', docId: _current.id, toEmail,
     })});
     showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Dokument wysłany na ' + toEmail, true);
-    setTimeout(() => { closeModal(); load(); }, 1300);
+    setTimeout(() => { closeModal(); loadPay(); }, 1300);
+  } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
+};
+
+$('mSendExt').onclick = async () => {
+  if (!_current || _kind !== 'contract') return;
+  const toEmail = $('mEmail').value.trim();
+  if (!toEmail) { showMsg('Podaj e-mail drugiej strony.', false); return; }
+  busy(true);
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'send-extend', docId: _current.id,
+      subject: $('mSubjExt').value, body: $('mBodyExt').value, toEmail,
+    })});
+    showMsg(res.debug ? '✓ Zapisano (tryb testowy — mail nie wyszedł)' : '✓ Wysłano na ' + toEmail, true);
+    setTimeout(() => { closeModal(); loadContracts(); }, 1300);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 };
 
 async function setPaid(paid) {
-  if (!_current) return;
+  if (!_current || _kind !== 'pay') return;
   busy(true);
   try {
     await api('/api/dunning', { method: 'POST', body: JSON.stringify({
       action: 'mark-doc-paid', docId: _current.id, paid,
     })});
     showMsg(paid ? '✓ Oznaczono jako zapłacone' : '✓ Cofnięto oznaczenie', true);
-    setTimeout(() => { closeModal(); load(); }, 900);
+    setTimeout(() => { closeModal(); loadPay(); }, 900);
   } catch (e) { showMsg('✗ ' + e.message, false); busy(false); }
 }
 $('mPaid').onclick = () => setPaid(true);
