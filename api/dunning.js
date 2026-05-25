@@ -287,6 +287,16 @@ function enrichDoc(id, x) {
       message: x.publicQuestion.message || '',
       at: x.publicQuestion.at?.toDate?.()?.toISOString() || null,
     } : null,
+    hasUnreadQuestion: (() => {
+      const qAt = x.publicQuestion?.at?.toMillis?.() ?? null;
+      const qSeen = x.publicQuestionSeenAt?.toMillis?.() ?? null;
+      return qAt != null && (qSeen == null || qAt > qSeen);
+    })(),
+    hasUnreadConfirmation: (() => {
+      const cAt = x.publicConfirmedAt?.toMillis?.() ?? null;
+      const cSeen = x.publicConfirmedSeenAt?.toMillis?.() ?? null;
+      return cAt != null && (cSeen == null || cAt > cSeen);
+    })(),
   };
 }
 
@@ -1266,6 +1276,19 @@ export default async function handler(req, res) {
       if (!email) return res.status(400).json({ error: 'Brak e-maila konta' });
       const sent = await processSelfReminders(uid, email);
       return res.status(200).json({ ok: true, sent });
+    }
+
+    // ── POST: oznacz zdarzenia dokumentu (potwierdzenie, pytanie) jako przeczytane ──
+    if (action === 'ack-doc-events') {
+      const { docId } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      try {
+        await db.collection('users').doc(uid).collection('documents').doc(docId).update({
+          publicQuestionSeenAt: Timestamp.now(),
+          publicConfirmedSeenAt: Timestamp.now(),
+        });
+      } catch { /* doc moze nie istniec - silent */ }
+      return res.status(200).json({ ok: true });
     }
 
     // ── POST: wygeneruj (lub odbierz istniejący) publiczny link do dokumentu ──

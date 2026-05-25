@@ -93,6 +93,20 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
 .cb input{margin:0;cursor:pointer;}
 .cb:hover{background:#faf8f4;}
 .cb-info{font-size:.72rem;color:#9b948c;margin-top:6px;}
+
+.bell{position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#3a3330;display:flex;align-items:center;font-family:inherit;}
+.bell:hover{background:#ebe7df;}
+.bell svg{width:20px;height:20px;}
+.bell-badge{position:absolute;top:0;right:0;background:#b91c1c;color:#fff;font-size:.62rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;line-height:1;}
+.bell-badge.hidden{display:none;}
+
+.card-flags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.flag{font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:6px;letter-spacing:.01em;white-space:nowrap;}
+.flag-sent{background:#dbeafe;color:#1d4ed8;}
+.flag-conf{background:#dcfce7;color:#15803d;}
+.flag-q{background:#fef3c7;color:#b45309;}
+.flag-q.unread{background:#fee2e2;color:#b91c1c;animation:flagPulse 1.8s ease-in-out infinite;}
+@keyframes flagPulse{0%,100%{opacity:1}50%{opacity:.6}}
 </style>
 </head>
 <body>
@@ -103,6 +117,10 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
       <div class="sub">Płatności i umowy w jednym miejscu — terminy, przypomnienia, przedłużenia</div>
     </div>
     <div class="links">
+      <button class="bell" id="bellBtn" aria-label="Powiadomienia" title="Powiadomienia">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="bell-badge hidden" id="bellBadge">0</span>
+      </button>
       <a class="link" href="/panel-ustawienia.html">⚙ Ustawienia</a>
     </div>
   </div>
@@ -360,7 +378,25 @@ function renderPayAttn() {
   $('cntPaid').textContent = _payDocs.filter(d => d.paid).length;
   $('cntRem').textContent = _payRemSent;
   $('payAttn').style.display = 'flex';
+  renderBell();
 }
+
+function renderBell() {
+  const n = _payDocs.filter(d => d.hasUnreadQuestion || d.hasUnreadConfirmation).length;
+  const badge = $('bellBadge');
+  if (n > 0) { badge.textContent = n > 9 ? '9+' : String(n); badge.classList.remove('hidden'); }
+  else { badge.classList.add('hidden'); }
+}
+
+$('bellBtn').onclick = () => {
+  // przełącz na zakładkę Płatności i przewiń do pierwszego dokumentu z powiadomieniem
+  document.querySelector('.tab-btn[data-tab="pay"]').click();
+  const first = _payDocs.find(d => d.hasUnreadQuestion || d.hasUnreadConfirmation);
+  if (first) {
+    const card = document.querySelector(`#payContent .card[data-id="${first.id}"]`);
+    if (card) { card.scrollIntoView({behavior:'smooth', block:'center'}); card.style.boxShadow = '0 0 0 3px #f59e0b'; setTimeout(() => { card.style.boxShadow = ''; }, 2000); }
+  }
+};
 function renderPayChips() {
   const cats = [...new Set(_payDocs.map(d => d.catLabel || 'Inne'))].sort();
   $('payChips').innerHTML = [['all','Wszystkie'], ...cats.map(c => [c,c])]
@@ -383,11 +419,17 @@ function renderPay() {
       ? ' · ' + Number(d.amount).toLocaleString('pl-PL', {minimumFractionDigits:2}) + ' ' + (d.currency || 'zł')
       : '';
     const badge = d.paid ? { cls: 'b-paid', label: 'Zapłacone ✓' } : d._due;
+    const flags = [];
+    if (d.lastSentAt) flags.push('<span class="flag flag-sent">📤 Wysłano</span>');
+    if (d.publicConfirmedAt) flags.push('<span class="flag flag-conf">✓ Potwierdzone</span>');
+    if (d.publicQuestion) flags.push(`<span class="flag flag-q${d.hasUnreadQuestion ? ' unread' : ''}">❓ Pytanie od klienta</span>`);
+    const flagsHtml = flags.length ? `<div class="card-flags">${flags.join('')}</div>` : '';
     return `<div class="card${d.paid ? ' is-paid' : ''}" data-id="${d.id}">
       <div class="card-ico">${esc(d.icon || '📄')}</div>
       <div class="card-mid">
         <div class="card-name">${esc(d.name)}</div>
-        <div class="card-meta">${esc(d.catLabel || 'Inne')} · ${created}${amt}${d.lastSentAt ? ' · wysłano' : ''}</div>
+        <div class="card-meta">${esc(d.catLabel || 'Inne')} · ${created}${amt}</div>
+        ${flagsHtml}
       </div>
       <div class="badge ${badge.cls}">${esc(badge.label)}</div>
     </div>`;
@@ -438,11 +480,13 @@ function renderContract() {
   $('contractContent').className = '';
   $('contractContent').innerHTML = list.map(c => {
     const created = c.createdAt ? new Date(c.createdAt).toLocaleDateString('pl-PL') : '—';
+    const flagsHtml = c.lastSentAt ? '<div class="card-flags"><span class="flag flag-sent">📤 Wysłano</span></div>' : '';
     return `<div class="card" data-id="${c.id}">
       <div class="card-ico">${esc(c.icon || '📄')}</div>
       <div class="card-mid">
         <div class="card-name">${esc(c.name)}</div>
-        <div class="card-meta">${esc(c.catLabel || 'Inne')} · utworzono ${created}${c.lastSentAt ? ' · wysłano' : ''}</div>
+        <div class="card-meta">${esc(c.catLabel || 'Inne')} · utworzono ${created}</div>
+        ${flagsHtml}
       </div>
       <div class="badge ${c._end.cls}">${esc(c._end.label)}</div>
     </div>`;
@@ -523,6 +567,12 @@ async function openPayModal(d) {
 
   $('modalBg').classList.add('open');
   loadHistory(d.id);
+  // Oznacz zdarzenia jako przeczytane (jeśli były nieprzeczytane)
+  if (d.hasUnreadQuestion || d.hasUnreadConfirmation) {
+    api('/api/dunning', { method: 'POST', body: JSON.stringify({ action: 'ack-doc-events', docId: d.id }) }).catch(() => {});
+    d.hasUnreadQuestion = false; d.hasUnreadConfirmation = false;
+    renderBell();
+  }
   if (!d.paid) await loadPayTemplate(null);
 }
 
