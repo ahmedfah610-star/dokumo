@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Faktura – Dokumo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
+body{background:#f5f3ef;color:#1a1714;min-height:100vh;padding:40px 16px;}
+.wrap{max-width:480px;margin:0 auto;}
+.brand{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:18px;}
+.brand img{height:24px;width:auto;display:block;}
+.brand span{font-size:13px;font-weight:800;color:#6b6560;letter-spacing:-0.01em;}
+.card{background:#fff;border:1px solid rgba(26,23,20,.09);border-radius:18px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.04);}
+.card h1{font-size:1.1rem;font-weight:800;line-height:1.4;margin-bottom:4px;}
+.from{font-size:.82rem;color:#6b6560;margin-bottom:22px;}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px solid #f0ede8;}
+.row:last-of-type{border-bottom:none;}
+.row-l{font-size:.76rem;color:#6b6560;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.row-v{font-size:.92rem;font-weight:700;text-align:right;word-break:break-word;}
+.row-v.big{font-size:1.3rem;}
+.btns{display:flex;flex-direction:column;gap:10px;margin-top:22px;}
+.btn{padding:13px 18px;border-radius:11px;border:none;cursor:pointer;font-size:.9rem;font-weight:700;font-family:inherit;text-align:center;}
+.btn-dark{background:#1a1714;color:#fff;}.btn-dark:hover{background:#3a3330;}
+.btn-light{background:#f0ede8;color:#1a1714;}.btn-light:hover{background:#e5e1da;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.note{margin-top:14px;padding:13px 16px;border-radius:11px;font-size:.85rem;font-weight:600;text-align:center;}
+.note-ok{background:#dcfce7;color:#15803d;}
+.note-err{background:#fee2e2;color:#b91c1c;}
+.note-info{background:#fef9c3;color:#854d0e;}
+.q-form{margin-top:14px;background:#faf8f4;border:1px solid #e5e7eb;border-radius:11px;padding:14px;display:none;}
+.q-form.show{display:block;}
+.q-form label{display:block;font-size:.76rem;font-weight:700;color:#6b6560;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.q-form textarea{width:100%;padding:10px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.88rem;font-family:inherit;outline:none;min-height:90px;line-height:1.55;resize:vertical;}
+.q-form textarea:focus{border-color:#1a1714;}
+.q-form .q-btns{display:flex;gap:8px;margin-top:10px;}
+.q-form .q-btns .btn{flex:1;padding:10px;}
+.footer{margin-top:22px;text-align:center;font-size:.72rem;color:#9b948c;}
+.footer a{color:#6b6560;text-decoration:none;}
+.loading,.error{padding:48px;text-align:center;color:#9b948c;font-size:.9rem;}
+.error{color:#b91c1c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <img src="logo2.png" alt="">
+    <span>Dokumo</span>
+  </div>
+  <div id="content" class="loading">Ładowanie…</div>
+  <div class="footer">
+    Bezpieczna strona obsługiwana przez <a href="https://dokumoflow.com">dokumoflow.com</a>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const params = new URLSearchParams(location.search);
+const TOKEN = params.get('t') || '';
+let _confirmed = false, _questionSent = false;
+
+async function api(path, opts) {
+  const r = await fetch(path, opts || {});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  return data;
+}
+
+function money(amount, currency) {
+  if (amount == null) return null;
+  const cur = ({ PLN:'zł', EUR:'€', USD:'$', GBP:'£' })[currency] || (currency || 'zł');
+  return Number(amount).toLocaleString('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ' + cur;
+}
+
+async function load() {
+  if (!TOKEN || TOKEN.length < 12) {
+    $('content').className = 'error';
+    $('content').textContent = 'Nieprawidłowy lub niepełny link.';
+    return;
+  }
+  try {
+    const res = await api('/api/dunning?action=public-invoice&t=' + encodeURIComponent(TOKEN));
+    render(res.invoice);
+  } catch (e) {
+    $('content').className = 'error';
+    $('content').textContent = e.message || 'Nie udało się wczytać dokumentu.';
+  }
+}
+
+function render(inv) {
+  _confirmed = !!inv.confirmed;
+  const dStr = inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('pl-PL', {year:'numeric',month:'long',day:'numeric'}) : null;
+  const amt = money(inv.amount, inv.currency);
+  let rows = '';
+  if (amt) rows += `<div class="row"><span class="row-l">Kwota</span><span class="row-v big">${esc(amt)}</span></div>`;
+  if (dStr) rows += `<div class="row"><span class="row-l">Termin płatności</span><span class="row-v">${esc(dStr)}</span></div>`;
+  if (inv.bankAccount) rows += `<div class="row"><span class="row-l">Numer konta</span><span class="row-v" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem">${esc(inv.bankAccount)}</span></div>`;
+
+  let bottom = '';
+  if (inv.confirmed) {
+    const ca = inv.confirmedAt ? new Date(inv.confirmedAt).toLocaleString('pl-PL', {dateStyle:'short',timeStyle:'short'}) : '';
+    bottom = `<div class="note note-ok">✓ Potwierdziłeś odbiór tej faktury${ca ? ' · ' + esc(ca) : ''}</div>`;
+  } else {
+    bottom = `<div class="btns">
+      <button class="btn btn-dark" id="btnConfirm">✓ Potwierdzam odbiór faktury</button>
+      <button class="btn btn-light" id="btnQuestion">Mam pytanie do faktury</button>
+    </div>
+    <div class="q-form" id="qForm">
+      <label>Twoje pytanie</label>
+      <textarea id="qText" placeholder="Wpisz swoje pytanie…"></textarea>
+      <div class="q-btns">
+        <button class="btn btn-dark" id="btnSendQ">Wyślij pytanie</button>
+        <button class="btn btn-light" id="btnCancelQ">Anuluj</button>
+      </div>
+    </div>
+    <div id="msg"></div>`;
+  }
+
+  $('content').className = '';
+  $('content').innerHTML = `<div class="card">
+    <h1>${esc(inv.name || 'Dokument')}</h1>
+    <div class="from">${inv.fromName ? 'od ' + esc(inv.fromName) : 'Wystawca faktury'}</div>
+    ${rows}
+    ${bottom}
+  </div>`;
+
+  if (!inv.confirmed) wireButtons();
+}
+
+function showMsg(text, cls) {
+  const m = $('msg');
+  m.className = 'note ' + cls;
+  m.textContent = text;
+}
+
+function wireButtons() {
+  $('btnConfirm').onclick = async () => {
+    $('btnConfirm').disabled = true; $('btnQuestion').disabled = true;
+    try {
+      await api('/api/dunning?action=public-confirm', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ t: TOKEN }) });
+      load(); // przeładuj — pokaże stan potwierdzony
+    } catch (e) {
+      showMsg('Nie udało się zapisać: ' + e.message, 'note-err');
+      $('btnConfirm').disabled = false; $('btnQuestion').disabled = false;
+    }
+  };
+  $('btnQuestion').onclick = () => { $('qForm').classList.add('show'); $('qText').focus(); };
+  $('btnCancelQ').onclick = () => { $('qForm').classList.remove('show'); };
+  $('btnSendQ').onclick = async () => {
+    const txt = $('qText').value.trim();
+    if (!txt) { showMsg('Wpisz treść pytania.', 'note-err'); return; }
+    $('btnSendQ').disabled = true;
+    try {
+      await api('/api/dunning?action=public-question', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ t: TOKEN, message: txt }) });
+      $('qForm').classList.remove('show');
+      showMsg('✓ Wiadomość wysłana do wystawcy faktury.', 'note-ok');
+      $('btnQuestion').disabled = true;
+    } catch (e) {
+      showMsg('Nie udało się wysłać: ' + e.message, 'note-err');
+      $('btnSendQ').disabled = false;
+    }
+  };
+}
+
+load();
+</script>
+</body>
+</html>

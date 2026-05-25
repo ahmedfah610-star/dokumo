@@ -166,6 +166,20 @@ h1{font-size:1.45rem;font-weight:800;margin-bottom:3px;}
     </div>
     <div class="btns" style="margin-top:0"><button class="btn btn-light" id="mSaveDue">Zapisz termin</button></div>
 
+    <!-- Publiczny link (tylko płatności) -->
+    <div class="sec" id="linkSec" style="display:none">
+      <label class="sec-h">Publiczny link do faktury</label>
+      <div class="sec-hint">Wyślij ten link klientowi — zobaczy fakturę, może potwierdzić odbiór albo zadać pytanie. Linki nie wygasają.</div>
+      <button class="btn btn-light" id="genLinkBtn">Wygeneruj publiczny link</button>
+      <div id="linkInfo" style="display:none">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <input type="text" id="linkUrl" readonly style="flex:1;min-width:0;padding:9px 12px;border:1px solid rgba(26,23,20,.18);border-radius:9px;font-size:.74rem;font-family:ui-monospace,Menlo,Consolas,monospace;outline:none;background:#faf8f4;">
+          <button class="btn btn-light" id="copyLinkBtn">Kopiuj</button>
+        </div>
+        <div id="linkStats" style="font-size:.78rem;color:#3a3330;line-height:1.75;"></div>
+      </div>
+    </div>
+
     <!-- Sekcja PŁATNOŚCI: 4 szablony przypomnień -->
     <div class="sec" id="paySec" style="display:none">
       <label class="sec-h">Wyślij przypomnienie o płatności</label>
@@ -444,6 +458,37 @@ function resetModalButtons() {
   $('paySec').style.display = 'none';
   $('extSec').style.display = 'none';
   $('mPaidNote').style.display = 'none';
+  $('linkSec').style.display = 'none';
+  $('linkInfo').style.display = 'none';
+  $('genLinkBtn').style.display = '';
+}
+
+function renderLinkSection(d) {
+  $('linkSec').style.display = 'block';
+  if (d.publicToken) {
+    $('genLinkBtn').style.display = 'none';
+    $('linkInfo').style.display = 'block';
+    $('linkUrl').value = d.publicUrl || '';
+    const parts = [];
+    if (d.publicOpens > 0) {
+      const last = d.publicLastSeen ? new Date(d.publicLastSeen).toLocaleString('pl-PL',{dateStyle:'short',timeStyle:'short'}) : '';
+      parts.push('👁 Otwarto ' + d.publicOpens + 'x' + (last ? ' · ostatnio ' + esc(last) : ''));
+    } else {
+      parts.push('Klient jeszcze nie otworzył linku.');
+    }
+    if (d.publicConfirmedAt) {
+      const c = new Date(d.publicConfirmedAt).toLocaleString('pl-PL',{dateStyle:'short',timeStyle:'short'});
+      parts.push('<span style="color:#15803d;font-weight:700">✓ Potwierdził odbiór: ' + esc(c) + '</span>');
+    }
+    if (d.publicQuestion) {
+      const qAt = d.publicQuestion.at ? new Date(d.publicQuestion.at).toLocaleString('pl-PL',{dateStyle:'short',timeStyle:'short'}) : '';
+      parts.push('<div style="background:#fef9c3;border-left:3px solid #f59e0b;padding:8px 11px;border-radius:6px;margin-top:6px"><b>❓ Pytanie od klienta</b>' + (qAt ? ' · ' + esc(qAt) : '') + ':<br>' + esc(d.publicQuestion.message) + '</div>');
+    }
+    $('linkStats').innerHTML = parts.join('<br>');
+  } else {
+    $('genLinkBtn').style.display = '';
+    $('linkInfo').style.display = 'none';
+  }
 }
 function showMsg(t, ok) { const m = $('mMsg'); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = t; }
 function closeModal() { $('modalBg').classList.remove('open'); _current = null; _kind = null; }
@@ -465,6 +510,7 @@ async function openPayModal(d) {
   setReminderCheckboxes(d.selfReminderDays || []);
 
   $('mPaidNote').style.display = d.paid ? 'block' : 'none';
+  renderLinkSection(d);
   if (!d.paid) {
     $('paySec').style.display = 'block';
     $('mSendPay').style.display = '';
@@ -643,6 +689,34 @@ async function setPaid(paid) {
 }
 $('mPaid').onclick = () => setPaid(true);
 $('mUnpaid').onclick = () => setPaid(false);
+
+// ── Publiczny link ──
+$('genLinkBtn').onclick = async () => {
+  if (!_current || _kind !== 'pay') return;
+  $('genLinkBtn').disabled = true;
+  try {
+    const res = await api('/api/dunning', { method: 'POST', body: JSON.stringify({
+      action: 'link', docId: _current.id,
+    })});
+    _current.publicToken = res.token;
+    _current.publicUrl = res.url;
+    renderLinkSection(_current);
+    showMsg('✓ Link wygenerowany', true);
+  } catch (e) { showMsg('✗ ' + e.message, false); }
+  $('genLinkBtn').disabled = false;
+};
+$('copyLinkBtn').onclick = async () => {
+  const v = $('linkUrl').value;
+  if (!v) return;
+  try {
+    await navigator.clipboard.writeText(v);
+    const b = $('copyLinkBtn'); const t = b.textContent;
+    b.textContent = '✓ Skopiowano';
+    setTimeout(() => { b.textContent = t; }, 1500);
+  } catch {
+    $('linkUrl').select(); document.execCommand && document.execCommand('copy');
+  }
+};
 
 // ── Modal dodawania własnej faktury / umowy ──
 let _addKind = 'faktura';

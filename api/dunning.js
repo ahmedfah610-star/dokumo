@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { randomBytes } from 'crypto';
 
 // ─────────────────────────────────────────────────────────────────────────
 // AI Windykator — Faza A (ukryty rollout za feature flagiem).
@@ -255,6 +256,15 @@ function enrichDoc(id, x) {
     lastSentAt: toIso(x.lastSentAt), lastReminderLevel: x.lastReminderLevel || null,
     selfReminderDays: Array.isArray(x.selfReminderDays) ? x.selfReminderDays : [],
     source: x.source || 'generated',
+    publicToken: x.publicToken || null,
+    publicUrl: x.publicToken ? 'https://dokumoflow.com/faktura-link.html?t=' + x.publicToken : null,
+    publicOpens: x.publicOpens || 0,
+    publicLastSeen: toIso(x.publicLastSeen),
+    publicConfirmedAt: toIso(x.publicConfirmedAt),
+    publicQuestion: x.publicQuestion ? {
+      message: x.publicQuestion.message || '',
+      at: x.publicQuestion.at?.toDate?.()?.toISOString() || null,
+    } : null,
   };
 }
 
@@ -647,6 +657,68 @@ export default async function handler(req, res) {
         } catch (e) { /* skip */ }
       }
       return res.status(200).json({ ok: true, processed, sent: totalSent });
+    }
+
+    // ── Akcje publiczne (link tokenowy): bez auth, tylko weryfikacja tokenu ──
+    if (action === 'public-invoice' || action === 'public-confirm' || action === 'public-question') {
+      const t = (req.query?.t || req.body?.t || '').toString();
+      if (!t || t.length < 12) return res.status(400).json({ error: 'Brak tokenu' });
+      const snap = await db.collectionGroup('documents').where('publicToken', '==', t).limit(1).get();
+      if (snap.empty) return res.status(404).json({ error: 'Nieprawidłowy lub wygasły link' });
+      const docSnap = snap.docs[0];
+      const data = docSnap.data();
+      const ownerUid = docSnap.ref.parent.parent.id;
+
+      if (action === 'public-invoice') {
+        // bumper: liczba otworzeń + ostatni dostęp (fire-and-forget)
+        docSnap.ref.update({
+          publicOpens: (data.publicOpens || 0) + 1,
+          publicLastSeen: Timestamp.now(),
+        }).catch(() => {});
+        let fromName = '';
+        try {
+          const us = await db.collection('users').doc(ownerUid).get();
+          fromName = us.data()?.dunningPreferences?.fromName || '';
+        } catch { /* ignore */ }
+        const enriched = enrichDoc(docSnap.id, data);
+        return res.status(200).json({
+          ok: true,
+          invoice: {
+            name: enriched?.name || data.name || 'Dokument',
+            amount: enriched?.amount ?? (typeof data.amount === 'number' ? data.amount : null),
+            currency: enriched?.currency || data.currency || 'PLN',
+            dueDate: enriched?.dueDate || data.dueDate?.toDate?.()?.toISOString() || null,
+            bankAccount: enriched?.bankAccount || data.bankAccount || '',
+            fromName,
+            confirmed: !!data.publicConfirmedAt,
+            confirmedAt: data.publicConfirmedAt?.toDate?.()?.toISOString() || null,
+            hasQuestion: !!data.publicQuestion,
+          },
+        });
+      }
+
+      if (action === 'public-confirm') {
+        if (req.method !== 'POST') return res.status(405).json({ error: 'Wymagana metoda POST' });
+        if (data.publicConfirmedAt) return res.status(200).json({ ok: true, alreadyConfirmed: true });
+        await docSnap.ref.update({ publicConfirmedAt: Timestamp.now() });
+        await logHistory(ownerUid, {
+          invoiceId: docSnap.id, level: 0, action: 'link_confirmed',
+          metadata: { docName: data.name || '' },
+        });
+        return res.status(200).json({ ok: true });
+      }
+
+      if (action === 'public-question') {
+        if (req.method !== 'POST') return res.status(405).json({ error: 'Wymagana metoda POST' });
+        const msg = (req.body?.message || '').toString().slice(0, 2000).trim();
+        if (!msg) return res.status(400).json({ error: 'Brak treści pytania' });
+        await docSnap.ref.update({ publicQuestion: { message: msg, at: Timestamp.now() } });
+        await logHistory(ownerUid, {
+          invoiceId: docSnap.id, level: 0, action: 'link_question',
+          metadata: { docName: data.name || '', preview: msg.slice(0, 200) },
+        });
+        return res.status(200).json({ ok: true });
+      }
     }
 
     // ── Wszystkie pozostałe akcje: wymagają flagi ──
@@ -1165,6 +1237,25 @@ export default async function handler(req, res) {
       if (!email) return res.status(400).json({ error: 'Brak e-maila konta' });
       const sent = await processSelfReminders(uid, email);
       return res.status(200).json({ ok: true, sent });
+    }
+
+    // ── POST: wygeneruj (lub odbierz istniejący) publiczny link do dokumentu ──
+    if (action === 'link') {
+      const { docId } = req.body || {};
+      if (!docId) return res.status(400).json({ error: 'Brak docId' });
+      const dRef = db.collection('users').doc(uid).collection('documents').doc(docId);
+      const dSnap = await dRef.get();
+      if (!dSnap.exists) return res.status(404).json({ error: 'Dokument nie istnieje' });
+      let token = dSnap.data().publicToken;
+      if (!token) {
+        token = randomBytes(18).toString('base64url');
+        await dRef.update({ publicToken: token, publicTokenCreatedAt: Timestamp.now() });
+      }
+      return res.status(200).json({
+        ok: true,
+        token,
+        url: 'https://dokumoflow.com/faktura-link.html?t=' + token,
+      });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });
