@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5.0">
+<title>Skaner dokumentów AI — wyciągnij dane z PDF do Excela | DokumoFlow</title>
+<meta name="description" content="Skaner dokumentów online z AI. Wyciągnij PESEL, NIP, kwoty, e-maile i własne pola z PDF-ów lub zdjęć — i pobierz gotową tabelę CSV/Excel. Faktury, dowody osobiste, umowy, wyciągi bankowe. Bez instalacji, po polsku.">
+<link rel="canonical" href="https://dokumoflow.com/skaner-dokumentow.html">
+<meta property="og:title" content="Skaner dokumentów AI — PDF i zdjęcia do tabeli Excel">
+<meta property="og:description" content="Wgraj faktury, dowody albo umowy — AI wyciągnie wskazane pola i odda gotową tabelę. Po polsku, w 30 sekund.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dokumoflow.com/skaner-dokumentow.html">
+<meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index, follow">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Skaner dokumentów AI — DokumoFlow","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Skaner dokumentów online z AI. Wyciąga dane (PESEL, NIP, kwoty, e-maile, daty, własne pola) z plików PDF i zdjęć, eksport CSV / Excel.","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"},"publisher":{"@type":"Organization","name":"DokumoFlow","url":"https://dokumoflow.com"},"inLanguage":"pl-PL"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Dokumo","item":"https://dokumoflow.com"},{"@type":"ListItem","position":2,"name":"Skaner dokumentów AI","item":"https://dokumoflow.com/skaner-dokumentow.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Co to jest skaner dokumentów AI w DokumoFlow?","acceptedAnswer":{"@type":"Answer","text":"To narzędzie online, w którym wgrywasz PDF-y albo zdjęcia dokumentów (faktury, dowody osobiste, umowy, wyciągi bankowe), zaznaczasz pola do wyciągnięcia — np. PESEL, NIP, kwoty, e-maile — a AI zwraca gotową tabelę z danymi, którą można pobrać jako plik CSV otwierany w Excelu."}},{"@type":"Question","name":"Czy skaner działa z polskimi dokumentami i diakrytykami?","acceptedAnswer":{"@type":"Answer","text":"Tak. Skaner jest zaprojektowany pod polskie dokumenty: rozpoznaje polskie znaki, weryfikuje sumę kontrolną PESEL i NIP, sprawdza format IBAN-u (PL26…), numeru telefonu i kwot zapisanych z przecinkiem dziesiętnym. Eksport CSV ma BOM, więc Excel PL otwiera go bez krzaków."}},{"@type":"Question","name":"Czy mogę dodać własne pole do wyciągnięcia?","acceptedAnswer":{"@type":"Answer","text":"Tak. Oprócz gotowych pól (PESEL, NIP, e-mail, telefon, IBAN, kwota, data, imię i nazwisko, adres, nazwa firmy) możesz dopisać dowolne — np. „Numer umowy”, „Nr KRS”, „Data zawarcia”, „Symbol faktury” — i AI je rozpozna w każdym wgranym pliku."}},{"@type":"Question","name":"Jakie formaty plików obsługuje skaner?","acceptedAnswer":{"@type":"Answer","text":"PDF, PNG, JPG i WEBP. Maksymalny rozmiar pojedynczego pliku to 4 MB. Skanować można wiele plików naraz — narzędzie przetwarza je równolegle i składa wszystko w jednej tabeli z kolumną „Dokument” dla każdej linii."}},{"@type":"Question","name":"Czy moje dokumenty są zapisywane na serwerze?","acceptedAnswer":{"@type":"Answer","text":"Nie. Pliki są wysyłane do silnika AI tylko po to, żeby wyciągnąć z nich dane — nie zapisujemy ich na dysku ani w bazie. Po przetworzeniu w naszym systemie zostają wyłącznie wyniki w Twojej przeglądarce, dopóki nie zamkniesz strony albo nie klikniesz „Zacznij od nowa”."}},{"@type":"Question","name":"Czy mogę poprawić wynik AI ręcznie?","acceptedAnswer":{"@type":"Answer","text":"Tak. Każdą komórkę w tabeli wyników można kliknąć i edytować bez ograniczeń. Pola z błędem walidacji (np. zły PESEL, niepoprawny format e-maila) są oznaczone ⚠️, a kolumny — kolorowymi etykietami pewności AI (zielone ≥80%, żółte 50–80%, czerwone <50%). Dzięki temu od razu widać, co warto przejrzeć."}}]}</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
+body{background:#f9fafb;color:#111827;min-height:100vh;line-height:1.5;}
+
+/* ── NAV ── */
+.nav-bar{background:rgba(255,255,255,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #f3f4f6;position:sticky;top:0;z-index:50;}
+.nav-inner{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-logo img{height:28px;width:auto;display:block;}
+.nav-logo span{font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-link{padding:7px 14px;font-size:13px;font-weight:600;color:#374151;border-radius:9px;text-decoration:none;transition:background .15s;}
+.nav-link:hover{background:#f3f4f6;}
+.nav-cta{padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;box-shadow:0 1px 3px rgba(37,99,235,.3);}
+.nav-cta:hover{background:#1d4ed8;}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:#1a1714;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+
+/* ── HERO ── */
+.hero{padding:48px 24px 28px;text-align:center;max-width:880px;margin:0 auto;}
+.hero .badge{display:inline-flex;align-items:center;gap:6px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:.02em;margin-bottom:16px;}
+.hero h1{font-size:clamp(1.8rem,4.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:14px;}
+.hero h1 .grad{background:linear-gradient(90deg,#2563eb,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:1.05rem;color:#4b5563;max-width:620px;margin:0 auto 22px;}
+.hero .trust{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;font-size:.78rem;color:#6b7280;font-weight:600;}
+.hero .trust span{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #e5e7eb;padding:6px 13px;border-radius:999px;}
+
+/* ── QUICK PRESETS ── */
+.presets{max-width:1100px;margin:8px auto 24px;padding:0 24px;}
+.presets-h{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:10px;text-align:center;}
+.presets-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.preset{background:#fff;border:1.5px solid #e5e7eb;border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left;transition:all .15s;display:flex;gap:12px;align-items:flex-start;}
+.preset:hover{border-color:#2563eb;background:#f0f7ff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,.1);}
+.preset-ic{font-size:1.6rem;flex-shrink:0;line-height:1;}
+.preset-t{font-size:.92rem;font-weight:700;color:#111827;margin-bottom:2px;}
+.preset-d{font-size:.74rem;color:#6b7280;}
+
+/* ── MAIN WRAP ── */
+.wrap{max-width:1100px;margin:0 auto;padding:8px 24px 24px;}
+
+.steps{display:flex;gap:6px;margin-bottom:18px;font-size:.74rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.07em;justify-content:center;}
+.step{padding:7px 14px;border-radius:999px;background:#fff;border:1px solid #e5e7eb;display:flex;align-items:center;gap:6px;}
+.step .num{width:18px;height:18px;border-radius:50%;background:#e5e7eb;color:#6b7280;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.step.active{background:#111827;color:#fff;border-color:#111827;}
+.step.active .num{background:rgba(255,255,255,.2);color:#fff;}
+.step.done{background:#ecfdf5;color:#047857;border-color:#a7f3d0;}
+.step.done .num{background:#10b981;color:#fff;}
+
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:26px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-size:1.15rem;font-weight:800;margin-bottom:4px;color:#111827;}
+.card .h-sub{font-size:.85rem;color:#6b7280;margin-bottom:18px;}
+
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:12px;}
+.field-cb{display:flex;align-items:center;gap:9px;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer;font-size:.88rem;font-weight:500;color:#374151;transition:all .12s;}
+.field-cb:hover{background:#f9fafb;border-color:#d1d5db;}
+.field-cb input{margin:0;cursor:pointer;width:16px;height:16px;accent-color:#2563eb;}
+.field-cb.checked{background:#eff6ff;border-color:#2563eb;color:#1d4ed8;font-weight:600;}
+.field-cb .x-remove{margin-left:auto;color:#dc2626;font-weight:700;font-size:.75rem;opacity:0;transition:opacity .12s;background:none;border:none;cursor:pointer;}
+.field-cb:hover .x-remove{opacity:1;}
+
+.add-row{display:flex;gap:8px;margin-top:6px;}
+.add-row input{flex:1;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:.86rem;font-family:inherit;outline:none;transition:border-color .15s;}
+.add-row input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+
+.dropzone{border:2.5px dashed #d1d5db;border-radius:14px;padding:48px 22px;text-align:center;cursor:pointer;transition:all .15s;background:#fafbfc;}
+.dropzone:hover,.dropzone.drag{background:#eff6ff;border-color:#2563eb;}
+.dropzone .dz-ico{font-size:2.5rem;margin-bottom:8px;}
+.dropzone .dz-h{font-size:1rem;font-weight:700;margin-bottom:4px;color:#111827;}
+.dropzone .dz-s{font-size:.78rem;color:#6b7280;}
+.file-list{margin-top:14px;}
+.file-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#f9fafb;border-radius:10px;margin-bottom:6px;font-size:.85rem;border:1px solid #f3f4f6;}
+.file-row .fr-name{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-row .fr-size{color:#9ca3af;font-size:.74rem;flex-shrink:0;}
+.file-row .fr-status{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:999px;flex-shrink:0;}
+.fr-s-pending{background:#e5e7eb;color:#4b5563;}
+.fr-s-processing{background:#dbeafe;color:#1d4ed8;}
+.fr-s-done{background:#d1fae5;color:#047857;}
+.fr-s-error{background:#fee2e2;color:#b91c1c;}
+.file-row .fr-x{background:none;border:none;cursor:pointer;color:#9ca3af;font-size:1.1rem;font-weight:700;padding:0 4px;}
+.file-row .fr-x:hover{color:#dc2626;}
+
+.progress-row{display:flex;align-items:center;gap:14px;margin-top:12px;font-size:.86rem;font-weight:600;}
+.progress-bar{flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#2563eb,#06b6d4);border-radius:4px;transition:width .25s;}
+
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.btn{padding:11px 22px;border-radius:10px;border:none;cursor:pointer;font-size:.86rem;font-weight:700;font-family:inherit;transition:all .15s;}
+.btn-dark{background:#111827;color:#fff;}.btn-dark:hover{background:#1f2937;}
+.btn-primary{background:#2563eb;color:#fff;box-shadow:0 1px 3px rgba(37,99,235,.3);}.btn-primary:hover{background:#1d4ed8;}
+.btn-light{background:#f3f4f6;color:#374151;}.btn-light:hover{background:#e5e7eb;}
+.btn-green{background:#10b981;color:#fff;}.btn-green:hover{background:#059669;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.results-table{width:100%;border-collapse:collapse;font-size:.85rem;background:#fff;border-radius:11px;overflow:hidden;}
+.results-table th{background:#111827;color:#fff;padding:12px 14px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;user-select:none;white-space:nowrap;}
+.results-table th:hover{background:#1f2937;}
+.results-table th .sort-ind{font-size:.7rem;opacity:.6;margin-left:4px;}
+.results-table td{padding:11px 14px;border-bottom:1px solid #f3f4f6;vertical-align:top;}
+.results-table tr:last-child td{border-bottom:none;}
+.results-table tr:hover td{background:#f9fafb;}
+.results-table .cell-doc{font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;color:#374151;}
+.results-table .cell{cursor:text;position:relative;}
+.results-table .cell:hover{background:#fff7ed;}
+.results-table .cell-input{width:100%;padding:5px 7px;border:1.5px solid #2563eb;border-radius:5px;font-size:.85rem;font-family:inherit;outline:none;background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.15);}
+.results-table .cell-val{font-weight:500;}
+.results-table .cell-val.empty{color:#9ca3af;font-style:italic;}
+.results-table .conf{display:inline-block;font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+.conf-high{background:#d1fae5;color:#047857;}
+.conf-mid{background:#fef3c7;color:#b45309;}
+.conf-low{background:#fee2e2;color:#b91c1c;}
+.warn-ic{color:#dc2626;font-weight:700;cursor:help;margin-left:4px;}
+.results-table .err-row td{background:#fef2f2;color:#991b1b;font-style:italic;}
+
+.scroll-x{overflow-x:auto;border:1px solid #e5e7eb;border-radius:11px;}
+
+.empty,.loading,.error{padding:48px;text-align:center;color:#6b7280;font-size:.92rem;}
+.error{color:#b91c1c;}
+.msg{font-size:.84rem;padding:10px 14px;border-radius:9px;margin-top:10px;display:none;}
+.msg.ok{background:#d1fae5;color:#047857;display:block;}
+.msg.err{background:#fee2e2;color:#b91c1c;display:block;}
+.msg.info{background:#dbeafe;color:#1d4ed8;display:block;}
+.hidden{display:none !important;}
+input[type="file"]{display:none;}
+
+/* ── HOW + WHO + FAQ ── */
+.section{max-width:1100px;margin:64px auto 0;padding:0 24px;}
+.section-h{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;letter-spacing:-.025em;color:#111827;text-align:center;margin-bottom:8px;}
+.section-sub{font-size:.95rem;color:#6b7280;text-align:center;margin-bottom:32px;max-width:560px;margin-left:auto;margin-right:auto;}
+
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;}
+.how-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:24px;}
+.how-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#eff6ff;color:#2563eb;font-weight:800;font-size:.95rem;margin-bottom:12px;}
+.how-card h3{font-size:1.05rem;font-weight:700;margin-bottom:6px;color:#111827;}
+.how-card p{font-size:.88rem;color:#6b7280;}
+
+.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.who-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:22px;}
+.who-ic{font-size:1.7rem;margin-bottom:10px;}
+.who-card h3{font-size:1rem;font-weight:700;margin-bottom:5px;color:#111827;}
+.who-card p{font-size:.82rem;color:#6b7280;line-height:1.5;}
+
+.faq{max-width:780px;margin:0 auto;}
+.faq-item{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.faq-q{padding:16px 20px;font-weight:700;font-size:.95rem;color:#111827;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.faq-q::after{content:'+';font-size:1.4rem;color:#6b7280;font-weight:400;transition:transform .2s;flex-shrink:0;}
+.faq-item.open .faq-q::after{transform:rotate(45deg);}
+.faq-a{padding:0 20px 16px;font-size:.88rem;color:#4b5563;line-height:1.6;display:none;}
+.faq-item.open .faq-a{display:block;}
+
+/* ── FOOTER ── */
+.footer{margin-top:72px;padding:32px 24px;background:#fff;border-top:1px solid #e5e7eb;}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:.84rem;color:#6b7280;}
+.footer a{color:#374151;text-decoration:none;font-weight:600;}
+.footer a:hover{color:#2563eb;}
+
+@media (max-width:600px){
+  .nav-inner{padding:12px 16px;}
+  .hero{padding:32px 16px 22px;}
+  .wrap,.section,.presets{padding-left:16px;padding-right:16px;}
+  .card{padding:20px;}
+  .steps{font-size:.68rem;flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="logo2.png" alt="DokumoFlow">
+      <span>DokumoFlow</span>
+    </a>
+    <div class="nav-right">
+      <a href="artykuly.html" class="nav-link">Artykuły</a>
+      <a href="konto.html" class="nav-link" id="navLoginBtn">Zaloguj</a>
+      <a href="konto.html?rejestracja=1" class="nav-cta" id="navRegisterBtn">Załóż konto</a>
+      <a href="konto.html" id="navProfile" class="nav-avatar" style="display:none;text-decoration:none;">?</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <span class="badge">⚡ Skaner dokumentów AI</span>
+  <h1>PDF i zdjęcia → <span class="grad">gotowa tabela Excel</span><br>w 30 sekund</h1>
+  <p>Wyciągnij PESEL, NIP, kwoty, e-maile, daty albo własne pola z faktur, dowodów, umów czy wyciągów bankowych. AI rozpoznaje polskie znaki i sprawdza sumy kontrolne — Ty tylko pobierasz CSV.</p>
+  <div class="trust">
+    <span>✓ Bez instalacji</span>
+    <span>✓ Po polsku</span>
+    <span>✓ PDF, PNG, JPG, WEBP</span>
+    <span>✓ Eksport CSV / Excel</span>
+    <span>✓ Walidacja PESEL, NIP, IBAN</span>
+  </div>
+</header>
+
+<!-- ── QUICK PRESETS ── -->
+<section class="presets">
+  <div class="presets-h">⚡ Szybki start — wybierz typ dokumentu</div>
+  <div class="presets-grid">
+    <button class="preset" data-preset="faktura">
+      <div class="preset-ic">🧾</div>
+      <div>
+        <div class="preset-t">Faktura</div>
+        <div class="preset-d">numer, NIP, kwota, daty</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="dowod">
+      <div class="preset-ic">🪪</div>
+      <div>
+        <div class="preset-t">Dowód osobisty</div>
+        <div class="preset-d">PESEL, imię, adres, data ur.</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="wyciag">
+      <div class="preset-ic">🏦</div>
+      <div>
+        <div class="preset-t">Wyciąg bankowy</div>
+        <div class="preset-d">IBAN, kwoty, daty operacji</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="umowa">
+      <div class="preset-ic">📄</div>
+      <div>
+        <div class="preset-t">Umowa</div>
+        <div class="preset-d">strony, NIP, kwota, terminy</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="cv">
+      <div class="preset-ic">👤</div>
+      <div>
+        <div class="preset-t">CV / kontakt</div>
+        <div class="preset-d">imię, e-mail, telefon</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="clear">
+      <div class="preset-ic">🧹</div>
+      <div>
+        <div class="preset-t">Wyczyść</div>
+        <div class="preset-d">odznacz wszystkie pola</div>
+      </div>
+    </button>
+  </div>
+</section>
+
+<!-- ── TOOL ── -->
+<div class="wrap">
+  <div class="steps">
+    <div class="step active" data-step="setup"><span class="num">1</span> Wybór pól</div>
+    <div class="step" data-step="upload"><span class="num">2</span> Wgrywanie</div>
+    <div class="step" data-step="results"><span class="num">3</span> Wyniki</div>
+  </div>
+
+  <!-- ETAP 1: WYBÓR PÓL -->
+  <div class="card" id="setupCard">
+    <h2>Co wyciągnąć z dokumentów?</h2>
+    <div class="h-sub">Zaznacz pola, które AI ma wyłuskać z każdego dokumentu. Możesz dodać własne — np. „Numer umowy", „Nr KRS", „Data zawarcia".</div>
+    <div class="fields-grid" id="fieldsGrid"></div>
+    <div class="add-row">
+      <input type="text" id="customField" placeholder="np. Numer umowy, Nr KRS, Data zawarcia…" maxlength="80">
+      <button class="btn btn-light" id="addCustom">+ Dodaj pole</button>
+    </div>
+    <div class="btns">
+      <button class="btn btn-primary" id="toUpload">Dalej — wgraj pliki →</button>
+    </div>
+    <div class="msg" id="setupMsg"></div>
+  </div>
+
+  <!-- ETAP 2: UPLOAD -->
+  <div class="card hidden" id="uploadCard">
+    <h2>Wgraj dokumenty</h2>
+    <div class="h-sub">PDF lub obraz (PNG / JPG / WEBP). Wiele plików naraz. Maks. 4 MB na plik.</div>
+    <div class="dropzone" id="dropzone">
+      <div class="dz-ico">📥</div>
+      <div class="dz-h">Przeciągnij pliki tutaj albo kliknij, żeby wybrać</div>
+      <div class="dz-s">PDF, PNG, JPG, WEBP · do 4 MB · wiele plików naraz</div>
+    </div>
+    <input type="file" id="fileInput" multiple accept="application/pdf,image/png,image/jpeg,image/webp">
+    <div class="file-list" id="fileList"></div>
+    <div class="progress-row hidden" id="progressRow">
+      <div id="progressLabel">Przetworzono 0/0</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="btns">
+      <button class="btn btn-light" id="backToSetup">← Zmień pola</button>
+      <button class="btn btn-primary" id="startProcess" disabled>Wyciągnij dane</button>
+    </div>
+    <div class="msg" id="uploadMsg"></div>
+  </div>
+
+  <!-- ETAP 3: WYNIKI -->
+  <div class="card hidden" id="resultsCard">
+    <h2>Wyniki ekstrakcji</h2>
+    <div class="h-sub">Kliknij komórkę, aby edytować. Pola z ⚠️ wymagają sprawdzenia — wykryto błąd walidacji. Kolor obok wartości to pewność AI.</div>
+    <div class="scroll-x">
+      <table class="results-table" id="resultsTable"></table>
+    </div>
+    <div class="btns">
+      <button class="btn btn-light" id="backToUpload">← Wgraj więcej</button>
+      <button class="btn btn-green" id="exportCsv">📥 Pobierz CSV (Excel)</button>
+      <button class="btn btn-light" id="startOver">Zacznij od nowa</button>
+    </div>
+    <div class="msg" id="resultsMsg"></div>
+  </div>
+</div>
+
+<!-- ── JAK TO DZIAŁA ── -->
+<section class="section">
+  <h2 class="section-h">Jak to działa</h2>
+  <p class="section-sub">Trzy kroki od wgrania pliku do tabeli w Excelu. Bez instalacji, bez skomplikowanej konfiguracji.</p>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">1</div>
+      <h3>Wybierz pola</h3>
+      <p>Zaznacz gotowe (PESEL, NIP, kwota, e-mail) albo dopisz własne. AI wie, co ma rozpoznać.</p>
+    </div>
+    <div class="how-card">
+      <div class="how-num">2</div>
+      <h3>Wgraj pliki</h3>
+      <p>Przeciągnij PDF-y albo zdjęcia dokumentów. Możesz wrzucić kilkadziesiąt naraz — przetwarzamy równolegle.</p>
+    </div>
+    <div class="how-card">
+      <div class="how-num">3</div>
+      <h3>Pobierz CSV</h3>
+      <p>Każdy plik to jedna linia, każde pole to jedna kolumna. Excel PL otwiera bez krzaków, gotowe do księgowości.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── DLA KOGO ── -->
+<section class="section">
+  <h2 class="section-h">Dla kogo to narzędzie</h2>
+  <p class="section-sub">Wszędzie tam, gdzie trzeba przepisać dane z papieru albo PDF-a do tabeli — szybciej niż ręcznie.</p>
+  <div class="who-grid">
+    <div class="who-card">
+      <div class="who-ic">📊</div>
+      <h3>Księgowość</h3>
+      <p>Wyciąganie NIP-ów, numerów i kwot z faktur kosztowych. Eksport CSV → import do programu księgowego.</p>
+    </div>
+    <div class="who-card">
+      <div class="who-ic">👥</div>
+      <h3>HR i kadry</h3>
+      <p>PESEL, adres i data urodzenia z dokumentów tożsamości. Walidacja sum kontrolnych w locie.</p>
+    </div>
+    <div class="who-card">
+      <div class="who-ic">⚖️</div>
+      <h3>Kancelarie i biura prawne</h3>
+      <p>Strony umowy, NIP-y, kwoty i terminy z setek umów — w jednym arkuszu, bez przepisywania.</p>
+    </div>
+    <div class="who-card">
+      <div class="who-ic">🛒</div>
+      <h3>E-commerce i logistyka</h3>
+      <p>Listy przewozowe, faktury zakupowe, potwierdzenia płatności — dane do systemu bez ręcznego klepania.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="section">
+  <h2 class="section-h">Najczęstsze pytania</h2>
+  <p class="section-sub">Wszystko, co warto wiedzieć przed pierwszym skanem.</p>
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q">Czy skaner działa z polskimi dokumentami?</div>
+      <div class="faq-a">Tak — rozpoznaje polskie znaki, weryfikuje sumę kontrolną PESEL i NIP, sprawdza format IBAN-u (PL26…), numeru telefonu i kwot z przecinkiem dziesiętnym. Eksport CSV ma BOM, więc Excel PL otwiera go bez krzaków.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Czy mogę dodać własne pole?</div>
+      <div class="faq-a">Tak. Oprócz gotowych (PESEL, NIP, e-mail, telefon, IBAN, kwota, data, imię, adres, nazwa firmy) możesz dopisać dowolne — np. „Numer umowy", „Nr KRS", „Data zawarcia", „Symbol faktury" — i AI je rozpozna w każdym pliku.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Jakie formaty plików obsługujecie?</div>
+      <div class="faq-a">PDF, PNG, JPG i WEBP, do 4 MB na plik. Wiele plików naraz — przetwarzamy równolegle i składamy w jednej tabeli.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Czy moje dokumenty są zapisywane?</div>
+      <div class="faq-a">Nie. Pliki wysyłane są do silnika AI tylko po to, żeby wyciągnąć dane — nie zapisujemy ich. Wyniki widzisz w przeglądarce dopóki nie zamkniesz strony albo nie klikniesz „Zacznij od nowa".</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Czy mogę poprawić wynik ręcznie?</div>
+      <div class="faq-a">Tak — każdą komórkę w tabeli wyników można kliknąć i edytować. Pola z błędem walidacji są oznaczone ⚠️, a kolor obok wartości pokazuje pewność AI (zielony ≥80%, żółty 50–80%, czerwony &lt;50%).</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Czy potrzebuję konta?</div>
+      <div class="faq-a">Tak, wymagane jest zalogowane konto DokumoFlow — to chroni narzędzie przed nadużyciami. Założenie konta jest darmowe i zajmuje 30 sekund.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>© 2026 DokumoFlow — <a href="index.html">strona główna</a> · <a href="artykuly.html">artykuły</a> · <a href="kontakt.html">kontakt</a></div>
+    <div style="font-size:.78rem;color:#9ca3af;">Skaner dokumentów AI · wersja beta</div>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
+const app = getApps().length ? getApps()[0] : initializeApp(__c);
+const auth = getAuth(app);
+let _user = null;
+
+// ── Pola predefiniowane ──
+const PREDEFINED = [
+  { key: 'imie_nazwisko', label: 'Imię i nazwisko', validator: 'name' },
+  { key: 'pesel',         label: 'PESEL',           validator: 'pesel' },
+  { key: 'adres',         label: 'Adres',           validator: null },
+  { key: 'telefon',       label: 'Telefon',         validator: 'phone' },
+  { key: 'email',         label: 'E-mail',          validator: 'email' },
+  { key: 'data_urodzenia',label: 'Data urodzenia',  validator: 'date' },
+  { key: 'nr_rachunku',   label: 'Numer konta (IBAN)', validator: 'iban' },
+  { key: 'nazwa_firmy',   label: 'Nazwa firmy',     validator: null },
+  { key: 'nip',           label: 'NIP',             validator: 'nip' },
+  { key: 'kwota',         label: 'Kwota',           validator: 'amount' },
+];
+
+// ── Quick presets ──
+const PRESETS = {
+  faktura: ['nazwa_firmy', 'nip', 'kwota'],
+  dowod:   ['imie_nazwisko', 'pesel', 'adres', 'data_urodzenia'],
+  wyciag:  ['nr_rachunku', 'kwota', 'data_urodzenia'],
+  umowa:   ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
+  cv:      ['imie_nazwisko', 'email', 'telefon'],
+};
+
+let _fields = PREDEFINED.map(f => ({ ...f, selected: false, custom: false }));
+let _files = [];
+let _rows = [];
+let _sortBy = null, _sortDir = 1;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MAX_FILE = 4 * 1024 * 1024;
+
+// ── WALIDATORY ──
+const VALIDATORS = {
+  pesel: v => {
+    if (!v) return null;
+    if (!/^\d{11}$/.test(v)) return 'PESEL: oczekiwano 11 cyfr';
+    const w = [1,3,7,9,1,3,7,9,1,3];
+    let s = 0; for (let i = 0; i < 10; i++) s += parseInt(v[i]) * w[i];
+    const c = (10 - s % 10) % 10;
+    return c === parseInt(v[10]) ? null : 'PESEL: nieprawidłowa suma kontrolna';
+  },
+  nip: v => {
+    if (!v) return null;
+    const clean = v.replace(/\D/g, '');
+    if (clean.length !== 10) return 'NIP: oczekiwano 10 cyfr';
+    const w = [6,5,7,2,3,4,5,6,7];
+    let s = 0; for (let i = 0; i < 9; i++) s += parseInt(clean[i]) * w[i];
+    return s % 11 === parseInt(clean[9]) ? null : 'NIP: nieprawidłowa suma kontrolna';
+  },
+  email: v => v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? 'E-mail: niepoprawny format' : null,
+  phone: v => {
+    if (!v) return null;
+    const c = v.replace(/[\s+\-()]/g, '');
+    return /^(48)?\d{9}$/.test(c) ? null : 'Telefon: oczekiwano 9 cyfr (PL)';
+  },
+  iban: v => {
+    if (!v) return null;
+    const c = v.replace(/\s/g, '').toUpperCase();
+    return /^[A-Z]{2}\d{2}\d{20,30}$/.test(c) ? null : 'IBAN: niepoprawny format';
+  },
+  amount: v => v && !/^-?\d+([.,]\d+)?$/.test(v.replace(/\s/g, '')) ? 'Kwota: oczekiwano liczby' : null,
+  date: v => v && !/^\d{4}-\d{2}-\d{2}|^\d{1,2}[./-]\d{1,2}[./-]\d{4}/.test(v) ? 'Data: niepoprawny format' : null,
+  name: v => v && v.split(/\s+/).filter(Boolean).length < 2 ? 'Imię i nazwisko: oczekiwano min. 2 słów' : null,
+};
+
+// ── RENDER ETAP 1 ──
+function renderFields() {
+  $('fieldsGrid').innerHTML = _fields.map((f, i) => `
+    <label class="field-cb${f.selected ? ' checked' : ''}">
+      <input type="checkbox" data-i="${i}" ${f.selected ? 'checked' : ''}>
+      <span>${esc(f.label)}</span>
+      ${f.custom ? `<button class="x-remove" data-rm="${i}" title="Usuń">✕</button>` : ''}
+    </label>`).join('');
+  document.querySelectorAll('#fieldsGrid input[type=checkbox]').forEach(cb => {
+    cb.onclick = e => { const i = parseInt(cb.dataset.i); _fields[i].selected = cb.checked; renderFields(); };
+  });
+  document.querySelectorAll('#fieldsGrid [data-rm]').forEach(b => {
+    b.onclick = e => { e.preventDefault(); e.stopPropagation(); const i = parseInt(b.dataset.rm); _fields.splice(i, 1); renderFields(); };
+  });
+}
+
+$('addCustom').onclick = () => {
+  const label = $('customField').value.trim();
+  if (!label) return;
+  const key = 'custom_' + Date.now().toString(36);
+  _fields.push({ key, label, selected: true, custom: true, validator: null });
+  $('customField').value = '';
+  renderFields();
+};
+$('customField').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('addCustom').click(); } });
+
+// presety
+document.querySelectorAll('.preset').forEach(b => {
+  b.onclick = () => {
+    const p = b.dataset.preset;
+    if (p === 'clear') {
+      _fields.forEach(f => f.selected = false);
+    } else {
+      const keys = PRESETS[p] || [];
+      _fields.forEach(f => f.selected = keys.includes(f.key));
+    }
+    renderFields();
+    document.querySelector('.steps').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+});
+
+$('toUpload').onclick = () => {
+  const sel = _fields.filter(f => f.selected);
+  if (!sel.length) { showMsg('Zaznacz przynajmniej 1 pole.', 'err'); return; }
+  switchStep('upload');
+};
+
+// ── ETAP 2: UPLOAD ──
+const dz = $('dropzone'), fi = $('fileInput');
+dz.onclick = () => fi.click();
+['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); addFiles(e.dataTransfer.files); });
+fi.onchange = e => addFiles(e.target.files);
+
+function addFiles(fileList) {
+  let added = 0, skipped = 0;
+  for (const file of fileList) {
+    if (file.size > MAX_FILE) { skipped++; continue; }
+    const ok = ['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type) || /\.(pdf|png|jpe?g|webp)$/i.test(file.name);
+    if (!ok) { skipped++; continue; }
+    _files.push({ file, name: file.name, size: file.size, status: 'pending' });
+    added++;
+  }
+  if (skipped) showMsg(`Dodano ${added}, pominięto ${skipped} (zły format albo > 4 MB).`, 'info');
+  else if (added) showMsg(`Dodano ${added} plików.`, 'ok');
+  renderFiles();
+}
+
+function renderFiles() {
+  const labels = { pending: 'gotowy', processing: 'przetwarzam…', done: '✓ gotowe', error: '✗ błąd' };
+  $('fileList').innerHTML = _files.map((f, i) => `
+    <div class="file-row">
+      <div class="fr-name">${esc(f.name)}</div>
+      <div class="fr-size">${(f.size/1024).toFixed(0)} KB</div>
+      <div class="fr-status fr-s-${f.status}">${labels[f.status]}</div>
+      ${f.status === 'pending' || f.status === 'error' ? `<button class="fr-x" data-rm="${i}" title="Usuń">✕</button>` : ''}
+    </div>`).join('');
+  document.querySelectorAll('.fr-x').forEach(b => {
+    b.onclick = () => { _files.splice(parseInt(b.dataset.rm), 1); renderFiles(); };
+  });
+  $('startProcess').disabled = !_files.some(f => f.status === 'pending');
+}
+
+$('backToSetup').onclick = () => switchStep('setup');
+
+$('startProcess').onclick = async () => {
+  const sel = _fields.filter(f => f.selected).map(f => ({ key: f.key, label: f.label }));
+  if (!sel.length) { showMsg('Brak wybranych pól. Wróć i zaznacz.', 'err'); return; }
+  $('startProcess').disabled = true;
+  $('backToSetup').disabled = true;
+  $('progressRow').classList.remove('hidden');
+  _rows = [];
+  const pending = _files.filter(f => f.status === 'pending');
+  let done = 0;
+  updateProgress(done, pending.length);
+
+  const CONCURRENCY = 2;
+  const queue = [...pending];
+  async function worker() {
+    while (queue.length) {
+      const f = queue.shift();
+      f.status = 'processing'; renderFiles();
+      try {
+        const base64 = await fileToBase64(f.file);
+        const res = await callOCR({ file: base64, mediaType: f.file.type || guessMime(f.name), fields: sel });
+        f.status = 'done';
+        f.result = res.fields || {};
+        _rows.push({ docName: f.name, values: f.result });
+      } catch (e) {
+        f.status = 'error';
+        f.error = e.message;
+        _rows.push({ docName: f.name, error: e.message });
+      }
+      done++; updateProgress(done, pending.length); renderFiles();
+    }
+  }
+  await Promise.all(Array.from({length: CONCURRENCY}, worker));
+  $('backToSetup').disabled = false;
+  showMsg(`Gotowe — ${done}/${pending.length} przetworzonych.`, 'ok');
+  setTimeout(() => switchStep('results'), 600);
+};
+
+function updateProgress(done, total) {
+  $('progressLabel').textContent = `Przetworzono ${done}/${total}`;
+  $('progressFill').style.width = (total ? (done / total * 100) : 0) + '%';
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => { const s = r.result; const i = s.indexOf(','); resolve(i >= 0 ? s.slice(i + 1) : s); };
+    r.onerror = () => reject(new Error('Nie udało się wczytać pliku'));
+    r.readAsDataURL(file);
+  });
+}
+function guessMime(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return ({ pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' })[ext] || '';
+}
+
+async function callOCR(body) {
+  const t = await _user.getIdToken();
+  const r = await fetch('/api/dunning', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'ocr-extract', ...body }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  return data;
+}
+
+// ── ETAP 3: TABELA WYNIKÓW ──
+function renderResults() {
+  const sel = _fields.filter(f => f.selected);
+  const t = $('resultsTable');
+
+  const rows = [..._rows];
+  if (_sortBy) {
+    rows.sort((a, b) => {
+      const ka = _sortBy === '__doc__' ? a.docName : (a.values?.[_sortBy]?.value || '');
+      const kb = _sortBy === '__doc__' ? b.docName : (b.values?.[_sortBy]?.value || '');
+      return ka.localeCompare(kb, 'pl') * _sortDir;
+    });
+  }
+
+  t.innerHTML = `<thead><tr>
+    <th data-col="__doc__">Dokument ${_sortBy === '__doc__' ? (_sortDir > 0 ? '▲' : '▼') : ''}<span class="sort-ind">⇅</span></th>
+    ${sel.map(f => `<th data-col="${esc(f.key)}">${esc(f.label)} ${_sortBy === f.key ? (_sortDir > 0 ? '▲' : '▼') : ''}<span class="sort-ind">⇅</span></th>`).join('')}
+  </tr></thead><tbody>
+  ${rows.map((row) => {
+    if (row.error) {
+      return `<tr class="err-row"><td class="cell-doc">${esc(row.docName)}</td><td colspan="${sel.length}">Błąd: ${esc(row.error)}</td></tr>`;
+    }
+    return `<tr data-ri="${_rows.indexOf(row)}">
+      <td class="cell-doc">${esc(row.docName)}</td>
+      ${sel.map(f => {
+        const cell = row.values?.[f.key] || { value: '', confidence: 0 };
+        const v = cell.value || '';
+        const conf = cell.confidence || 0;
+        const confCls = conf >= 80 ? 'conf-high' : conf >= 50 ? 'conf-mid' : 'conf-low';
+        const validator = VALIDATORS[f.validator];
+        const warn = validator ? validator(v) : null;
+        return `<td class="cell" data-key="${esc(f.key)}">
+          <span class="cell-val${!v ? ' empty' : ''}">${v ? esc(v) : '—'}</span>
+          ${conf ? `<span class="conf ${confCls}">${conf}%</span>` : ''}
+          ${warn ? `<span class="warn-ic" title="${esc(warn)}">⚠️</span>` : ''}
+        </td>`;
+      }).join('')}
+    </tr>`;
+  }).join('')}
+  </tbody>`;
+
+  t.querySelectorAll('th[data-col]').forEach(th => {
+    th.onclick = () => {
+      const col = th.dataset.col;
+      if (_sortBy === col) _sortDir = -_sortDir; else { _sortBy = col; _sortDir = 1; }
+      renderResults();
+    };
+  });
+  t.querySelectorAll('td.cell').forEach(td => {
+    td.onclick = () => editCell(td);
+  });
+}
+
+function editCell(td) {
+  if (td.querySelector('input')) return;
+  const tr = td.closest('tr');
+  const ri = parseInt(tr.dataset.ri);
+  const key = td.dataset.key;
+  const current = _rows[ri].values?.[key]?.value || '';
+  const inp = document.createElement('input');
+  inp.className = 'cell-input';
+  inp.value = current;
+  inp.onkeydown = e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = current; inp.blur(); } };
+  inp.onblur = () => {
+    if (!_rows[ri].values) _rows[ri].values = {};
+    if (!_rows[ri].values[key]) _rows[ri].values[key] = { value: '', confidence: 0 };
+    _rows[ri].values[key].value = inp.value;
+    _rows[ri].values[key].edited = true;
+    renderResults();
+  };
+  td.innerHTML = '';
+  td.appendChild(inp);
+  inp.focus();
+  inp.select();
+}
+
+$('backToUpload').onclick = () => switchStep('upload');
+$('startOver').onclick = () => {
+  if (!confirm('Zacząć od nowa? Bieżące wyniki zostaną utracone.')) return;
+  _files = []; _rows = []; renderFiles(); switchStep('setup');
+};
+
+$('exportCsv').onclick = () => {
+  const sel = _fields.filter(f => f.selected);
+  const headers = ['Dokument', ...sel.map(f => f.label)];
+  const lines = [headers.map(h => `"${h.replace(/"/g, '""')}"`).join(';')];
+  for (const row of _rows) {
+    if (row.error) continue;
+    const cells = [row.docName, ...sel.map(f => row.values?.[f.key]?.value || '')];
+    lines.push(cells.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';'));
+  }
+  const csv = '﻿' + lines.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'skaner-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+};
+
+// ── NAWIGACJA ETAPÓW ──
+function switchStep(step) {
+  $('setupCard').classList.toggle('hidden', step !== 'setup');
+  $('uploadCard').classList.toggle('hidden', step !== 'upload');
+  $('resultsCard').classList.toggle('hidden', step !== 'results');
+  document.querySelectorAll('.step').forEach(el => {
+    el.classList.remove('active', 'done');
+    const s = el.dataset.step;
+    if (s === step) el.classList.add('active');
+    else if ((step === 'upload' && s === 'setup') || (step === 'results' && (s === 'setup' || s === 'upload'))) {
+      el.classList.add('done');
+    }
+  });
+  if (step === 'results') renderResults();
+  ['setupMsg','uploadMsg','resultsMsg'].forEach(id => { const el = $(id); if (el) el.className = 'msg'; });
+  document.querySelector('.steps').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showMsg(text, type) {
+  const card = !$('setupCard').classList.contains('hidden') ? $('setupMsg')
+    : !$('uploadCard').classList.contains('hidden') ? $('uploadMsg')
+    : $('resultsMsg');
+  if (card) { card.className = 'msg ' + type; card.textContent = text; }
+}
+
+// ── FAQ accordion ──
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').onclick = () => item.classList.toggle('open');
+});
+
+// ── AUTH NAV ──
+function updateNavAuth(u) {
+  const login = $('navLoginBtn'), reg = $('navRegisterBtn'), prof = $('navProfile');
+  if (u) {
+    if (login) login.style.display = 'none';
+    if (reg) reg.style.display = 'none';
+    if (prof) { prof.style.display = 'flex'; prof.textContent = (u.email || 'U')[0].toUpperCase(); }
+  } else {
+    if (login) login.style.display = '';
+    if (reg) reg.style.display = '';
+    if (prof) prof.style.display = 'none';
+  }
+}
+
+onAuthStateChanged(auth, async u => {
+  updateNavAuth(u);
+  if (!u) {
+    $('setupCard').innerHTML = '<div class="error">Aby skorzystać ze skanera dokumentów, zaloguj się na konto DokumoFlow. <a href="/konto.html" style="color:#2563eb;text-decoration:underline;font-weight:600">Zaloguj się →</a></div>';
+    return;
+  }
+  _user = u;
+  renderFields();
+});
+</script>
+</body>
+</html>
