@@ -229,11 +229,11 @@ input[type="file"]{display:none;}
         <div class="preset-d">numer, NIP, kwota, daty</div>
       </div>
     </button>
-    <button class="preset" data-preset="dowod">
-      <div class="preset-ic">🪪</div>
+    <button class="preset" data-preset="paragon">
+      <div class="preset-ic">🛒</div>
       <div>
-        <div class="preset-t">Dowód osobisty</div>
-        <div class="preset-d">PESEL, imię, adres, data ur.</div>
+        <div class="preset-t">Paragon / rachunek</div>
+        <div class="preset-d">kwota, data, NIP sprzedawcy</div>
       </div>
     </button>
     <button class="preset" data-preset="wyciag">
@@ -255,6 +255,34 @@ input[type="file"]{display:none;}
       <div>
         <div class="preset-t">CV / kontakt</div>
         <div class="preset-d">imię, e-mail, telefon</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="pismo">
+      <div class="preset-ic">✉️</div>
+      <div>
+        <div class="preset-t">Pismo / korespondencja</div>
+        <div class="preset-d">imię, adres, e-mail, telefon</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="zaswiadczenie">
+      <div class="preset-ic">📑</div>
+      <div>
+        <div class="preset-t">Zaświadczenie</div>
+        <div class="preset-d">imię, firma, NIP, kwota</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="wezwanie">
+      <div class="preset-ic">⚖️</div>
+      <div>
+        <div class="preset-t">Wezwanie do zapłaty</div>
+        <div class="preset-d">dłużnik, kwota, IBAN, data</div>
+      </div>
+    </button>
+    <button class="preset" data-preset="oferta">
+      <div class="preset-ic">💼</div>
+      <div>
+        <div class="preset-t">Oferta / wycena</div>
+        <div class="preset-d">firma, NIP, kwota, kontakt</div>
       </div>
     </button>
     <button class="preset" data-preset="clear">
@@ -444,11 +472,15 @@ const PREDEFINED = [
 
 // ── Quick presets ──
 const PRESETS = {
-  faktura: ['nazwa_firmy', 'nip', 'kwota'],
-  dowod:   ['imie_nazwisko', 'pesel', 'adres', 'data_urodzenia'],
-  wyciag:  ['nr_rachunku', 'kwota', 'data_urodzenia'],
-  umowa:   ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
-  cv:      ['imie_nazwisko', 'email', 'telefon'],
+  faktura:       ['nazwa_firmy', 'nip', 'kwota'],
+  paragon:       ['nazwa_firmy', 'nip', 'kwota'],
+  wyciag:        ['nr_rachunku', 'kwota'],
+  umowa:         ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
+  cv:            ['imie_nazwisko', 'email', 'telefon'],
+  pismo:         ['imie_nazwisko', 'adres', 'email', 'telefon'],
+  zaswiadczenie: ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
+  wezwanie:      ['imie_nazwisko', 'nazwa_firmy', 'kwota', 'nr_rachunku'],
+  oferta:        ['nazwa_firmy', 'nip', 'kwota', 'email'],
 };
 
 let _fields = PREDEFINED.map(f => ({ ...f, selected: false, custom: false }));
