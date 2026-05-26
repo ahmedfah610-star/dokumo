@@ -137,6 +137,17 @@ body{background:#f9fafb;color:#111827;min-height:100vh;line-height:1.5;}
 
 .scroll-x{overflow-x:auto;border:1px solid #e5e7eb;border-radius:11px;}
 
+/* ── USAGE BANNER ── */
+.usage-banner{max-width:1100px;margin:0 auto 14px;padding:14px 18px;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:.88rem;}
+.usage-free{background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;}
+.usage-promax{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534;}
+.usage-locked{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+.usage-banner b{font-weight:800;}
+.usage-banner .ub-cta{margin-left:auto;padding:8px 16px;background:#111827;color:#fff;border-radius:9px;text-decoration:none;font-size:.82rem;font-weight:700;}
+.usage-banner .ub-cta:hover{background:#1f2937;}
+.usage-banner.usage-locked .ub-cta{background:#dc2626;}
+.usage-banner.usage-locked .ub-cta:hover{background:#b91c1c;}
+
 .empty,.loading,.error{padding:48px;text-align:center;color:#6b7280;font-size:.92rem;}
 .error{color:#b91c1c;}
 .msg{font-size:.84rem;padding:10px 14px;border-radius:9px;margin-top:10px;display:none;}
@@ -262,6 +273,7 @@ input[type="file"]{display:none;}
 
 <!-- ── TOOL ── -->
 <div class="wrap">
+  <div id="usageBanner" class="usage-banner" style="display:none;"></div>
   <div class="steps">
     <div class="step active" data-step="setup"><span class="num">1</span> Wybór pól</div>
     <div class="step" data-step="upload"><span class="num">2</span> Wgrywanie</div>
@@ -448,6 +460,7 @@ let _fields = PREDEFINED.map(f => ({ ...f, selected: false, custom: false }));
 let _files = [];
 let _rows = [];
 let _sortBy = null, _sortDir = 1;
+let _usage = { tier: 'free', used: 0, limit: 3, remaining: 3 };
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -581,8 +594,9 @@ $('startProcess').onclick = async () => {
 
   const CONCURRENCY = 2;
   const queue = [...pending];
+  let limitHit = false;
   async function worker() {
-    while (queue.length) {
+    while (queue.length && !limitHit) {
       const f = queue.shift();
       f.status = 'processing'; renderFiles();
       try {
@@ -595,11 +609,17 @@ $('startProcess').onclick = async () => {
         f.status = 'error';
         f.error = e.message;
         _rows.push({ docName: f.name, error: e.message });
+        if (e.code === 'limit_exceeded') limitHit = true;
       }
       done++; updateProgress(done, pending.length); renderFiles();
     }
   }
   await Promise.all(Array.from({length: CONCURRENCY}, worker));
+  if (limitHit) {
+    // Oznacz oczekujące jako "limit" — nie próbowano
+    _files.filter(f => f.status === 'pending').forEach(f => { f.status = 'error'; f.error = 'Limit darmowych skanów wyczerpany'; });
+    renderFiles();
+  }
   $('backToSetup').disabled = false;
   showMsg(`Gotowe — ${done}/${pending.length} przetworzonych.`, 'ok');
   setTimeout(() => switchStep('results'), 600);
@@ -631,8 +651,43 @@ async function callOCR(body) {
     body: JSON.stringify({ action: 'ocr-extract', ...body }),
   });
   const data = await r.json().catch(() => ({}));
+  if (r.status === 402) {
+    _usage = { tier: 'free', used: data.used || 3, limit: data.limit || 3, remaining: 0 };
+    renderUsageBanner();
+    const e = new Error(data.message || 'Limit darmowych skanów wyczerpany');
+    e.code = 'limit_exceeded';
+    throw e;
+  }
   if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  if (data.tier) {
+    _usage = {
+      tier: data.tier,
+      used: data.used || 0,
+      limit: data.limit || null,
+      remaining: data.remaining != null ? data.remaining : null,
+    };
+    renderUsageBanner();
+  }
   return data;
+}
+
+function renderUsageBanner() {
+  const b = $('usageBanner');
+  if (!b) return;
+  if (_usage.tier === 'promax') {
+    b.className = 'usage-banner usage-promax';
+    b.innerHTML = '<span>⭐ <b>Pro Max</b> — skanujesz bez limitu.</span>';
+    b.style.display = 'flex';
+  } else if (_usage.remaining === 0) {
+    b.className = 'usage-banner usage-locked';
+    b.innerHTML = `<span>🚫 <b>Limit wyczerpany</b> — wykorzystano ${_usage.used}/${_usage.limit} darmowych skanów. Wykup Pro Max, aby skanować bez limitu.</span><a class="ub-cta" href="subskrypcja.html">Zobacz Pro Max →</a>`;
+    b.style.display = 'flex';
+  } else {
+    b.className = 'usage-banner usage-free';
+    const left = _usage.remaining != null ? _usage.remaining : (_usage.limit - _usage.used);
+    b.innerHTML = `<span>🎁 <b>Wersja darmowa</b> — pozostało <b>${left}/${_usage.limit}</b> darmowych skanów. Pro Max odblokowuje bez limitu.</span><a class="ub-cta" href="subskrypcja.html">Zobacz Pro Max →</a>`;
+    b.style.display = 'flex';
+  }
 }
 
 // ── ETAP 3: TABELA WYNIKÓW ──
@@ -778,14 +833,38 @@ function updateNavAuth(u) {
   }
 }
 
+async function fetchUsage() {
+  try {
+    const t = await _user.getIdToken();
+    const r = await fetch('/api/sub', { headers: { 'Authorization': 'Bearer ' + t } });
+    const data = await r.json().catch(() => ({}));
+    if (data.active && data.plan === 'promax') {
+      _usage = { tier: 'promax', used: 0, limit: null, remaining: null };
+    } else {
+      _usage = { tier: 'free', used: 0, limit: 3, remaining: 3 };
+    }
+  } catch {
+    _usage = { tier: 'free', used: 0, limit: 3, remaining: 3 };
+  }
+  renderUsageBanner();
+}
+
 onAuthStateChanged(auth, async u => {
   updateNavAuth(u);
   if (!u) {
-    $('setupCard').innerHTML = '<div class="error">Aby skorzystać ze skanera dokumentów, zaloguj się na konto DokumoFlow. <a href="/konto.html" style="color:#2563eb;text-decoration:underline;font-weight:600">Zaloguj się →</a></div>';
+    $('setupCard').innerHTML = `
+      <div style="text-align:center;padding:24px 8px;">
+        <div style="font-size:2.4rem;margin-bottom:10px;">🔐</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:6px;">Zaloguj się, aby skorzystać ze skanera</div>
+        <div style="font-size:.9rem;color:#6b7280;margin-bottom:18px;">Darmowe konto DokumoFlow = <b>3 darmowe skany</b> na start.<br>Pro Max odblokowuje bez limitu.</div>
+        <a href="konto.html?rejestracja=1" class="btn btn-primary" style="text-decoration:none;display:inline-block;margin-right:6px;">Załóż darmowe konto</a>
+        <a href="konto.html" class="btn btn-light" style="text-decoration:none;display:inline-block;">Zaloguj</a>
+      </div>`;
     return;
   }
   _user = u;
   renderFields();
+  fetchUsage();
 });
 </script>
 </body>

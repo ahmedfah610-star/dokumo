@@ -1,5 +1,5 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { randomBytes } from 'crypto';
 
@@ -95,6 +95,23 @@ async function verifyFlagged(req) {
   const data = snap.exists ? (snap.data() || {}) : {};
   if (data?.featureFlags?.dunning !== true) throw err(403, 'feature_disabled');
   return { uid: decoded.uid, email: decoded.email || '', name: decoded.name || '', userDoc: data };
+}
+
+// ── Dostęp do Skanera dokumentów: ProMax bez limitu, free 3 darmowe ──
+const OCR_FREE_LIMIT = 3;
+async function getOcrAccess(uid) {
+  const subSnap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
+  if (subSnap.exists) {
+    const data = subSnap.data() || {};
+    const expMs = data.expiresAt?.toMillis?.() ?? (data.expiresAt ? new Date(data.expiresAt).getTime() : null);
+    const active = !data.cancelled && (!expMs || expMs > Date.now());
+    if (active && data.plan === 'promax') {
+      return { tier: 'promax', limit: null, used: 0 };
+    }
+  }
+  const uSnap = await db.collection('users').doc(uid).get();
+  const used = (uSnap.exists ? (uSnap.data() || {}) : {}).ocrUsedFree || 0;
+  return { tier: 'free', limit: OCR_FREE_LIMIT, used };
 }
 
 // ── Formatowanie ──
@@ -811,7 +828,61 @@ export default async function handler(req, res) {
       }
     }
 
-    // ── Wszystkie pozostałe akcje: wymagają flagi ──
+    // ── Skaner dokumentów (OCR) — dostępny dla wszystkich zalogowanych, limit 3 dla free ──
+    if (action === 'ocr-extract') {
+      if (req.method !== 'POST') return res.status(405).json({ error: 'Wymagana metoda POST' });
+      const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
+      if (!token) return res.status(401).json({ error: 'Zaloguj się, aby korzystać ze skanera' });
+      let decoded;
+      try { decoded = await auth.verifyIdToken(token); }
+      catch { return res.status(401).json({ error: 'Nieważny token logowania' }); }
+      const uid = decoded.uid;
+
+      const { file, mediaType, fields } = req.body || {};
+      if (!file || !mediaType) return res.status(400).json({ error: 'Brak pliku' });
+      if (!Array.isArray(fields) || fields.length === 0) return res.status(400).json({ error: 'Wybierz przynajmniej 1 pole' });
+      if (fields.length > 20) return res.status(400).json({ error: 'Maks. 20 pól na dokument' });
+      const cleanFields = fields
+        .filter(f => f && typeof f.key === 'string' && typeof f.label === 'string')
+        .map(f => ({ key: f.key.slice(0, 60), label: f.label.slice(0, 120) }))
+        .slice(0, 20);
+      if (!cleanFields.length) return res.status(400).json({ error: 'Nieprawidłowe pola' });
+
+      const access = await getOcrAccess(uid);
+      if (access.tier === 'free' && access.used >= access.limit) {
+        return res.status(402).json({
+          error: 'limit_exceeded',
+          message: `Wykorzystano ${access.used}/${access.limit} darmowych skanów. Pro Max odblokowuje bez limitu.`,
+          used: access.used,
+          limit: access.limit,
+          tier: 'free',
+          upgradeUrl: '/subskrypcja.html',
+        });
+      }
+
+      try {
+        const result = await callAnthropicOCR({ base64Data: file, mediaType, fields: cleanFields });
+        let newUsed = access.used;
+        if (access.tier === 'free') {
+          await db.collection('users').doc(uid).set({
+            ocrUsedFree: FieldValue.increment(1),
+          }, { merge: true });
+          newUsed = access.used + 1;
+        }
+        return res.status(200).json({
+          ok: true,
+          ...result,
+          tier: access.tier,
+          used: access.tier === 'free' ? newUsed : null,
+          limit: access.limit,
+          remaining: access.tier === 'free' ? Math.max(0, access.limit - newUsed) : null,
+        });
+      } catch (e) {
+        return res.status(500).json({ error: 'Skan nie powiódł się: ' + e.message });
+      }
+    }
+
+    // ── Pozostałe akcje (AI Windykator): wymagają flagi ──
     const { uid, email, name, userDoc } = await verifyFlagged(req);
     const fromName = userDoc?.dunningPreferences?.fromName || name || (email ? email.split('@')[0] : 'Zespół');
     const tone = userDoc?.dunningPreferences?.tone || 'neutral';
@@ -1366,28 +1437,6 @@ export default async function handler(req, res) {
         token,
         url: 'https://dokumoflow.com/faktura-link.html?t=' + token,
       });
-    }
-
-    // ── POST: OCR — wyciągnij wybrane pola z dokumentu (PDF/obraz) ──
-    if (action === 'ocr-extract') {
-      const { file, mediaType, fields } = req.body || {};
-      if (!file || !mediaType) return res.status(400).json({ error: 'Brak pliku' });
-      if (!Array.isArray(fields) || fields.length === 0) {
-        return res.status(400).json({ error: 'Wybierz przynajmniej 1 pole' });
-      }
-      if (fields.length > 20) return res.status(400).json({ error: 'Maks. 20 pól na dokument' });
-      // sanityzacja fields
-      const cleanFields = fields
-        .filter(f => f && typeof f.key === 'string' && typeof f.label === 'string')
-        .map(f => ({ key: f.key.slice(0, 60), label: f.label.slice(0, 120) }))
-        .slice(0, 20);
-      if (!cleanFields.length) return res.status(400).json({ error: 'Nieprawidłowe pola' });
-      try {
-        const result = await callAnthropicOCR({ base64Data: file, mediaType, fields: cleanFields });
-        return res.status(200).json({ ok: true, ...result });
-      } catch (e) {
-        return res.status(500).json({ error: 'OCR nie powiódł się: ' + e.message });
-      }
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });
