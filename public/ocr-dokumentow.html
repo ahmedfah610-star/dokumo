@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCR dokumentów – Dokumo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,Segoe UI,sans-serif;}
+body{background:#f5f3ef;color:#1a1714;min-height:100vh;}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px;}
+h1{font-size:1.55rem;font-weight:800;margin-bottom:3px;}
+.sub{font-size:.84rem;color:#6b6560;margin-bottom:22px;}
+.steps{display:flex;gap:6px;margin-bottom:24px;font-size:.75rem;font-weight:700;color:#9b948c;text-transform:uppercase;letter-spacing:.07em;}
+.step{padding:6px 12px;border-radius:7px;background:#ebe7df;}
+.step.active{background:#1a1714;color:#fff;}
+.step.done{background:#dcfce7;color:#15803d;}
+
+.card{background:#fff;border:1px solid rgba(26,23,20,.1);border-radius:14px;padding:22px;margin-bottom:14px;}
+.card h2{font-size:1rem;font-weight:800;margin-bottom:4px;}
+.card .h-sub{font-size:.78rem;color:#9b948c;margin-bottom:16px;}
+
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:12px;}
+.field-cb{display:flex;align-items:center;gap:9px;padding:11px 13px;border:1.5px solid rgba(26,23,20,.12);border-radius:10px;background:#fff;cursor:pointer;font-size:.88rem;font-weight:500;color:#3a3330;transition:background .12s,border-color .12s;}
+.field-cb:hover{background:#faf8f4;}
+.field-cb input{margin:0;cursor:pointer;width:16px;height:16px;}
+.field-cb.checked{background:#f0fdf4;border-color:#16a34a;}
+.field-cb .x-remove{margin-left:auto;color:#b91c1c;font-weight:700;font-size:.75rem;opacity:0;transition:opacity .12s;background:none;border:none;cursor:pointer;}
+.field-cb:hover .x-remove{opacity:1;}
+
+.add-row{display:flex;gap:8px;margin-top:6px;}
+.add-row input{flex:1;padding:10px 13px;border:1.5px solid rgba(26,23,20,.18);border-radius:10px;font-size:.86rem;font-family:inherit;outline:none;}
+.add-row input:focus{border-color:#1a1714;}
+
+.dropzone{border:2.5px dashed rgba(26,23,20,.25);border-radius:14px;padding:48px 22px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s;}
+.dropzone:hover,.dropzone.drag{background:#faf8f4;border-color:#1a1714;}
+.dropzone .dz-ico{font-size:2.5rem;margin-bottom:8px;}
+.dropzone .dz-h{font-size:1rem;font-weight:700;margin-bottom:4px;}
+.dropzone .dz-s{font-size:.78rem;color:#9b948c;}
+.file-list{margin-top:14px;}
+.file-row{display:flex;align-items:center;gap:12px;padding:10px 13px;background:#faf8f4;border-radius:10px;margin-bottom:6px;font-size:.84rem;}
+.file-row .fr-name{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-row .fr-size{color:#9b948c;font-size:.74rem;flex-shrink:0;}
+.file-row .fr-status{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:999px;flex-shrink:0;}
+.fr-s-pending{background:#ebe7df;color:#6b6560;}
+.fr-s-processing{background:#dbeafe;color:#1d4ed8;}
+.fr-s-done{background:#dcfce7;color:#15803d;}
+.fr-s-error{background:#fee2e2;color:#b91c1c;}
+.file-row .fr-x{background:none;border:none;cursor:pointer;color:#9b948c;font-size:1.1rem;font-weight:700;padding:0 4px;}
+.file-row .fr-x:hover{color:#b91c1c;}
+
+.progress-row{display:flex;align-items:center;gap:14px;margin-top:12px;font-size:.86rem;font-weight:600;}
+.progress-bar{flex:1;height:8px;background:#ebe7df;border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:#1a1714;border-radius:4px;transition:width .25s;}
+
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.btn{padding:11px 22px;border-radius:10px;border:none;cursor:pointer;font-size:.86rem;font-weight:700;font-family:inherit;}
+.btn-dark{background:#1a1714;color:#fff;}.btn-dark:hover{background:#3a3330;}
+.btn-light{background:#f0ede8;color:#1a1714;}.btn-light:hover{background:#e5e1da;}
+.btn-green{background:#15803d;color:#fff;}.btn-green:hover{background:#136b34;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.results-table{width:100%;border-collapse:collapse;font-size:.85rem;background:#fff;border-radius:11px;overflow:hidden;}
+.results-table th{background:#1a1714;color:#fff;padding:11px 13px;text-align:left;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;user-select:none;white-space:nowrap;}
+.results-table th:hover{background:#3a3330;}
+.results-table th .sort-ind{font-size:.7rem;opacity:.6;margin-left:4px;}
+.results-table td{padding:10px 13px;border-bottom:1px solid #f0ede8;vertical-align:top;}
+.results-table tr:last-child td{border-bottom:none;}
+.results-table tr:hover td{background:#faf8f4;}
+.results-table .cell-doc{font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;color:#3a3330;}
+.results-table .cell{cursor:text;position:relative;}
+.results-table .cell:hover{background:#fff7ed;}
+.results-table .cell-input{width:100%;padding:5px 7px;border:1.5px solid #2563eb;border-radius:5px;font-size:.85rem;font-family:inherit;outline:none;background:#fff;}
+.results-table .cell-val{font-weight:500;}
+.results-table .cell-val.empty{color:#9b948c;font-style:italic;}
+.results-table .conf{display:inline-block;font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+.conf-high{background:#dcfce7;color:#15803d;}
+.conf-mid{background:#fef3c7;color:#b45309;}
+.conf-low{background:#fee2e2;color:#b91c1c;}
+.warn-ic{color:#b91c1c;font-weight:700;cursor:help;margin-left:4px;}
+.results-table .err-row td{background:#fef2f2;color:#991b1b;font-style:italic;}
+
+.scroll-x{overflow-x:auto;border:1px solid rgba(26,23,20,.1);border-radius:11px;}
+
+.empty,.loading,.error{padding:48px;text-align:center;color:#9b948c;font-size:.88rem;}
+.error{color:#b91c1c;}
+.msg{font-size:.84rem;padding:10px 14px;border-radius:9px;margin-top:10px;display:none;}
+.msg.ok{background:#dcfce7;color:#15803d;display:block;}
+.msg.err{background:#fee2e2;color:#b91c1c;display:block;}
+.msg.info{background:#eff6ff;color:#1d4ed8;display:block;}
+.hidden{display:none !important;}
+input[type="file"]{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OCR dokumentów</h1>
+  <div class="sub">Wyciągaj dane z PDF-ów i skanów: wybierasz pola, wgrywasz pliki, dostajesz tabelę.</div>
+
+  <div class="steps">
+    <div class="step active" data-step="setup">1. Wybór pól</div>
+    <div class="step" data-step="upload">2. Wgrywanie</div>
+    <div class="step" data-step="results">3. Wyniki</div>
+  </div>
+
+  <!-- ETAP 1: WYBÓR PÓL -->
+  <div class="card" id="setupCard">
+    <h2>Co wyciągnąć z dokumentów?</h2>
+    <div class="h-sub">Zaznacz pola, które AI ma wyłuskać z każdego dokumentu. Możesz dodać własne.</div>
+    <div class="fields-grid" id="fieldsGrid"></div>
+    <div class="add-row">
+      <input type="text" id="customField" placeholder="np. Numer umowy, Nr KRS, Data zawarcia…" maxlength="80">
+      <button class="btn btn-light" id="addCustom">+ Dodaj pole</button>
+    </div>
+    <div class="btns">
+      <button class="btn btn-dark" id="toUpload">Dalej — wgraj pliki →</button>
+    </div>
+  </div>
+
+  <!-- ETAP 2: UPLOAD -->
+  <div class="card hidden" id="uploadCard">
+    <h2>Wgraj dokumenty</h2>
+    <div class="h-sub">PDF lub obraz (PNG/JPG). Możesz wrzucić wiele plików naraz. Maks. 4 MB na plik.</div>
+    <div class="dropzone" id="dropzone">
+      <div class="dz-ico">📥</div>
+      <div class="dz-h">Przeciągnij pliki tutaj albo kliknij, żeby wybrać</div>
+      <div class="dz-s">PDF, PNG, JPG · do 4 MB · wiele plików naraz</div>
+    </div>
+    <input type="file" id="fileInput" multiple accept="application/pdf,image/png,image/jpeg,image/webp">
+    <div class="file-list" id="fileList"></div>
+    <div class="progress-row hidden" id="progressRow">
+      <div id="progressLabel">Przetworzono 0/0</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="btns">
+      <button class="btn btn-light" id="backToSetup">← Zmień pola</button>
+      <button class="btn btn-dark" id="startProcess" disabled>Wyciągnij dane</button>
+    </div>
+    <div class="msg" id="uploadMsg"></div>
+  </div>
+
+  <!-- ETAP 3: WYNIKI -->
+  <div class="card hidden" id="resultsCard">
+    <h2>Wyniki ekstrakcji</h2>
+    <div class="h-sub">Kliknij komórkę, aby edytować. Pola z ⚠️ wymagają sprawdzenia — wykryto błąd walidacji.</div>
+    <div class="scroll-x">
+      <table class="results-table" id="resultsTable"></table>
+    </div>
+    <div class="btns">
+      <button class="btn btn-light" id="backToUpload">← Wgraj więcej</button>
+      <button class="btn btn-green" id="exportCsv">📥 Pobierz CSV</button>
+      <button class="btn btn-light" id="startOver">Zacznij od nowa</button>
+    </div>
+    <div class="msg" id="resultsMsg"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const __c = await (await fetch('/api/nip-lookup?fbconfig')).json();
+const app = getApps().length ? getApps()[0] : initializeApp(__c);
+const auth = getAuth(app);
+let _user = null;
+
+// ── Pola predefiniowane ──
+const PREDEFINED = [
+  { key: 'imie_nazwisko', label: 'Imię i nazwisko', validator: 'name' },
+  { key: 'pesel',         label: 'PESEL',           validator: 'pesel' },
+  { key: 'adres',         label: 'Adres',           validator: null },
+  { key: 'telefon',       label: 'Telefon',         validator: 'phone' },
+  { key: 'email',         label: 'E-mail',          validator: 'email' },
+  { key: 'data_urodzenia',label: 'Data urodzenia',  validator: 'date' },
+  { key: 'nr_rachunku',   label: 'Numer konta (IBAN)', validator: 'iban' },
+  { key: 'nazwa_firmy',   label: 'Nazwa firmy',     validator: null },
+  { key: 'nip',           label: 'NIP',             validator: 'nip' },
+  { key: 'kwota',         label: 'Kwota',           validator: 'amount' },
+];
+
+// state
+let _fields = PREDEFINED.map(f => ({ ...f, selected: false, custom: false }));
+let _files = []; // {file, name, size, status, result?, error?}
+let _rows = []; // {docName, values:{key:{value, confidence, edited?}}}
+let _sortBy = null, _sortDir = 1;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MAX_FILE = 4 * 1024 * 1024; // 4 MB
+
+// ── WALIDATORY ──
+const VALIDATORS = {
+  pesel: v => {
+    if (!v) return null;
+    if (!/^\d{11}$/.test(v)) return 'PESEL: oczekiwano 11 cyfr';
+    const w = [1,3,7,9,1,3,7,9,1,3];
+    let s = 0; for (let i = 0; i < 10; i++) s += parseInt(v[i]) * w[i];
+    const c = (10 - s % 10) % 10;
+    return c === parseInt(v[10]) ? null : 'PESEL: nieprawidłowa suma kontrolna';
+  },
+  nip: v => {
+    if (!v) return null;
+    const clean = v.replace(/\D/g, '');
+    if (clean.length !== 10) return 'NIP: oczekiwano 10 cyfr';
+    const w = [6,5,7,2,3,4,5,6,7];
+    let s = 0; for (let i = 0; i < 9; i++) s += parseInt(clean[i]) * w[i];
+    return s % 11 === parseInt(clean[9]) ? null : 'NIP: nieprawidłowa suma kontrolna';
+  },
+  email: v => v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? 'E-mail: niepoprawny format' : null,
+  phone: v => {
+    if (!v) return null;
+    const c = v.replace(/[\s+\-()]/g, '');
+    return /^(48)?\d{9}$/.test(c) ? null : 'Telefon: oczekiwano 9 cyfr (PL)';
+  },
+  iban: v => {
+    if (!v) return null;
+    const c = v.replace(/\s/g, '').toUpperCase();
+    return /^[A-Z]{2}\d{2}\d{20,30}$/.test(c) ? null : 'IBAN: niepoprawny format';
+  },
+  amount: v => v && !/^-?\d+([.,]\d+)?$/.test(v.replace(/\s/g, '')) ? 'Kwota: oczekiwano liczby' : null,
+  date: v => v && !/^\d{4}-\d{2}-\d{2}|^\d{1,2}[./-]\d{1,2}[./-]\d{4}/.test(v) ? 'Data: niepoprawny format' : null,
+  name: v => v && v.split(/\s+/).filter(Boolean).length < 2 ? 'Imię i nazwisko: oczekiwano min. 2 słów' : null,
+};
+
+// ── RENDER ETAP 1 ──
+function renderFields() {
+  $('fieldsGrid').innerHTML = _fields.map((f, i) => `
+    <label class="field-cb${f.selected ? ' checked' : ''}">
+      <input type="checkbox" data-i="${i}" ${f.selected ? 'checked' : ''}>
+      <span>${esc(f.label)}</span>
+      ${f.custom ? `<button class="x-remove" data-rm="${i}" title="Usuń">✕</button>` : ''}
+    </label>`).join('');
+  document.querySelectorAll('#fieldsGrid input[type=checkbox]').forEach(cb => {
+    cb.onclick = e => { const i = parseInt(cb.dataset.i); _fields[i].selected = cb.checked; renderFields(); };
+  });
+  document.querySelectorAll('#fieldsGrid [data-rm]').forEach(b => {
+    b.onclick = e => { e.preventDefault(); e.stopPropagation(); const i = parseInt(b.dataset.rm); _fields.splice(i, 1); renderFields(); };
+  });
+}
+
+$('addCustom').onclick = () => {
+  const label = $('customField').value.trim();
+  if (!label) return;
+  const key = 'custom_' + Date.now().toString(36);
+  _fields.push({ key, label, selected: true, custom: true, validator: null });
+  $('customField').value = '';
+  renderFields();
+};
+$('customField').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('addCustom').click(); } });
+
+$('toUpload').onclick = () => {
+  const sel = _fields.filter(f => f.selected);
+  if (!sel.length) { showMsg('Zaznacz przynajmniej 1 pole.', 'err'); return; }
+  switchStep('upload');
+};
+
+// ── ETAP 2: UPLOAD ──
+const dz = $('dropzone'), fi = $('fileInput');
+dz.onclick = () => fi.click();
+['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); addFiles(e.dataTransfer.files); });
+fi.onchange = e => addFiles(e.target.files);
+
+function addFiles(fileList) {
+  let added = 0, skipped = 0;
+  for (const file of fileList) {
+    if (file.size > MAX_FILE) { skipped++; continue; }
+    const ok = ['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type) || /\.(pdf|png|jpe?g|webp)$/i.test(file.name);
+    if (!ok) { skipped++; continue; }
+    _files.push({ file, name: file.name, size: file.size, status: 'pending' });
+    added++;
+  }
+  if (skipped) showMsg(`Dodano ${added}, pominięto ${skipped} (zły format albo > 4 MB).`, 'info');
+  else if (added) showMsg(`Dodano ${added} plików.`, 'ok');
+  renderFiles();
+}
+
+function renderFiles() {
+  const labels = { pending: 'gotowy', processing: 'przetwarzam…', done: '✓ gotowe', error: '✗ błąd' };
+  $('fileList').innerHTML = _files.map((f, i) => `
+    <div class="file-row">
+      <div class="fr-name">${esc(f.name)}</div>
+      <div class="fr-size">${(f.size/1024).toFixed(0)} KB</div>
+      <div class="fr-status fr-s-${f.status}">${labels[f.status]}</div>
+      ${f.status === 'pending' || f.status === 'error' ? `<button class="fr-x" data-rm="${i}" title="Usuń">✕</button>` : ''}
+    </div>`).join('');
+  document.querySelectorAll('.fr-x').forEach(b => {
+    b.onclick = () => { _files.splice(parseInt(b.dataset.rm), 1); renderFiles(); };
+  });
+  $('startProcess').disabled = !_files.some(f => f.status === 'pending');
+}
+
+$('backToSetup').onclick = () => switchStep('setup');
+
+$('startProcess').onclick = async () => {
+  const sel = _fields.filter(f => f.selected).map(f => ({ key: f.key, label: f.label }));
+  if (!sel.length) { showMsg('Brak wybranych pól. Wróć i zaznacz.', 'err'); return; }
+  $('startProcess').disabled = true;
+  $('backToSetup').disabled = true;
+  $('progressRow').classList.remove('hidden');
+  _rows = [];
+  const pending = _files.filter(f => f.status === 'pending');
+  let done = 0;
+  updateProgress(done, pending.length);
+
+  // Przetwarzanie sekwencyjne (2 równolegle byłoby fajne, ale prościej tak)
+  const CONCURRENCY = 2;
+  const queue = [...pending];
+  async function worker() {
+    while (queue.length) {
+      const f = queue.shift();
+      f.status = 'processing'; renderFiles();
+      try {
+        const base64 = await fileToBase64(f.file);
+        const res = await callOCR({ file: base64, mediaType: f.file.type || guessMime(f.name), fields: sel });
+        f.status = 'done';
+        f.result = res.fields || {};
+        _rows.push({ docName: f.name, values: f.result });
+      } catch (e) {
+        f.status = 'error';
+        f.error = e.message;
+        _rows.push({ docName: f.name, error: e.message });
+      }
+      done++; updateProgress(done, pending.length); renderFiles();
+    }
+  }
+  await Promise.all(Array.from({length: CONCURRENCY}, worker));
+  $('backToSetup').disabled = false;
+  showMsg(`Gotowe — ${done}/${pending.length} przetworzonych.`, 'ok');
+  setTimeout(() => switchStep('results'), 600);
+};
+
+function updateProgress(done, total) {
+  $('progressLabel').textContent = `Przetworzono ${done}/${total}`;
+  $('progressFill').style.width = (total ? (done / total * 100) : 0) + '%';
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => { const s = r.result; const i = s.indexOf(','); resolve(i >= 0 ? s.slice(i + 1) : s); };
+    r.onerror = () => reject(new Error('Nie udało się wczytać pliku'));
+    r.readAsDataURL(file);
+  });
+}
+function guessMime(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return ({ pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' })[ext] || '';
+}
+
+async function callOCR(body) {
+  const t = await _user.getIdToken();
+  const r = await fetch('/api/dunning', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'ocr-extract', ...body }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+  return data;
+}
+
+// ── ETAP 3: TABELA WYNIKÓW ──
+function renderResults() {
+  const sel = _fields.filter(f => f.selected);
+  const cols = ['__doc__', ...sel.map(f => f.key)];
+  const t = $('resultsTable');
+
+  // sortowanie
+  const rows = [..._rows];
+  if (_sortBy) {
+    rows.sort((a, b) => {
+      const ka = _sortBy === '__doc__' ? a.docName : (a.values?.[_sortBy]?.value || '');
+      const kb = _sortBy === '__doc__' ? b.docName : (b.values?.[_sortBy]?.value || '');
+      return ka.localeCompare(kb, 'pl') * _sortDir;
+    });
+  }
+
+  t.innerHTML = `<thead><tr>
+    <th data-col="__doc__">Dokument ${_sortBy === '__doc__' ? (_sortDir > 0 ? '▲' : '▼') : ''}<span class="sort-ind">⇅</span></th>
+    ${sel.map(f => `<th data-col="${esc(f.key)}">${esc(f.label)} ${_sortBy === f.key ? (_sortDir > 0 ? '▲' : '▼') : ''}<span class="sort-ind">⇅</span></th>`).join('')}
+  </tr></thead><tbody>
+  ${rows.map((row, ri) => {
+    if (row.error) {
+      return `<tr class="err-row"><td class="cell-doc">${esc(row.docName)}</td><td colspan="${sel.length}">Błąd: ${esc(row.error)}</td></tr>`;
+    }
+    return `<tr data-ri="${_rows.indexOf(row)}">
+      <td class="cell-doc">${esc(row.docName)}</td>
+      ${sel.map(f => {
+        const cell = row.values?.[f.key] || { value: '', confidence: 0 };
+        const v = cell.value || '';
+        const conf = cell.confidence || 0;
+        const confCls = conf >= 80 ? 'conf-high' : conf >= 50 ? 'conf-mid' : 'conf-low';
+        const validator = VALIDATORS[f.validator];
+        const warn = validator ? validator(v) : null;
+        return `<td class="cell" data-key="${esc(f.key)}">
+          <span class="cell-val${!v ? ' empty' : ''}">${v ? esc(v) : '—'}</span>
+          ${conf ? `<span class="conf ${confCls}">${conf}%</span>` : ''}
+          ${warn ? `<span class="warn-ic" title="${esc(warn)}">⚠️</span>` : ''}
+        </td>`;
+      }).join('')}
+    </tr>`;
+  }).join('')}
+  </tbody>`;
+
+  // Click on header → sort
+  t.querySelectorAll('th[data-col]').forEach(th => {
+    th.onclick = () => {
+      const col = th.dataset.col;
+      if (_sortBy === col) _sortDir = -_sortDir; else { _sortBy = col; _sortDir = 1; }
+      renderResults();
+    };
+  });
+  // Click on cell → edit
+  t.querySelectorAll('td.cell').forEach(td => {
+    td.onclick = () => editCell(td);
+  });
+}
+
+function editCell(td) {
+  if (td.querySelector('input')) return;
+  const tr = td.closest('tr');
+  const ri = parseInt(tr.dataset.ri);
+  const key = td.dataset.key;
+  const current = _rows[ri].values?.[key]?.value || '';
+  const inp = document.createElement('input');
+  inp.className = 'cell-input';
+  inp.value = current;
+  inp.onkeydown = e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = current; inp.blur(); } };
+  inp.onblur = () => {
+    if (!_rows[ri].values) _rows[ri].values = {};
+    if (!_rows[ri].values[key]) _rows[ri].values[key] = { value: '', confidence: 0 };
+    _rows[ri].values[key].value = inp.value;
+    _rows[ri].values[key].edited = true;
+    renderResults();
+  };
+  td.innerHTML = '';
+  td.appendChild(inp);
+  inp.focus();
+  inp.select();
+}
+
+$('backToUpload').onclick = () => switchStep('upload');
+$('startOver').onclick = () => {
+  if (!confirm('Zacząć od nowa? Bieżące wyniki zostaną utracone.')) return;
+  _files = []; _rows = []; renderFiles(); switchStep('setup');
+};
+
+$('exportCsv').onclick = () => {
+  const sel = _fields.filter(f => f.selected);
+  const headers = ['Dokument', ...sel.map(f => f.label)];
+  const lines = [headers.map(h => `"${h.replace(/"/g, '""')}"`).join(';')];
+  for (const row of _rows) {
+    if (row.error) continue;
+    const cells = [row.docName, ...sel.map(f => row.values?.[f.key]?.value || '')];
+    lines.push(cells.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';'));
+  }
+  const csv = '﻿' + lines.join('\n'); // BOM dla Excel PL
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'ocr-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+};
+
+// ── NAWIGACJA ETAPÓW ──
+function switchStep(step) {
+  $('setupCard').classList.toggle('hidden', step !== 'setup');
+  $('uploadCard').classList.toggle('hidden', step !== 'upload');
+  $('resultsCard').classList.toggle('hidden', step !== 'results');
+  document.querySelectorAll('.step').forEach(el => {
+    el.classList.remove('active', 'done');
+    const s = el.dataset.step;
+    if (s === step) el.classList.add('active');
+    else if ((step === 'upload' && s === 'setup') || (step === 'results' && (s === 'setup' || s === 'upload'))) {
+      el.classList.add('done');
+    }
+  });
+  if (step === 'results') renderResults();
+  $('uploadMsg').className = 'msg'; $('resultsMsg').className = 'msg';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showMsg(text, type) {
+  const m = $('uploadMsg').classList.contains('hidden') ? null : $('uploadMsg');
+  const target = $('setupCard').classList.contains('hidden') ? $('uploadMsg') : null;
+  // pokaż w aktywnej karcie
+  const card = !$('setupCard').classList.contains('hidden') ? null
+    : !$('uploadCard').classList.contains('hidden') ? $('uploadMsg')
+    : $('resultsMsg');
+  if (card) { card.className = 'msg ' + type; card.textContent = text; }
+}
+
+// ── AUTH ──
+onAuthStateChanged(auth, async u => {
+  if (!u) {
+    $('setupCard').innerHTML = '<div class="error">Zaloguj się, aby korzystać z OCR dokumentów. <a href="/konto.html" style="color:#1a1714;text-decoration:underline">Zaloguj się →</a></div>';
+    return;
+  }
+  _user = u;
+  renderFields();
+});
+</script>
+</body>
+</html>

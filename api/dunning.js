@@ -24,6 +24,64 @@ const DAY = 86400000;
 // Wysyłka maili WŁĄCZONA. Tryb testowy (maile nie wychodzą) tylko gdy DUNNING_DEBUG_MODE === 'true'.
 const DEBUG = process.env.DUNNING_DEBUG_MODE === 'true';
 
+// Bumpujemy limit body do 6 MB — endpoint OCR przyjmuje pliki w base64.
+export const config = { api: { bodyParser: { sizeLimit: '6mb' } } };
+
+// ── OCR: ekstrakcja pól z dokumentu (PDF lub obraz) przez Anthropic ──
+async function callAnthropicOCR({ base64Data, mediaType, fields }) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('Brak ANTHROPIC_API_KEY');
+
+  const fieldsList = fields.map(f => `- ${f.key}: ${f.label}`).join('\n');
+  const systemPrompt = `Jesteś precyzyjnym systemem ekstrakcji danych z dokumentów. Wyciągasz konkretne pola z dokumentu i zwracasz je jako JSON.
+
+ZASADY:
+- Zwróć WYŁĄCZNIE poprawny JSON, bez markdown, bez fence'ów
+- Dla każdego pola: value (dokładnie tak jak w dokumencie, albo pusty string jeśli brak) i confidence (0-100 — Twoja pewność)
+- Nie zmyślaj. Brak danych = pusty string z confidence 0
+- Normalizuj: PESEL 11 cyfr bez spacji. NIP 10 cyfr bez kresek. Telefon: same cyfry, opcjonalnie z +48. IBAN bez spacji
+- Daty: format ISO YYYY-MM-DD gdy możliwe
+- Język dokumentu: polski
+
+FORMAT WYJŚCIA (ścisły JSON):
+{"fields":{"klucz_pola_1":{"value":"...","confidence":95},"klucz_pola_2":{"value":"","confidence":0}}}`;
+
+  const userPrompt = `Wyciągnij te pola z dokumentu:
+${fieldsList}
+
+Zwróć JSON ze WSZYSTKIMI wypisanymi kluczami.`;
+
+  let docContent;
+  if (mediaType === 'application/pdf') {
+    docContent = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } };
+  } else if (mediaType.startsWith('image/')) {
+    docContent = { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } };
+  } else {
+    throw new Error('Nieobsługiwany typ pliku: ' + mediaType);
+  }
+
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2048,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: [docContent, { type: 'text', text: userPrompt }] }],
+    }),
+    signal: AbortSignal.timeout(45000),
+  });
+  if (!r.ok) {
+    let detail = '';
+    try { detail = await r.text(); } catch {}
+    throw new Error('Anthropic HTTP ' + r.status + (detail ? ': ' + detail.slice(0, 200) : ''));
+  }
+  const data = await r.json();
+  const raw = data?.content?.[0]?.text || '';
+  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  return JSON.parse(cleaned);
+}
+
 function err(status, message) { return Object.assign(new Error(message), { status }); }
 
 // ── Dostęp: token + feature flag ──
@@ -1308,6 +1366,28 @@ export default async function handler(req, res) {
         token,
         url: 'https://dokumoflow.com/faktura-link.html?t=' + token,
       });
+    }
+
+    // ── POST: OCR — wyciągnij wybrane pola z dokumentu (PDF/obraz) ──
+    if (action === 'ocr-extract') {
+      const { file, mediaType, fields } = req.body || {};
+      if (!file || !mediaType) return res.status(400).json({ error: 'Brak pliku' });
+      if (!Array.isArray(fields) || fields.length === 0) {
+        return res.status(400).json({ error: 'Wybierz przynajmniej 1 pole' });
+      }
+      if (fields.length > 20) return res.status(400).json({ error: 'Maks. 20 pól na dokument' });
+      // sanityzacja fields
+      const cleanFields = fields
+        .filter(f => f && typeof f.key === 'string' && typeof f.label === 'string')
+        .map(f => ({ key: f.key.slice(0, 60), label: f.label.slice(0, 120) }))
+        .slice(0, 20);
+      if (!cleanFields.length) return res.status(400).json({ error: 'Nieprawidłowe pola' });
+      try {
+        const result = await callAnthropicOCR({ base64Data: file, mediaType, fields: cleanFields });
+        return res.status(200).json({ ok: true, ...result });
+      } catch (e) {
+        return res.status(500).json({ error: 'OCR nie powiódł się: ' + e.message });
+      }
     }
 
     return res.status(400).json({ error: 'Nieznana akcja: ' + action });
