@@ -229,13 +229,6 @@ input[type="file"]{display:none;}
         <div class="preset-d">numer, NIP, kwota, daty</div>
       </div>
     </button>
-    <button class="preset" data-preset="paragon">
-      <div class="preset-ic">🛒</div>
-      <div>
-        <div class="preset-t">Paragon / rachunek</div>
-        <div class="preset-d">kwota, data, NIP sprzedawcy</div>
-      </div>
-    </button>
     <button class="preset" data-preset="wyciag">
       <div class="preset-ic">🏦</div>
       <div>
@@ -257,39 +250,11 @@ input[type="file"]{display:none;}
         <div class="preset-d">imię, e-mail, telefon</div>
       </div>
     </button>
-    <button class="preset" data-preset="pismo">
-      <div class="preset-ic">✉️</div>
+    <button class="preset" data-preset="inne">
+      <div class="preset-ic">✨</div>
       <div>
-        <div class="preset-t">Pismo / korespondencja</div>
-        <div class="preset-d">imię, adres, e-mail, telefon</div>
-      </div>
-    </button>
-    <button class="preset" data-preset="zaswiadczenie">
-      <div class="preset-ic">📑</div>
-      <div>
-        <div class="preset-t">Zaświadczenie</div>
-        <div class="preset-d">imię, firma, NIP, kwota</div>
-      </div>
-    </button>
-    <button class="preset" data-preset="wezwanie">
-      <div class="preset-ic">⚖️</div>
-      <div>
-        <div class="preset-t">Wezwanie do zapłaty</div>
-        <div class="preset-d">dłużnik, kwota, IBAN, data</div>
-      </div>
-    </button>
-    <button class="preset" data-preset="oferta">
-      <div class="preset-ic">💼</div>
-      <div>
-        <div class="preset-t">Oferta / wycena</div>
-        <div class="preset-d">firma, NIP, kwota, kontakt</div>
-      </div>
-    </button>
-    <button class="preset" data-preset="clear">
-      <div class="preset-ic">🧹</div>
-      <div>
-        <div class="preset-t">Wyczyść</div>
-        <div class="preset-d">odznacz wszystkie pola</div>
+        <div class="preset-t">Inne</div>
+        <div class="preset-d">wybierz pola samodzielnie</div>
       </div>
     </button>
   </div>
@@ -472,15 +437,11 @@ const PREDEFINED = [
 
 // ── Quick presets ──
 const PRESETS = {
-  faktura:       ['nazwa_firmy', 'nip', 'kwota'],
-  paragon:       ['nazwa_firmy', 'nip', 'kwota'],
-  wyciag:        ['nr_rachunku', 'kwota'],
-  umowa:         ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
-  cv:            ['imie_nazwisko', 'email', 'telefon'],
-  pismo:         ['imie_nazwisko', 'adres', 'email', 'telefon'],
-  zaswiadczenie: ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
-  wezwanie:      ['imie_nazwisko', 'nazwa_firmy', 'kwota', 'nr_rachunku'],
-  oferta:        ['nazwa_firmy', 'nip', 'kwota', 'email'],
+  faktura: ['nazwa_firmy', 'nip', 'kwota'],
+  wyciag:  ['nr_rachunku', 'kwota'],
+  umowa:   ['imie_nazwisko', 'nazwa_firmy', 'nip', 'kwota'],
+  cv:      ['imie_nazwisko', 'email', 'telefon'],
+  inne:    [],
 };
 
 let _fields = PREDEFINED.map(f => ({ ...f, selected: false, custom: false }));
@@ -555,13 +516,8 @@ $('customField').addEventListener('keydown', e => { if (e.key === 'Enter') { e.p
 // presety
 document.querySelectorAll('.preset').forEach(b => {
   b.onclick = () => {
-    const p = b.dataset.preset;
-    if (p === 'clear') {
-      _fields.forEach(f => f.selected = false);
-    } else {
-      const keys = PRESETS[p] || [];
-      _fields.forEach(f => f.selected = keys.includes(f.key));
-    }
+    const keys = PRESETS[b.dataset.preset] || [];
+    _fields.forEach(f => f.selected = keys.includes(f.key));
     renderFields();
     document.querySelector('.steps').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
