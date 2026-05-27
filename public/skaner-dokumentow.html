@@ -148,6 +148,16 @@ body{background:#f9fafb;color:#111827;min-height:100vh;line-height:1.5;}
 .usage-banner.usage-locked .ub-cta{background:#dc2626;}
 .usage-banner.usage-locked .ub-cta:hover{background:#b91c1c;}
 
+/* ── DEMO PREVIEW ── */
+.demo-section{margin-top:24px;}
+.demo-wrap{position:relative;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.05);max-width:1100px;margin:0 auto;}
+.demo-label{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#eff6ff,#dbeafe);color:#1d4ed8;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:999px;margin-bottom:14px;letter-spacing:.05em;text-transform:uppercase;}
+.demo-table .cell-val{font-weight:500;}
+.demo-table tr:hover td{background:#f9fafb;}
+.demo-legend{display:flex;flex-wrap:wrap;gap:14px 18px;margin-top:14px;font-size:.78rem;color:#6b7280;padding-top:14px;border-top:1px dashed #e5e7eb;}
+.demo-legend span{display:inline-flex;align-items:center;gap:6px;}
+.demo-legend .conf{margin-left:0;}
+
 .empty,.loading,.error{padding:48px;text-align:center;color:#6b7280;font-size:.92rem;}
 .error{color:#b91c1c;}
 .msg{font-size:.84rem;padding:10px 14px;border-radius:9px;margin-top:10px;display:none;}
@@ -228,6 +238,62 @@ input[type="file"]{display:none;}
     <span>✓ Walidacja PESEL, NIP, IBAN</span>
   </div>
 </header>
+
+<!-- ── DEMO PREVIEW ── -->
+<section class="section demo-section">
+  <h2 class="section-h">Tak wygląda gotowa tabela</h2>
+  <p class="section-sub">Przykład skanu 4 dokumentów — faktury, umowy, paragonu i wezwania. Każda komórka edytowalna, kolor obok wartości to pewność AI, ⚠️ oznacza błąd walidacji.</p>
+  <div class="demo-wrap">
+    <div class="demo-label">👀 Demo — przykładowe wyniki</div>
+    <div class="scroll-x">
+      <table class="results-table demo-table">
+        <thead><tr>
+          <th>Dokument</th>
+          <th>Nazwa firmy</th>
+          <th>NIP</th>
+          <th>Kwota</th>
+          <th>E-mail</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="cell-doc">faktura-FV-2026-127.pdf</td>
+            <td><span class="cell-val">ABC Sp. z o.o.</span><span class="conf conf-high">98%</span></td>
+            <td><span class="cell-val">525-284-58-23</span><span class="conf conf-high">95%</span></td>
+            <td><span class="cell-val">4 920,00 zł</span><span class="conf conf-high">92%</span></td>
+            <td><span class="cell-val">biuro@abc.pl</span><span class="conf conf-high">99%</span></td>
+          </tr>
+          <tr>
+            <td class="cell-doc">umowa-zlecenie-J.Kowalski.pdf</td>
+            <td><span class="cell-val">Tech Solutions Sp. z o.o.</span><span class="conf conf-high">88%</span></td>
+            <td><span class="cell-val">777-319-42-13</span><span class="conf conf-high">94%</span></td>
+            <td><span class="cell-val">2 500,00 zł</span><span class="conf conf-mid">85%</span></td>
+            <td><span class="cell-val">hr@techsol.pl</span><span class="conf conf-high">91%</span></td>
+          </tr>
+          <tr>
+            <td class="cell-doc">paragon-IMG_0421.jpg</td>
+            <td><span class="cell-val">Lidl Polska Sp. z o.o.</span><span class="conf conf-mid">76%</span></td>
+            <td><span class="cell-val">526-025-02-74</span><span class="conf conf-mid">82%</span></td>
+            <td><span class="cell-val">87,42 zł</span><span class="conf conf-high">89%</span></td>
+            <td><span class="cell-val empty">—</span></td>
+          </tr>
+          <tr>
+            <td class="cell-doc">wezwanie-do-zaplaty.pdf</td>
+            <td><span class="cell-val">Jan Kowalski</span><span class="conf conf-low">68%</span><span class="warn-ic" title="Wykryto imię i nazwisko zamiast nazwy firmy">⚠️</span></td>
+            <td><span class="cell-val empty">—</span></td>
+            <td><span class="cell-val">1 200,00 zł</span><span class="conf conf-mid">78%</span></td>
+            <td><span class="cell-val">maria.n@gmail.com</span><span class="conf conf-high">94%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="demo-legend">
+      <span><span class="conf conf-high">90%+</span> wysoka pewność AI</span>
+      <span><span class="conf conf-mid">50–89%</span> średnia — warto sprawdzić</span>
+      <span><span class="conf conf-low">&lt;50%</span> niska — popraw ręcznie</span>
+      <span>⚠️ błąd walidacji (np. zła suma kontrolna NIP, niepoprawny e-mail)</span>
+    </div>
+  </div>
+</section>
 
 <!-- ── QUICK PRESETS ── -->
 <section class="presets">
