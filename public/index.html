@@ -1070,9 +1070,58 @@ button { font-family: inherit; cursor: pointer; border: none; }
 .nav-mob { display: none; }
 @media (max-width: 768px) {
   .nav-items { display: none; }
-  .nav { padding: 8px 14px; }
-  .nav-mob { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; }
-  .nav-mob span { width: 18px; height: 1.5px; background: var(--t1); }
+  .nav { padding: 10px 14px; gap: 8px; }
+  .nav-mob { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.15s; }
+  .nav-mob:hover { background: rgba(0,0,0,0.04); }
+  .nav-mob span { width: 18px; height: 1.5px; background: var(--t1); transition: transform 0.2s, opacity 0.2s; }
+  .nav-mob.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+  .nav-mob.open span:nth-child(2) { opacity: 0; }
+  .nav-mob.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+  #navLoginBtn { display: none !important; }
+  #navAuth { gap: 4px !important; }
+  .btn-glow { padding: 8px 14px !important; font-size: 12px !important; }
+  .nav-logo span { display: none; }
+}
+@media (max-width: 400px) {
+  #navRegisterBtn { display: none !important; }
+}
+
+/* Mobile drawer */
+.mob-drawer {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.mob-drawer.open { opacity: 1; pointer-events: auto; }
+.mob-drawer-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 88%; max-width: 320px;
+  background: #fff;
+  box-shadow: -12px 0 40px rgba(0,0,0,0.15);
+  padding: 80px 24px 32px;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+}
+.mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+.mob-drawer-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-radius: 12px;
+  font-size: 15px; font-weight: 500; color: var(--t1);
+  text-decoration: none; transition: background 0.15s;
+  margin-bottom: 4px;
+}
+.mob-drawer-link:hover { background: var(--bg3); }
+.mob-drawer-link.cta {
+  background: var(--acc-grad); color: #fff;
+  justify-content: center; margin-top: 16px;
+  box-shadow: 0 6px 20px rgba(124,58,237,0.3);
+}
+.mob-drawer-section {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--t3); padding: 16px 16px 8px;
 }
 
 /* ─── HERO ─── */
@@ -2462,10 +2511,27 @@ footer { background: var(--bg3); border-top: 1px solid var(--border); padding: 5
   .b-card.x2, .b-card.x3, .b-card.x4 { grid-column: span 1; }
   .pricing-grid4 { grid-template-columns: 1fr; }
   .footer-top2 { grid-template-columns: 1fr; }
-  .counters { gap: 32px; }
-  section.sec { padding: 80px 20px; }
-  h1.hero-title { font-size: 48px; }
-  .hero { padding: 100px 20px 60px; }
+  .counters {
+    display: grid !important; grid-template-columns: 1fr 1fr; gap: 24px 16px;
+  }
+  .counter-num { font-size: 28px !important; }
+  .counter-label { font-size: 11px !important; }
+  section.sec { padding: 64px 18px; }
+  h1.hero-title { font-size: 44px !important; line-height: 1.05; }
+  .hero-sub { font-size: 15px !important; }
+  .hero { padding: 80px 18px 48px; }
+  .hero-cta { width: 100%; }
+  .hero-cta .btn-primary, .hero-cta .btn-glow { width: 100%; justify-content: center; }
+  .hero-badge { font-size: 11px !important; padding: 5px 10px !important; }
+  .sec-title { font-size: 32px !important; }
+  .final h2 { font-size: 36px !important; }
+  /* showcase card scroll padding */
+  .sc-list { padding: 10px !important; }
+  .sc-tool { min-width: 180px !important; }
+  /* signature section stack */
+  .sign-pad { grid-template-columns: 1fr !important; gap: 24px !important; }
+  /* welcome chatbot full bleed on tiny screens */
+  .welcome-card { max-width: 100% !important; }
 }
 </style>
 </head>
@@ -2511,8 +2577,26 @@ footer { background: var(--bg3); border-top: 1px solid var(--border); padding: 5
       </div>
     </div>
   </div>
-  <div class="nav-mob"><span></span><span></span><span></span></div>
+  <div class="nav-mob" id="navHamburger" onclick="toggleMobDrawer(event)"><span></span><span></span><span></span></div>
 </nav>
+
+<!-- Mobile drawer -->
+<div class="mob-drawer" id="mobDrawer" onclick="closeMobDrawer(event)">
+  <div class="mob-drawer-panel" onclick="event.stopPropagation()">
+    <div class="mob-drawer-section">Nawigacja</div>
+    <a href="#funkcje" class="mob-drawer-link" onclick="closeMobDrawer()">Funkcje <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="#jak" class="mob-drawer-link" onclick="closeMobDrawer()">Jak działa <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="#cennik" class="mob-drawer-link" onclick="closeMobDrawer()">Cennik <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="artykuly.html" class="mob-drawer-link">Artykuły <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <div class="mob-drawer-section" id="mobDrawerAuthLabel">Konto</div>
+    <a href="konto.html" class="mob-drawer-link" id="mobDrawerLogin">Zaloguj się <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="konto.html?rejestracja=1" class="mob-drawer-link cta" id="mobDrawerRegister">Spróbuj za darmo</a>
+    <a href="konto.html" class="mob-drawer-link" id="mobDrawerAccount" style="display:none;">Moje konto <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="moje-dokumenty.html" class="mob-drawer-link" id="mobDrawerDocs" style="display:none;">Moje dokumenty <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="subskrypcja.html" class="mob-drawer-link" id="mobDrawerSub" style="display:none;">Subskrypcja <span style="color:var(--t3);font-size:14px;">→</span></a>
+    <a href="#" class="mob-drawer-link" id="mobDrawerLogout" style="display:none;color:#dc2626;" onclick="event.preventDefault();logoutUser();">Wyloguj się <span style="font-size:14px;">→</span></a>
+  </div>
+</div>
 
 <!-- ─── HERO ─── -->
 <section class="hero">
@@ -4228,6 +4312,13 @@ function updateNavAuth() {
   var profile = document.getElementById('navProfile');
   var avatar = document.getElementById('navAvatar');
   var emailEl = document.getElementById('navProfileEmail');
+  // Mobile drawer counterparts
+  var dLogin = document.getElementById('mobDrawerLogin');
+  var dRegister = document.getElementById('mobDrawerRegister');
+  var dAccount = document.getElementById('mobDrawerAccount');
+  var dDocs = document.getElementById('mobDrawerDocs');
+  var dSub = document.getElementById('mobDrawerSub');
+  var dLogout = document.getElementById('mobDrawerLogout');
   if (!loginBtn) return;
   if (user) {
     loginBtn.style.display = 'none';
@@ -4239,11 +4330,40 @@ function updateNavAuth() {
     } else {
       avatar.textContent = (user.email || 'U')[0].toUpperCase();
     }
+    if (dLogin) dLogin.style.display = 'none';
+    if (dRegister) dRegister.style.display = 'none';
+    if (dAccount) dAccount.style.display = '';
+    if (dDocs) dDocs.style.display = '';
+    if (dSub) dSub.style.display = '';
+    if (dLogout) dLogout.style.display = '';
   } else {
     loginBtn.style.display = '';
     registerBtn.style.display = '';
     profile.style.display = 'none';
+    if (dLogin) dLogin.style.display = '';
+    if (dRegister) dRegister.style.display = '';
+    if (dAccount) dAccount.style.display = 'none';
+    if (dDocs) dDocs.style.display = 'none';
+    if (dSub) dSub.style.display = 'none';
+    if (dLogout) dLogout.style.display = 'none';
   }
+}
+function toggleMobDrawer(e) {
+  if (e) e.stopPropagation();
+  var d = document.getElementById('mobDrawer');
+  var h = document.getElementById('navHamburger');
+  if (!d) return;
+  var open = d.classList.toggle('open');
+  if (h) h.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeMobDrawer(e) {
+  if (e && e.target.closest('.mob-drawer-panel') && !e.target.closest('.mob-drawer-link')) return;
+  var d = document.getElementById('mobDrawer');
+  var h = document.getElementById('navHamburger');
+  if (d) d.classList.remove('open');
+  if (h) h.classList.remove('open');
+  document.body.style.overflow = '';
 }
 function toggleNavDropdown(e) {
   e.stopPropagation();
