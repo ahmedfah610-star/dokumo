@@ -84,13 +84,54 @@ Zwróć JSON ze WSZYSTKIMI wypisanymi kluczami.`;
 
 function err(status, message) { return Object.assign(new Error(message), { status }); }
 
+// ─────────────────────────────────────────────────────────────────────────
+// Rate limiting — in-memory sliding window per Lambda instance.
+// Best-effort: cold starts resetuja licznik, ale 1 instancja tlumi 99% spamu
+// z jednego zrodla. Dla OCR (kosztowne wywolania Anthropic) dodatkowo
+// twardy lifetime cap przez Firestore (ocrUsedFree dla free).
+// ─────────────────────────────────────────────────────────────────────────
+const _rateMap = new Map();
+function rateLimit(key, max, windowMs) {
+  const now = Date.now();
+  const arr = _rateMap.get(key) || [];
+  const recent = arr.filter(t => now - t < windowMs);
+  if (recent.length >= max) return false;
+  recent.push(now);
+  _rateMap.set(key, recent);
+  if (_rateMap.size > 5000) {
+    for (const [k, v] of _rateMap.entries()) {
+      const r = v.filter(t => now - t < windowMs);
+      if (r.length === 0) _rateMap.delete(k);
+      else _rateMap.set(k, r);
+    }
+  }
+  return true;
+}
+function getClientIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (xff) return (Array.isArray(xff) ? xff[0] : xff).split(',')[0].trim();
+  return req.socket?.remoteAddress || 'unknown';
+}
+function rateLimitResponse(res, retryAfterSec) {
+  res.setHeader('Retry-After', String(retryAfterSec));
+  return res.status(429).json({ error: 'Zbyt wiele zapytan. Sprobuj ponownie za chwile.' });
+}
+
 // ── Dostęp: token + feature flag ──
 async function verifyFlagged(req) {
+  const ip = getClientIp(req);
+  if (!rateLimit('auth-attempt:' + ip, 30, 60 * 1000)) {
+    throw err(429, 'Zbyt wiele prob uwierzytelnienia. Sprobuj za chwile.');
+  }
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) throw err(401, 'Brak tokenu');
   let decoded;
   try { decoded = await auth.verifyIdToken(token); }
   catch { throw err(401, 'Nieważny token'); }
+  // Per-user request rate limit (after auth succeeds)
+  if (!rateLimit('user-req:' + decoded.uid, 180, 60 * 1000)) {
+    throw err(429, 'Zbyt wiele zapytan. Sprobuj za minute.');
+  }
   const snap = await db.collection('users').doc(decoded.uid).get();
   const data = snap.exists ? (snap.data() || {}) : {};
   if (data?.featureFlags?.dunning !== true) throw err(403, 'feature_disabled');
@@ -768,8 +809,16 @@ export default async function handler(req, res) {
 
     // ── Akcje publiczne (link tokenowy): bez auth, tylko weryfikacja tokenu ──
     if (action === 'public-invoice' || action === 'public-confirm' || action === 'public-question') {
+      const ip = getClientIp(req);
+      // Per-IP brake: GET (public-invoice) 120/min, write actions znacznie mniej
+      const isWrite = action === 'public-confirm' || action === 'public-question';
+      const limit = isWrite ? 10 : 120;
+      const win = isWrite ? 60 * 60 * 1000 : 60 * 1000;
+      if (!rateLimit('pub-ip:' + ip, limit, win)) return rateLimitResponse(res, isWrite ? 600 : 30);
       const t = (req.query?.t || req.body?.t || '').toString();
       if (!t || t.length < 12) return res.status(400).json({ error: 'Brak tokenu' });
+      // Per-token rate limit (chroni przed enumeracja klikow)
+      if (!rateLimit('pub-tok:' + t, isWrite ? 5 : 60, win)) return rateLimitResponse(res, isWrite ? 600 : 60);
       const snap = await db.collectionGroup('documents').where('publicToken', '==', t).limit(1).get();
       if (snap.empty) return res.status(404).json({ error: 'Nieprawidłowy lub wygasły link' });
       const docSnap = snap.docs[0];
@@ -831,12 +880,19 @@ export default async function handler(req, res) {
     // ── Skaner dokumentów (OCR) — dostępny dla wszystkich zalogowanych, limit 3 dla free ──
     if (action === 'ocr-extract') {
       if (req.method !== 'POST') return res.status(405).json({ error: 'Wymagana metoda POST' });
+      // Per-IP brake przed weryfikacja tokenu - chroni przed credential stuffing
+      const ip = getClientIp(req);
+      if (!rateLimit('ocr-ip:' + ip, 30, 60 * 60 * 1000)) return rateLimitResponse(res, 600);
       const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
       if (!token) return res.status(401).json({ error: 'Zaloguj się, aby korzystać ze skanera' });
       let decoded;
       try { decoded = await auth.verifyIdToken(token); }
       catch { return res.status(401).json({ error: 'Nieważny token logowania' }); }
       const uid = decoded.uid;
+      // Per-uid limit: chroni nawet Pro Max przed skryptowym drenazem Anthropic
+      // (30/godz, 100/dzien sliding window)
+      if (!rateLimit('ocr-uid-h:' + uid, 30, 60 * 60 * 1000)) return rateLimitResponse(res, 600);
+      if (!rateLimit('ocr-uid-d:' + uid, 100, 24 * 60 * 60 * 1000)) return rateLimitResponse(res, 3600);
 
       const { file, mediaType, fields } = req.body || {};
       if (!file || !mediaType) return res.status(400).json({ error: 'Brak pliku' });
