@@ -146,22 +146,35 @@ button { font-family: inherit; cursor: pointer; border: none; }
 }
 .welcome-ai .wc-msg b { color: #7c3aed !important; }
 .welcome-ai .wc-tool-link {
-  background: white !important;
+  background: #fff !important;
   border: 1px solid rgba(0,0,0,0.08) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
 }
 .welcome-ai .wc-tool-link:hover {
   background: #faf5ff !important;
   border-color: rgba(124,58,237,0.3) !important;
+  box-shadow: 0 6px 18px rgba(124,58,237,0.12) !important;
 }
 .welcome-ai .wc-tool-link-t { color: #1d1d1f !important; }
-.welcome-ai .wc-tool-link-d { color: rgba(29,29,31,0.55) !important; }
-.welcome-ai .wc-article-link {
-  background: #f5f5f7 !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  color: rgba(29,29,31,0.65) !important;
+.welcome-ai .wc-tool-link-d { color: rgba(29,29,31,0.6) !important; font-family: var(--font) !important; }
+.welcome-ai .wc-tool-link-arrow {
+  background: rgba(124,58,237,0.1) !important;
+  color: #7c3aed !important;
 }
-.welcome-ai .wc-article-link:hover { background: #ebebef !important; color: #1d1d1f !important; }
+.welcome-ai .wc-tool-link:hover .wc-tool-link-arrow { background: rgba(124,58,237,0.18) !important; }
+.welcome-ai .wc-article-link {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(29,29,31,0.65) !important;
+  padding: 6px 2px !important;
+}
+.welcome-ai .wc-article-link em { color: #1d1d1f !important; }
+.welcome-ai .wc-article-link:hover { color: #1d1d1f !important; background: transparent !important; }
+.welcome-ai .wc-article-link:hover em { text-decoration-color: rgba(124,58,237,0.5) !important; }
+.welcome-ai .wc-article-link-arrow {
+  background: rgba(124,58,237,0.12) !important;
+  color: #7c3aed !important;
+}
 .welcome-ai .wc-chips { border-top: 1px solid rgba(0,0,0,0.06) !important; }
 .welcome-ai .wc-chip {
   background: #ffffff !important;
@@ -514,34 +527,63 @@ button { font-family: inherit; cursor: pointer; border: none; }
   background: rgba(255,255,255,0.06); color: white;
   align-self: flex-end; border-bottom-right-radius: 5px;
 }
-.wc-msg b { color: #c084fc; }
+.wc-msg b { color: #c084fc; font-weight: 600; }
 .wc-msg .wc-tool-link {
-  display: flex; align-items: center; gap: 10px;
-  margin-top: 10px;
-  background: rgba(0,0,0,0.3); border: 1px solid rgba(168,85,247,0.2);
-  border-radius: 12px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 12px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(168,85,247,0.18);
+  border-radius: 14px; padding: 12px 14px;
   text-decoration: none;
-  transition: all 0.18s;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
 }
-.wc-msg .wc-tool-link:hover { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.4); }
+.wc-msg .wc-tool-link:hover {
+  background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(168,85,247,0.18);
+}
 .wc-tool-link-ic {
-  width: 32px; height: 32px; border-radius: 8px;
+  width: 38px; height: 38px; border-radius: 10px;
   background: var(--acc-grad);
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
+  font-size: 17px; flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(168,85,247,0.25);
 }
-.wc-tool-link-tx { flex: 1; }
-.wc-tool-link-t { font-size: 13px; font-weight: 600; color: white; }
-.wc-tool-link-d { font-family: var(--mono); font-size: 10px; color: var(--t3); margin-top: 1px; }
-.wc-tool-link-arrow { color: var(--acc); font-size: 14px; }
+.wc-tool-link-tx { flex: 1; min-width: 0; }
+.wc-tool-link-t { font-size: 14px; font-weight: 600; color: white; letter-spacing: -0.005em; line-height: 1.3; }
+.wc-tool-link-d {
+  font-family: var(--font); font-size: 12px; color: var(--t2);
+  margin-top: 2px; font-weight: 400; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.wc-tool-link-arrow {
+  color: var(--acc); flex-shrink: 0;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(168,85,247,0.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.wc-msg .wc-tool-link:hover .wc-tool-link-arrow {
+  transform: translateX(3px);
+  background: rgba(168,85,247,0.2);
+}
 .wc-msg .wc-article-link {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-  border-radius: 100px; padding: 5px 11px;
-  font-family: var(--mono); font-size: 11px; color: var(--t2);
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 10px;
+  background: transparent; border: none; padding: 6px 2px;
+  font-family: var(--font); font-size: 12.5px; color: var(--t2);
   text-decoration: none;
+  transition: color 0.18s;
 }
-.wc-msg .wc-article-link:hover { background: rgba(255,255,255,0.08); color: white; }
+.wc-msg .wc-article-link em { font-style: normal; color: white; font-weight: 500; }
+.wc-msg .wc-article-link:hover { color: white; }
+.wc-msg .wc-article-link:hover em { text-decoration: underline; text-decoration-color: rgba(168,85,247,0.6); text-underline-offset: 3px; }
+.wc-article-link-arrow {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 5px;
+  background: rgba(168,85,247,0.15);
+  color: #c084fc; font-size: 11px; font-weight: 600;
+  flex-shrink: 0;
+}
 
 .wc-typing {
   display: inline-flex; gap: 4px; align-items: center;
@@ -3918,19 +3960,20 @@ if (document.readyState === 'loading') {
 
 // ─── WELCOME CHATBOT ───
 const INTENTS = [
-  { keywords: ['zwoln','wypowiedz','rozwiąz umow','urlop'], tool: 'Dokumenty pracownicze', icon: '👔', url: 'https://dokumoflow.com/wypowiedzenia.html', article: { t: 'Wypowiedzenia w Kodeksie pracy', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['faktur','fakture','vat','proform','korekt'], tool: 'Generator faktur', icon: '🧾', url: 'https://dokumoflow.com/faktura.html', article: { t: 'Jak wystawić fakturę VAT', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['cv','życiorys','curriculum'], tool: 'Kreator CV', icon: '📄', url: 'https://dokumoflow.com/wybierz-szablon.html', article: { t: 'Jak napisać dobre CV pod ATS', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['list moty','motywacyjny','aplikacja'], tool: 'List motywacyjny', icon: '✉️', url: 'https://dokumoflow.com', article: null },
-  { keywords: ['sprawdz umow','analiza umow','umowa o prac','przed podp','klauzul'], tool: 'Sprawdź umowę z AI', icon: '🔍', url: 'https://dokumoflow.com/analiza-umowy.html', article: { t: 'Co sprawdzić w umowie o pracę', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['popraw cv','analiza cv','ocen cv','ats'], tool: 'Popraw CV z AI', icon: '📊', url: 'https://dokumoflow.com/popraw-cv.html', article: null },
-  { keywords: ['nda','poufność','poufnosc','tajemnic'], tool: 'NDA — HR i Biznes', icon: '🤝', url: 'https://dokumoflow.com/hr.html', article: null },
-  { keywords: ['b2b','samozatrudn','jdg'], tool: 'Umowa B2B', icon: '💼', url: 'https://dokumoflow.com/hr.html', article: null },
-  { keywords: ['regulamin','sklep','rodo','prywatnoś','zwrot'], tool: 'Dokumenty e-commerce', icon: '🛒', url: 'https://dokumoflow.com/ecommerce.html', article: null },
-  { keywords: ['najem','wynaj','mieszka','protokoł','protokol'], tool: 'Umowa najmu', icon: '🏠', url: 'https://dokumoflow.com/administracja.html', article: null },
-  { keywords: ['biznesplan','swot','strategia','wspólnik','wspolnik'], tool: 'Dokumenty administracyjne', icon: '📊', url: 'https://dokumoflow.com/administracja.html', article: null },
-  { keywords: ['sprzedaż','sprzedaz','kupna','rękojm'], tool: 'Umowa sprzedaży', icon: '📝', url: 'https://dokumoflow.com/generator-umowy-sprzedazy.html', article: null },
-  { keywords: ['kalkulator','wynagrodz','pensja','brutto','netto'], tool: 'Kalkulator wynagrodzeń', icon: '🧮', url: 'https://dokumoflow.com/kalkulator-wynagrodzen.html', article: null },
+  { keywords: ['zwoln','wypowiedz','rozwiąz umow','urlop'], tool: 'Dokumenty pracownicze', desc: 'Wypowiedzenie, świadectwo pracy, urlop', icon: '👔', url: 'https://dokumoflow.com/wypowiedzenia.html', article: { t: 'Wypowiedzenia w Kodeksie pracy', u: 'https://dokumoflow.com/artykuly.html' } },
+  { keywords: ['faktur','fakture','vat','proform','korekt'], tool: 'Generator faktur', desc: 'VAT, proforma, korekta — gotowe w 30 sek.', icon: '🧾', url: 'https://dokumoflow.com/faktura.html', article: { t: 'Jak wystawić fakturę VAT', u: 'https://dokumoflow.com/artykuly.html' } },
+  { keywords: ['cv','życiorys','curriculum'], tool: 'Kreator CV', desc: '12 szablonów ATS-friendly, AI dopasowuje treść', icon: '📄', url: 'https://dokumoflow.com/wybierz-szablon.html', article: { t: 'Jak napisać dobre CV pod ATS', u: 'https://dokumoflow.com/artykuly.html' } },
+  { keywords: ['list moty','motywacyjny','aplikacja'], tool: 'List motywacyjny', desc: 'AI pisze spersonalizowany list w 20 sek.', icon: '✉️', url: 'https://dokumoflow.com/list-motywacyjny.html', article: null },
+  { keywords: ['sprawdz umow','analiza umow','umowa o prac','przed podp','klauzul'], tool: 'Sprawdź umowę z AI', desc: 'Analiza klauzul i wyłapanie ryzyk', icon: '🔍', url: 'https://dokumoflow.com/analiza-umowy.html', article: { t: 'Co sprawdzić w umowie o pracę', u: 'https://dokumoflow.com/artykuly.html' } },
+  { keywords: ['popraw cv','analiza cv','ocen cv','ats'], tool: 'Popraw CV z AI', desc: 'Ocena ATS i sugestie poprawek', icon: '📊', url: 'https://dokumoflow.com/popraw-cv.html', article: null },
+  { keywords: ['nda','poufność','poufnosc','tajemnic'], tool: 'NDA — HR i Biznes', desc: 'Umowa o poufność, edytowalny szablon', icon: '🤝', url: 'https://dokumoflow.com/hr.html', article: null },
+  { keywords: ['b2b','samozatrudn','jdg'], tool: 'Umowa B2B', desc: 'Dla freelancerów i kontraktorów', icon: '💼', url: 'https://dokumoflow.com/hr.html', article: null },
+  { keywords: ['regulamin','sklep','rodo','prywatnoś','zwrot'], tool: 'Dokumenty e-commerce', desc: 'Regulamin, RODO, polityka zwrotów', icon: '🛒', url: 'https://dokumoflow.com/ecommerce.html', article: null },
+  { keywords: ['najem','wynaj','mieszka','protokoł','protokol'], tool: 'Umowa najmu', desc: 'Z protokołem zdawczo-odbiorczym', icon: '🏠', url: 'https://dokumoflow.com/administracja.html', article: null },
+  { keywords: ['biznesplan','swot','strategia','wspólnik','wspolnik'], tool: 'Dokumenty administracyjne', desc: 'Biznesplan, SWOT, umowa wspólników', icon: '📊', url: 'https://dokumoflow.com/administracja.html', article: null },
+  { keywords: ['sprzedaż','sprzedaz','kupna','rękojm'], tool: 'Umowa sprzedaży', desc: 'Z rękojmią, zgodna z KC', icon: '📝', url: 'https://dokumoflow.com/generator-umowy-sprzedazy.html', article: null },
+  { keywords: ['kalkulator','wynagrodz','pensja','brutto','netto'], tool: 'Kalkulator wynagrodzeń', desc: 'Brutto → netto, UoP / B2B / zlecenie', icon: '🧮', url: 'https://dokumoflow.com/kalkulator-wynagrodzen.html', article: null },
+  { keywords: ['skaner','ocr','wyciąg','wyciag','rozpozna','pesel z'], tool: 'Skaner dokumentów AI', desc: 'PDF lub zdjęcie → tabela Excel', icon: '🔎', url: 'https://dokumoflow.com/skaner-dokumentow.html', article: null },
 ];
 function findIntent(text) {
   const t = text.toLowerCase();
@@ -3992,13 +4035,13 @@ function findIntent(text) {
       typing.remove();
       const intent = findIntent(text);
       if (intent) {
-        let html = 'Wygląda, że szukasz <b>' + intent.tool + '</b>. To dobre dopasowanie do Twojego zapytania.';
+        let html = 'Wygląda, że szukasz <b>' + intent.tool + '</b>. Polecam:';
         html += '<a href="' + intent.url + '" class="wc-tool-link">';
         html += '<div class="wc-tool-link-ic">' + intent.icon + '</div>';
-        html += '<div class="wc-tool-link-tx"><div class="wc-tool-link-t">' + intent.tool + '</div><div class="wc-tool-link-d">// otwórz narzędzie</div></div>';
-        html += '<div class="wc-tool-link-arrow">→</div></a>';
+        html += '<div class="wc-tool-link-tx"><div class="wc-tool-link-t">' + intent.tool + '</div><div class="wc-tool-link-d">' + (intent.desc || 'Otwórz narzędzie') + '</div></div>';
+        html += '<div class="wc-tool-link-arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div></a>';
         if (intent.article) {
-          html += '<a href="' + intent.article.u + '" class="wc-article-link">📖 ' + intent.article.t + '</a>';
+          html += '<a href="' + intent.article.u + '" class="wc-article-link"><span class="wc-article-link-arrow">↗</span><span>Przeczytaj: <em>' + intent.article.t + '</em></span></a>';
         }
         addMsg(html);
       } else {
