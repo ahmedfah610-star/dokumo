@@ -3686,7 +3686,7 @@ document.querySelectorAll('[data-shine]').forEach(card => {
 });
 
 // ─── CREATE DOCUMENT WIZARD ───
-(function() {
+function initCreateDocWizard() {
   const TOOLS_BY_CAT = {
     kariera: [
       { ic: '📄', t: 'Kreator CV', d: '12 szablonów, ATS-friendly', url: 'https://dokumoflow.com/wybierz-szablon.html' },
@@ -3825,7 +3825,12 @@ document.querySelectorAll('[data-shine]').forEach(card => {
   document.querySelectorAll('.btn-primary, .btn-glow').forEach(a => {
     a.addEventListener('click', e => { e.preventDefault(); open(); });
   });
-})();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCreateDocWizard);
+} else {
+  initCreateDocWizard();
+}
 
 // ─── WELCOME CHATBOT ───
 const INTENTS = [
