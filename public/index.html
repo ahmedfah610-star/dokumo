@@ -3978,7 +3978,8 @@ function initCreateDocWizard() {
       renderFinal();
       setStep(3);
     } else if (step === 3 && selectedTool) {
-      window.location.href = 'konto.html?rejestracja=1';
+      // Open the actual tool selected by the user
+      window.location.href = selectedTool.url || 'konto.html?rejestracja=1';
     }
   });
   backBtn.addEventListener('click', () => { if (step > 1) setStep(step - 1); });
