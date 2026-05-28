@@ -3856,27 +3856,47 @@ document.querySelectorAll('[data-shine]').forEach(card => {
 function initCreateDocWizard() {
   const TOOLS_BY_CAT = {
     kariera: [
-      { ic: '📄', t: 'Kreator CV', d: '12 szablonów, ATS-friendly', url: 'https://dokumoflow.com/wybierz-szablon.html' },
-      { ic: '✉️', t: 'List motywacyjny', d: 'Spersonalizowany przez AI', url: 'https://dokumoflow.com/list-motywacyjny.html' },
-      { ic: '📊', t: 'Popraw CV z AI', d: 'Analiza ATS i sugestie', url: 'https://dokumoflow.com/popraw-cv.html' },
-      { ic: '🧮', t: 'Kalkulator wynagrodzeń', d: 'Brutto → netto, UoP/B2B', url: 'https://dokumoflow.com/kalkulator-wynagrodzen.html' }
+      { ic: '📄', t: 'Kreator CV', d: '12 szablonów, ATS-friendly', url: 'wybierz-szablon.html' },
+      { ic: '✉️', t: 'List motywacyjny', d: 'Spersonalizowany przez AI', url: 'list-motywacyjny.html' },
+      { ic: '📊', t: 'Popraw CV z AI', d: 'Analiza ATS i sugestie', url: 'popraw-cv.html' },
+      { ic: '🧮', t: 'Kalkulator wynagrodzeń', d: 'Brutto → netto, UoP/B2B', url: 'kalkulator-wynagrodzen.html' }
     ],
     biznes: [
-      { ic: '🧾', t: 'Generator faktur', d: 'VAT, proforma, korekta', url: 'https://dokumoflow.com/faktura.html' },
-      { ic: '🤝', t: 'HR i Biznes', d: 'NDA, B2B, zlecenie', url: 'https://dokumoflow.com/hr.html' },
-      { ic: '🛒', t: 'Dokumenty e-commerce', d: 'Regulamin, RODO, zwroty', url: 'https://dokumoflow.com/ecommerce.html' },
-      { ic: '🏠', t: 'Dokumenty administracyjne', d: 'Najem, biznesplan, SWOT', url: 'https://dokumoflow.com/administracja.html' },
-      { ic: '📝', t: 'Umowa sprzedaży', d: 'Z rękojmią, KC', url: 'https://dokumoflow.com/generator-umowy-sprzedazy.html' },
-      { ic: '🔎', t: 'Skaner dokumentów AI', d: 'PDF/zdjęcia → tabela Excel', url: 'https://dokumoflow.com/skaner-dokumentow.html' }
-    ],
-    prawne: [
-      { ic: '🔍', t: 'Sprawdź umowę z AI', d: 'Analiza klauzul i ryzyk', url: 'https://dokumoflow.com/analiza-umowy.html' }
+      { ic: '🧾', t: 'Generator faktur', d: 'VAT, proforma, korekta, zaliczkowa', variants: [
+        { ic: '🧾', t: 'Faktura VAT', d: 'Standardowa faktura sprzedaży', url: 'faktura.html' },
+        { ic: '📋', t: 'Faktura proforma', d: 'Przed otrzymaniem zapłaty', url: 'faktura.html?typ=proforma' },
+        { ic: '✏️', t: 'Faktura korygująca', d: 'Korekta wystawionej faktury', url: 'faktura.html?typ=korekta' },
+        { ic: '💰', t: 'Faktura zaliczkowa', d: 'Przed dostawą towaru / usługi', url: 'faktura.html?typ=zaliczka' }
+      ] },
+      { ic: '🛒', t: 'Dokumenty e-commerce', d: 'Regulamin, RODO, polityka zwrotów', variants: [
+        { ic: '🛒', t: 'Regulamin sklepu', d: 'Zgodny z dyrektywą Omnibus 2026', url: 'generator-regulaminu-sklepu.html' },
+        { ic: '🔒', t: 'Polityka prywatności', d: 'Klauzule RODO + cookies', url: 'generator-polityki-prywatnosci.html' },
+        { ic: '↩️', t: 'Polityka zwrotów', d: '14 dni odstąpienia, procedura', url: 'generator-polityki-zwrotow.html' }
+      ] },
+      { ic: '🏠', t: 'Dokumenty administracyjne', d: 'Najem, biznesplan, SWOT, wspólnicy', variants: [
+        { ic: '🏠', t: 'Umowa najmu', d: 'Z protokołem zdawczo-odbiorczym', url: 'umowa-najmu.html' },
+        { ic: '📈', t: 'Biznesplan dla banku', d: 'Pełny szablon biznesplanu', url: 'biznesplan-dla-banku.html' },
+        { ic: '🎯', t: 'Analiza SWOT', d: 'Mocne, słabe, szanse, zagrożenia', url: 'analiza-swot.html' },
+        { ic: '🤝', t: 'Umowa wspólników', d: 'Spółka cywilna, udziały', url: 'umowa-wspolnikow.html' }
+      ] },
+      { ic: '📝', t: 'Umowa sprzedaży', d: 'Z rękojmią, zgodna z KC', url: 'generator-umowy-sprzedazy.html' },
+      { ic: '🔍', t: 'Analiza umowy AI', d: 'Sprawdza klauzule i ryzyka', url: 'analiza-umowy.html' },
+      { ic: '🔎', t: 'Skaner dokumentów AI', d: 'PDF/zdjęcia → tabela Excel', url: 'skaner-dokumentow.html' },
+      { ic: '⚖️', t: 'Wezwanie do zapłaty', d: 'Przedsądowe wezwanie', url: 'wezwanie-do-zaplaty.html' },
+      { ic: '🤝', t: 'NDA — Umowa o poufność', d: 'Edytowalny szablon', url: 'generator-nda.html' }
     ],
     hr: [
-      { ic: '👔', t: 'Wypowiedzenie umowy', d: 'Porozumienie stron, z winy', url: 'https://dokumoflow.com/wypowiedzenia.html' },
-      { ic: '🌴', t: 'Wniosek o urlop', d: 'Wypoczynkowy, bezpłatny', url: 'https://dokumoflow.com/wypowiedzenia.html' },
-      { ic: '📋', t: 'Świadectwo pracy', d: 'Zgodne z MPiPS', url: 'https://dokumoflow.com/wypowiedzenia.html' },
-      { ic: '🩺', t: 'Zaświadczenie o zatrudnieniu', d: 'Z dochodem lub bez', url: 'https://dokumoflow.com/wypowiedzenia.html' }
+      { ic: '👔', t: 'Umowa o pracę', d: 'Pełny etat, część etatu, próbna', url: 'generator-umowy-o-prace.html' },
+      { ic: '📋', t: 'Umowa zlecenie', d: 'Z klauzulami RODO 2026', url: 'generator-umowy-zlecenie.html' },
+      { ic: '🎨', t: 'Umowa o dzieło', d: 'Z prawami autorskimi', url: 'generator-umowy-o-dzielo.html' },
+      { ic: '💼', t: 'Umowa B2B', d: 'Dla freelancerów i kontraktorów', url: 'generator-umowy-b2b.html' },
+      { ic: '🔒', t: 'NDA — Umowa o poufność', d: 'Edytowalny szablon', url: 'generator-nda.html' }
+    ],
+    pracownicze: [
+      { ic: '✋', t: 'Wypowiedzenie umowy', d: 'Porozumienie stron, z winy', url: 'generator-wypowiedzenia.html' },
+      { ic: '🌴', t: 'Wniosek o urlop', d: 'Wypoczynkowy, bezpłatny, ojcowski', url: 'generator-wniosku-o-urlop.html' },
+      { ic: '📜', t: 'Świadectwo pracy', d: 'Zgodne z rozporządzeniem MPiPS 2026', url: 'generator-swiadectwa-pracy.html' },
+      { ic: '📑', t: 'Pełnomocnictwo', d: 'Ogólne, szczególne, do ZUS / US / banku', url: 'generator-pelnomocnictwa.html' }
     ]
   };
 
@@ -3896,9 +3916,17 @@ function initCreateDocWizard() {
   const finalT = document.getElementById('cdwFinalT');
   const finalD = document.getElementById('cdwFinalD');
 
+  const variantsList = document.getElementById('cdwVariants');
+  const step3Variants = document.getElementById('cdwStep3Variants');
+  const step3Final = document.getElementById('cdwStep3Final');
+  const step3VarEyebrow = document.getElementById('cdwStep3VariantsEyebrow');
+  const step3VarTitle = document.getElementById('cdwStep3VariantsTitle');
+  const step3VarSub = document.getElementById('cdwStep3VariantsSub');
+
   let step = 1;
   let selectedCat = null;
   let selectedTool = null;
+  let selectedVariant = null;
 
   function setStep(n) {
     step = n;
@@ -3910,14 +3938,25 @@ function initCreateDocWizard() {
     });
     stepN.textContent = `Krok ${n} z 3`;
     backBtn.disabled = n === 1;
+    const arrowSvg = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
     if (n === 1) {
       nextBtn.disabled = !selectedCat;
-      nextBtn.innerHTML = 'Dalej <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+      nextBtn.innerHTML = 'Dalej ' + arrowSvg;
     } else if (n === 2) {
       nextBtn.disabled = !selectedTool;
-      nextBtn.innerHTML = 'Dalej <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+      nextBtn.innerHTML = 'Dalej ' + arrowSvg;
     } else {
-      nextBtn.disabled = false;
+      // Step 3 — variants mode vs final mode
+      const hasVariants = selectedTool && Array.isArray(selectedTool.variants) && selectedTool.variants.length > 0;
+      if (hasVariants) {
+        step3Variants.style.display = 'block';
+        step3Final.style.display = 'none';
+        nextBtn.disabled = !selectedVariant;
+      } else {
+        step3Variants.style.display = 'none';
+        step3Final.style.display = 'block';
+        nextBtn.disabled = false;
+      }
       nextBtn.innerHTML = 'Stwórz dokument →';
     }
   }
@@ -3925,22 +3964,43 @@ function initCreateDocWizard() {
   function selectCat(cat) {
     selectedCat = cat;
     selectedTool = null;
+    selectedVariant = null;
     cats.forEach(c => c.classList.toggle('selected', c.dataset.cat === cat));
     nextBtn.disabled = false;
   }
 
   function renderTools() {
     const tools = TOOLS_BY_CAT[selectedCat] || [];
-    const catNames = { kariera: 'KARIERA', biznes: 'BIZNES', prawne: 'ANALIZA UMOWY', hr: 'DOKUMENTY PRACOWNICZE' };
+    const catNames = { kariera: 'KARIERA', biznes: 'BIZNES', hr: 'HR — UMOWY Z PRACOWNIKAMI', pracownicze: 'DOKUMENTY PRACOWNICZE' };
     step2Eyebrow.textContent = catNames[selectedCat] || 'DOKUMENT';
     step2Title.textContent = 'Wybierz dokument';
     toolsList.innerHTML = tools.map((tool, i) =>
-      `<button class="cdw-tool" data-i="${i}"><div class="cdw-tool-ic" style="background:linear-gradient(135deg,#faf5ff,#f3e8ff)">${tool.ic}</div><div class="cdw-tool-tx"><div class="cdw-tool-t">${tool.t}</div><div class="cdw-tool-d">${tool.d}</div></div></button>`
+      `<button class="cdw-tool" data-i="${i}"><div class="cdw-tool-ic" style="background:linear-gradient(135deg,#faf5ff,#f3e8ff)">${tool.ic}</div><div class="cdw-tool-tx"><div class="cdw-tool-t">${tool.t}${tool.variants ? ' <span style=\"font-size:10px;color:#7c3aed;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;\">·' + tool.variants.length + ' typów</span>' : ''}</div><div class="cdw-tool-d">${tool.d}</div></div></button>`
     ).join('');
     toolsList.querySelectorAll('.cdw-tool').forEach((el, i) => {
       el.addEventListener('click', () => {
         selectedTool = tools[i];
+        selectedVariant = null;
         toolsList.querySelectorAll('.cdw-tool').forEach(t => t.classList.remove('selected'));
+        el.classList.add('selected');
+        nextBtn.disabled = false;
+      });
+    });
+  }
+
+  function renderVariants() {
+    if (!selectedTool || !selectedTool.variants) return;
+    const variants = selectedTool.variants;
+    step3VarEyebrow.textContent = (selectedTool.t || '').toUpperCase();
+    step3VarTitle.textContent = 'Wybierz rodzaj';
+    step3VarSub.textContent = selectedTool.d || 'Każdy szablon dopasujemy pod Twoje dane.';
+    variantsList.innerHTML = variants.map((v, i) =>
+      `<button class="cdw-tool" data-vi="${i}"><div class="cdw-tool-ic" style="background:linear-gradient(135deg,#faf5ff,#f3e8ff)">${v.ic}</div><div class="cdw-tool-tx"><div class="cdw-tool-t">${v.t}</div><div class="cdw-tool-d">${v.d}</div></div></button>`
+    ).join('');
+    variantsList.querySelectorAll('.cdw-tool').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        selectedVariant = variants[i];
+        variantsList.querySelectorAll('.cdw-tool').forEach(t => t.classList.remove('selected'));
         el.classList.add('selected');
         nextBtn.disabled = false;
       });
@@ -3957,10 +4017,11 @@ function initCreateDocWizard() {
   function open() {
     overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
-    setStep(1);
     cats.forEach(c => c.classList.remove('selected'));
     selectedCat = null;
     selectedTool = null;
+    selectedVariant = null;
+    setStep(1);
     nextBtn.disabled = true;
   }
   function close() {
@@ -3975,11 +4036,17 @@ function initCreateDocWizard() {
       renderTools();
       setStep(2);
     } else if (step === 2 && selectedTool) {
-      renderFinal();
+      const hasVariants = Array.isArray(selectedTool.variants) && selectedTool.variants.length > 0;
+      if (hasVariants) {
+        renderVariants();
+      } else {
+        renderFinal();
+      }
       setStep(3);
     } else if (step === 3 && selectedTool) {
-      // Open the actual tool selected by the user
-      window.location.href = selectedTool.url || 'konto.html?rejestracja=1';
+      // Open the actual tool / variant selected by the user
+      const target = (selectedVariant && selectedVariant.url) || selectedTool.url || 'konto.html?rejestracja=1';
+      window.location.href = target;
     }
   });
   backBtn.addEventListener('click', () => { if (step > 1) setStep(step - 1); });
@@ -4388,7 +4455,7 @@ function suggestIntents(text) {
           <div class="cdw-cat-ic" style="background:linear-gradient(135deg,#faf5ff,#f3e8ff);color:#7c3aed">📄</div>
           <div class="cdw-cat-tx">
             <div class="cdw-cat-t">Kariera</div>
-            <div class="cdw-cat-d">CV, listy motywacyjne, kalkulator wynagrodzeń</div>
+            <div class="cdw-cat-d">CV, list motywacyjny, kalkulator wynagrodzeń</div>
             <div class="cdw-cat-count">4 narzędzia</div>
           </div>
         </button>
@@ -4396,23 +4463,23 @@ function suggestIntents(text) {
           <div class="cdw-cat-ic" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#10b981">🧾</div>
           <div class="cdw-cat-tx">
             <div class="cdw-cat-t">Biznes</div>
-            <div class="cdw-cat-d">Faktury, umowy B2B, regulamin sklepu, skaner OCR</div>
-            <div class="cdw-cat-count">6 narzędzi</div>
-          </div>
-        </button>
-        <button class="cdw-cat" data-cat="prawne">
-          <div class="cdw-cat-ic" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706">🔍</div>
-          <div class="cdw-cat-tx">
-            <div class="cdw-cat-t">Analiza umowy</div>
-            <div class="cdw-cat-d">Sprawdź umowę przed podpisem, wykryj klauzule</div>
-            <div class="cdw-cat-count">1 narzędzie</div>
+            <div class="cdw-cat-d">Faktury, e-commerce, najem, analiza umowy, skaner</div>
+            <div class="cdw-cat-count">8 narzędzi</div>
           </div>
         </button>
         <button class="cdw-cat" data-cat="hr">
+          <div class="cdw-cat-ic" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706">🤝</div>
+          <div class="cdw-cat-tx">
+            <div class="cdw-cat-t">HR</div>
+            <div class="cdw-cat-d">Umowy z pracownikami, B2B, NDA, zlecenie, dzieło</div>
+            <div class="cdw-cat-count">5 narzędzi</div>
+          </div>
+        </button>
+        <button class="cdw-cat" data-cat="pracownicze">
           <div class="cdw-cat-ic" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#2563eb">👔</div>
           <div class="cdw-cat-tx">
             <div class="cdw-cat-t">Dokumenty pracownicze</div>
-            <div class="cdw-cat-d">Wypowiedzenia, wnioski o urlop, świadectwa</div>
+            <div class="cdw-cat-d">Wypowiedzenie, urlop, świadectwo pracy, pełnomocnictwo</div>
             <div class="cdw-cat-count">4 narzędzia</div>
           </div>
         </button>
@@ -4429,8 +4496,20 @@ function suggestIntents(text) {
       <div class="cdw-tools" id="cdwTools"></div>
     </div>
 
-    <!-- STEP 3: Final -->
+    <!-- STEP 3: Variants OR Final -->
     <div class="cdw-step" data-cdw-step="3">
+      <!-- Variants mode -->
+      <div id="cdwStep3Variants" style="display:none;">
+        <div class="cdw-step-h">
+          <div class="cdw-step-eyebrow" id="cdwStep3VariantsEyebrow">TYP</div>
+          <h2 class="cdw-step-title" id="cdwStep3VariantsTitle">Wybierz rodzaj</h2>
+          <p class="cdw-step-sub" id="cdwStep3VariantsSub">Każdy szablon dopasujemy pod Twoje dane.</p>
+        </div>
+        <div class="cdw-tools" id="cdwVariants"></div>
+      </div>
+
+      <!-- Final summary mode (when tool has no variants) -->
+      <div id="cdwStep3Final">
       <div class="cdw-step-h">
         <div class="cdw-step-eyebrow">PODSUMOWANIE</div>
         <h2 class="cdw-step-title">Gotowy do startu</h2>
@@ -4468,6 +4547,7 @@ function suggestIntents(text) {
           <div class="cdw-check">Pobierz gotowy PDF — bez znaku wodnego</div>
         </div>
       </div>
+      </div><!-- /cdwStep3Final -->
     </div>
 
     <div class="cdw-foot">
