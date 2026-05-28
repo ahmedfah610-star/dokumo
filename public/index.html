@@ -2113,12 +2113,43 @@ section.sec {
 }
 @media (max-width: 700px) {
   .sc-stage { padding: 20px 18px 0; }
-  .sc-preview { margin: 0 -18px; padding: 18px; }
-  .sc-panel { inset: 18px; }
+  .sc-preview {
+    margin: 0 -18px; padding: 18px;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  .sc-panel {
+    position: relative !important;
+    inset: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    pointer-events: auto !important;
+    display: none;
+  }
+  .sc-panel.active { display: block; }
+  .sc-cv, .sc-list-mock, .sc-score-mock, .sc-inv-paper, .sc-calc-mock,
+  .sc-ecom-v2, .sc-admin-cards, .sc-sprz, .sc-library, .sc-letter, .sc-clauses {
+    height: auto !important; min-height: auto !important;
+  }
   .sc-stage-header { flex-direction: column; gap: 14px; }
   .sc-stage-actions { flex-direction: row; align-items: center; }
   .sc-admin-grid { grid-template-columns: 1fr; }
   .sc-score-bar-row { grid-template-columns: 100px 1fr 40px; }
+  /* CV preview: smaller header, tighter padding */
+  .sc-cv-head { padding: 18px 18px 16px; flex-wrap: wrap; gap: 10px; }
+  .sc-cv-av { width: 44px; height: 44px; font-size: 15px; }
+  .sc-cv-name { font-size: 17px; }
+  .sc-cv-role { font-size: 12px; }
+  .sc-cv-sb, .sc-cv-main { padding: 16px 18px; }
+  /* Invoice preview: tighter */
+  .sc-inv-paper { padding: 20px 22px !important; }
+  /* Tool list: don't make it too tall horizontally */
+  .sc-list { padding: 10px !important; gap: 8px; }
+  .sc-tool { min-width: 170px !important; padding: 10px 12px !important; }
+  .sc-tool-ic { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+  .sc-tool-t { font-size: 13px !important; }
+  .sc-tool-c { font-size: 10px !important; }
 }
 
 /* ─── HOW IT WORKS ─── *//* ─── HOW IT WORKS ─── */
