@@ -4019,8 +4019,10 @@ function findIntent(text) {
     if (e.key === 'Escape' && modal.classList.contains('show')) close();
   });
 
-  // Always show on page load
-  setTimeout(open, 600);
+  // Always show on page load (desktop only — mobile has wizard CTA + menu instead)
+  if (window.innerWidth > 768) {
+    setTimeout(open, 600);
+  }
 })();
 
 // ─── SIGN PAD canvas drawing ───
