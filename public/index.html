@@ -4001,27 +4001,96 @@ if (document.readyState === 'loading') {
 
 // ─── WELCOME CHATBOT ───
 const INTENTS = [
-  { keywords: ['zwoln','wypowiedz','rozwiąz umow','urlop'], tool: 'Dokumenty pracownicze', desc: 'Wypowiedzenie, świadectwo pracy, urlop', icon: '👔', url: 'https://dokumoflow.com/wypowiedzenia.html', article: { t: 'Wypowiedzenia w Kodeksie pracy', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['faktur','fakture','vat','proform','korekt'], tool: 'Generator faktur', desc: 'VAT, proforma, korekta — gotowe w 30 sek.', icon: '🧾', url: 'https://dokumoflow.com/faktura.html', article: { t: 'Jak wystawić fakturę VAT', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['cv','życiorys','curriculum'], tool: 'Kreator CV', desc: '12 szablonów ATS-friendly, AI dopasowuje treść', icon: '📄', url: 'https://dokumoflow.com/wybierz-szablon.html', article: { t: 'Jak napisać dobre CV pod ATS', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['list moty','motywacyjny','aplikacja'], tool: 'List motywacyjny', desc: 'AI pisze spersonalizowany list w 20 sek.', icon: '✉️', url: 'https://dokumoflow.com/list-motywacyjny.html', article: null },
-  { keywords: ['sprawdz umow','analiza umow','umowa o prac','przed podp','klauzul'], tool: 'Sprawdź umowę z AI', desc: 'Analiza klauzul i wyłapanie ryzyk', icon: '🔍', url: 'https://dokumoflow.com/analiza-umowy.html', article: { t: 'Co sprawdzić w umowie o pracę', u: 'https://dokumoflow.com/artykuly.html' } },
-  { keywords: ['popraw cv','analiza cv','ocen cv','ats'], tool: 'Popraw CV z AI', desc: 'Ocena ATS i sugestie poprawek', icon: '📊', url: 'https://dokumoflow.com/popraw-cv.html', article: null },
-  { keywords: ['nda','poufność','poufnosc','tajemnic'], tool: 'NDA — HR i Biznes', desc: 'Umowa o poufność, edytowalny szablon', icon: '🤝', url: 'https://dokumoflow.com/hr.html', article: null },
-  { keywords: ['b2b','samozatrudn','jdg'], tool: 'Umowa B2B', desc: 'Dla freelancerów i kontraktorów', icon: '💼', url: 'https://dokumoflow.com/hr.html', article: null },
-  { keywords: ['regulamin','sklep','rodo','prywatnoś','zwrot'], tool: 'Dokumenty e-commerce', desc: 'Regulamin, RODO, polityka zwrotów', icon: '🛒', url: 'https://dokumoflow.com/ecommerce.html', article: null },
-  { keywords: ['najem','wynaj','mieszka','protokoł','protokol'], tool: 'Umowa najmu', desc: 'Z protokołem zdawczo-odbiorczym', icon: '🏠', url: 'https://dokumoflow.com/administracja.html', article: null },
-  { keywords: ['biznesplan','swot','strategia','wspólnik','wspolnik'], tool: 'Dokumenty administracyjne', desc: 'Biznesplan, SWOT, umowa wspólników', icon: '📊', url: 'https://dokumoflow.com/administracja.html', article: null },
-  { keywords: ['sprzedaż','sprzedaz','kupna','rękojm'], tool: 'Umowa sprzedaży', desc: 'Z rękojmią, zgodna z KC', icon: '📝', url: 'https://dokumoflow.com/generator-umowy-sprzedazy.html', article: null },
-  { keywords: ['kalkulator','wynagrodz','pensja','brutto','netto'], tool: 'Kalkulator wynagrodzeń', desc: 'Brutto → netto, UoP / B2B / zlecenie', icon: '🧮', url: 'https://dokumoflow.com/kalkulator-wynagrodzen.html', article: null },
-  { keywords: ['skaner','ocr','wyciąg','wyciag','rozpozna','pesel z'], tool: 'Skaner dokumentów AI', desc: 'PDF lub zdjęcie → tabela Excel', icon: '🔎', url: 'https://dokumoflow.com/skaner-dokumentow.html', article: null },
+  // ── Praca / kariera ──
+  { keywords: ['cv','życiorys','zyciorys','curriculum','resume','aplikuj','aplikacj','szuka prac','znalezc prac','rekrutacj','rekruter','ats','szablon cv','wzor cv','wzór cv','napisz cv','stworz cv','stworzyc cv'], tool: 'Kreator CV', desc: '12 szablonów ATS-friendly, AI dopasowuje treść', icon: '📄', url: 'https://dokumoflow.com/wybierz-szablon.html', article: { t: 'Jak napisać dobre CV pod ATS', u: 'https://dokumoflow.com/jak-napisac-cv-2026.html' } },
+  { keywords: ['popraw cv','ulepsz cv','analiza cv','sprawdz cv','sprawdź cv','ocen cv','ocenić cv','ocenic cv','ats cv','popraw cv ai','cv ai','cv ats'], tool: 'Popraw CV z AI', desc: 'Ocena ATS i sugestie poprawek', icon: '📊', url: 'https://dokumoflow.com/popraw-cv.html', article: null },
+  { keywords: ['list moty','motywacyjn','motywacj','aplikacja list','cover letter','list do prac'], tool: 'List motywacyjny', desc: 'AI pisze spersonalizowany list w 20 sek.', icon: '✉️', url: 'https://dokumoflow.com/list-motywacyjny.html', article: null },
+  { keywords: ['kalkulator','wynagrodz','pensj','brutto','netto','ile zarob','ile na rek','ile dosta','wyplat','przelicz','uop','uop b2b','b2b kalkulator','umowa o prace ile'], tool: 'Kalkulator wynagrodzeń', desc: 'Brutto → netto, UoP / B2B / zlecenie', icon: '🧮', url: 'https://dokumoflow.com/kalkulator-wynagrodzen.html', article: null },
+
+  // ── HR / pracownicze ──
+  { keywords: ['zwoln','wypowiedz','rozwiąz umow','rozwiaz umow','odejs','odejdź','rzuc prac','konc prac','konczy prac','rezygnuj z prac','rozsta','wypowiedzenie umow','wypowiedzenie pracy'], tool: 'Wypowiedzenie umowy', desc: 'Wypowiedzenie, świadectwo pracy, urlop', icon: '✋', url: 'https://dokumoflow.com/generator-wypowiedzenia.html', article: { t: 'Wypowiedzenie umowy o pracę 2026', u: 'https://dokumoflow.com/wypowiedzenie-umowy-o-prace-2026.html' } },
+  { keywords: ['urlop','wakacj','wakacyjn','wolne dni','dni wolne','wniosek urlop','urlop wypoczyn','urlop bezpł','urlop bezpl','wypoczynkow','tata urlop','ojcowsk','macierzyn'], tool: 'Wniosek o urlop', desc: 'Wypoczynkowy, bezpłatny, ojcowski', icon: '🌴', url: 'https://dokumoflow.com/generator-wniosku-o-urlop.html', article: null },
+  { keywords: ['świadectw','swiadectw','swiadectwo prac','świadectwo prac'], tool: 'Świadectwo pracy', desc: 'Zgodne z rozporządzeniem MPiPS 2026', icon: '📋', url: 'https://dokumoflow.com/generator-swiadectwa-pracy.html', article: { t: 'Świadectwo pracy 2026 — wzór, termin, kary', u: 'https://dokumoflow.com/swiadectwo-pracy-2026.html' } },
+  { keywords: ['umowa o prac','umowa o pracy','umowa pracy','uop wzor','wzor umowy o prac','stworz umow o prac','generator umowy o prac'], tool: 'Umowa o pracę', desc: 'Pełny etat, część etatu, próbna', icon: '👔', url: 'https://dokumoflow.com/generator-umowy-o-prace.html', article: null },
+  { keywords: ['umowa zlecenie','umowa zlec','zlecenie wz','wzor zlecen','generator zlec'], tool: 'Umowa zlecenie', desc: 'Wzór z klauzulami RODO 2026', icon: '📋', url: 'https://dokumoflow.com/generator-umowy-zlecenie.html', article: { t: 'Umowa zlecenie vs umowa o pracę', u: 'https://dokumoflow.com/umowa-zlecenie-vs-umowa-o-prace.html' } },
+  { keywords: ['umowa o dziel','umowa o dzieło','dzielo','dzieło','umowa dzielo'], tool: 'Umowa o dzieło', desc: 'Z klauzulą praw autorskich', icon: '📝', url: 'https://dokumoflow.com/generator-umowy-o-dzielo.html', article: null },
+  { keywords: ['b2b','samozatrudn','jdg','własna działal','wlasna dzialal','kontrakt b2b','umowa b2b','freelance','programist b2b'], tool: 'Umowa B2B', desc: 'Dla freelancerów i kontraktorów', icon: '💼', url: 'https://dokumoflow.com/generator-umowy-b2b.html', article: { t: 'Przejście na B2B — czy warto?', u: 'https://dokumoflow.com/przejscie-na-b2b.html' } },
+
+  // ── Biznes ──
+  { keywords: ['faktur','fakture','vat','proform','korekt','rachune','wystaw faktur','wystawic faktur','invoice'], tool: 'Generator faktur', desc: 'VAT, proforma, korekta — gotowe w 30 sek.', icon: '🧾', url: 'https://dokumoflow.com/faktura.html', article: { t: 'Jak wystawić fakturę VAT', u: 'https://dokumoflow.com/artykuly.html' } },
+  { keywords: ['nda','poufnoś','poufnosc','tajemnic przedsiębior','tajemnic przedsiebior','klauzula poufn','umowa nda'], tool: 'NDA — Umowa o poufność', desc: 'Edytowalny szablon NDA', icon: '🤝', url: 'https://dokumoflow.com/generator-nda.html', article: null },
+  { keywords: ['regulamin','sklep internet','sklep online','rodo sklep','polityka prywatn','polityka zwrot','zwrot e-commerce','dyrektywa omnibus','omnibus'], tool: 'Dokumenty e-commerce', desc: 'Regulamin, RODO, polityka zwrotów', icon: '🛒', url: 'https://dokumoflow.com/ecommerce.html', article: { t: 'Sklep internetowy 2026 — co MUSI być', u: 'https://dokumoflow.com/sklep-internetowy-2026.html' } },
+  { keywords: ['umowa sprzedaż','umowa sprzedaz','umowa kupna','umowa kupno','rękojm','rekojm','sprzedaż prywat','sprzedaz prywat','sprzedaż samoch','sprzedaz samoch','umowa sam'], tool: 'Umowa sprzedaży', desc: 'Z rękojmią, zgodna z KC', icon: '📝', url: 'https://dokumoflow.com/generator-umowy-sprzedazy.html', article: null },
+  { keywords: ['biznesplan','swot','strategia bizn','plan finansow','prognoza finansow','plan dzialaln','plan działaln'], tool: 'Biznesplan i SWOT', desc: 'Biznesplan dla banku, analiza SWOT', icon: '📊', url: 'https://dokumoflow.com/biznesplan-dla-banku.html', article: null },
+  { keywords: ['wspolnik','wspólnik','umowa wspolnik','udzialy','udziały','spolka','spółka'], tool: 'Umowa wspólników', desc: 'Spółka cywilna, udziały, zasady wyjścia', icon: '🤝', url: 'https://dokumoflow.com/umowa-wspolnikow.html', article: null },
+  { keywords: ['skaner','ocr','wyciąg dane','wyciag dane','rozpozna tekst','rozpozna pdf','pdf do excel','pesel z dokum','nip z faktur','tabela z dokum','batch dokument'], tool: 'Skaner dokumentów AI', desc: 'PDF lub zdjęcie → tabela Excel', icon: '🔎', url: 'https://dokumoflow.com/skaner-dokumentow.html', article: null },
+
+  // ── Najem ──
+  { keywords: ['najem','wynaj','umowa najmu','wynajem mieszka','wynajem lokalu','umowa wynaj','mieszka pod wynaj','protokoł zdaw','protokol zdaw','zdawczo-odbiorczy'], tool: 'Umowa najmu', desc: 'Z protokołem zdawczo-odbiorczym', icon: '🏠', url: 'https://dokumoflow.com/umowa-najmu.html', article: { t: 'Mieszkanie dla studenta 2026', u: 'https://dokumoflow.com/mieszkanie-dla-studenta-2026.html' } },
+  { keywords: ['wypowiedzenie najm','rozwiąz najm','rozwiaz najm','konc najem','konc najmu'], tool: 'Wypowiedzenie najmu', desc: 'Zgodne z ustawą o ochronie praw lokatorów', icon: '🏠', url: 'https://dokumoflow.com/wypowiedzenie-najmu.html', article: null },
+
+  // ── Analiza / sprawdzenie ──
+  { keywords: ['sprawdz umow','sprawdź umow','analiza umow','analizuj umow','przed podpis','klauzul niedozw','klauzul abuzyw','czy umowa jest ok','czy to dobra umowa','ryzyko w umow','ryzyka w umow','przegląd umow','przeglad umow','co jest w umow','co sprawdz w umow'], tool: 'Sprawdź umowę z AI', desc: 'Analiza klauzul i wyłapanie ryzyk', icon: '🔍', url: 'https://dokumoflow.com/analiza-umowy.html', article: { t: 'Co sprawdzić w umowie o pracę', u: 'https://dokumoflow.com/artykuly.html' } },
+
+  // ── Pisma / wezwania / pełnomocnictwo ──
+  { keywords: ['wezwanie do zapłat','wezwanie do zaplat','wezwanie zaplaty','wezwanie zapłaty','windyk','dłuznik','dluznik','nieopłacon','nieoplacon','niezapłac','niezaplac'], tool: 'Wezwanie do zapłaty', desc: 'Przedsądowe wezwanie do zapłaty', icon: '⚖️', url: 'https://dokumoflow.com/wezwanie-do-zaplaty.html', article: null },
+  { keywords: ['pełnomocnictw','pelnomocnictw','pełnomocnik','pelnomocnik','upoważnien','upowaznien','prokur'], tool: 'Pełnomocnictwo', desc: 'Ogólne, szczególne, do banku, ZUS, US', icon: '📜', url: 'https://dokumoflow.com/generator-pelnomocnictwa.html', article: null },
 ];
-function findIntent(text) {
-  const t = text.toLowerCase();
-  for (const intent of INTENTS) {
-    for (const kw of intent.keywords) { if (t.includes(kw)) return intent; }
+
+function normalizeText(s) {
+  return (s || '').toLowerCase()
+    .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e').replace(/ł/g,'l')
+    .replace(/ń/g,'n').replace(/ó/g,'o').replace(/ś/g,'s').replace(/ż/g,'z').replace(/ź/g,'z')
+    .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function _scoreKeyword(normText, kw) {
+  // Each kw may be a phrase with multiple tokens. Each token must be present.
+  // Short tokens (<=3 chars) must match as whole word; longer tokens match as substring.
+  const tokens = normalizeText(kw).split(/\s+/).filter(Boolean);
+  if (!tokens.length) return 0;
+  let phraseScore = 0;
+  for (const t of tokens) {
+    let found;
+    if (t.length <= 3) {
+      // word-boundary match for short tokens
+      found = new RegExp('(^|\\s)' + t + '(\\s|$)').test(normText);
+    } else {
+      found = normText.includes(t);
+    }
+    if (!found) return 0; // any missing token kills the phrase
+    phraseScore += t.length >= 6 ? 3 : t.length >= 4 ? 2 : 2;
   }
-  return null;
+  // Multi-token phrases score higher (more specific match)
+  if (tokens.length > 1) phraseScore += tokens.length;
+  return phraseScore;
+}
+
+function _scoreIntent(intent, normText) {
+  let score = 0;
+  for (const kw of intent.keywords) {
+    score += _scoreKeyword(normText, kw);
+  }
+  return score;
+}
+
+function findIntent(text) {
+  const norm = normalizeText(text);
+  if (!norm) return null;
+  let best = null, bestScore = 0;
+  for (const intent of INTENTS) {
+    const s = _scoreIntent(intent, norm);
+    if (s > bestScore) { bestScore = s; best = intent; }
+  }
+  return bestScore >= 2 ? best : null;
+}
+
+function suggestIntents(text) {
+  const norm = normalizeText(text);
+  if (!norm) return [];
+  const scored = INTENTS.map(intent => ({ intent, score: _scoreIntent(intent, norm) }))
+    .filter(x => x.score > 0).sort((a,b) => b.score - a.score);
+  return scored.slice(0, 3).map(x => x.intent);
 }
 (function() {
   const modal = document.getElementById('welcomeAi');
@@ -4075,18 +4144,40 @@ function findIntent(text) {
     setTimeout(() => {
       typing.remove();
       const intent = findIntent(text);
+      function toolCardHtml(it) {
+        let h = '<a href="' + it.url + '" class="wc-tool-link">';
+        h += '<div class="wc-tool-link-ic">' + it.icon + '</div>';
+        h += '<div class="wc-tool-link-tx"><div class="wc-tool-link-t">' + it.tool + '</div><div class="wc-tool-link-d">' + (it.desc || 'Otwórz narzędzie') + '</div></div>';
+        h += '<div class="wc-tool-link-arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div></a>';
+        return h;
+      }
       if (intent) {
         let html = 'Wygląda, że szukasz <b>' + intent.tool + '</b>. Polecam:';
-        html += '<a href="' + intent.url + '" class="wc-tool-link">';
-        html += '<div class="wc-tool-link-ic">' + intent.icon + '</div>';
-        html += '<div class="wc-tool-link-tx"><div class="wc-tool-link-t">' + intent.tool + '</div><div class="wc-tool-link-d">' + (intent.desc || 'Otwórz narzędzie') + '</div></div>';
-        html += '<div class="wc-tool-link-arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div></a>';
+        html += toolCardHtml(intent);
         if (intent.article) {
           html += '<a href="' + intent.article.u + '" class="wc-article-link"><span class="wc-article-link-arrow">↗</span><span>Przeczytaj: <em>' + intent.article.t + '</em></span></a>';
         }
         addMsg(html);
       } else {
-        addMsg('Hmm, nie do końca rozumiem 🤔 Spróbuj inaczej — np. „chcę zwolnić pracownika", „wystawić fakturę dla klienta", „sprawdzić umowę B2B przed podpisem".');
+        // Fallback: pokaż najbliższe trafienia jako sugestie zamiast "nie wiem"
+        const suggestions = suggestIntents(text);
+        if (suggestions.length) {
+          let html = 'Nie jestem pewien czego dokładnie szukasz — może coś z tego?';
+          suggestions.forEach(s => { html += toolCardHtml(s); });
+          html += '<a href="https://dokumoflow.com/artykuly.html" class="wc-article-link"><span class="wc-article-link-arrow">↗</span><span>Albo zobacz <em>wszystkie 25+ narzędzi i artykuły</em></span></a>';
+          addMsg(html);
+        } else {
+          let html = 'Hmm, nie do końca łapię 🤔 Powiedz konkretniej — np.:';
+          html += '<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:13px;opacity:0.75;">';
+          html += '<span>• <em>„wystawić fakturę dla klienta"</em></span>';
+          html += '<span>• <em>„zwolnić pracownika"</em></span>';
+          html += '<span>• <em>„umowa zlecenie na wakacje"</em></span>';
+          html += '<span>• <em>„sprawdź moją umowę B2B"</em></span>';
+          html += '<span>• <em>„wynajem mieszkania"</em></span>';
+          html += '</div>';
+          html += '<a href="https://dokumoflow.com/artykuly.html" class="wc-article-link" style="margin-top:14px;"><span class="wc-article-link-arrow">↗</span><span>Albo zobacz <em>pełną listę narzędzi i artykułów</em></span></a>';
+          addMsg(html);
+        }
       }
     }, 800 + Math.random() * 500);
   }
