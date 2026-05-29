@@ -576,7 +576,7 @@ function getUser(){ try{return JSON.parse(localStorage.getItem('dokumo_user'));}
 function updateNavAuth(){
   var user=getUser(),loginBtn=document.getElementById('navLoginBtn'),registerBtn=document.getElementById('navRegisterBtn'),profile=document.getElementById('navProfile'),avatar=document.getElementById('navAvatar'),emailEl=document.getElementById('navProfileEmail');
   if(!loginBtn)return;
-  if(user){loginBtn.style.display='none';registerBtn.style.display='none';profile.style.display='flex';if(emailEl)emailEl.textContent=user.email||'';if(user.photo){avatar.innerHTML='<img src="'+user.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else{avatar.textContent=(user.email||'U')[0].toUpperCase();}}
+  if(user){loginBtn.style.display='none';registerBtn.style.display='none';profile.style.display='flex';if(emailEl)emailEl.textContent=user.email||'';if(user.photo){{var _img=document.createElement("img");_img.src=user.photo;_img.alt="";_img.style.cssText="width:100%;height:100%;border-radius:50%;object-fit:cover";avatar.replaceChildren(_img);}}else{avatar.textContent=(user.email||'U')[0].toUpperCase();}}
   else{loginBtn.style.display='';registerBtn.style.display='';profile.style.display='none';}
 }
 function toggleNavDropdown(e){e.stopPropagation();document.getElementById('navDropdown').classList.toggle('open');}

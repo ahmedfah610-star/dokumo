@@ -6,6 +6,13 @@ import { createHash } from 'crypto';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://dokumoflow.com';
 const FROM = 'Dokumo Podpisy <noreply@dokumoflow.com>';
 
+// Escape uzytkowniczego stringa w kontekscie HTML email (chroni przed XSS)
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
 async function sendEmail({ to, subject, html }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return;
@@ -92,6 +99,8 @@ export default async function handler(req, res) {
     // Wyślij email do strony 2 z linkiem
     if (party2Email) {
       const link = `${BASE_URL}/podpisz.html?id=${ref.id}`;
+      const safeName = escHtml(party1Name);
+      const safeDocName = escHtml(docName || 'Dokument');
       await sendEmail({
         to: party2Email,
         subject: `${party1Name} zaprasza Cię do podpisania dokumentu — ${docName || 'Dokument'}`,
@@ -102,8 +111,8 @@ export default async function handler(req, res) {
             </div>
             <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Prośba o podpisanie dokumentu</h2>
             <p style="color:#555;font-size:15px;line-height:1.6;margin-bottom:24px">
-              <strong>${party1Name}</strong> prosi Cię o złożenie elektronicznego podpisu pod dokumentem:<br>
-              <strong>${docName || 'Dokument'}</strong>
+              <strong>${safeName}</strong> prosi Cię o złożenie elektronicznego podpisu pod dokumentem:<br>
+              <strong>${safeDocName}</strong>
             </p>
             <a href="${link}" style="display:inline-block;padding:14px 28px;background:#111;color:#fff;font-weight:700;font-size:15px;border-radius:50px;text-decoration:none">
               ✍ Podpisz dokument

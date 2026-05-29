@@ -799,7 +799,7 @@ function showProfile(user) {
   wrap.style.display = 'flex';
   const av = document.getElementById('profileAvatar');
   if (user.photoURL) {
-    av.innerHTML = '<img src="' + user.photoURL + '" alt="">';
+    {var _img=document.createElement("img");_img.src=user.photoURL;_img.alt="";av.replaceChildren(_img);}
   } else {
     av.textContent = (user.displayName || user.email || '?')[0].toUpperCase();
   }

@@ -577,7 +577,7 @@ function updateNavAuth() {
     profile.style.display = 'flex';
     if (emailEl) emailEl.textContent = user.email || '';
     if (user.photo) {
-      avatar.innerHTML = '<img src="'+user.photo+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+      {var _img=document.createElement("img");_img.src=user.photo;_img.alt="";_img.style.cssText="width:100%;height:100%;border-radius:50%;object-fit:cover";avatar.replaceChildren(_img);}
     } else {
       avatar.textContent = (user.email||'U')[0].toUpperCase();
     }
