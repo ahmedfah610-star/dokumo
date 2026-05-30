@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="logo2.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5.0">
+<title>KSeF 2026 — co to jest, kogo obowiązuje i od kiedy | Dokumo</title>
+<meta name="description" content="KSeF 2026: harmonogram (1.02.2026 duzi, 1.04.2026 reszta, 2027 zwolnieni z VAT), autoryzacja, kary do 100% VAT za niezgodnosc i checklist przygotowania.">
+<link rel="canonical" href="https://dokumoflow.com/ksef-2026.html">
+<meta property="og:title" content="KSeF 2026 — co to, kogo dotyczy i kary za niezgodność">
+<meta property="og:description" content="Krajowy System e-Faktur 2026 — od 1 lutego dla dużych, od 1 kwietnia dla pozostałych. Harmonogram, autoryzacja, kary do 100% VAT.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dokumoflow.com/ksef-2026.html">
+<meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index, follow">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Dokumo","item":"https://dokumoflow.com"},{"@type":"ListItem","position":2,"name":"Artykuły","item":"https://dokumoflow.com/artykuly.html"},{"@type":"ListItem","position":3,"name":"KSeF 2026 — co to jest, kogo obowiązuje i od kiedy","item":"https://dokumoflow.com/ksef-2026.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"KSeF 2026 — co to jest, kogo obowiązuje i od kiedy","author":{"@type":"Organization","name":"Zespół Dokumo"},"publisher":{"@type":"Organization","name":"Dokumo","url":"https://dokumoflow.com"},"datePublished":"2026-05-30","dateModified":"2026-05-30","description":"Przewodnik po Krajowym Systemie e-Faktur 2026: harmonogram wdrożenia, autoryzacja, format FA(3), kary za niezgodność i praktyczne kroki przygotowania mikrofirmy i jednoosobowej działalności."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Czym jest KSeF i czy jest obowiązkowy?","acceptedAnswer":{"@type":"Answer","text":"KSeF (Krajowy System e-Faktur) to państwowa platforma Ministerstwa Finansów do wystawiania, wysyłania i odbierania faktur ustrukturyzowanych w formacie XML FA(3). Od 1 lutego 2026 jest obowiązkowy dla podatników VAT z obrotem powyżej 200 mln zł, od 1 kwietnia 2026 dla pozostałych podatników VAT czynnych, a od 1 stycznia 2027 również dla zwolnionych z VAT. Korzystanie z KSeF po dacie obowiązku jest wymogiem prawnym, a wystawianie faktur poza systemem zagrożone karą grzywny."}},{"@type":"Question","name":"Kiedy KSeF stanie się obowiązkowy dla mikrofirm i jednoosobowej działalności?","acceptedAnswer":{"@type":"Answer","text":"Mikrofirmy i jednoosobowe działalności gospodarcze, które są podatnikami VAT czynnymi, mają obowiązek korzystania z KSeF od 1 kwietnia 2026. Działalności zwolnione z VAT (do limitu 200 tys. zł obrotu rocznie) mają obowiązek dopiero od 1 stycznia 2027 — ale mogą korzystać dobrowolnie wcześniej."}},{"@type":"Question","name":"Jak autoryzować się w KSeF?","acceptedAnswer":{"@type":"Answer","text":"Są trzy sposoby autoryzacji: token KSeF (najprostszy, generowany w e-Urzędzie Skarbowym, ważny 5 lat), Profil Zaufany przez gov.pl albo mObywatel oraz kwalifikowany podpis lub pieczęć elektroniczna (ok. 200-400 zł rocznie). Dla mikrofirm i jednoosobowych działalności najwygodniejszy jest token KSeF wgrany do programu fakturującego."}},{"@type":"Question","name":"Jakie kary grożą za niewystawienie faktury w KSeF?","acceptedAnswer":{"@type":"Answer","text":"Wystawianie faktury poza KSeF po dacie obowiązku, mimo wymogu prawnego, podlega karze pieniężnej do 100% kwoty podatku VAT wykazanego na fakturze (a w przypadku faktury bez wykazanej kwoty VAT — do 18,75% kwoty należności ogółem). Sankcje stosuje urząd skarbowy w drodze decyzji. Naczelnik US może też nałożyć kary porządkowe za inne uchybienia."}},{"@type":"Question","name":"Co konkretnie zmienia KSeF w wystawianiu faktur?","acceptedAnswer":{"@type":"Answer","text":"Faktura przestaje istnieć jako PDF/papier — staje się ustrukturyzowanym dokumentem XML w bazie KSeF. Data wystawienia to data nadania numeru KSeF (nie data sporządzenia w programie). Klient pobiera fakturę z KSeF, nie ode mnie mailem. Termin płatności liczy się od daty doręczenia w KSeF. Faktury B2C i niektóre wyjątki branżowe pozostają poza systemem."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="logo2.png" as="image">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="style.css"></noscript>
+
+<style>
+* { font-family:'Inter',sans-serif; box-sizing:border-box; }
+body { background:#f9fafb; margin:0; padding:0; color:#374151; }
+.nav-center-btn:hover { background:#f3f4f6 !important; }
+.nav-tool-item { display:flex; align-items:center; gap:12px; padding:10px 12px; text-decoration:none; border-radius:10px; transition:background 0.15s; }
+.nav-tool-item:hover { background:#f9fafb; }
+.nav-tool-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.nav-tool-text { display:flex; flex-direction:column; gap:1px; }
+.nav-tool-name { font-size:13.5px; font-weight:600; color:#111827; }
+.nav-tool-desc { font-size:11.5px; color:#6b7280; }
+.nav-profile-email,.nav-profile-link,.nav-logout-btn,.nav-avatar { font-family:'Inter',sans-serif !important; }
+.nav-profile-email { font-size:12.5px !important; color:#6b7280 !important; font-weight:500 !important; letter-spacing:0 !important; }
+.nav-profile-link { font-size:13.5px !important; color:#374151 !important; font-weight:500 !important; letter-spacing:0 !important; }
+.nav-profile-dropdown { border-radius:14px !important; background:#fff !important; }
+@media (max-width: 768px) { .nav-center-links { display:none !important; } }
+
+.nav-hamburger { display:none; align-items:center; justify-content:center; width:36px; height:36px; border:none; background:none; cursor:pointer; border-radius:8px; padding:0; flex-shrink:0; }
+.nav-hamburger:hover { background:#f3f4f6; }
+@media (max-width:768px) { .nav-hamburger { display:flex; } }
+.mobile-menu { display:none; position:fixed; top:61px; left:0; right:0; z-index:49; }
+.mobile-menu.open { display:block; }
+.mobile-menu-overlay { position:fixed; inset:0; top:61px; background:rgba(0,0,0,.25); }
+.mobile-menu-panel { position:relative; background:#fff; padding:12px 12px 20px; box-shadow:0 8px 32px rgba(0,0,0,.15); border-bottom:1px solid #f3f4f6; }
+.mobile-menu-section { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#9ca3af; padding:6px 8px 6px; }
+.mobile-menu-link { display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:10px; text-decoration:none; }
+.mobile-menu-link:hover { background:#f9fafb; }
+.mobile-menu-link-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.mobile-menu-link-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Inter',sans-serif; }
+.mobile-menu-link-desc { font-size:11px; color:#6b7280; font-family:'Inter',sans-serif; }
+.mobile-menu-articles-btn { display:flex; align-items:center; gap:10px; padding:12px 10px; margin-top:8px; background:#eff6ff; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; color:#2563eb; font-family:'Inter',sans-serif; }
+.mobile-menu-articles-btn:hover { background:#dbeafe; }
+
+.article-page-wrap { max-width:1120px; margin:0 auto; padding:0 24px; display:grid; grid-template-columns:1fr 280px; gap:48px; align-items:start; }
+@media (max-width:960px) { .article-page-wrap { grid-template-columns:1fr; } .article-toc { display:none; } }
+
+.article-header { background:#fff; border-radius:20px; padding:48px 56px 40px; margin:40px 0 0; box-shadow:0 1px 6px rgba(0,0,0,.06); border:1px solid #f3f4f6; grid-column:1/-1; }
+@media (max-width:700px) { .article-header { padding:28px 20px; } }
+.ah-badge { display:inline-flex; align-items:center; gap:6px; background:#ecfdf5; color:#065f46; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:4px 12px; border-radius:999px; margin-bottom:20px; }
+.ah-title { font-size:2.2rem; font-weight:900; color:#111827; line-height:1.2; letter-spacing:-0.03em; margin:0 0 16px; }
+@media (max-width:700px) { .ah-title { font-size:1.55rem; } }
+.ah-meta { display:flex; align-items:center; gap:16px; font-size:0.83rem; color:#9ca3af; font-weight:500; flex-wrap:wrap; }
+.ah-meta-sep { width:3px; height:3px; border-radius:50%; background:#d1d5db; }
+.ah-author { color:#374151; font-weight:600; }
+
+.article-body { background:#fff; border-radius:20px; padding:40px 56px; box-shadow:0 1px 6px rgba(0,0,0,.06); border:1px solid #f3f4f6; margin-bottom:40px; min-width:0; }
+@media (max-width:700px) { .article-body { padding:24px 18px; } }
+.article-body h2 { font-size:1.45rem; font-weight:800; color:#111827; margin:44px 0 16px; letter-spacing:-0.02em; line-height:1.3; padding-top:8px; border-top:1px solid #f3f4f6; }
+.article-body h2:first-child { border-top:none; margin-top:0; padding-top:0; }
+.article-body h3 { font-size:1.08rem; font-weight:700; color:#111827; margin:28px 0 12px; letter-spacing:-0.01em; }
+.article-body p { font-size:0.97rem; line-height:1.8; color:#374151; margin:0 0 16px; }
+.article-body ul, .article-body ol { margin:0 0 20px; padding-left:24px; }
+.article-body li { font-size:0.97rem; line-height:1.75; color:#374151; margin-bottom:6px; }
+.article-body strong { color:#111827; font-weight:700; }
+
+.tip-box { background:#eff6ff; border-left:4px solid #2563eb; border-radius:0 12px 12px 0; padding:16px 20px; margin:24px 0; display:flex; gap:12px; align-items:flex-start; }
+.tip-box-icon { font-size:18px; flex-shrink:0; margin-top:2px; }
+.tip-box-text { font-size:0.9rem; line-height:1.65; color:#1e40af; font-weight:500; }
+.tip-box-text strong { color:#1d4ed8; }
+.warn-box { background:#fffbeb; border-left:4px solid #f59e0b; border-radius:0 12px 12px 0; padding:16px 20px; margin:24px 0; display:flex; gap:12px; align-items:flex-start; }
+.warn-box-icon { font-size:18px; flex-shrink:0; margin-top:2px; }
+.warn-box-text { font-size:0.9rem; line-height:1.65; color:#92400e; font-weight:500; }
+.warn-box-text strong { color:#b45309; }
+.danger-box { background:#fef2f2; border-left:4px solid #dc2626; border-radius:0 12px 12px 0; padding:16px 20px; margin:24px 0; display:flex; gap:12px; align-items:flex-start; }
+.danger-box-icon { font-size:18px; flex-shrink:0; margin-top:2px; }
+.danger-box-text { font-size:0.9rem; line-height:1.65; color:#991b1b; font-weight:500; }
+.danger-box-text strong { color:#b91c1c; }
+.info-box { background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 12px 12px 0; padding:16px 20px; margin:24px 0; display:flex; gap:12px; align-items:flex-start; }
+.info-box-icon { font-size:18px; flex-shrink:0; margin-top:2px; }
+.info-box-text { font-size:0.9rem; line-height:1.65; color:#14532d; font-weight:500; }
+.info-box-text strong { color:#166534; }
+
+.law-table { width:100%; border-collapse:collapse; margin:20px 0 24px; font-size:0.9rem; }
+.law-table th { background:#111827; color:#fff; font-weight:700; padding:12px 16px; text-align:left; font-size:0.82rem; letter-spacing:0.03em; }
+.law-table th:first-child { border-radius:10px 0 0 0; }
+.law-table th:last-child { border-radius:0 10px 0 0; }
+.law-table td { padding:11px 16px; border-bottom:1px solid #f3f4f6; color:#374151; }
+.law-table tr:last-child td { border-bottom:none; }
+.law-table tr:nth-child(even) td { background:#f9fafb; }
+.law-table tr:hover td { background:#eff6ff; }
+
+.stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:24px 0; }
+@media(max-width:640px){ .stat-grid { grid-template-columns:1fr; } }
+.stat-card { background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:16px; padding:20px; text-align:center; }
+.stat-val { font-size:2rem; font-weight:900; color:#111827; letter-spacing:-0.04em; margin-bottom:6px; }
+.stat-lbl { font-size:0.78rem; color:#6b7280; line-height:1.5; font-weight:500; }
+
+.article-toc { background:#fff; border-radius:16px; padding:16px 18px; box-shadow:0 1px 6px rgba(0,0,0,.06); border:1px solid #f3f4f6; }
+.toc-title { font-size:0.7rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#9ca3af; margin-bottom:10px; }
+.toc-link { display:block; font-size:0.8rem; color:#6b7280; text-decoration:none; padding:3px 0; border-bottom:1px solid #f9fafb; transition:color 0.15s; font-weight:500; line-height:1.4; }
+.toc-link:last-child { border-bottom:none; }
+.toc-link:hover { color:#111827; }
+
+.article-cta { background:#111827; border-radius:20px; padding:32px; text-align:center; margin-bottom:40px; }
+.article-cta h3 { font-size:1.2rem; font-weight:800; color:#fff; margin:0 0 8px; letter-spacing:-0.02em; }
+.article-cta p { font-size:0.88rem; color:#9ca3af; margin:0 0 20px; }
+.article-cta a { display:inline-block; background:#fff; color:#111827; font-size:0.88rem; font-weight:700; padding:12px 24px; border-radius:50px; text-decoration:none; transition:opacity 0.15s; }
+.article-cta a:hover { opacity:0.9; }
+
+.related-articles { background:#fff; border-radius:16px; padding:16px 18px; box-shadow:0 1px 6px rgba(0,0,0,.06); border:1px solid #f3f4f6; }
+.ra-title { font-size:0.7rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#9ca3af; margin-bottom:10px; }
+.ra-link { display:block; font-size:0.82rem; color:#374151; text-decoration:none; padding:5px 0; border-bottom:1px solid #f9fafb; font-weight:600; transition:color 0.15s; line-height:1.35; }
+.ra-link:last-child { border-bottom:none; }
+.ra-link:hover { color:#2563eb; }
+
+.source-box { background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:12px; padding:16px 20px; margin:28px 0 0; }
+.source-box p { font-size:0.8rem; color:#6b7280; margin:0; line-height:1.6; }
+.source-box a { color:#2563eb; }
+</style>
+
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});
+if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
+<script>gtag('js',new Date());gtag('config','G-61ETEPHJB7');</script>
+<script type="module">
+import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const __c=await(await fetch('/api/nip-lookup?fbconfig')).json();
+const app=getApps().length?getApps()[0]:initializeApp(__c);
+window._fbSignOut=()=>signOut(getAuth(app));
+onAuthStateChanged(getAuth(app),async u=>{
+  if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));}
+  else{window._fbToken=null;}
+  if(window._renderNav)window._renderNav();
+});
+</script>
+</head>
+<body>
+
+<a href="#main-content" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#fff;color:#111;padding:8px 16px;border-radius:8px;font-weight:600;text-decoration:none;border:2px solid #111;" onfocus="this.style.left='4px'" onblur="this.style.left='-9999px'">Przejdź do treści</a>
+
+<header style="background:rgba(255,255,255,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #f3f4f6;position:sticky;top:0;z-index:50;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;width:100%;max-width:1280px;margin:0 auto;">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+      <img src="logo2.png" style="height:28px;width:auto;display:block;">
+      <span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Inter',sans-serif;">DokumoFlow</span>
+    </a>
+    <div class="nav-center-links" style="display:flex;align-items:center;gap:4px;">
+      <div style="position:relative;">
+        <button onclick="toggleToolsDropdown(event)" aria-expanded="false" id="toolsMenuBtn" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="if(!document.getElementById('toolsDropdown2').style.display||document.getElementById('toolsDropdown2').style.display==='none')this.style.background='transparent'">
+          Narzędzia
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="toolsDropdown2" class="nav-tools-dropdown" style="display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid #f3f4f6;z-index:200;overflow:hidden;">
+  <div style="display:flex;">
+    <div style="padding:8px;min-width:230px;border-right:1px solid #f3f4f6;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Kariera</div>
+      <a href="wybierz-szablon.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span></a>
+      <a href="popraw-cv.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#fef9c3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Popraw CV z AI</span><span class="nav-tool-desc">Analiza i wskazówki do Twojego CV</span></span></a>
+      <a href="kalkulator-wynagrodzen.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Kalkulator wynagrodzeń</span><span class="nav-tool-desc">Brutto / netto / UoP / B2B</span></span></a>
+      <a href="wypowiedzenia.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Dokumenty pracownicze</span><span class="nav-tool-desc">Urlop, wypowiedzenie, świadectwo</span></span></a>
+    </div>
+    <div style="padding:8px;min-width:230px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Biznes</div>
+      <a href="hr.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Dokumenty HR i Biznes</span><span class="nav-tool-desc">B2B, NDA, zlecenie, umowa o pracę</span></span></a>
+      <a href="ecommerce.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Dokumenty ecommerce</span><span class="nav-tool-desc">Regulamin, RODO, zwroty</span></span></a>
+      <a href="faktura.html" class="nav-tool-item"><span class="nav-tool-icon" style="background:#f0fdf4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span><span class="nav-tool-text"><span class="nav-tool-name">Generator faktur</span><span class="nav-tool-desc">Faktura VAT i proforma w PDF</span></span></a>
+    </div>
+  </div>
+</div>
+      </div>
+      <a href="artykuly.html" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Inter',sans-serif;">Artykuły</a>
+    </div>
+    <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;font-family:'Inter',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
+      <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(37,99,235,.3);" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
+      <div class="nav-profile" id="navProfile" style="display:none">
+        <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
+        <div class="nav-profile-dropdown" id="navDropdown">
+          <div class="nav-profile-email" id="navProfileEmail"></div>
+          <a href="konto.html" class="nav-profile-link">Moje konto</a>
+          <a href="moje-dokumenty.html" class="nav-profile-link">Moje dokumenty</a>
+          <a href="subskrypcja.html" class="nav-profile-link">Subskrypcja</a>
+          <div class="nav-profile-sep"></div>
+          <button class="nav-profile-link nav-logout-btn" onclick="logoutUser()">Wyloguj się</button>
+        </div>
+      </div>
+      <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu-panel">
+    <div class="mobile-menu-section">Narzędzia</div>
+    <a href="wybierz-szablon.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></span><span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz CV z AI</div></span></a>
+    <a href="kalkulator-wynagrodzen.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#fff7ed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg></span><span><div class="mobile-menu-link-name">Kalkulator wynagrodzeń</div><div class="mobile-menu-link-desc">Brutto / netto</div></span></a>
+    <a href="wypowiedzenia.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#f0f9ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg></span><span><div class="mobile-menu-link-name">Dokumenty pracownicze</div><div class="mobile-menu-link-desc">Urlop, wypowiedzenie</div></span></a>
+    <a href="hr.html" class="mobile-menu-link"><span class="mobile-menu-link-icon" style="background:#fef2f2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></span><span><div class="mobile-menu-link-name">HR i Biznes</div><div class="mobile-menu-link-desc">B2B, NDA, zlecenie</div></span></a>
+    <div style="height:1px;background:#f3f4f6;margin:8px 4px;"></div>
+    <a href="artykuly.html" class="mobile-menu-articles-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Artykuły i poradniki<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:auto;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</div>
+
+<main id="main-content">
+<div style="max-width:1120px;margin:0 auto;padding:0 24px;">
+  <div class="article-header">
+    <div class="ah-badge">🧾 KSeF 2026</div>
+    <h1 class="ah-title">KSeF 2026 —<br>co to jest, kogo obowiązuje i od kiedy</h1>
+    <div class="ah-meta">
+      <span class="ah-author">Zespół Dokumo</span>
+      <span class="ah-meta-sep"></span>
+      <span>Maj 2026</span>
+      <span class="ah-meta-sep"></span>
+      <span>11 min czytania</span>
+      <span class="ah-meta-sep"></span>
+      <span>Stan prawny: maj 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="article-page-wrap" style="margin-top:32px;">
+  <div>
+    <div class="article-body">
+
+      <p>Krajowy System e-Faktur (KSeF) to państwowa platforma Ministerstwa Finansów do wystawiania, wysyłania i odbierania faktur ustrukturyzowanych w formacie XML. Po wielokrotnych przesunięciach harmonogramu, Ministerstwo Finansów ostatecznie utrzymuje obowiązkowe wejście od <strong>1 lutego 2026 r.</strong> dla największych podatników i <strong>1 kwietnia 2026 r.</strong> dla pozostałych. To największa zmiana w sposobie fakturowania w Polsce od czasu wprowadzenia VAT i dotknie praktycznie każdej firmy.</p>
+
+      <div class="info-box">
+        <div class="info-box-icon">✅</div>
+        <div class="info-box-text"><strong>Najkrócej:</strong> KSeF zastępuje wystawianie faktur w PDF/papier dla transakcji B2B. Od 1 lutego 2026 obowiązkowy dla podatników VAT z obrotem ≥ 200 mln zł, od 1 kwietnia 2026 dla pozostałych VAT-owców, od 1 stycznia 2027 dla zwolnionych z VAT. Kara za wystawianie poza KSeF: do <strong>100% kwoty VAT</strong> z faktury.</div>
+      </div>
+
+      <h2 id="co-to">Czym jest KSeF</h2>
+
+      <p>KSeF (Krajowy System e-Faktur) to centralna platforma prowadzona przez Ministerstwo Finansów, w której podatnicy VAT wystawiają, wysyłają i odbierają tzw. <strong>faktury ustrukturyzowane</strong> — czyli dokumenty w ściśle określonym formacie XML (schema FA(3)). System działa od 1 stycznia 2022 r. w trybie dobrowolnym, a od 2026 r. staje się obowiązkowy dla większości firm.</p>
+
+      <p>Najważniejsza różnica wobec dotychczasowego modelu: <strong>faktura nie jest już PDF-em ani kartką papieru, którą wysyła się klientowi mailem</strong>. To wpis w państwowej bazie danych z unikalnym numerem KSeF, automatycznym timestampem i hashem dokumentu. Klient pobiera fakturę z KSeF (przez swoją autoryzację), a nie z Twojej skrzynki mailowej.</p>
+
+      <h2 id="harmonogram">Harmonogram wdrożenia obowiązkowego</h2>
+
+      <p>Po sześciu przesunięciach (między 2022 a 2026 r.) Ministerstwo Finansów ustanowiło ostateczny harmonogram:</p>
+
+      <table class="law-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Grupa podatników</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1 stycznia 2022</td><td>Wszyscy podatnicy VAT</td><td>Dobrowolnie</td></tr>
+          <tr><td><strong>1 lutego 2026</strong></td><td>Duzi podatnicy VAT czynni — obrót ≥ 200 mln zł w 2024 r.</td><td>OBOWIĄZKOWO</td></tr>
+          <tr><td><strong>1 kwietnia 2026</strong></td><td>Pozostali podatnicy VAT czynni (mikrofirmy, małe firmy, JDG)</td><td>OBOWIĄZKOWO</td></tr>
+          <tr><td><strong>1 stycznia 2027</strong></td><td>Podatnicy zwolnieni z VAT (do 200 tys. zł obrotu)</td><td>OBOWIĄZKOWO</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <div class="warn-box-icon">⚠️</div>
+        <div class="warn-box-text"><strong>Harmonogram może się jeszcze zmienić.</strong> Ministerstwo Finansów już sześciokrotnie przesuwało terminy — warto śledzić oficjalne komunikaty (gov.pl/web/finanse) tuż przed datą wejścia obowiązku. Stan na maj 2026 r.: harmonogram powyższy jest aktualny, ale nie wykluczone są kolejne korekty dla mniejszych podatników.</div>
+      </div>
+
+      <h2 id="kogo-dotyczy">Kogo dotyczy KSeF</h2>
+
+      <p>Po wejściu w pełnym wymiarze (1 kwietnia 2026 r.) KSeF będzie obowiązkowy dla <strong>wszystkich podatników VAT czynnych</strong> wystawiających faktury w obrocie B2B — niezależnie od formy prawnej:</p>
+
+      <ul>
+        <li><strong>Jednoosobowa działalność gospodarcza (JDG)</strong> — freelancer IT, marketingowiec, projektant, doradca</li>
+        <li><strong>Mikrofirmy</strong> (do 9 zatrudnionych) — sklepy, gabinety, biura</li>
+        <li><strong>Małe i średnie firmy</strong> — spółki z o.o., spółki cywilne</li>
+        <li><strong>Duże korporacje</strong></li>
+      </ul>
+
+      <p>Co <strong>NIE</strong> wchodzi do KSeF:</p>
+
+      <ul>
+        <li><strong>Faktury B2C</strong> (dla osób fizycznych nieprowadzących działalności) — można wystawiać w KSeF dobrowolnie, ale nie jest to wymagane</li>
+        <li><strong>Faktury OSS/IOSS</strong> — sprzedaż wewnątrzwspólnotowa konsumencka rozliczana w trybie One Stop Shop</li>
+        <li><strong>Niektóre branże regulowane</strong> — m.in. czasowe wyłączenia dla podatników akcyzy</li>
+        <li><strong>Działalność nierejestrowana</strong> (do 75% min. wynagrodzenia/m-c) — nie ma obowiązku rejestracji w VAT, więc i KSeF</li>
+      </ul>
+
+      <h2 id="co-zmienia">Co konkretnie zmienia KSeF</h2>
+
+      <p>Z perspektywy małej firmy lub freelancera B2B zmieniają się cztery fundamentalne rzeczy:</p>
+
+      <ol>
+        <li><strong>Faktura ma nowy moment „powstania"</strong> — nie z chwilą sporządzenia w programie, ale z chwilą nadania <strong>numeru KSeF</strong> przez system MF. Numer wewnętrzny (np. „FV/2026/127") nadal istnieje, ale dla celów VAT liczy się numer KSeF.</li>
+        <li><strong>Klient pobiera fakturę z KSeF</strong>, nie z Twojej wiadomości e-mail. Po nadaniu numeru możesz nadal wysłać PDF z grzeczności, ale prawny oryginał istnieje w KSeF.</li>
+        <li><strong>Termin płatności liczy się od daty doręczenia w KSeF</strong> — nie od dnia wystawienia w programie. To istotne dla windykacji i odsetek.</li>
+        <li><strong>Brak PDF-ów jako oryginałów</strong> — XML strukturalny z numerem KSeF jest jedynym źródłem prawdy. PDF jest tylko czytelną reprezentacją.</li>
+      </ol>
+
+      <div class="tip-box">
+        <div class="tip-box-icon">💡</div>
+        <div class="tip-box-text"><strong>Skutek praktyczny:</strong> nie musisz już wysyłać klientowi PDF-a mailem ani drukować faktury. Wystarczy że klient ma autoryzację w KSeF (a od 1 kwietnia 2026 musi mieć, jeśli jest VAT-owcem). Klient widzi fakturę w swoim KSeF-ie automatycznie.</div>
+      </div>
+
+      <h2 id="autoryzacja">Jak autoryzować się w KSeF — 3 metody</h2>
+
+      <p>Żeby wystawić fakturę w KSeF (przez własny program, biuro rachunkowe albo bezpośrednio przez aplikację Podatnika KSeF), musisz najpierw się uwierzytelnić. Są trzy sposoby:</p>
+
+      <table class="law-table">
+        <thead>
+          <tr>
+            <th>Metoda</th>
+            <th>Koszt</th>
+            <th>Najlepsze dla</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Token KSeF</strong> (najprostszy)</td><td>0 zł</td><td>JDG, mikrofirma, sam wystawiasz faktury</td></tr>
+          <tr><td><strong>Profil Zaufany</strong> / mObywatel</td><td>0 zł</td><td>Korzystanie z aplikacji Podatnika KSeF w przeglądarce</td></tr>
+          <tr><td><strong>Kwalifikowany podpis</strong> / pieczęć</td><td>200-400 zł/rok</td><td>Spółki, integracja z systemami ERP, biura rachunkowe</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Dla 90% mikrofirm rekomendowany jest token KSeF.</strong> Generujesz go raz w e-Urzędzie Skarbowym, wgrywasz do swojego programu fakturującego (np. Dokumo) — i program wysyła faktury w Twoim imieniu bez kolejnych logowań. Token jest ważny 5 lat, ale można go w każdej chwili odwołać.</p>
+
+      <h2 id="kary">Kary za niezgodność</h2>
+
+      <p>Kary wprowadzone przez ustawodawcę są wyjątkowo dotkliwe i miały zniechęcić do prób „obchodzenia" KSeF:</p>
+
+      <div class="danger-box">
+        <div class="danger-box-icon">🚫</div>
+        <div class="danger-box-text"><strong>Kara za wystawienie faktury poza KSeF mimo obowiązku:</strong> do <strong>100% kwoty VAT</strong> wykazanego na fakturze. Dla faktury bez wykazanej kwoty VAT — do <strong>18,75% kwoty należności ogółem</strong>. Stosuje urząd skarbowy w drodze decyzji administracyjnej, niezależnie od ewentualnych konsekwencji karnoskarbowych.</div>
+      </div>
+
+      <p>Przykład: firma wystawia fakturę na 10 000 zł netto + 2 300 zł VAT = 12 300 zł brutto poza KSeF po dacie obowiązku. Maksymalna kara: 2 300 zł (100% kwoty VAT). To <strong>realna sankcja finansowa</strong>, nie symbol — naczelnik US może ją nałożyć w decyzji od ręki.</p>
+
+      <p>Dodatkowe sankcje:</p>
+
+      <ul>
+        <li><strong>Brak prawa do odliczenia VAT u nabywcy</strong> — jeśli faktura nie ma numeru KSeF, kupujący nie odliczy VAT-u od kosztu. To praktycznie eliminuje faktury poza KSeF w obrocie B2B.</li>
+        <li><strong>Sankcje porządkowe</strong> — m.in. za nieprzesłanie faktury w terminie (do 24h), za błędny format XML, za brak autoryzacji.</li>
+        <li><strong>Odpowiedzialność karnoskarbowa</strong> — w skrajnych przypadkach uchylanie się od obowiązku KSeF może być potraktowane jako wykroczenie skarbowe (art. 56 KKS).</li>
+      </ul>
+
+      <h2 id="checklist">Co musisz zrobić od razu — 5-punktowy checklist</h2>
+
+      <ol>
+        <li><strong>Sprawdź czy jesteś VAT-owcem.</strong> Jeśli tak — obowiązek od 1 kwietnia 2026. Jeśli zwolniony — od 1 stycznia 2027 (ale możesz wcześniej dobrowolnie).</li>
+        <li><strong>Wygeneruj token KSeF.</strong> Zaloguj się do <em>e-Urząd Skarbowy</em> → zakładka Twoja firma → KSeF → „Generuj token". Zapisz w bezpiecznym miejscu (np. menedżer haseł).</li>
+        <li><strong>Wybierz program fakturujący wspierający KSeF.</strong> Dokumo, Fakturownia, IFirma, InFakt, Comarch — porównaj funkcje i ceny. Najtaniej u mikrosaaS-ów (~30-50 zł/m-c).</li>
+        <li><strong>Przetestuj na środowisku testowym</strong> Ministerstwa Finansów (ksef-test.mf.gov.pl). Wystaw 2-3 faktury próbne, sprawdź czy program prawidłowo nadaje numer, generuje UPO i pokazuje status.</li>
+        <li><strong>Poinformuj księgowość i klientów.</strong> Klienci powinni mieć autoryzację w KSeF zanim wyślesz im fakturę. Wyślij krótki mail informacyjny ~2 tygodnie przed wejściem obowiązku.</li>
+      </ol>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-val">1.04.2026</div>
+          <div class="stat-lbl">KSeF obowiązkowy dla pozostałych podatników VAT</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">100%</div>
+          <div class="stat-lbl">maksymalna kara — % kwoty VAT z faktury poza KSeF</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">5 lat</div>
+          <div class="stat-lbl">ważność tokenu KSeF — wygenerujesz raz</div>
+        </div>
+      </div>
+
+      <h2 id="ksef-vs-tradycyjne">KSeF vs tradycyjne wystawianie faktur</h2>
+
+      <table class="law-table">
+        <thead>
+          <tr>
+            <th>Aspekt</th>
+            <th>Przed KSeF</th>
+            <th>Po KSeF (od 1.04.2026)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Format faktury</td><td>PDF, papier, dowolny</td><td>XML strukturalny FA(3)</td></tr>
+          <tr><td>Numer faktury</td><td>Twój własny (np. FV/2026/001)</td><td>Numer KSeF + Twój wewnętrzny</td></tr>
+          <tr><td>Data wystawienia</td><td>Data sporządzenia w programie</td><td>Data nadania numeru KSeF</td></tr>
+          <tr><td>Wysyłka klientowi</td><td>E-mail z PDF, papier, kurier</td><td>Klient pobiera z KSeF automatycznie</td></tr>
+          <tr><td>Termin płatności</td><td>Od daty wystawienia</td><td>Od daty doręczenia w KSeF</td></tr>
+          <tr><td>Korekta faktury</td><td>Korekta + wysyłka</td><td>Korekta w KSeF z referencją do oryginału</td></tr>
+          <tr><td>Archiwizacja</td><td>5 lat u Ciebie</td><td>10 lat w KSeF + Twoja kopia</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="bledy">Najczęstsze błędy i nieporozumienia</h2>
+
+      <ol>
+        <li><strong>„Jestem zwolniony z VAT, nie dotyczy mnie"</strong> — dotyczy, tylko z innym terminem (1 stycznia 2027). Lepiej się przygotować wcześniej, bo wszystkie programy fakturujące będą gotowe do tego czasu.</li>
+        <li><strong>„Mam Fakturownia/IFirma, więc spoko"</strong> — sprawdź czy Twój pakiet obsługuje KSeF. Część tańszych planów nie ma tej funkcji albo wymaga dopłaty.</li>
+        <li><strong>„Wystawię papierowo, kara nie warta zachodu"</strong> — kara to do 100% kwoty VAT z każdej faktury. Plus klient nie odliczy VAT-u, więc i tak nie zapłaci.</li>
+        <li><strong>„KSeF zastępuje moją księgowość"</strong> — nie zastępuje. KSeF to tylko system fakturowania. Księgowość (JPK_V7, JPK_FA, deklaracje) idzie osobno.</li>
+        <li><strong>„Wystawię fakturę, klient sam ją odbierze"</strong> — klient musi mieć autoryzację w KSeF, żeby zobaczyć fakturę. Jeśli klient też jest VAT-owcem — po 1 kwietnia 2026 musi mieć. Sprawdź wcześniej.</li>
+        <li><strong>„KSeF działa offline"</strong> — nie. KSeF wymaga połączenia z API MF. Awaria systemu MF = nie wystawisz faktury (są tryby awaryjne, ale ograniczone do 7 dni).</li>
+      </ol>
+
+      <h2 id="podsumowanie">Podsumowanie</h2>
+
+      <p>KSeF to <strong>największa zmiana w polskim systemie fakturowania od czasu wprowadzenia VAT w 1993 r.</strong> Po wielokrotnych odsunięciach Ministerstwo Finansów ustanowiło harmonogram: 1 lutego 2026 dla największych, 1 kwietnia 2026 dla pozostałych VAT-owców, 1 stycznia 2027 dla zwolnionych z VAT. Kary realne (do 100% kwoty VAT), wymówek nie będzie.</p>
+
+      <p>Dobra wiadomość: dla freelancera B2B czy mikrofirmy <strong>całe przygotowanie zajmie 1-2 godziny</strong> — wygenerować token, podpiąć do programu fakturującego, zrobić 2 faktury próbne. Najgorzej zrobią ci, którzy zignorują temat do marca 2026 i wtedy dowiedzą się, że ich oprogramowanie nie obsługuje KSeF albo że ich klient nie ma autoryzacji. Najlepszy moment na działanie: <strong>teraz</strong>.</p>
+
+      <div class="source-box">
+        <p><strong>Podstawa prawna:</strong> KSeF — ustawa z 16 czerwca 2023 r. o zmianie ustawy o podatku od towarów i usług oraz niektórych innych ustaw (Dz.U. 2023 poz. 1598). Kary za niezgodność — art. 106nf ustawy o VAT. Format ustrukturyzowany faktury — rozporządzenie MF w sprawie korzystania z KSeF. Harmonogram — informacje Ministerstwa Finansów (gov.pl/web/finanse). Artykuł ma charakter informacyjny i nie stanowi porady prawnej — stan na maj 2026 r.</p>
+      </div>
+    </div>
+
+    <div class="article-cta">
+      <h3>Wystaw fakturę do KSeF w 30 sekund</h3>
+      <p>Generator faktur Dokumo wspiera KSeF natywnie — wygeneruj fakturę, kliknij „Wyślij do KSeF" i odbierz UPO. Bez konfiguracji, bez dodatkowych opłat.</p>
+      <a href="faktura.html">Otwórz generator faktur →</a>
+    </div>
+
+    <div class="article-body" style="margin-top:0;">
+      <h2 style="margin-top:0;border-top:none;padding-top:0;">Najczęstsze pytania</h2>
+
+      <h3>Czym jest KSeF i czy jest obowiązkowy?</h3>
+      <p>KSeF (Krajowy System e-Faktur) to państwowa platforma Ministerstwa Finansów do wystawiania, wysyłania i odbierania faktur ustrukturyzowanych w formacie XML FA(3). Od 1 lutego 2026 jest obowiązkowy dla podatników VAT z obrotem powyżej 200 mln zł, od 1 kwietnia 2026 dla pozostałych podatników VAT czynnych, a od 1 stycznia 2027 również dla zwolnionych z VAT. Korzystanie z KSeF po dacie obowiązku jest wymogiem prawnym, a wystawianie faktur poza systemem jest zagrożone karą grzywny.</p>
+
+      <h3>Kiedy KSeF stanie się obowiązkowy dla mikrofirm i jednoosobowej działalności?</h3>
+      <p>Mikrofirmy i jednoosobowe działalności gospodarcze, które są podatnikami VAT czynnymi, mają obowiązek korzystania z KSeF od 1 kwietnia 2026. Działalności zwolnione z VAT (do limitu 200 tys. zł obrotu rocznie) mają obowiązek dopiero od 1 stycznia 2027 — ale mogą korzystać dobrowolnie wcześniej.</p>
+
+      <h3>Jak autoryzować się w KSeF?</h3>
+      <p>Są trzy sposoby autoryzacji: token KSeF (najprostszy, generowany w e-Urzędzie Skarbowym, ważny 5 lat), Profil Zaufany przez gov.pl albo mObywatel oraz kwalifikowany podpis lub pieczęć elektroniczna (ok. 200-400 zł rocznie). Dla mikrofirm i jednoosobowych działalności najwygodniejszy jest token KSeF wgrany do programu fakturującego.</p>
+
+      <h3>Jakie kary grożą za niewystawienie faktury w KSeF?</h3>
+      <p>Wystawianie faktury poza KSeF po dacie obowiązku podlega karze pieniężnej do 100% kwoty podatku VAT wykazanego na fakturze, a w przypadku faktury bez wykazanej kwoty VAT — do 18,75% kwoty należności ogółem. Sankcje stosuje urząd skarbowy w drodze decyzji. Dodatkowo nabywca traci prawo do odliczenia VAT-u od faktury bez numeru KSeF.</p>
+
+      <h3>Co konkretnie zmienia KSeF w wystawianiu faktur?</h3>
+      <p>Faktura przestaje istnieć jako PDF/papier — staje się ustrukturyzowanym dokumentem XML w bazie KSeF. Data wystawienia to data nadania numeru KSeF (nie data sporządzenia w programie). Klient pobiera fakturę z KSeF, nie ode mnie mailem. Termin płatności liczy się od daty doręczenia w KSeF. Faktury B2C i niektóre wyjątki branżowe pozostają poza systemem.</p>
+    </div>
+  </div>
+
+  <aside>
+    <div style="position:sticky;top:88px;margin-top:40px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 100px);overflow-y:auto;">
+    <div class="article-toc">
+      <div class="toc-title">Spis treści</div>
+      <a href="#co-to" class="toc-link">Czym jest KSeF</a>
+      <a href="#harmonogram" class="toc-link">Harmonogram wdrożenia</a>
+      <a href="#kogo-dotyczy" class="toc-link">Kogo dotyczy</a>
+      <a href="#co-zmienia" class="toc-link">Co zmienia w fakturach</a>
+      <a href="#autoryzacja" class="toc-link">Jak się autoryzować</a>
+      <a href="#kary" class="toc-link">Kary za niezgodność</a>
+      <a href="#checklist" class="toc-link">Checklist przygotowania</a>
+      <a href="#ksef-vs-tradycyjne" class="toc-link">KSeF vs tradycyjne faktury</a>
+      <a href="#bledy" class="toc-link">Najczęstsze błędy</a>
+      <a href="#podsumowanie" class="toc-link">Podsumowanie</a>
+    </div>
+
+    <div class="related-articles">
+      <div class="ra-title">Powiązane artykuły</div>
+      <a href="jak-wystawic-fakture-ksef.html" class="ra-link">🧾 Jak wystawić fakturę do KSeF</a>
+      <a href="dyrektywa-omnibus-2026.html" class="ra-link">🛒 Dyrektywa Omnibus 2026</a>
+      <a href="sklep-internetowy-2026.html" class="ra-link">🏪 Sklep internetowy 2026</a>
+      <a href="przejscie-na-b2b.html" class="ra-link">💼 Przejście na B2B</a>
+      <a href="koszty-dzialalnosci-2026.html" class="ra-link">💰 Koszty działalności 2026</a>
+    </div>
+
+    <div class="related-articles">
+      <div class="ra-title">Narzędzia Dokumo</div>
+      <a href="faktura.html" class="ra-link">🧾 Generator faktur VAT</a>
+      <a href="kalkulator-wynagrodzen.html" class="ra-link">🧮 Kalkulator wynagrodzeń</a>
+      <a href="skaner-dokumentow.html" class="ra-link">🔎 Skaner dokumentów AI</a>
+      <a href="generator-umowy-b2b.html" class="ra-link">💼 Generator umowy B2B</a>
+    </div>
+    </div>
+  </aside>
+</div>
+</main>
+
+<footer style="background:#fff;border-top:1px solid #f3f4f6;padding:32px 24px;margin-top:48px;">
+  <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="logo2.png" style="height:26px;width:auto;display:block;">
+      <span style="font-size:14px;font-weight:800;color:#111827;">Dokumo</span>
+    </div>
+    <p style="font-size:13px;color:#9ca3af;margin:0;">© 2026 Dokumo. Wszelkie prawa zastrzeżone.</p>
+    <div style="display:flex;gap:24px;">
+      <a href="regulamin.html" style="font-size:13px;color:#9ca3af;text-decoration:none;">Regulamin</a>
+      <a href="prywatnosc.html" style="font-size:13px;color:#9ca3af;text-decoration:none;">Prywatność</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function getUser() { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } }
+function updateNavAuth() {
+  var user = getUser();
+  var loginBtn = document.getElementById('navLoginBtn');
+  var registerBtn = document.getElementById('navRegisterBtn');
+  var profile = document.getElementById('navProfile');
+  var avatar = document.getElementById('navAvatar');
+  var emailEl = document.getElementById('navProfileEmail');
+  if (!loginBtn) return;
+  if (user) {
+    loginBtn.style.display = 'none';
+    registerBtn.style.display = 'none';
+    profile.style.display = 'flex';
+    if (emailEl) emailEl.textContent = user.email || '';
+    if (user.photo) {
+      {var _img=document.createElement("img");_img.src=user.photo;_img.alt="";_img.style.cssText="width:100%;height:100%;border-radius:50%;object-fit:cover";avatar.replaceChildren(_img);}
+    } else {
+      avatar.textContent = (user.email||'U')[0].toUpperCase();
+    }
+  } else {
+    loginBtn.style.display = '';
+    registerBtn.style.display = '';
+    profile.style.display = 'none';
+  }
+}
+function toggleNavDropdown(e) { e.stopPropagation(); var dd = document.getElementById('navDropdown'); if (dd) dd.classList.toggle('open'); }
+function toggleToolsDropdown(e) { e.stopPropagation(); var dd = document.getElementById('toolsDropdown2'); var btn = document.getElementById('toolsMenuBtn'); dd.style.display = dd.style.display === 'none' ? 'block' : 'none'; if (btn) btn.setAttribute('aria-expanded', dd.style.display !== 'none' ? 'true' : 'false'); }
+function toggleMobileMenu() { var menu = document.getElementById('mobileMenu'); if (!menu) return; var open = menu.classList.toggle('open'); var ham = document.getElementById('navHamburger'); if (ham) ham.innerHTML = open ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>'; }
+function logoutUser() { localStorage.removeItem('dokumo_user'); localStorage.removeItem('dokumo_sub'); (window._fbSignOut ? window._fbSignOut() : Promise.resolve()).finally(function(){ window.location.href='index.html'; }); }
+document.addEventListener('click', function() { var dd = document.getElementById('navDropdown'); if (dd) dd.classList.remove('open'); var td = document.getElementById('toolsDropdown2'); if (td) td.style.display = 'none'; });
+updateNavAuth(); window._renderNav = updateNavAuth;
+</script>
+</body>
+</html>
