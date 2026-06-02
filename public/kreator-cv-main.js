@@ -2002,15 +2002,21 @@ function _buildFreshCVElement() {
   let html = '';
   try { html = buildCVHTML(cvTemplate) || ''; } catch(e) { console.error('buildCVHTML failed:', e); }
   if (!html || html.trim().length < 50) return null;
-  // Utworz offscreen wrapper dla html2pdf
+  // Utworz wrapper offscreen ALE z prawdziwym layoutem (NIE position:fixed!).
+  // html2canvas ma znany bug z position:fixed - renderuje pusto.
+  // Uzywam position:absolute z translate poza ekran zeby element mial pelny layout.
   const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;background:#fff;';
+  wrapper.style.cssText = 'position:absolute;left:0;top:0;width:595px;background:#fff;transform:translateX(-200vw);z-index:-1;';
   wrapper.innerHTML = html;
   document.body.appendChild(wrapper);
+  // Wymus reflow zeby przegladarka policzyla layout
+  void wrapper.offsetHeight;
   // Uruchom _fixCVFullHeight zeby wyrownac layout
   if (wrapper.firstElementChild && typeof _fixCVFullHeight === 'function') {
     try { _fixCVFullHeight(wrapper.firstElementChild); } catch(e) {}
   }
+  // Drugi reflow po fixach
+  void wrapper.offsetHeight;
   return wrapper;
 }
 
@@ -2180,18 +2186,29 @@ async function downloadCV() {
 
 async function _clientSidePDF(el, filename) {
   const clone = el.cloneNode(true);
-  clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;background:#fff';
+  // POZYCJA ABSOLUTE + translate (nie fixed!) - html2canvas ma bug z fixed.
+  // background-color musi byc explicit zeby PDF mial bialy bg.
+  clone.style.cssText = 'position:absolute;left:0;top:0;width:595px;background:#fff !important;transform:translateX(-200vw);z-index:-1;';
   document.body.appendChild(clone);
+  // Wymus reflow
+  void clone.offsetHeight;
   try {
     const blob = await html2pdf().set({
       margin: 0, filename,
       image: { type: 'jpeg', quality: .95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, width: 595 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: 595,
+        windowWidth: 595,
+        backgroundColor: '#ffffff',
+      },
       jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait' },
     }).from(clone).outputPdf('blob');
     await _savePDF(blob, filename);
   } finally {
-    document.body.removeChild(clone);
+    if (clone.parentNode) document.body.removeChild(clone);
   }
 }
 
