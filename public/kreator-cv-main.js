@@ -2023,11 +2023,25 @@ async function downloadCV() {
   saveCVToMyDocs(fullName);
 
   const el = document.getElementById('cvPreviewInner');
+  // Force-render preview before reading innerHTML — defensive na mobilkach,
+  // gdzie initial updateCVPreview() z cv-templates.js moze nie dojsc na czas
+  // (race z DOMContentLoaded / deferred scripts).
+  try {
+    if (typeof updateCVPreview === 'function') updateCVPreview();
+  } catch(e) { /* ignore */ }
   // Ensure biznes rebalancing is applied before reading innerHTML for PDF
   if (cvTemplate === 'biznes' && el && el.firstElementChild) _fixBiznesOverflow(el.firstElementChild);
   if (!el) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    return;
+  }
+  // Sanity check: jesli preview jest podejrzanie krotki/pusty, pokaz blad
+  const htmlContent = el.innerHTML || '';
+  if (htmlContent.trim().length < 200) {
+    if (overlay) overlay.style.display = 'none';
+    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    alert('CV nie zostało jeszcze załadowane. Wypełnij formularz i spróbuj ponownie.');
     return;
   }
 

@@ -116,6 +116,10 @@ export default async function handler(req, res) {
   const { html, filename } = req.body || {};
   if (!html) return res.status(400).json({ error: 'Brak HTML' });
   if (typeof html !== 'string' || html.length > 1500000) return res.status(400).json({ error: 'HTML zbyt duży' });
+  // Defensive: odrzuc podejrzanie maly HTML zeby nie generowac pustych PDF
+  if (html.replace(/<[^>]+>/g, '').trim().length < 30) {
+    return res.status(400).json({ error: 'HTML CV jest pusty - wypelnij formularz przed pobraniem.' });
+  }
 
   const pdfServiceUrl = process.env.PDF_SERVICE_URL;
   const pdfApiKey = process.env.PDF_API_KEY;
