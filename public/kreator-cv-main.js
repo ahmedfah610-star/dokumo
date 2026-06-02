@@ -1994,6 +1994,38 @@ function pickTemplate(id) {
 (window.requestIdleCallback || function(cb){setTimeout(cb,0);})(function(){renderCVForm();updateCVPreview();});
 
 
+// ── Helper: zbuduj swiezy CV element z wymuszonym renderem ──
+function _buildFreshCVElement() {
+  // Wygeneruj HTML bezposrednio z buildCVHTML zamiast czytac DOM,
+  // ktore moze byc puste (race condition initial render).
+  if (typeof buildCVHTML !== 'function') return null;
+  let html = '';
+  try { html = buildCVHTML(cvTemplate) || ''; } catch(e) { console.error('buildCVHTML failed:', e); }
+  if (!html || html.trim().length < 50) return null;
+  // Utworz offscreen wrapper dla html2pdf
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;background:#fff;';
+  wrapper.innerHTML = html;
+  document.body.appendChild(wrapper);
+  // Uruchom _fixCVFullHeight zeby wyrownac layout
+  if (wrapper.firstElementChild && typeof _fixCVFullHeight === 'function') {
+    try { _fixCVFullHeight(wrapper.firstElementChild); } catch(e) {}
+  }
+  return wrapper;
+}
+
+// ── Ladowanie html2pdf jesli nie dostepny ──
+async function _ensureHtml2Pdf() {
+  if (typeof html2pdf !== 'undefined') return true;
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    s.onload = () => resolve(typeof html2pdf !== 'undefined');
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
 async function downloadCV() {
   // Wymagane logowanie — bez konta nie można pobrać
   const _user = (() => { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } })();
@@ -2031,25 +2063,21 @@ async function downloadCV() {
   } catch(e) { /* ignore */ }
   // Ensure biznes rebalancing is applied before reading innerHTML for PDF
   if (cvTemplate === 'biznes' && el && el.firstElementChild) _fixBiznesOverflow(el.firstElementChild);
-  if (!el) {
+
+  // ── BUILD FRESH CV ELEMENT (offscreen) ──
+  // Zamiast czytac el.innerHTML (ktore moze byc puste), zawsze buduj
+  // swiezy element offscreen przez _buildFreshCVElement -> buildCVHTML.
+  const freshEl = _buildFreshCVElement();
+  if (!freshEl) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    alert('Nie udało się zbudować CV. Wypełnij formularz i spróbuj ponownie.');
     return;
   }
-  // Pobierz HTML: priorytetowo z cvPreviewInner, fallback do buildCVHTML
-  // (bypassuje DOM gdyby preview nie zdazyl sie wyrenderowac)
-  let htmlContent = el.innerHTML || '';
-  if (htmlContent.trim().length < 200 && typeof buildCVHTML === 'function') {
-    try {
-      htmlContent = buildCVHTML(cvTemplate) || '';
-      // Wlozenie do DOM dla _fixCVFullHeight
-      el.innerHTML = htmlContent;
-      if (typeof _fixCVFullHeight === 'function') _fixCVFullHeight(el.firstElementChild);
-      htmlContent = el.innerHTML;
-    } catch(e) { console.error('buildCVHTML fallback failed:', e); }
-  }
-  // Sanity check: jesli HTML wciaz krotki/pusty, pokaz blad
+  const htmlContent = freshEl.innerHTML || '';
+  // Sanity check
   if (htmlContent.trim().length < 200) {
+    document.body.removeChild(freshEl);
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
     alert('CV nie zostało jeszcze załadowane. Wypełnij formularz i spróbuj ponownie.');
@@ -2099,34 +2127,38 @@ async function downloadCV() {
     const blob = await resp.blob();
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-    // Sanity check: PDF mniejszy niz 3KB to prawie na pewno pusty/uszkodzony
-    // (typowy 1-stronnicowy CV PDF z trescia to 8-50KB). Wtedy probujemy
-    // client-side jako fallback.
+    // Sanity check: PDF mniejszy niz 3KB to prawie na pewno pusty.
+    // Auto-fallback do client-side z FRESH ELEMENT.
     if (blob.size < 3000) {
       console.warn('PDF z serwera podejrzanie maly (' + blob.size + ' bajtow) - probuje client-side fallback');
-      try {
-        if (typeof html2pdf === 'undefined') {
-          await new Promise((res2, rej2) => {
-            const s = document.createElement('script');
-            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-            s.onload = res2; s.onerror = rej2;
-            document.head.appendChild(s);
-          });
-        }
-        await _clientSidePDF(el, filename);
-        return;
-      } catch(fbErr) {
-        console.error('Client-side fallback failed:', fbErr);
-        // Pokaz oryginalny (mozliwy pusty) PDF jako ostatnia deska ratunku
+      const okHtml2pdf = await _ensureHtml2Pdf();
+      if (okHtml2pdf) {
+        try {
+          await _clientSidePDF(freshEl, filename);
+          if (freshEl.parentNode) document.body.removeChild(freshEl);
+          return;
+        } catch(fbErr) { console.error('Client-side fallback failed:', fbErr); }
       }
     }
+    if (freshEl.parentNode) document.body.removeChild(freshEl);
     _showPDFPreview(blob, filename);
     return;
   } catch(e) {
     // Fallback: generuj PDF po stronie klienta gdy serwis PDF nie działa
+    const okHtml2pdf = await _ensureHtml2Pdf();
+    if (okHtml2pdf) {
+      try {
+        await _clientSidePDF(freshEl, filename);
+        if (freshEl.parentNode) document.body.removeChild(freshEl);
+        if (overlay) overlay.style.display = 'none';
+        if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+        return;
+      } catch(e2) { console.error('Client-side primary failed:', e2); }
+    }
+    // Stara sciezka fallback dla kompatybilnosci
     const el2 = document.getElementById('cvPreviewInner');
     if (el2 && typeof html2pdf !== 'undefined') {
-      try { await _clientSidePDF(el2, filename); return; } catch(e2) {}
+      try { await _clientSidePDF(el2, filename); return; } catch(e3) {}
     }
     if (el2 && typeof html2pdf === 'undefined') {
       await new Promise((res2, rej2) => {
