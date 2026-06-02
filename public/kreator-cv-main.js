@@ -2121,11 +2121,21 @@ async function _savePDF(blob, filename) {
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   const url = URL.createObjectURL(blob);
   if (isIOS) {
-    // navigator.share wymaga gestu — po async fetchu gest wygasa.
-    // window.location.href otwiera PDF w Safari PDF Viewer bez gestu.
-    // Użytkownik tapuje Share → "Zapisz do Pliki".
-    window.location.href = url;
-    // Nie cofaj blob URL — Safari potrzebuje go podczas przeglądania
+    // Safari iOS 13+ wspiera <a download> przez klik syntetyczny.
+    // Fallback: window.open w nowej karcie (Safari pokaze PDF viewer).
+    // Wczesniej window.location.href = url czasem dawal pusty PDF.
+    try {
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      a.style.display = 'none';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } catch(e) {
+      window.open(url, '_blank');
+    }
+    // Nie revokuj od razu — Safari moze nadal czytac url po kliku
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   } else {
     const a = document.createElement('a');
     a.href = url; a.download = filename;
@@ -2186,9 +2196,9 @@ function _showFreeAiLimitModal(type) {
 
 // ── PDF PREVIEW PRZED POBRANIEM ────────────────────────────────────────
 function _showPDFPreview(blob, filename) {
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if (isIOS) { _savePDF(blob, filename); return; }
-
+  // Preview modal dziala tez na iOS (iframe z blob: URL renderuje sie poprawnie).
+  // Wczesniej iOS bypassowal preview i probowal window.location.href = url,
+  // co czasem konczylo sie pustym PDF w Safari Viewer.
   const url = URL.createObjectURL(blob);
   const existing = document.getElementById('cvPdfPreviewModal');
   if (existing) { existing.remove(); }
