@@ -242,4 +242,14 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch(e) { console.error('Błąd odczytu pliku:', e); }
     }
   }
+
+  // ── Unconditional initial render dla nowych userow bez draftu ──
+  // Bez tego cvPreviewInner pozostaje puste do pierwszego inputa,
+  // a klik "Pobierz" generuje pusty PDF.
+  setTimeout(function() {
+    try {
+      if (typeof renderCVForm === 'function') renderCVForm();
+      if (typeof updateCVPreview === 'function') updateCVPreview();
+    } catch(e) { console.error('Initial CV render failed:', e); }
+  }, 50);
 });
