@@ -2036,8 +2036,19 @@ async function downloadCV() {
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
     return;
   }
-  // Sanity check: jesli preview jest podejrzanie krotki/pusty, pokaz blad
-  const htmlContent = el.innerHTML || '';
+  // Pobierz HTML: priorytetowo z cvPreviewInner, fallback do buildCVHTML
+  // (bypassuje DOM gdyby preview nie zdazyl sie wyrenderowac)
+  let htmlContent = el.innerHTML || '';
+  if (htmlContent.trim().length < 200 && typeof buildCVHTML === 'function') {
+    try {
+      htmlContent = buildCVHTML(cvTemplate) || '';
+      // Wlozenie do DOM dla _fixCVFullHeight
+      el.innerHTML = htmlContent;
+      if (typeof _fixCVFullHeight === 'function') _fixCVFullHeight(el.firstElementChild);
+      htmlContent = el.innerHTML;
+    } catch(e) { console.error('buildCVHTML fallback failed:', e); }
+  }
+  // Sanity check: jesli HTML wciaz krotki/pusty, pokaz blad
   if (htmlContent.trim().length < 200) {
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
@@ -2056,7 +2067,7 @@ async function downloadCV() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
-        html: el.innerHTML,
+        html: htmlContent,
         filename: safeName,
         isCv: true,
         cvDocName: 'CV – ' + fullName,
