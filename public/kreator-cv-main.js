@@ -2099,6 +2099,27 @@ async function downloadCV() {
     const blob = await resp.blob();
     if (overlay) overlay.style.display = 'none';
     if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    // Sanity check: PDF mniejszy niz 3KB to prawie na pewno pusty/uszkodzony
+    // (typowy 1-stronnicowy CV PDF z trescia to 8-50KB). Wtedy probujemy
+    // client-side jako fallback.
+    if (blob.size < 3000) {
+      console.warn('PDF z serwera podejrzanie maly (' + blob.size + ' bajtow) - probuje client-side fallback');
+      try {
+        if (typeof html2pdf === 'undefined') {
+          await new Promise((res2, rej2) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            s.onload = res2; s.onerror = rej2;
+            document.head.appendChild(s);
+          });
+        }
+        await _clientSidePDF(el, filename);
+        return;
+      } catch(fbErr) {
+        console.error('Client-side fallback failed:', fbErr);
+        // Pokaz oryginalny (mozliwy pusty) PDF jako ostatnia deska ratunku
+      }
+    }
     _showPDFPreview(blob, filename);
     return;
   } catch(e) {
