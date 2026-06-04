@@ -121,7 +121,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'HTML CV jest pusty - wypelnij formularz przed pobraniem.' });
   }
 
-  const pdfServiceUrl = process.env.PDF_SERVICE_URL;
+  const pdfServiceUrl = (process.env.PDF_SERVICE_URL || '').replace(/\/$/, '');
   const pdfApiKey = process.env.PDF_API_KEY;
 
   if (!pdfServiceUrl) return res.status(500).json({ error: 'PDF_SERVICE_URL nie ustawiony' });
