@@ -8,6 +8,9 @@ if (!getApps().length) {
 const db = getFirestore();
 const auth = getAuth();
 
+// Wydłuż timeout do 60s — purge PESEL-i może iść przez setki dokumentów
+export const config = { maxDuration: 60 };
+
 const VALID_PLANS = ['kariera', 'biznes', 'promax'];
 
 async function verifyAdmin(req) {
@@ -274,6 +277,116 @@ export default async function handler(req, res) {
         }
         throw e;
       }
+    }
+
+    // POST action=pesel-purge — jednorazowy purge PESEL-i z dokumentow uzytkownikow.
+    // ?dryRun=1 (lub body.dryRun=true) zwraca tylko raport bez zmian.
+    if (action === 'pesel-purge') {
+      const dryRun = req.query?.dryRun === '1' || req.body?.dryRun === true;
+      const stats = {
+        users: 0,
+        documents: 0,
+        drafts: 0,
+        peselsFound: 0,
+        documentsUpdated: 0,
+        errors: [],
+      };
+
+      // Walidacja checksumy PESEL — odsiewa NIP/REGON/nr konta
+      const isValidPesel = (s) => {
+        if (!/^\d{11}$/.test(s)) return false;
+        const w = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+        let sum = 0;
+        for (let i = 0; i < 10; i++) sum += parseInt(s[i]) * w[i];
+        return (10 - (sum % 10)) % 10 === parseInt(s[10]);
+      };
+      const MASK = '*'.repeat(11);
+      const maskString = (str) => {
+        if (typeof str !== 'string' || !str) return { result: str, count: 0 };
+        let count = 0;
+        const result = str.replace(/(\d[\d\s\-]{9,16}\d)/g, (m) => {
+          const digits = m.replace(/[\s\-]/g, '');
+          if (digits.length !== 11 || !isValidPesel(digits)) return m;
+          count++;
+          return MASK;
+        });
+        return { result, count };
+      };
+      const maskValue = (v) => {
+        if (typeof v === 'string') return maskString(v);
+        if (Array.isArray(v)) {
+          let total = 0;
+          const arr = v.map((it) => { const r = maskValue(it); total += r.count; return r.result; });
+          return { result: arr, count: total };
+        }
+        if (v && typeof v === 'object') {
+          let total = 0;
+          const obj = {};
+          for (const k of Object.keys(v)) { const r = maskValue(v[k]); total += r.count; obj[k] = r.result; }
+          return { result: obj, count: total };
+        }
+        return { result: v, count: 0 };
+      };
+      const maskJsonString = (jsonStr) => {
+        if (typeof jsonStr !== 'string' || !jsonStr) return { result: jsonStr, count: 0 };
+        let parsed;
+        try { parsed = JSON.parse(jsonStr); } catch { return maskString(jsonStr); }
+        const r = maskValue(parsed);
+        if (r.count === 0) return { result: jsonStr, count: 0 };
+        return { result: JSON.stringify(r.result), count: r.count };
+      };
+
+      const processDoc = async (docRef, data) => {
+        const update = {};
+        let total = 0;
+        for (const f of ['text', 'name']) {
+          if (typeof data[f] === 'string' && data[f]) {
+            const r = maskString(data[f]);
+            if (r.count > 0) { update[f] = r.result; total += r.count; }
+          }
+        }
+        for (const f of ['cvDataJson', 'covDataJson', 'fakDataJson', 'umowaDataJson', 'docDataJson']) {
+          if (typeof data[f] === 'string' && data[f]) {
+            const r = maskJsonString(data[f]);
+            if (r.count > 0) { update[f] = r.result; total += r.count; }
+          }
+        }
+        if (total > 0 && !dryRun) {
+          update.peselPurgedAt = Timestamp.now();
+          await docRef.update(update);
+        }
+        return total;
+      };
+
+      const usersSnap = await db.collection('users').get();
+      stats.users = usersSnap.size;
+
+      for (const userDoc of usersSnap.docs) {
+        const uid = userDoc.id;
+        try {
+          const docsSnap = await db.collection('users').doc(uid).collection('documents').get();
+          for (const d of docsSnap.docs) {
+            stats.documents++;
+            const found = await processDoc(d.ref, d.data());
+            if (found > 0) { stats.peselsFound += found; stats.documentsUpdated++; }
+          }
+        } catch (e) {
+          stats.errors.push(`documents ${uid.slice(0,8)}: ${e.message}`);
+        }
+        try {
+          const draftRef = db.collection('users').doc(uid).collection('drafts').doc('cv');
+          const draftDoc = await draftRef.get();
+          if (draftDoc.exists) {
+            stats.drafts++;
+            const found = await processDoc(draftRef, draftDoc.data());
+            if (found > 0) { stats.peselsFound += found; stats.documentsUpdated++; }
+          }
+        } catch (e) {
+          stats.errors.push(`draft ${uid.slice(0,8)}: ${e.message}`);
+        }
+      }
+
+      return res.status(200).json({ ok: true, dryRun, ...stats });
     }
 
     return res.status(400).json({ error: 'Nieznana akcja' });
