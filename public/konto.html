@@ -99,6 +99,17 @@ body.has-user #profileWrap { display:flex !important; }
   font-size:.85rem; color:var(--ink2); line-height:1.6; margin-bottom:32px;
 }
 
+/* Return banner — pokazujemy gdy user przyszedl z formularza */
+.k-return-banner {
+  display:none; background:#eff6ff; border:1px solid #bfdbfe;
+  border-radius:10px; padding:11px 14px; margin-bottom:20px;
+  font-size:.82rem; color:#1e40af; line-height:1.45;
+  align-items:flex-start; gap:8px;
+}
+.k-return-banner.visible { display:flex; }
+.k-return-banner-icon { flex-shrink:0; font-size:1rem; line-height:1.2; }
+.k-return-banner strong { font-weight:700; }
+
 .k-oauth-btn {
   width:100%; display:flex; align-items:center; gap:14px;
   padding:14px 18px;
@@ -393,6 +404,13 @@ body.has-user #profileWrap { display:flex !important; }
   try {
     var u = JSON.parse(localStorage.getItem('dokumo_user'));
     if (u && u.email) {
+      // Jesli user juz jest zalogowany ALE wraca z formularza (?return=) —
+      // od razu go przekieruj, nie pokazuj profilu.
+      var ret = new URLSearchParams(location.search).get('return');
+      if (ret && ret.indexOf('/') === 0 && ret.indexOf('//') !== 0 && ret.indexOf(':') < 0 && ret.indexOf('/api/') !== 0) {
+        window.location.replace(ret);
+        return;
+      }
       document.documentElement.className += ' has-user';
       document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('has-user');
@@ -408,6 +426,30 @@ body.has-user #profileWrap { display:flex !important; }
       });
     }
   } catch(e) {}
+})();
+
+// Pokaz banner "Wracasz do: ..." gdy user przyszedl z formularza
+(function() {
+  function _label() {
+    var ret = new URLSearchParams(location.search).get('return') || '';
+    if (!ret.startsWith('/') || ret.startsWith('//') || ret.indexOf(':') >= 0) return null;
+    if (ret.indexOf('kreator-cv') >= 0) return 'Kreatora CV';
+    if (ret.indexOf('faktura') >= 0) return 'Generatora faktur';
+    if (ret.indexOf('analiza-umowy') >= 0) return 'Analizy umowy AI';
+    if (ret.indexOf('list-motywacyjny') >= 0) return 'Listu motywacyjnego';
+    if (ret.indexOf('generator') >= 0) return 'Generatora dokumentów';
+    return null;
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    var label = _label();
+    if (!label) return;
+    var banner = document.getElementById('returnBanner');
+    var labelEl = document.getElementById('returnBannerLabel');
+    if (banner && labelEl) {
+      labelEl.textContent = label;
+      banner.classList.add('visible');
+    }
+  });
 })();
 </script>
 
@@ -425,6 +467,12 @@ body.has-user #profileWrap { display:flex !important; }
       </div>
       <div class="k-login-title">Witaj w Dokumo</div>
       <p class="k-login-sub">Zaloguj się, by zapisać swoje dane i nie wypełniać formularzy dwa razy.</p>
+
+      <!-- Banner: Wracasz do... -->
+      <div class="k-return-banner" id="returnBanner">
+        <span class="k-return-banner-icon">↩</span>
+        <span><strong>Wracasz do: <span id="returnBannerLabel"></span></strong><br>Twoje postępy są zapisane — wrócimy do nich po zalogowaniu.</span>
+      </div>
 
       <!-- Tabs -->
       <div class="k-auth-tabs">
@@ -623,6 +671,33 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
+// ── RETURN URL po zalogowaniu/rejestracji ──
+// User przychodzący z formularza (kreator-cv, faktura itp.) ma w URL ?return=/kreator-cv.html.
+// Po sukcesie przekierowujemy tam żeby nie tracił postępów.
+function _safeReturnUrl() {
+  try {
+    const ret = new URLSearchParams(location.search).get('return');
+    if (!ret) return null;
+    // Tylko same-origin: musi zaczynać sie od / ale nie // (chroni przed protocol-relative URL)
+    if (!ret.startsWith('/') || ret.startsWith('//')) return null;
+    if (ret.includes(':')) return null;
+    // Tylko .html stron lub /, blokuj /api/ etc.
+    if (ret.startsWith('/api/') || ret.startsWith('/_')) return null;
+    return ret;
+  } catch(e) { return null; }
+}
+
+function _maybeReturnLabel() {
+  const ret = _safeReturnUrl();
+  if (!ret) return null;
+  if (ret.indexOf('kreator-cv') >= 0) return 'kreatora CV';
+  if (ret.indexOf('faktura') >= 0) return 'generatora faktur';
+  if (ret.indexOf('analiza-umowy') >= 0) return 'analizy umowy';
+  if (ret.indexOf('list-motywacyjny') >= 0) return 'kreatora listu motywacyjnego';
+  if (ret.indexOf('generator') >= 0) return 'generatora dokumentów';
+  return 'dokumentu';
+}
+
 window.handleOAuth = async function() {
   const btn = event.currentTarget;
   btn.style.opacity = '.6'; btn.style.pointerEvents = 'none';
@@ -635,8 +710,15 @@ window.handleOAuth = async function() {
     document.getElementById('kontoDefault').style.display = 'none';
     const s = document.getElementById('kontoSuccess');
     s.style.display = 'block';
-    document.getElementById('successMsg').textContent = 'Zalogowano jako ' + user.displayName;
-    setTimeout(() => { showProfile(user); s.style.display = 'none'; }, 1400);
+    const _ret = _safeReturnUrl();
+    const _label = _maybeReturnLabel();
+    if (_ret && _label) {
+      document.getElementById('successMsg').textContent = 'Zalogowano — wracamy do ' + _label + '…';
+      setTimeout(() => { window.location.href = _ret; }, 1200);
+    } else {
+      document.getElementById('successMsg').textContent = 'Zalogowano jako ' + user.displayName;
+      setTimeout(() => { showProfile(user); s.style.display = 'none'; }, 1400);
+    }
   } catch(err) {
     btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     btn.querySelector('.k-oauth-label').textContent = 'Kontynuuj z Google';
@@ -725,9 +807,17 @@ window.handleEmailSubmit = async function() {
     document.getElementById('kontoDefault').style.display = 'none';
     const s = document.getElementById('kontoSuccess');
     s.style.display = 'block';
-    document.getElementById('successMsg').textContent =
-      (_emailMode === 'register' ? 'Zarejestrowano jako ' : 'Zalogowano jako ') + (user.displayName || user.email);
-    setTimeout(() => { showProfile(user); s.style.display = 'none'; }, 1400);
+    const _ret = _safeReturnUrl();
+    const _label = _maybeReturnLabel();
+    if (_ret && _label) {
+      document.getElementById('successMsg').textContent =
+        (_emailMode === 'register' ? 'Zarejestrowano — wracamy do ' : 'Zalogowano — wracamy do ') + _label + '…';
+      setTimeout(() => { window.location.href = _ret; }, 1200);
+    } else {
+      document.getElementById('successMsg').textContent =
+        (_emailMode === 'register' ? 'Zarejestrowano jako ' : 'Zalogowano jako ') + (user.displayName || user.email);
+      setTimeout(() => { showProfile(user); s.style.display = 'none'; }, 1400);
+    }
   } catch(err) {
     showEmailMsg(emailErrMsg(err.code), 'error');
     btn.disabled = false;
