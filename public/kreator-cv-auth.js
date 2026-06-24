@@ -90,15 +90,39 @@ async function resetCVData() {
       });
     }
   } catch(e) {}
+  // Wyczysc tez lokalny cache zeby nie przywrocil sie po reload
+  try { localStorage.removeItem('dokumo_cv_draft_cache'); } catch(e) {}
   if (typeof renderCVForm === 'function') renderCVForm();
   if (typeof updateCVPreview === 'function') updateCVPreview();
 }
 
 // ── WERSJA ROBOCZA – AUTOSAVE ─────────────────────────────
+// localStorage zapisywany zawsze (też dla niezalogowanych) z debounce 2s.
+// Firestore sync tylko dla zalogowanych, debounce 10s + max 1/min.
 var _draftTimer = null;
-
+var _localTimer = null;
 var _lastDraftSave = 0;
+
+function _snapshotCV() {
+  return Object.assign({}, cvData, {
+    __template: cvTemplate,
+    __color: cvCustomColor || null,
+    __customSections: cvCustomSections || [],
+    __sidebarSections: Array.from(cvSidebarSections)
+  });
+}
+
+function _saveCVLocal() {
+  try { localStorage.setItem('dokumo_cv_draft_cache', JSON.stringify(_snapshotCV())); } catch(e) {}
+}
+
 function triggerDraftSave() {
+  // 1. localStorage — zawsze, szybki debounce 2s — chroni dane niezalogowanych
+  //    przed utratą przy rejestracji / odświeżeniu strony.
+  clearTimeout(_localTimer);
+  _localTimer = setTimeout(_saveCVLocal, 2000);
+
+  // 2. Firestore — tylko dla zalogowanych, wolniejszy debounce + rate limit
   if (!window._fbToken) return;
   clearTimeout(_draftTimer);
   _draftTimer = setTimeout(function() {
@@ -113,6 +137,9 @@ function triggerDraftSave() {
 
 async function saveCVDraft() {
   try {
+    // Najpierw zapisz lokalnie (synchronicznie) — żeby cache był zawsze aktualny
+    _saveCVLocal();
+
     var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
     if (!token) return;
     var cvPreviewEl = document.getElementById('cvPreviewInner');
@@ -120,14 +147,9 @@ async function saveCVDraft() {
     var resp = await fetch('/api/draft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({
-        text: cvText,
-        cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))
-      })
+      body: JSON.stringify({ text: cvText, cvDataJson: JSON.stringify(_snapshotCV()) })
     });
     if (resp.ok) {
-      // Cache lokalnie dla szybszego ładowania przy następnym wejściu
-      try { localStorage.setItem('dokumo_cv_draft_cache', JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))); } catch(e) {}
       var badge = document.getElementById('cvDraftBadge');
       if (badge) {
         badge.textContent = '✓ Zapisano';
@@ -140,8 +162,10 @@ async function saveCVDraft() {
 
 async function loadCVDraft() {
   try {
-    // Ładuj z localStorage natychmiast (zanim Firestore odpowie)
+    // Ładuj z localStorage natychmiast — działa też dla niezalogowanych
+    // (np. po powrocie z rejestracji konta z wypełnionymi już danymi).
     var cached = localStorage.getItem('dokumo_cv_draft_cache');
+    var loadedFromLocal = false;
     if (cached) {
       try {
         var cachedData = JSON.parse(cached);
@@ -152,12 +176,25 @@ async function loadCVDraft() {
         if (!urlTpl && cachedData.__sidebarSections) cvSidebarSections = new Set(cachedData.__sidebarSections);
         delete cachedData.__template; delete cachedData.__color; delete cachedData.__customSections; delete cachedData.__sidebarSections;
         Object.assign(cvData, cachedData);
+        loadedFromLocal = true;
         if (typeof renderCVForm === 'function') renderCVForm();
         if (typeof updateCVPreview === 'function') updateCVPreview();
       } catch(e) {}
     }
     var token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
-    if (!token) return;
+    if (!token) {
+      // Niezalogowany — pokaż banner tylko jeśli faktycznie coś przywróciliśmy z localStorage
+      if (loadedFromLocal) {
+        var b1 = document.getElementById('cvDraftBadge');
+        if (b1) {
+          b1.textContent = '↩ Twoje postępy zostały przywrócone';
+          b1.classList.add('visible');
+          clearTimeout(b1._hideTimer);
+          b1._hideTimer = setTimeout(function() { b1.classList.remove('visible'); }, 5000);
+        }
+      }
+      return;
+    }
     var resp = await fetch('/api/draft', { headers: { 'Authorization': 'Bearer ' + token } });
     if (!resp.ok) return;
     var data = await resp.json();
