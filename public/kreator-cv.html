@@ -624,6 +624,9 @@ updateChip(); // od razu z localStorage
 // Po zalogowaniu Firebase — odśwież z API + profil + wersja robocza
 window.addEventListener('_fbAuthReady', async ()=>{
   updateCVNavProfile();
+  // Załaduj wersję roboczą ZAWSZE (też dla niezalogowanych — z localStorage),
+  // żeby user nie tracił postępów przy rejestracji / odświeżeniu strony.
+  if(!window._cvEditLoaded) loadCVDraft();
   if(!window._fbToken) return;
   try{
     const token = typeof window._fbToken === 'function' ? await window._fbToken() : window._fbToken;
@@ -634,12 +637,10 @@ window.addEventListener('_fbAuthReady', async ()=>{
       updateChip();
     }
   }catch(e){}
-  // Załaduj wersję roboczą tylko jeśli nie ma danych z edycji
-  if(!window._cvEditLoaded) loadCVDraft();
 });
 </script>
 
-<script defer src="kreator-cv-auth.js?v=20260530d"></script>
+<script defer src="kreator-cv-auth.js?v=20260624a"></script>
 
 <style>
 /* NAV — styl index.html */
