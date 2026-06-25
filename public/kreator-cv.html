@@ -642,6 +642,23 @@ window.addEventListener('_fbAuthReady', async ()=>{
 
 <script defer src="kreator-cv-auth.js?v=20260624a"></script>
 
+<script>
+// Auto-dodaj ?return=/kreator-cv.html do KAZDEGO linka do konta — zeby po
+// zalogowaniu/rejestracji user wrocil do swoich postepow CV (capture phase
+// modyfikuje URL zanim browser zacznie nawigacje).
+(function(){
+  var RETURN = '/kreator-cv.html';
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="konto.html"]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href || href.indexOf('return=') !== -1) return;
+    var sep = href.indexOf('?') !== -1 ? '&' : '?';
+    a.setAttribute('href', href + sep + 'return=' + encodeURIComponent(RETURN));
+  }, true);
+})();
+</script>
+
 <style>
 /* NAV — styl index.html */
 .cv-nav-back-lnk{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:#6b7280;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid #e5e7eb;margin-left:10px;transition:all .2s;white-space:nowrap;flex-shrink:0;}
