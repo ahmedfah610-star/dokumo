@@ -3,9 +3,11 @@ function updateCVNavProfile() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) {}
   var profile = document.getElementById('cvNavProfile');
+  var authButtons = document.getElementById('cvAuthButtons');
   if (!profile) return;
   if (user) {
     profile.style.display = 'flex';
+    if (authButtons) authButtons.style.display = 'none';
     var avatar = document.getElementById('cvNavAvatar');
     var emailEl = document.getElementById('cvNavEmail');
     if (emailEl) emailEl.textContent = user.email || '';
@@ -18,6 +20,7 @@ function updateCVNavProfile() {
     }
   } else {
     profile.style.display = 'none';
+    if (authButtons) authButtons.style.display = 'flex';
   }
   var resetBtn = document.getElementById('btnResetCV');
   if (resetBtn) resetBtn.style.display = user ? '' : 'none';

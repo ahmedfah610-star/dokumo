@@ -640,7 +640,7 @@ window.addEventListener('_fbAuthReady', async ()=>{
 });
 </script>
 
-<script defer src="kreator-cv-auth.js?v=20260624a"></script>
+<script defer src="kreator-cv-auth.js?v=20260625a"></script>
 
 <script>
 // Auto-dodaj ?return=/kreator-cv.html do KAZDEGO linka do konta — zeby po
@@ -681,6 +681,21 @@ window.addEventListener('_fbAuthReady', async ()=>{
 .cv-nav-drop-logout:hover{background:#fff5f5 !important;}
 .cv-draft-badge{font-size:.62rem;color:#94a3b8;display:none;align-items:center;gap:4px;white-space:nowrap;margin-right:4px;}
 .cv-draft-badge.visible{display:flex;}
+
+/* AUTH BUTTONS (niezalogowani) */
+.cv-auth-buttons{display:flex;align-items:center;gap:6px;}
+.cv-auth-btn{display:inline-flex;align-items:center;padding:7px 14px;font-size:12.5px;font-weight:600;border-radius:8px;text-decoration:none;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;}
+.cv-auth-btn-login{color:#374151;background:transparent;border:1.5px solid #e5e7eb;}
+.cv-auth-btn-login:hover{background:#f3f4f6;border-color:#cbd5e1;color:#111827;}
+.cv-auth-btn-register{color:#fff;background:#2563eb;border:1.5px solid #2563eb;font-weight:700;box-shadow:0 1px 3px rgba(37,99,235,.25);}
+.cv-auth-btn-register:hover{background:#1d4ed8;border-color:#1d4ed8;}
+@media (max-width: 540px) {
+  .cv-auth-btn{padding:6px 10px;font-size:11.5px;}
+  .cv-auth-btn-login{display:none;}
+}
+@media (max-width: 380px) {
+  .cv-auth-btn-register{padding:5px 8px;font-size:11px;}
+}
 </style>
 <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Kreator CV online – Stwórz profesjonalne CV</h1>
 <div class="cv-app">
@@ -696,6 +711,11 @@ window.addEventListener('_fbAuthReady', async ()=>{
         ↺ <span class="cv-btn-label">Zacznij od nowa</span>
       </button>
       <span class="cv-draft-badge" id="cvDraftBadge"></span>
+      <!-- AUTH BUTTONS — widoczne tylko dla niezalogowanych -->
+      <div class="cv-auth-buttons" id="cvAuthButtons" style="display:flex;align-items:center;gap:6px">
+        <a href="konto.html" class="cv-auth-btn cv-auth-btn-login" id="cvBtnLogin">Zaloguj się</a>
+        <a href="konto.html?rejestracja=1" class="cv-auth-btn cv-auth-btn-register" id="cvBtnRegister">Załóż konto</a>
+      </div>
       <div class="cv-nav-profile" id="cvNavProfile" style="display:none">
         <div class="cv-nav-avatar" id="cvNavAvatar" onclick="toggleCVNavDropdown(event)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu użytkownika" onkeydown="if(event.key==='Enter'||event.key===' '){toggleCVNavDropdown(event)}">?</div>
         <div class="cv-nav-dropdown" id="cvNavDropdown">
