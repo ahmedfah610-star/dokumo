@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { hasSensitivePII, hasSensitivePIIInJson } from '../lib/pii.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -39,6 +40,15 @@ export default async function handler(req, res) {
     if (!exp || exp <= new Date()) return res.status(403).json({ error: 'Subskrypcja wygasła' });
   } catch(e) {
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
+  }
+
+  // PII check — nie zapisujemy dokumentow zawierajacych PESEL do Firestore (RODO)
+  if (hasSensitivePII(text) || hasSensitivePIIInJson(cvDataJson) ||
+      hasSensitivePIIInJson(covDataJson) || hasSensitivePIIInJson(fakDataJson)) {
+    return res.status(200).json({
+      ok: true, skipped: true, reason: 'pii_detected',
+      message: 'Dokument zawiera wrażliwe dane (PESEL) — pobrano lokalnie, nie zapisano w chmurze.'
+    });
   }
 
   // Limit liczby dokumentów per użytkownik (max 500)

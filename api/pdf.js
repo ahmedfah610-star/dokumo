@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { hasSensitivePIIInJson } from '../lib/pii.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -54,23 +55,28 @@ export default async function handler(req, res) {
     try {
       const { cvDocName, cvDataJson } = req.body || {};
       await freeRef.create({ usedAt: Timestamp.now(), docName: cvDocName || 'CV' });
-      // Zapisz dokument do users/{uid}/documents żeby było widać co pobrano
+      // Zapisz dokument do users/{uid}/documents żeby było widać co pobrano —
+      // POMIJAMY jesli zawiera PESEL (RODO compliance, user dostaje PDF lokalnie).
       try {
-        const docRef = db.collection('users').doc(uid).collection('documents').doc();
-        await docRef.set({
-          id: docRef.id,
-          typeId: 'cv',
-          name: cvDocName || 'CV',
-          text: '',
-          cat: 'kariera',
-          icon: '📋',
-          catLabel: 'Kariera',
-          status: 'generated',
-          isFree: true,
-          cvDataJson: typeof cvDataJson === 'string' && cvDataJson.length <= 500000 ? cvDataJson : '',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+        if (hasSensitivePIIInJson(cvDataJson)) {
+          console.log('PII detected in free CV — skip Firestore save for uid', uid.slice(0,8));
+        } else {
+          const docRef = db.collection('users').doc(uid).collection('documents').doc();
+          await docRef.set({
+            id: docRef.id,
+            typeId: 'cv',
+            name: cvDocName || 'CV',
+            text: '',
+            cat: 'kariera',
+            icon: '📋',
+            catLabel: 'Kariera',
+            status: 'generated',
+            isFree: true,
+            cvDataJson: typeof cvDataJson === 'string' && cvDataJson.length <= 500000 ? cvDataJson : '',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+        }
       } catch(saveErr) {
         console.error('Free CV doc save error:', saveErr.message);
       }

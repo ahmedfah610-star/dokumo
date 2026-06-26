@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { hasSensitivePII, hasSensitivePIIInJson } from '../lib/pii.js';
 
 // Połączony endpoint dokumentów — scala dawne get-docs.js (GET) i update-doc.js (POST/DELETE).
 // Routing po metodzie HTTP; stare ścieżki /api/get-docs i /api/update-doc działają
@@ -76,6 +77,15 @@ export default async function handler(req, res) {
   if (typeof text === 'string' && text.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
   if (typeof covDataJson === 'string' && covDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
   if (typeof fakDataJson === 'string' && fakDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+
+  // PII check — odrzucamy update zawierajace PESEL (RODO, spójnie z save).
+  // User edytuje doc lokalnie, ale update do Firestore jest blokowany.
+  if (hasSensitivePII(text) || hasSensitivePIIInJson(covDataJson) || hasSensitivePIIInJson(fakDataJson)) {
+    return res.status(200).json({
+      ok: true, skipped: true, reason: 'pii_detected',
+      message: 'Zmiana zawiera wrażliwe dane (PESEL) — nie zapisano w chmurze.'
+    });
+  }
 
   try {
     const ref = db.collection('users').doc(uid).collection('documents').doc(docId);

@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { hasSensitivePII, hasSensitivePIIInJson } from '../lib/pii.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -33,6 +34,11 @@ export default async function handler(req, res) {
     const { text, cvDataJson } = req.body;
     if (typeof text === 'string' && text.length > 200000) return res.status(400).json({ error: 'Dane zbyt duże' });
     if (typeof cvDataJson === 'string' && cvDataJson.length > 200000) return res.status(400).json({ error: 'Dane zbyt duże' });
+    // PII check — nie zapisujemy draftow zawierajacych PESEL (RODO).
+    // Localstorage cache po stronie klienta nadal trzyma dane, tylko Firestore pomijamy.
+    if (hasSensitivePII(text) || hasSensitivePIIInJson(cvDataJson)) {
+      return res.status(200).json({ ok: true, skipped: true, reason: 'pii_detected' });
+    }
     try {
       await db.collection('users').doc(uid).collection('drafts').doc('cv').set({
         text: text || '',

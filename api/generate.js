@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { hasSensitivePII } from '../lib/pii.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -414,26 +415,34 @@ ${truncated}`;
       return res.status(500).json({ error: 'Pusta odpowiedź AI' });
     }
 
+    // PII check — nie zapisujemy dokumentow z PESEL do Firestore (RODO).
+    // User i tak otrzymuje wygenerowany text w response, tylko pomijamy persist.
+    const piiDetected = hasSensitivePII(text);
+
     // Zapisz dokument do Firestore (subskrybenci + darmowi — żeby było widać co wygenerowano)
     try {
-      const ref = db.collection('users').doc(uid).collection('documents').doc();
-      await ref.set({
-        id: ref.id,
-        typeId: docId || 'unknown',
-        name: docName || 'Dokument',
-        text,
-        cat,
-        icon: docIcon || '📄',
-        catLabel: docCatLabel || 'Inne',
-        status: 'generated',
-        isFree: isFree || false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-      // Dla darmowych — zaktualizuj freeDocUsage z odniesieniem do dokumentu
-      if (isFree) {
-        const ip = getIp(req);
-        db.collection('freeDocUsage').doc(ip).update({ docRef: `users/${uid}/documents/${ref.id}`, docName: docName || 'Dokument' }).catch(() => {});
+      if (piiDetected) {
+        console.log('PII detected — skipping Firestore save for uid', uid.slice(0,8));
+      } else {
+        const ref = db.collection('users').doc(uid).collection('documents').doc();
+        await ref.set({
+          id: ref.id,
+          typeId: docId || 'unknown',
+          name: docName || 'Dokument',
+          text,
+          cat,
+          icon: docIcon || '📄',
+          catLabel: docCatLabel || 'Inne',
+          status: 'generated',
+          isFree: isFree || false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        // Dla darmowych — zaktualizuj freeDocUsage z odniesieniem do dokumentu
+        if (isFree) {
+          const ip = getIp(req);
+          db.collection('freeDocUsage').doc(ip).update({ docRef: `users/${uid}/documents/${ref.id}`, docName: docName || 'Dokument' }).catch(() => {});
+        }
       }
     } catch(e) {
       console.error('Firestore save error:', e.message);
