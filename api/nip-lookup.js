@@ -36,8 +36,9 @@ export default async function handler(req, res) {
   }
 
   if ('fbconfig' in req.query) {
-    // Nie cachujemy publicznie — tylko no-store żeby przeglądarka nie trzymała w cache
-    res.setHeader('Cache-Control', 'private, no-store');
+    // Firebase Web API Key z zalozenia jest publiczny (frontend SDK). Cache 1h
+    // skraca load kazdej strony o 200-2000ms (eliminuje fetch + Vercel cold start)
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400');
     return res.json({
       apiKey: process.env.FIREBASE_WEB_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
