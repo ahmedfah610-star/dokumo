@@ -135,7 +135,13 @@ export default async function handler(req, res) {
   // Render at 595px szerokości; treść moze byc wyzsza niz 842px - Chrome
   // auto-paginuje. Nie strzepujemy min-height tak agresywnie - poprzednie
   // (overflow:hidden + strip min-height) powodowaly puste PDF.
+  // Defense-in-depth: PDF jest renderowany w headless Chromium (pdf-service) —
+  // usuwamy <script>, atrybuty on*= oraz javascript:/data:text/html, na wypadek
+  // gdyby HTML CV/dokumentu zawieral niezescapowane dane uzytkownika.
   const cleanHtml = html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '')
+    .replace(/\son\w+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, '')
+    .replace(/\s(href|src)\s*=\s*(["'])\s*(javascript|data:text\/html):/gi, ' $1=$2blocked:')
     .replace(/max-height\s*:\s*842px/gi, 'max-height:none');
 
   const fullHtml = `<!DOCTYPE html>

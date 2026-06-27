@@ -1,9 +1,30 @@
 // cv-templates.js – szablony CV
 // Ten plik jest ładowany przez kreator-cv.html
 
+// Wszystkie dane CV pochodzą od użytkownika i trafiają tu wprost jako HTML
+// (m.in. do generowania PDF po stronie serwera) — muszą być escapowane.
+function escHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function escapeDeep(val) {
+  if (typeof val === 'string') return escHtml(val);
+  if (Array.isArray(val)) return val.map(escapeDeep);
+  if (val && typeof val === 'object') {
+    var out = {};
+    for (var k in val) out[k] = escapeDeep(val[k]);
+    return out;
+  }
+  return val;
+}
+function escCustomSections() {
+  return typeof cvCustomSections === 'undefined' ? [] : escapeDeep(cvCustomSections);
+}
+
 function renderCustomSections(c1, c2) {
   if (typeof cvCustomSections === 'undefined' || !cvCustomSections.length) return '';
-  const sections = cvCustomSections.filter(s => s.title || s.content);
+  const sections = escCustomSections().filter(s => s.title || s.content);
   if (!sections.length) return '';
   const tpl = typeof cvTemplate !== 'undefined' ? cvTemplate : '';
 
@@ -41,7 +62,7 @@ function renderCustomSections(c1, c2) {
 }
 
 function buildCVHTML(tpl) {
-  const d = cvData;
+  const d = escapeDeep(cvData);
   const t = CV_TEMPLATES.find(x => x.id === tpl) || CV_TEMPLATES[0];
   const c1 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c1 : t.color1;
   const c2 = (typeof cvCustomColor !== 'undefined' && cvCustomColor) ? cvCustomColor.c2 : t.color2;
@@ -69,7 +90,7 @@ function buildCVHTML(tpl) {
     const skillsInSb = sb.has('umiejetnosci') && skills.length;
     const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
     const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    const customSects = escCustomSections().filter(s=>s.title||s.content);
 
     // Section header — duży węzeł na linii + podkreślenie
     const sh = (lbl) => `<div style="position:relative;margin-bottom:10px">
@@ -264,7 +285,7 @@ function buildCVHTML(tpl) {
             ${sbHdr(L("interests"))}
             <div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.65">${d.zainteresowania}</div>
           </div>`:''}
-          ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">${sbHdr(s.title||'')}<div style="font-size:11px;color:rgba(255,255,255,0.72);line-height:1.65">${s.content}</div></div>`).join('')}
+          ${escCustomSections().filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:13px;margin-bottom:15px">${sbHdr(s.title||'')}<div style="font-size:11px;color:rgba(255,255,255,0.72);line-height:1.65">${s.content}</div></div>`).join('')}
         </div>
       </div>
       <div style="flex:1;padding:28px 28px 20px;display:flex;flex-direction:column;min-width:0">
@@ -302,7 +323,7 @@ function buildCVHTML(tpl) {
         ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:18px">${mnHdr(L("languages"))}<div style="display:flex;flex-wrap:wrap;gap:6px 20px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:12px;color:#1c1c1c;font-weight:600">${l.jezyk}<span style="color:#aaa;font-weight:400"> – ${l.poziom}</span></span>`).join('')}</div></div>`:''}
         ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:18px">${mnHdr(label)}${items.map(c=>`<div style="font-size:12px;color:#555;margin-bottom:3px">· ${c}</div>`).join('')}</div>`).join('')}
         ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:18px">${mnHdr(L("interests"))}<div style="font-size:12px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
-        ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:18px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
+        ${escCustomSections().filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:18px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
         <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
@@ -903,7 +924,7 @@ function buildCVHTML(tpl) {
         ${jezykiInSb?`${sbHdr(L("languages"))}<div style="font-size:12px;color:rgba(255,255,255,0.9);line-height:1.7">${d.jezyki.filter(l=>l.jezyk).map(l=>`${l.jezyk} — ${l.poziom}`).join('<br>')}</div>`:''}
         ${certGroups.filter(cg=>sb.has(cg.key)).map(({label:lbl,items})=>`${sbHdr(lbl)}<div style="font-size:12px;color:rgba(255,255,255,0.9);line-height:1.7">${items.join('<br>')}</div>`).join('')}
         ${intInSb?`${sbHdr(L("interests"))}<div style="font-size:12px;color:rgba(255,255,255,0.9);line-height:1.65">${d.zainteresowania}</div>`:''}
-        ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`${sbHdr(s.title||'')}<div style="font-size:12px;color:rgba(255,255,255,0.9);line-height:1.65">${s.content}</div>`).join('')}
+        ${escCustomSections().filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`${sbHdr(s.title||'')}<div style="font-size:12px;color:rgba(255,255,255,0.9);line-height:1.65">${s.content}</div>`).join('')}
       </div>
       <div style="flex:1;padding:28px 24px 20px;display:flex;flex-direction:column;min-width:0">
         ${d.podsumowanie?`
@@ -940,7 +961,7 @@ function buildCVHTML(tpl) {
         ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:16px">${mnHdr(L("languages"))}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:12px;color:#1e293b;font-weight:600">${l.jezyk}<span style="color:#94a3b8;font-weight:400"> — ${l.poziom}</span></span>`).join('')}</div></div>`:''}
         ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label:lbl,items})=>`<div style="margin-bottom:16px">${mnHdr(lbl)}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${items.map(c=>`<span style="font-size:10.5px;color:#444">${c}</span>`).join('')}</div></div>`).join('')}
         ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:16px">${mnHdr(L("interests"))}<div style="font-size:12px;color:#64748b;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-        ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:16px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
+        ${escCustomSections().filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:16px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
         <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
@@ -1130,7 +1151,7 @@ function buildCVHTML(tpl) {
           ${jezykiInSb?`${sbHdr(L("languages"))}<div style="font-size:12px;color:#1e293b;line-height:1.7">${d.jezyki.filter(l=>l.jezyk).map(l=>`${l.jezyk} — ${l.poziom}`).join('<br>')}</div>`:''}
           ${certGroups.filter(cg=>sb.has(cg.key)).map(({label:lbl,items})=>`${sbHdr(lbl)}<div style="font-size:12px;color:#1e293b;line-height:1.7">${items.join('<br>')}</div>`).join('')}
           ${intInSb?`${sbHdr(L("interests"))}<div style="font-size:12px;color:#1e293b;line-height:1.65">${d.zainteresowania}</div>`:''}
-          ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`${sbHdr(s.title||'')}<div style="font-size:12px;color:#1e293b;line-height:1.65">${s.content}</div>`).join('')}
+          ${escCustomSections().filter(s=>sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`${sbHdr(s.title||'')}<div style="font-size:12px;color:#1e293b;line-height:1.65">${s.content}</div>`).join('')}
         </div>
         <div style="flex:1;padding:20px 22px 24px;min-width:0">
           ${d.podsumowanie?`
@@ -1167,7 +1188,7 @@ function buildCVHTML(tpl) {
           ${!jezykiInSb&&d.jezyki.some(l=>l.jezyk)?`<div style="margin-bottom:14px">${mnHdr(L("languages"))}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${d.jezyki.filter(l=>l.jezyk).map(l=>`<span style="font-size:12px;color:#1e293b;font-weight:600">${l.jezyk}<span style="color:#94a3b8;font-weight:400"> — ${l.poziom}</span></span>`).join('')}</div></div>`:''}
           ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label:lbl,items})=>`<div style="margin-bottom:14px">${mnHdr(lbl)}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${items.map(c=>`<span style="font-size:10.5px;color:#444">${c}</span>`).join('')}</div></div>`).join('')}
           ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:14px">${mnHdr(L("interests"))}<div style="font-size:12px;color:#64748b;line-height:1.6">${d.zainteresowania}</div></div>`:''}
-          ${(typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:14px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
+          ${escCustomSections().filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:14px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
         </div>
       </div>
       <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
@@ -1390,7 +1411,7 @@ function buildCVHTML(tpl) {
     const skillsInSb = sb.has('umiejetnosci') && skills.length;
     const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
     const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    const customSects = escCustomSections().filter(s=>s.title||s.content);
     // Unified section header: border-left style, bigger font, same everywhere
     const sh = (lbl) => `<div style="font-size:9.5px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${c1};padding-left:9px;border-left:3px solid ${c1};margin-bottom:10px">${lbl}</div>`;
     const sbLabel = (lbl) => `<div style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.18em;color:rgba(255,255,255,0.85);padding-left:9px;border-left:3px solid rgba(255,255,255,0.38);margin-bottom:8px">${lbl}</div>`;
@@ -1509,7 +1530,7 @@ function buildCVHTML(tpl) {
     const skillsInSb = sb.has('umiejetnosci') && skills.length;
     const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
     const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    const customSects = escCustomSections().filter(s=>s.title||s.content);
     const bIcon = (svgPath) => `<div style="width:18px;height:18px;border-radius:50%;background:${c1};flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></div>`;
     const bHdr = (lbl, svgPath) => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">${bIcon(svgPath)}<div style="font-size:9.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.09em">${lbl}</div></div><div style="height:1.5px;background:#dde3ed;margin-bottom:9px"></div>`;
     const bHdrSb = (lbl, svgPath) => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">${bIcon(svgPath)}<div style="font-size:9.5px;font-weight:800;color:${c1};text-transform:uppercase;letter-spacing:0.09em">${lbl}</div></div><div style="height:1.5px;background:#dde3ed;margin-bottom:9px"></div>`;
@@ -1566,7 +1587,7 @@ function buildCVHTML(tpl) {
     const skillsInSb = sb.has('umiejetnosci') && skills.length;
     const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
     const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    const customSects = escCustomSections().filter(s=>s.title||s.content);
     // Section header: ● LABEL ───────
     const mHdr  = (lbl) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-shrink:0"><span style="color:${c1};font-size:13px;line-height:1;flex-shrink:0">●</span><span style="font-size:8.5px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#111;white-space:nowrap">${lbl}</span><div style="flex:1;height:1px;background:#d1d5db;margin-left:5px"></div></div>`;
     const mHdrSb = (lbl) => `<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-shrink:0"><span style="color:${c1};font-size:11px;line-height:1;flex-shrink:0">●</span><span style="font-size:8px;font-weight:800;letter-spacing:0.13em;text-transform:uppercase;color:#111;white-space:nowrap">${lbl}</span><div style="flex:1;height:1px;background:#d1d5db;margin-left:4px"></div></div>`;
@@ -1719,7 +1740,7 @@ function buildCVHTML(tpl) {
     const skillsInSb = sb.has('umiejetnosci') && skills.length;
     const jezykiInSb = sb.has('jezyki') && d.jezyki.some(l=>l.jezyk);
     const intInSb    = sb.has('zainteresowania') && d.zainteresowania;
-    const customSects = (typeof cvCustomSections!=='undefined'?cvCustomSections:[]).filter(s=>s.title||s.content);
+    const customSects = escCustomSections().filter(s=>s.title||s.content);
     const secHdr = (icon, label) => `<div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;padding-bottom:4px;border-bottom:1.5px solid ${c1}">${icon}<span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:${c1}">${label}</span></div>`;
     const icoWork  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
     const icoEdu   = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c1}" stroke-width="2.5" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;

@@ -25,6 +25,11 @@ export default async function handler(req, res) {
   if (typeof covDataJson === 'string' && covDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
   if (typeof fakDataJson === 'string' && fakDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
 
+  const META_MAX = 200; // nazwa/ikona/etykieta nie potrzebują więcej
+  if (typeof docName === 'string' && docName.length > META_MAX) return res.status(400).json({ error: 'Nazwa dokumentu zbyt długa' });
+  if (typeof docIcon === 'string' && docIcon.length > META_MAX) return res.status(400).json({ error: 'Nieprawidłowa ikona' });
+  if (typeof docCatLabel === 'string' && docCatLabel.length > META_MAX) return res.status(400).json({ error: 'Nieprawidłowa kategoria' });
+
   let uid;
   try {
     ({ uid } = await auth.verifyIdToken(token));

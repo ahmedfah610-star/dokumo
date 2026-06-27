@@ -557,6 +557,12 @@ onAuthStateChanged(auth, async user => {
 window._allDocs = [];
 var activeFilter = 'all';
 
+function escHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
 // ── API ──
 async function getToken() {
   for (var i = 0; i < 30 && !window._fbReady; i++) {
@@ -648,9 +654,9 @@ function filterAndRender() {
   var html = '<div class="m-grid' + (_selectMode ? ' select-mode' : '') + '">';
   docs.forEach(function(doc) {
     var id = doc.id || '';
-    var name = (doc.name || 'Dokument').replace(/"/g, '&quot;');
-    var icon = doc.icon || '📄';
-    var catLabel = doc.catLabel || doc.cat || '';
+    var name = escHtml(doc.name || 'Dokument');
+    var icon = escHtml(doc.icon || '📄');
+    var catLabel = escHtml(doc.catLabel || doc.cat || '');
     var date = formatDate(doc.createdAt);
     var isSel = _selected[id] ? ' selected' : '';
     html += '<div class="d-card' + isSel + '" data-id="' + id + '" onclick="if(_selectMode){var cb=this.querySelector(\'.d-card-cb\');toggleCard(\'' + id + '\',this,cb);}">';
@@ -796,7 +802,7 @@ function downloadDoc(docId, format) {
     } else {
       var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       var win = window.open('', '_blank');
-      win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + doc.name + '</title>');
+      win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escHtml(doc.name) + '</title>');
       win.document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/scr'+'ipt>');
       win.document.write('<style>body{font-family:Arial,sans-serif;font-size:12pt;line-height:1.7;margin:2.5cm;color:#111}pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:11pt}@media print{body{margin:2cm}}</style>');
       win.document.write('</head><body><pre>' + safe + '</pre>');

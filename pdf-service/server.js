@@ -49,6 +49,16 @@ app.post('/generate-pdf', async (req, res) => {
   try {
     const b = await getBrowser();
     page = await b.newPage();
+    // Defense-in-depth: szablony CV/dokumentów używają tylko fontów systemowych
+    // i zdjęć jako data: URI — sieć nie jest potrzebna do renderowania, więc
+    // blokujemy cały ruch wychodzący na wypadek niezescapowanego HTML (SSRF/exfiltracja).
+    // (JS pozostaje włączony — page.evaluate() poniżej go wymaga.)
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const url = req.url();
+      if (url.startsWith('data:') || url.startsWith('about:')) return req.continue();
+      req.abort();
+    });
     // 595×842 matches the kreator preview exactly (A4 at 72dpi / CSS pixels)
     await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
