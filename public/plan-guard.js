@@ -135,7 +135,7 @@
         ico.style.borderColor = 'rgba(217,119,6,.35)';
         ico.style.color = '#d97706';
       }
-      if (txt) txt.textContent = message || 'Nie zapisano — dokument zawiera dane wrażliwe (PESEL)';
+      if (txt) txt.textContent = message || 'Nie zapisano — dokument zawiera dane wrażliwe (PESEL, nr dowodu, paszportu lub karty)';
     }, 150);
   }
 

@@ -242,7 +242,7 @@ function _saveCVLocal() {
   try {
     var snap = _snapshotCV();
     if (hasSensitivePIIClient(snap)) {
-      _showDraftBadge('⚠ Wykryto dane wrażliwe (PESEL/dowód/karta) — wersja robocza NIE zapisana lokalnie', 'warn', 6000);
+      _showDraftBadge('⚠ Wykryto dane wrażliwe (PESEL, nr dowodu, paszportu lub karty) — wersja robocza NIE zapisana lokalnie', 'warn', 6000);
       return;
     }
     localStorage.setItem('dokumo_cv_draft_cache', JSON.stringify(snap));
@@ -284,7 +284,7 @@ async function saveCVDraft() {
     if (resp.ok) {
       var data = await resp.json().catch(function() { return {}; });
       if (data.skipped && data.reason === 'pii_detected') {
-        _showDraftBadge(data.message || '⚠ Wykryto dane wrażliwe — zapisano tylko lokalnie', 'warn', 5000);
+        _showDraftBadge(data.message || '⚠ Wykryto dane wrażliwe (PESEL, nr dowodu, paszportu lub karty) — zapisano tylko lokalnie', 'warn', 5000);
       } else {
         _showDraftBadge('✓ Zapisano', '', 3000);
       }

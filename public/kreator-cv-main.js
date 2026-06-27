@@ -2268,7 +2268,7 @@ async function saveCVToMyDocs(fullName) {
     });
     var data = await resp.json().catch(function() { return {}; });
     if (data.skipped && data.reason === 'pii_detected' && typeof _showDraftBadge === 'function') {
-      _showDraftBadge(data.message || '⚠ Wykryto dane wrażliwe — nie zapisano w chmurze', 'warn', 6000);
+      _showDraftBadge(data.message || '⚠ Wykryto dane wrażliwe (PESEL, nr dowodu, paszportu lub karty) — nie zapisano w chmurze', 'warn', 6000);
     }
   } catch(e) {}
 }

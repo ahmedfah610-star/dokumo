@@ -452,7 +452,7 @@ ${truncated}`;
     sendFirstDocEmail(uid, docName || 'Dokument', cat).catch(e => console.error('First-doc email:', e.message));
 
     return res.status(200).json(piiDetected
-      ? { text, skipped: true, reason: 'pii_detected', message: 'Dokument zawiera wrażliwe dane (PESEL) — nie zapisano w Twoich dokumentach.' }
+      ? { text, skipped: true, reason: 'pii_detected', message: 'Dokument zawiera wrażliwe dane (PESEL, nr dowodu, paszportu lub karty płatniczej) — nie zapisano w Twoich dokumentach.' }
       : { text });
   } catch(e) {
     if (rollbackUsage) rollbackUsage();

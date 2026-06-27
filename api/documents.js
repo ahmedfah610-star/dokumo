@@ -83,7 +83,7 @@ export default async function handler(req, res) {
   if (hasSensitivePII(text) || hasSensitivePIIInJson(covDataJson) || hasSensitivePIIInJson(fakDataJson)) {
     return res.status(200).json({
       ok: true, skipped: true, reason: 'pii_detected',
-      message: 'Zmiana zawiera wrażliwe dane (PESEL) — nie zapisano w chmurze.'
+      message: 'Zmiana zawiera wrażliwe dane (PESEL, nr dowodu, paszportu lub karty płatniczej) — nie zapisano w chmurze.'
     });
   }
 

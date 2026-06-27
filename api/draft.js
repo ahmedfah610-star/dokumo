@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     if (hasSensitivePII(text) || hasSensitivePIIInJson(cvDataJson)) {
       return res.status(200).json({
         ok: true, skipped: true, reason: 'pii_detected',
-        message: 'Wersja robocza zawiera wrażliwe dane — nie zapisano w chmurze.'
+        message: 'Wersja robocza zawiera wrażliwe dane (PESEL, nr dowodu, paszportu lub karty płatniczej) — nie zapisano w chmurze.'
       });
     }
     try {
