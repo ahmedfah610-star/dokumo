@@ -644,7 +644,7 @@ async function logHistory(uid, entry) {
 // selfReminderSent (lista dni, na które już wysłano).
 async function processSelfReminders(uid, ownerEmail) {
   if (!ownerEmail) return 0;
-  const snap = await db.collection('users').doc(uid).collection('documents').get();
+  const snap = await db.collection('users').doc(uid).collection('documents').limit(500).get();
   let sent = 0;
   for (const d of snap.docs) {
     const x = d.data();
@@ -692,7 +692,10 @@ Otwórz panel: https://dokumoflow.com/panel-biznes.html`;
 // ── Monitor: dla jednego usera generuje propozycje Poziomu 1 ──
 async function monitorUser(uid, fromName, tone) {
   const summary = { generated: 0, skipped: 0, failed: 0 };
-  const invSnap = await db.collection('users').doc(uid).collection('invoices').get();
+  const invSnap = await db.collection('users').doc(uid).collection('invoices').limit(500).get();
+  const pendingSnap = await db.collection('users').doc(uid).collection('dunningActions')
+    .where('status', '==', 'pending').get();
+  const pendingInvoiceIds = new Set(pendingSnap.docs.map((d) => d.data().invoiceId));
 
   for (const docSnap of invSnap.docs) {
     const invoice = { id: docSnap.id, ...docSnap.data() };
@@ -708,9 +711,7 @@ async function monitorUser(uid, fromName, tone) {
     if (daysOverdue < 1) { summary.skipped++; continue; }
 
     // Czy istnieje już pending action dla tej faktury?
-    const existing = await db.collection('users').doc(uid).collection('dunningActions')
-      .where('invoiceId', '==', invoice.id).where('status', '==', 'pending').limit(1).get();
-    if (!existing.empty) { summary.skipped++; continue; }
+    if (pendingInvoiceIds.has(invoice.id)) { summary.skipped++; continue; }
 
     // Oznacz fakturę jako przeterminowaną (informacyjnie)
     if (invoice.status !== 'overdue') {
