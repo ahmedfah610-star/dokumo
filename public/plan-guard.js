@@ -120,7 +120,27 @@
     overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
   };
 
-  // Interceptor fetch — pokazuje modal gdy serwer zwróci 403 free_used
+  // Pokazuje w #checkSaved ostrzeżenie gdy serwer pominął zapis z powodu PII
+  // (zamiast domyslnego "✓ Zapisano" ktore strona ustawia od razu po fetchu).
+  function showPiiSkippedWarning(message) {
+    setTimeout(function () {
+      var cs = document.getElementById('checkSaved');
+      if (!cs) return;
+      cs.style.display = 'flex';
+      var ico = cs.querySelector('.check-ico');
+      var txt = cs.querySelector('span');
+      if (ico) {
+        ico.textContent = '⚠';
+        ico.style.background = 'rgba(217,119,6,.1)';
+        ico.style.borderColor = 'rgba(217,119,6,.35)';
+        ico.style.color = '#d97706';
+      }
+      if (txt) txt.textContent = message || 'Nie zapisano — dokument zawiera dane wrażliwe (PESEL)';
+    }, 150);
+  }
+
+  // Interceptor fetch — pokazuje modal gdy serwer zwróci 403 free_used,
+  // oraz ostrzeżenie gdy zapis dokumentu zostal pominiety z powodu PII.
   (function () {
     var _orig = window.fetch;
     window.fetch = function (url) {
@@ -130,6 +150,11 @@
           if (res.status === 403) {
             res.clone().json().then(function (d) {
               if (d.error === 'free_used' && window.showFreeDocModal) window.showFreeDocModal();
+            }).catch(function () {});
+          }
+          if (res.ok) {
+            res.clone().json().then(function (d) {
+              if (d.skipped && d.reason === 'pii_detected') showPiiSkippedWarning(d.message);
             }).catch(function () {});
           }
           return res;

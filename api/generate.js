@@ -451,7 +451,9 @@ ${truncated}`;
     // Email cross-sell po pierwszym wygenerowanym dokumencie (fire-and-forget)
     sendFirstDocEmail(uid, docName || 'Dokument', cat).catch(e => console.error('First-doc email:', e.message));
 
-    return res.status(200).json({ text });
+    return res.status(200).json(piiDetected
+      ? { text, skipped: true, reason: 'pii_detected', message: 'Dokument zawiera wrażliwe dane (PESEL) — nie zapisano w Twoich dokumentach.' }
+      : { text });
   } catch(e) {
     if (rollbackUsage) rollbackUsage();
     const msg = e.name === 'TimeoutError' || e.message?.includes('aborted')
