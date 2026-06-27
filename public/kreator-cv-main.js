@@ -2253,7 +2253,7 @@ async function saveCVToMyDocs(fullName) {
       cvData.email && 'Email: ' + cvData.email,
       cvData.tel && 'Tel: ' + cvData.tel,
     ].filter(Boolean).join('\n');
-    await fetch('/api/save-doc', {
+    var resp = await fetch('/api/save-doc', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
@@ -2266,6 +2266,10 @@ async function saveCVToMyDocs(fullName) {
         cvDataJson: JSON.stringify(Object.assign({}, cvData, { __template: cvTemplate, __color: cvCustomColor || null, __customSections: cvCustomSections || [], __sidebarSections: Array.from(cvSidebarSections) }))
       })
     });
+    var data = await resp.json().catch(function() { return {}; });
+    if (data.skipped && data.reason === 'pii_detected' && typeof _showDraftBadge === 'function') {
+      _showDraftBadge(data.message || '⚠ Wykryto dane wrażliwe — nie zapisano w chmurze', 'warn', 6000);
+    }
   } catch(e) {}
 }
 

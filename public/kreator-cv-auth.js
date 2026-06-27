@@ -99,6 +99,129 @@ async function resetCVData() {
   if (typeof updateCVPreview === 'function') updateCVPreview();
 }
 
+// ── WYKRYWANIE PII (klient) — port lib/pii.js. Blokuje zapis PESEL/dowodu/
+// paszportu/karty platniczej do localStorage — RODO: nie persystujemy danych
+// wrazliwych nawet lokalnie w przegladarce, nie tylko w Firestore.
+function _piiValidPesel(s) {
+  if (!/^\d{11}$/.test(s)) return false;
+  var w = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+  var sum = 0;
+  for (var i = 0; i < 10; i++) sum += parseInt(s[i], 10) * w[i];
+  if ((10 - (sum % 10)) % 10 !== parseInt(s[10], 10)) return false;
+  var mm = parseInt(s.slice(2, 4), 10);
+  var dd = parseInt(s.slice(4, 6), 10);
+  if (dd < 1 || dd > 31) return false;
+  var validMonths = {};
+  [0, 20, 40, 60, 80].forEach(function(offset) {
+    for (var m = 1; m <= 12; m++) validMonths[m + offset] = true;
+  });
+  return !!validMonths[mm];
+}
+
+function _piiContainsPesel(text) {
+  if (typeof text !== 'string' || !text) return false;
+  var matches = text.match(/\d[\d\s\-]{9,16}\d/g);
+  if (!matches) return false;
+  for (var i = 0; i < matches.length; i++) {
+    var digits = matches[i].replace(/[\s\-]/g, '');
+    if (digits.length === 11 && _piiValidPesel(digits)) return true;
+  }
+  return false;
+}
+
+function _piiValidDowod(s) {
+  if (!/^[A-Z]{3}\d{6}$/.test(s)) return false;
+  var weights = [7, 3, 1, 9, 7, 3, 1, 7, 3];
+  var chars = s.split('');
+  var sum = 0;
+  for (var i = 0; i < 9; i++) {
+    if (i === 3) continue;
+    var c = chars[i];
+    var val = /[A-Z]/.test(c) ? c.charCodeAt(0) - 55 : parseInt(c, 10);
+    var wi = i < 3 ? i : i - 1;
+    sum += val * weights[wi];
+  }
+  return sum % 10 === parseInt(chars[3], 10);
+}
+
+function _piiContainsDowod(text) {
+  if (typeof text !== 'string' || !text) return false;
+  var matches = text.match(/\b[A-Z]{3}\d{6}\b/g);
+  if (!matches) return false;
+  return matches.some(_piiValidDowod);
+}
+
+function _piiValidPassport(s) {
+  if (!/^[A-Z]{2}\d{7}$/.test(s)) return false;
+  var weights = [7, 3, 9, 1, 7, 3, 1, 7, 3];
+  var chars = s.split('');
+  var sum = 0;
+  for (var i = 0; i < 9; i++) {
+    if (i === 2) continue;
+    var c = chars[i];
+    var val = /[A-Z]/.test(c) ? c.charCodeAt(0) - 55 : parseInt(c, 10);
+    sum += val * weights[i];
+  }
+  return sum % 10 === parseInt(chars[2], 10);
+}
+
+function _piiContainsPassport(text) {
+  if (typeof text !== 'string' || !text) return false;
+  var matches = text.match(/\b[A-Z]{2}\d{7}\b/g);
+  if (!matches) return false;
+  return matches.some(_piiValidPassport);
+}
+
+function _piiValidCardLuhn(s) {
+  if (!/^\d{13,19}$/.test(s)) return false;
+  var sum = 0, alt = false;
+  for (var i = s.length - 1; i >= 0; i--) {
+    var n = parseInt(s[i], 10);
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+function _piiContainsCard(text) {
+  if (typeof text !== 'string' || !text) return false;
+  var matches = text.match(/\b(?:\d[ \-]?){12,18}\d\b/g);
+  if (!matches) return false;
+  for (var i = 0; i < matches.length; i++) {
+    var digits = matches[i].replace(/[\s\-]/g, '');
+    if (_piiValidCardLuhn(digits)) return true;
+  }
+  return false;
+}
+
+function hasSensitivePIIClient(value) {
+  if (value == null) return false;
+  if (typeof value === 'string') {
+    return _piiContainsPesel(value) || _piiContainsDowod(value) || _piiContainsPassport(value) || _piiContainsCard(value);
+  }
+  if (Array.isArray(value)) {
+    for (var i = 0; i < value.length; i++) if (hasSensitivePIIClient(value[i])) return true;
+    return false;
+  }
+  if (typeof value === 'object') {
+    for (var k in value) if (Object.prototype.hasOwnProperty.call(value, k) && hasSensitivePIIClient(value[k])) return true;
+    return false;
+  }
+  return false;
+}
+
+// Pokazuje badge nad nawigacja kreatora. kind='warn' -> kolor ostrzegawczy.
+function _showDraftBadge(text, kind, hideMs) {
+  var badge = document.getElementById('cvDraftBadge');
+  if (!badge) return;
+  badge.textContent = text;
+  badge.classList.toggle('warn', kind === 'warn');
+  badge.classList.add('visible');
+  clearTimeout(badge._hideTimer);
+  if (hideMs) badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, hideMs);
+}
+
 // ── WERSJA ROBOCZA – AUTOSAVE ─────────────────────────────
 // localStorage zapisywany zawsze (też dla niezalogowanych) z debounce 2s.
 // Firestore sync tylko dla zalogowanych, debounce 10s + max 1/min.
@@ -116,7 +239,14 @@ function _snapshotCV() {
 }
 
 function _saveCVLocal() {
-  try { localStorage.setItem('dokumo_cv_draft_cache', JSON.stringify(_snapshotCV())); } catch(e) {}
+  try {
+    var snap = _snapshotCV();
+    if (hasSensitivePIIClient(snap)) {
+      _showDraftBadge('⚠ Wykryto dane wrażliwe (PESEL/dowód/karta) — wersja robocza NIE zapisana lokalnie', 'warn', 6000);
+      return;
+    }
+    localStorage.setItem('dokumo_cv_draft_cache', JSON.stringify(snap));
+  } catch(e) {}
 }
 
 function triggerDraftSave() {
@@ -132,8 +262,7 @@ function triggerDraftSave() {
     var now = Date.now();
     if (now - _lastDraftSave < 60000) return; // max 1 save per minute
     _lastDraftSave = now;
-    var badge = document.getElementById('cvDraftBadge');
-    if (badge) { badge.textContent = '💾 Zapisuję...'; badge.classList.add('visible'); }
+    _showDraftBadge('💾 Zapisuję...', '', 0);
     saveCVDraft();
   }, 10000);
 }
@@ -153,11 +282,11 @@ async function saveCVDraft() {
       body: JSON.stringify({ text: cvText, cvDataJson: JSON.stringify(_snapshotCV()) })
     });
     if (resp.ok) {
-      var badge = document.getElementById('cvDraftBadge');
-      if (badge) {
-        badge.textContent = '✓ Zapisano';
-        clearTimeout(badge._hideTimer);
-        badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, 3000);
+      var data = await resp.json().catch(function() { return {}; });
+      if (data.skipped && data.reason === 'pii_detected') {
+        _showDraftBadge(data.message || '⚠ Wykryto dane wrażliwe — zapisano tylko lokalnie', 'warn', 5000);
+      } else {
+        _showDraftBadge('✓ Zapisano', '', 3000);
       }
     }
   } catch(e) {}
@@ -188,13 +317,7 @@ async function loadCVDraft() {
     if (!token) {
       // Niezalogowany — pokaż banner tylko jeśli faktycznie coś przywróciliśmy z localStorage
       if (loadedFromLocal) {
-        var b1 = document.getElementById('cvDraftBadge');
-        if (b1) {
-          b1.textContent = '↩ Twoje postępy zostały przywrócone';
-          b1.classList.add('visible');
-          clearTimeout(b1._hideTimer);
-          b1._hideTimer = setTimeout(function() { b1.classList.remove('visible'); }, 5000);
-        }
+        _showDraftBadge('↩ Twoje postępy zostały przywrócone', '', 5000);
       }
       return;
     }
@@ -214,13 +337,7 @@ async function loadCVDraft() {
     if (typeof renderCVForm === 'function') renderCVForm();
     if (typeof updateCVPreview === 'function') updateCVPreview();
     if (typeof renderTplGrid === 'function') renderTplGrid();
-    var badge = document.getElementById('cvDraftBadge');
-    if (badge) {
-      badge.textContent = '↩ Wersja robocza przywrócona';
-      badge.classList.add('visible');
-      clearTimeout(badge._hideTimer);
-      badge._hideTimer = setTimeout(function() { badge.classList.remove('visible'); }, 5000);
-    }
+    _showDraftBadge('↩ Wersja robocza przywrócona', '', 5000);
   } catch(e) {}
 }
 

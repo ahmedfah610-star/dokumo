@@ -34,10 +34,12 @@ export default async function handler(req, res) {
     const { text, cvDataJson } = req.body;
     if (typeof text === 'string' && text.length > 200000) return res.status(400).json({ error: 'Dane zbyt duże' });
     if (typeof cvDataJson === 'string' && cvDataJson.length > 200000) return res.status(400).json({ error: 'Dane zbyt duże' });
-    // PII check — nie zapisujemy draftow zawierajacych PESEL (RODO).
-    // Localstorage cache po stronie klienta nadal trzyma dane, tylko Firestore pomijamy.
+    // PII check — nie zapisujemy draftow zawierajacych PESEL/dowod/paszport/karte (RODO).
     if (hasSensitivePII(text) || hasSensitivePIIInJson(cvDataJson)) {
-      return res.status(200).json({ ok: true, skipped: true, reason: 'pii_detected' });
+      return res.status(200).json({
+        ok: true, skipped: true, reason: 'pii_detected',
+        message: 'Wersja robocza zawiera wrażliwe dane — nie zapisano w chmurze.'
+      });
     }
     try {
       await db.collection('users').doc(uid).collection('drafts').doc('cv').set({
