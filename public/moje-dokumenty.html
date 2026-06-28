@@ -669,6 +669,10 @@ function filterAndRender() {
     html += '<div>';
     if (catLabel) html += '<span class="d-cat-badge">' + catLabel + '</span>';
     html += '<span class="d-status-badge">&#10003; Wygenerowany</span>';
+    if (doc.complianceNeedsReview) {
+      var radarTitle = escHtml((doc.complianceFlags || []).map(function(f){ return f.summary || f.title || ''; }).join(' ') || 'Zmiana w przepisach może dotyczyć tego dokumentu.');
+      html += '<span class="d-status-badge" style="background:rgba(243,156,18,.15);color:#b9770e" title="' + radarTitle + '">&#9888; Może wymagać przeglądu</span>';
+    }
     html += '</div>';
     html += '</div></div>';
     html += '<div class="d-card-date">Utworzono: ' + date + '</div>';
