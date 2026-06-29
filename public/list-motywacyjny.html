@@ -237,6 +237,7 @@ const app=getApps().length?getApps()[0]:initializeApp(__c);
 onAuthStateChanged(getAuth(app),async u=>{
   if(u){localStorage.setItem("dokumo_user",JSON.stringify({name:u.displayName||"",email:u.email||"",photo:u.photoURL||""}));window._fbToken=await u.getIdToken();window._firebaseUser=u;}
   else{window._fbToken=null;window._firebaseUser=null;}
+  window._authReady=true;
   if(window._onAuthReady) window._onAuthReady();
 });
 </script>
@@ -260,11 +261,12 @@ onAuthStateChanged(getAuth(app),async u=>{
       <div class="lm-wizard-dot done" id="wizDot0"></div>
       <div class="lm-wizard-dot" id="wizDot1"></div>
       <div class="lm-wizard-dot" id="wizDot2"></div>
+      <div class="lm-wizard-dot" id="wizDot3"></div>
     </div>
 
     <!-- Krok 1: stanowisko -->
     <div class="lm-wizard-step active" id="wizStep0">
-      <div class="lm-wizard-label">Krok 1 z 3</div>
+      <div class="lm-wizard-label">Krok 1 z 4</div>
       <div class="lm-wizard-title">Na jakie stanowisko aplikujesz?</div>
       <div class="lm-wizard-sub">AI napisze list dopasowany do tej roli — im dokładniej, tym lepszy wynik.</div>
       <input class="lm-wizard-input" id="wizPos" type="text" placeholder="np. Frontend Developer, Specjalista ds. sprzedaży…" autocomplete="off" oninput="wizUpdateNext()" onkeydown="if(event.key==='Enter'&&this.value.trim())wizNext()">
@@ -276,7 +278,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
     <!-- Krok 2: firma -->
     <div class="lm-wizard-step" id="wizStep1">
-      <div class="lm-wizard-label">Krok 2 z 3</div>
+      <div class="lm-wizard-label">Krok 2 z 4</div>
       <div class="lm-wizard-title">Do jakiej firmy aplikujesz?</div>
       <div class="lm-wizard-sub">Opcjonalne — AI spersonalizuje list pod tę firmę. Możesz pominąć.</div>
       <input class="lm-wizard-input" id="wizCompany" type="text" placeholder="np. Google, PKO Bank Polski, startup…" autocomplete="off" onkeydown="if(event.key==='Enter')wizNext()">
@@ -288,7 +290,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
     <!-- Krok 3: doświadczenie -->
     <div class="lm-wizard-step" id="wizStep2">
-      <div class="lm-wizard-label">Krok 3 z 3</div>
+      <div class="lm-wizard-label">Krok 3 z 4</div>
       <div class="lm-wizard-title">Twoje doświadczenie zawodowe</div>
       <div class="lm-wizard-sub">AI dobierze odpowiedni ton — inaczej pisze dla studenta, inaczej dla seniora.</div>
       <div class="lm-wizard-pills" id="wizExpPills">
@@ -298,8 +300,20 @@ onAuthStateChanged(getAuth(app),async u=>{
         <button class="lm-wizard-pill" onclick="wizSelExp(this,'Powyżej 5 lat doświadczenia (senior)')">5+ lat</button>
       </div>
       <div class="lm-wizard-actions">
+        <button class="lm-wizard-btn-skip" onclick="wizNext()">Pomiń</button>
+        <button class="lm-wizard-btn-next" id="wizBtn2" onclick="wizNext()" disabled>Dalej →</button>
+      </div>
+    </div>
+
+    <!-- Krok 4: o sobie -->
+    <div class="lm-wizard-step" id="wizStep3">
+      <div class="lm-wizard-label">Krok 4 z 4</div>
+      <div class="lm-wizard-title">Napisz coś o sobie (opcjonalnie)</div>
+      <div class="lm-wizard-sub">Podaj swoje umiejętności, osiągnięcia lub certyfikaty — AI wykorzysta je, żeby list był bardziej konkretny i osobisty.</div>
+      <textarea class="lm-wizard-input lm-textarea" id="wizAbout" rows="4" placeholder="np. Mam 3-letnie doświadczenie w obsłudze klienta, znam angielski na poziomie C1, prowadziłam zespół 4 osób…" style="resize:vertical;min-height:90px;"></textarea>
+      <div class="lm-wizard-actions">
         <button class="lm-wizard-btn-skip" onclick="wizSubmit()">Pomiń i generuj</button>
-        <button class="lm-wizard-btn-next" id="wizBtn2" onclick="wizSubmit()" disabled>Generuj list ✨</button>
+        <button class="lm-wizard-btn-next" id="wizBtn3" onclick="wizSubmit()">Generuj list ✨</button>
       </div>
     </div>
   </div>
@@ -518,11 +532,22 @@ function wizNext(){
 function wizSubmit(){
   var pos = (document.getElementById('wizPos').value || '').trim();
   var company = (document.getElementById('wizCompany').value || '').trim();
+  var about = (document.getElementById('wizAbout').value || '').trim();
   document.getElementById('lmWizard').style.display = 'none';
+  document.getElementById('lmLoading').style.display = '';
   if(pos) document.getElementById('fPos').value = pos;
   if(company) document.getElementById('fCompany').value = company;
   if(_wizExp) window._wizardExperience = _wizExp;
-  autoGenerateFromWizard();
+  if(about) window._wizardAbout = about;
+  waitForAuthReady(autoGenerateFromWizard);
+}
+function waitForAuthReady(cb, maxWaitMs){
+  if(window._authReady){ cb(); return; }
+  var waited = 0;
+  var iv = setInterval(function(){
+    waited += 100;
+    if(window._authReady || waited >= (maxWaitMs || 3000)){ clearInterval(iv); cb(); }
+  }, 100);
 }
 function wizShow(){
   var el = document.getElementById('lmWizard');
@@ -680,6 +705,7 @@ function showEditor() {
 
 function showGenError() {
   var loading = document.getElementById('lmLoading');
+  loading.style.display = '';
   loading.innerHTML =
     '<div class="lm-error">' +
       '<div class="lm-error-title">Nie udało się wygenerować listu</div>' +
@@ -691,6 +717,10 @@ function showGenError() {
 async function autoGenerateFromWizard() {
   if (_autoGenDone) return;
   _autoGenDone = true;
+  if (!window._firebaseUser && !window._fbToken) {
+    window.location.href = 'konto.html?return=/list-motywacyjny.html';
+    return;
+  }
   try {
     var token = window._fbToken || '';
     var dz = new Date().toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'});
@@ -700,6 +730,8 @@ async function autoGenerateFromWizard() {
     if (gp('motivation'))   extra += '\n- Motywacja: ' + gp('motivation');
     var expVal = gp('experience') || window._wizardExperience || '';
     if (expVal) extra += '\n- Doświadczenie: ' + expVal;
+    var aboutVal = gp('about') || window._wizardAbout || '';
+    if (aboutVal) extra += '\n- Umiejętności / osiągnięcia / informacje podane przez kandydata: ' + aboutVal;
     var posVal  = gp('position') || val('fPos') || '[stanowisko]';
     var compVal = gp('company')  || val('fCompany') || '[firma]';
     var prompt = 'Napisz treść listu motywacyjnego po polsku (tylko główna treść – bez nagłówka adresowego, bez "Szanowni Państwo", bez "Z poważaniem").\n\n'
@@ -712,6 +744,7 @@ async function autoGenerateFromWizard() {
       + '- Dokładnie 3 akapity, każdy po 2-3 zdania. List MUSI zmieścić się na 1 stronie A4.\n'
       + '- Liczby zawsze cyframi: "40%" nie "czterdzieści procent", "2024" nie "dwa tysiące", "50 000 zł" nie "pięćdziesiąt tysięcy".\n'
       + '- Formalny, konkretny, gotowy do wklejenia. Zero markdown, zero gwiazdek, zero emoji.\n'
+      + (aboutVal ? '- Wykorzystaj podane umiejętności/osiągnięcia kandydata jako konkretne argumenty w treści listu.\n' : '')
       + 'BEZWZGLĘDNY ZAKAZ: nie używaj ŻADNYCH angielskich słów ani zwrotów — nawet branżowych. Pisz wyłącznie po polsku.';
     var coverSystemPrompt = 'Piszesz wyłącznie po polsku. ABSOLUTNY ZAKAZ używania jakichkolwiek angielskich słów lub zwrotów — dotyczy to również terminów branżowych, nawet powszechnie używanych. Zawsze stosuj polskie odpowiedniki: "umiejętności techniczne" zamiast "technical skills", "zarządzanie projektem" zamiast "project management", "oprogramowanie" zamiast "software", "programowanie" zamiast "coding", "dane" zamiast "data" itp. Zero markdown, zero gwiazdek. Tylko czysty tekst po polsku. Liczby zawsze cyframi — nigdy słowami.';
     var res = await fetch('/api/generate-free', {
@@ -719,6 +752,7 @@ async function autoGenerateFromWizard() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ prompt: prompt, type: 'letter' })
     });
+    if (res.status === 401) { window.location.href = 'konto.html?return=/list-motywacyjny.html'; return; }
     if (res.status === 403 || res.status === 429) { _showLetterLimitModal(); return; }
     var data = await res.json();
     var text = data.text || data.result || '';
