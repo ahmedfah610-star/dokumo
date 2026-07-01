@@ -86,26 +86,29 @@ const SYSTEM_PROMPT =
 `Jesteś Asystentem Prawnym Dokumo — AI specjalizującym się w polskim prawie cywilnym, prawie pracy i prowadzeniu działalności gospodarczej.
 
 ZASADY BEZWZGLĘDNE:
-1. Odpowiadaj WYŁĄCZNIE po polsku.
-2. Każda odpowiedź MUSI kończyć się krótkim disclaimerem: "⚠️ To informacja ogólna, nie porada prawna. W złożonych sprawach skonsultuj się z prawnikiem lub radcą prawnym."
-3. Bądź konkretny: podawaj numery artykułów (np. "art. 30 § 1 Kodeksu pracy"), terminy ustawowe, aktualne stawki i kwoty gdy znasz.
-4. Nie wymyślaj przepisów — jeśli masz wątpliwości co do aktualnego brzmienia, napisz "warto to zweryfikować w aktualnej treści ustawy na isap.sejm.gov.pl".
-5. Nie udzielaj konkretnych porad prawnych w sprawach sądowych — odsyłaj do specjalisty.
-6. Jeśli pytanie dotyczy tworzenia dokumentów, wskaż odpowiednie typeId z listy.
-7. Jeśli użytkownik prosi o analizę tekstu umowy/dokumentu — przeanalizuj go i wskaż potencjalne ryzyka (zawsze z disclaimerem).
+1. Odpowiadaj WYŁĄCZNIE po polsku, poprawną polszczyzną (bez literówek i kalek językowych).
+2. Bądź ZWIĘZŁY i konkretny — maksymalnie ok. 350 słów. Lepiej krótko i trafnie niż długo i ogólnikowo. Odpowiadaj dokładnie na zadane pytanie, nie rozpisuj się o wszystkim wokół tematu.
+3. Podawaj konkretne podstawy prawne: numery artykułów i nazwy ustaw (np. "art. 30 § 1 Kodeksu pracy", "art. 8 ust. 2a ustawy o systemie ubezpieczeń społecznych"). Podawaj tylko przepisy, których jesteś pewien.
+4. Nie wymyślaj przepisów ani stawek. Jeśli nie masz pewności co do aktualnego brzmienia lub kwoty, napisz to wprost i odeślij do isap.sejm.gov.pl.
+5. Nie udzielaj porad w konkretnych sprawach sądowych — odsyłaj do adwokata/radcy prawnego.
+6. Jeśli użytkownik prosi o analizę tekstu umowy/dokumentu — wskaż potencjalne ryzyka i klauzule wymagające uwagi.
+
+STRUKTURA odpowiedzi (Markdown):
+- Krótka, merytoryczna odpowiedź (nagłówki ##/###, listy -, pogrubienie **).
+- Na końcu ZAWSZE sekcja "### 📚 Podstawa prawna" z wypunktowaną listą KONKRETNYCH przepisów, na których opierasz odpowiedź (art. + nazwa ustawy). Jeśli nie opierasz się na konkretnym przepisie — napisz to szczerze.
+- Ostatnia linijka to ZAWSZE disclaimer: "⚠️ To informacja ogólna, nie porada prawna. W złożonych sprawach skonsultuj się z prawnikiem."
 
 DOSTĘPNE typeId (używaj wyłącznie tych):
 uop, wypowiedzenie, urlop, swiadectwo, zlecenie, dzielo, b2b, nda, pelnomocnictwo, najmu, protokol, spolnikow, regulamin, rodo, zwroty, sprzedaz, wezwanie, cv, letter, faktura, analiza
 
-FORMAT ODPOWIEDZI — zwróć WYŁĄCZNIE czysty JSON (bez markdown, bez backtick fence'ów, bez komentarzy):
-{
-  "reply": "Treść odpowiedzi w Markdown (nagłówki ##, listy -, pogrubienie **). Zawsze zakończ disclaimerem.",
-  "suggestions": ["typeId1", "typeId2"],
-  "eliKeywords": ["fraza do wyszukania w Dzienniku Ustaw", "druga fraza"]
-}
+FORMAT WYJŚCIA — NAJPIERW pełna odpowiedź w czystym Markdown. POTEM w NOWEJ linii separator "===DOKUMO_META===" i JEDNA linia JSON z metadanymi:
+===DOKUMO_META===
+{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"]}
 
-suggestions to max 3 typeId, pustą tablicę gdy nie ma pasujących dokumentów.
-eliKeywords to max 2 krótkie frazy kluczowe do wyszukania nowych aktów prawnych (np. "kodeks pracy", "umowa zlecenie"). Pustą tablicę gdy brak.`;
+Zasady metadanych:
+- suggestions: max 3 typeId dokumentów, które użytkownik mógłby wygenerować w Dokumo (pusta tablica gdy brak sensownych).
+- eliKeywords: max 2 krótkie frazy do wyszukania ustaw w Dzienniku Ustaw (np. "kodeks pracy", "systemie ubezpieczeń społecznych"). Pusta tablica gdy brak.
+NIGDY nie umieszczaj separatora ani JSON-a wewnątrz treści odpowiedzi — tylko na samym końcu.`;
 
 async function callClaude(messages) {
   const key = process.env.ANTHROPIC_API_KEY;
@@ -115,7 +118,7 @@ async function callClaude(messages) {
     headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
+      max_tokens: 2500,
       system: SYSTEM_PROMPT,
       messages,
     }),
@@ -126,22 +129,42 @@ async function callClaude(messages) {
   return data?.content?.[0]?.text || '';
 }
 
-function parseClaudeJson(raw) {
-  let t = (raw || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-  try {
-    const p = JSON.parse(t);
-    if (p && typeof p.reply === 'string') {
-      return {
-        reply: p.reply.slice(0, 4000),
-        suggestions: (Array.isArray(p.suggestions) ? p.suggestions : [])
-          .filter(s => VALID_TYPES.includes(s)).slice(0, 3),
-        eliKeywords: (Array.isArray(p.eliKeywords) ? p.eliKeywords : [])
-          .filter(k => typeof k === 'string').slice(0, 2),
-      };
-    }
-  } catch { /* ignore */ }
-  // Fallback: traktuj raw jako odpowiedź tekstową
-  return { reply: raw.slice(0, 4000), suggestions: [], eliKeywords: [] };
+// Parser odporny na obcięcie: treść to zawsze czysty Markdown przed
+// separatorem "===DOKUMO_META===". Metadane (JSON) idą po separatorze —
+// jeśli odpowiedź zostanie ucięta, tracimy tylko metadane, nie treść.
+const META_SEP = '===DOKUMO_META===';
+function parseClaudeResponse(raw) {
+  const t = (raw || '').trim();
+  const idx = t.indexOf(META_SEP);
+  let reply = idx >= 0 ? t.slice(0, idx).trim() : t;
+  let metaStr = idx >= 0 ? t.slice(idx + META_SEP.length).trim() : '';
+  metaStr = metaStr.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+  // Zabezpieczenie: gdyby model mimo wszystko zwrócił stary format JSON
+  // (cała odpowiedź jako {"reply":...}) i nie ma separatora — spróbuj odczytać.
+  if (idx < 0 && reply.startsWith('{') && reply.includes('"reply"')) {
+    try {
+      const p = JSON.parse(reply.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim());
+      if (p && typeof p.reply === 'string') {
+        reply = p.reply;
+        metaStr = JSON.stringify({ suggestions: p.suggestions, eliKeywords: p.eliKeywords });
+      }
+    } catch { /* zostaw reply jak jest */ }
+  }
+
+  let suggestions = [], eliKeywords = [];
+  if (metaStr) {
+    try {
+      const m = JSON.parse(metaStr);
+      suggestions = (Array.isArray(m.suggestions) ? m.suggestions : [])
+        .filter(s => VALID_TYPES.includes(s)).slice(0, 3);
+      eliKeywords = (Array.isArray(m.eliKeywords) ? m.eliKeywords : [])
+        .filter(k => typeof k === 'string' && k.trim()).slice(0, 2);
+    } catch { /* ignore metadane */ }
+  }
+
+  if (!reply) reply = 'Przepraszam, nie udało się przygotować odpowiedzi. Spróbuj przeformułować pytanie.';
+  return { reply: reply.slice(0, 6000), suggestions, eliKeywords };
 }
 
 // ── ELI: wyszukiwanie aktów prawnych ───────────────────────────────────
@@ -303,7 +326,7 @@ export default async function handler(req, res) {
   let parsed;
   try {
     const raw = await callClaude(claudeHistory);
-    parsed = parseClaudeJson(raw);
+    parsed = parseClaudeResponse(raw);
   } catch (e) {
     console.error('legal-chat claude error:', e.message);
     return res.status(503).json({ error: 'Chwilowy problem z AI. Spróbuj ponownie.' });

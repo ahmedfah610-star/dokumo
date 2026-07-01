@@ -382,7 +382,7 @@ function appendMsg(role, content, extras) {
     if (extras.relatedActs && extras.relatedActs.length) {
       var actsDiv = document.createElement('div');
       actsDiv.className = 'ap-acts';
-      actsDiv.innerHTML = '<div style="font-size:.75rem;font-weight:700;color:#aaa;letter-spacing:.4px;text-transform:uppercase;margin-bottom:2px">Powiązane przepisy</div>' +
+      actsDiv.innerHTML = '<div style="font-size:.75rem;font-weight:700;color:#aaa;letter-spacing:.4px;text-transform:uppercase;margin-bottom:2px">📚 Źródła — akty w Dzienniku Ustaw</div>' +
         extras.relatedActs.slice(0, 4).map(function(a) {
           return '<a class="ap-act-card" href="' + (a.url || '#') + '" target="_blank" rel="noopener">' +
             '<span class="ap-act-badge ' + (a.inForce ? 'force' : 'old') + '">' + (a.inForce ? 'obowiązuje' : 'nieaktualny') + '</span>' +
