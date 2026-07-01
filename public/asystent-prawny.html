@@ -113,18 +113,19 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-msg.user .ap-bubble{background:var(--acc-grad);color:#fff;border-bottom-right-radius:5px;box-shadow:0 4px 16px rgba(124,58,237,.22)}
 .ap-msg.assistant .ap-bubble{background:var(--bg);border:1px solid var(--border);color:var(--t1);border-bottom-left-radius:5px;box-shadow:var(--shadow)}
 /* Markdown inside bubbles */
-.ap-bubble h2,.ap-bubble h3{font-size:.98rem;font-weight:600;letter-spacing:-.01em;margin:16px 0 6px;color:var(--t1)}
+.ap-bubble{line-height:1.55}
+.ap-bubble h2,.ap-bubble h3{font-size:.95rem;font-weight:600;letter-spacing:-.01em;margin:11px 0 3px;color:var(--t1)}
 .ap-bubble h2:first-child,.ap-bubble h3:first-child{margin-top:0}
-.ap-bubble p{margin:0 0 8px}.ap-bubble p:last-child{margin-bottom:0}
-.ap-bubble ul,.ap-bubble ol{padding-left:20px;margin:8px 0}
-.ap-bubble li{margin:4px 0}
+.ap-bubble p{margin:0 0 5px}.ap-bubble p:last-child{margin-bottom:0}
+.ap-bubble ul,.ap-bubble ol{padding-left:18px;margin:4px 0}
+.ap-bubble li{margin:1px 0}
 .ap-bubble li::marker{color:var(--acc)}
 .ap-bubble strong{font-weight:600}
 .ap-bubble em{font-style:italic}
 .ap-bubble code{background:var(--bg3);padding:2px 6px;border-radius:6px;font-size:.85em;font-family:var(--mono)}
 .ap-bubble a{color:var(--acc);text-decoration:none;border-bottom:1px solid rgba(124,58,237,.3)}
 .ap-bubble a:hover{border-bottom-color:var(--acc)}
-.ap-bubble .ap-disc{margin-top:14px;padding-top:11px;border-top:1px solid var(--border);font-size:.78rem;color:var(--t3);line-height:1.5}
+.ap-bubble .ap-disc{margin-top:9px;padding-top:8px;border-top:1px solid var(--border);font-size:.77rem;color:var(--t3);line-height:1.45}
 /* Related acts */
 .ap-acts{margin-top:12px;display:flex;flex-direction:column;gap:7px;max-width:85%;align-self:flex-start}
 .ap-acts-label,.ap-sugg-label{font-family:var(--mono);font-size:.64rem;font-weight:500;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
@@ -445,22 +446,32 @@ function showMessages() {
   document.getElementById('messagesArea').style.display = '';
 }
 
-// ── Render markdown (basic) ──
-function md(text) {
-  if (!text) return '';
-  var t = text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+// ── Render markdown (line-based, kompaktowy — bez zbędnych <br>) ──
+function mdInline(s) {
+  return s
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
     .replace(/`(.+?)`/g,'<code>$1</code>')
-    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-    .replace(/^- (.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, function(m){ return '<ul>'+m+'</ul>'; })
-    .replace(/⚠️(.+)/g,'<div class="ap-disc">⚠️$1</div>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
-  return '<p>' + t + '</p>';
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+function md(text) {
+  if (!text) return '';
+  var esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var lines = esc.split('\n');
+  var html = '', inList = false;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+    var mLi = line.match(/^[-*]\s+(.+)$/);
+    if (mLi) { if (!inList) { html += '<ul>'; inList = true; } html += '<li>' + mdInline(mLi[1]) + '</li>'; continue; }
+    if (inList) { html += '</ul>'; inList = false; }
+    var mH = line.match(/^(#{2,6})\s+(.+)$/);
+    if (mH) { html += '<h3>' + mdInline(mH[2]) + '</h3>'; continue; }
+    if (/^⚠️/.test(line)) { html += '<div class="ap-disc">' + mdInline(line) + '</div>'; continue; }
+    html += '<p>' + mdInline(line) + '</p>';
+  }
+  if (inList) html += '</ul>';
+  return html;
 }
 
 // ── Append message to DOM ──
@@ -548,6 +559,13 @@ function updateQl(left, max) {
   }
 }
 
+// ── Wymóg logowania ──
+function isLoggedIn() { return !!(window._fbToken || window._firebaseUser); }
+function requireLogin() {
+  removeTyping();
+  appendMsg('assistant', '🔒 Aby otrzymać odpowiedź, [zaloguj się lub załóż darmowe konto](konto.html?return=/asystent-prawny.html). Rejestracja zajmuje chwilę i odblokowuje 20 pytań dziennie (100 z subskrypcją).');
+}
+
 // ── Send message ──
 async function sendMessage() {
   if (_loading) return;
@@ -555,6 +573,16 @@ async function sendMessage() {
   var msg = (input.value || '').trim();
   var sentFile = _pendingFile;
   if (!msg && !sentFile) return;
+
+  // Niezalogowany nie dostaje odpowiedzi (gdy stan auth jest już ustalony)
+  if (window._authReady && !isLoggedIn()) {
+    appendMsg('user', msg || (sentFile ? '📎 ' + sentFile.name : ''));
+    clearFile();
+    input.value = '';
+    input.style.height = 'auto';
+    requireLogin();
+    return;
+  }
 
   input.value = '';
   input.style.height = 'auto';
@@ -584,9 +612,11 @@ async function sendMessage() {
     removeTyping();
 
     if (!r.ok) {
-      if (r.status === 429) {
+      if (r.status === 401) {
+        requireLogin();
+      } else if (r.status === 429) {
         appendMsg('assistant', '⚠️ Dzienny limit zapytań został wyczerpany. [Ulepsz plan](subskrypcja.html), by kontynuować.');
-        updateQl(0, data.queriesMax || _queriesMax || 5);
+        updateQl(0, data.queriesMax || _queriesMax || 20);
       } else {
         appendMsg('assistant', '⚠️ Coś poszło nie tak: ' + (data.error || 'Spróbuj ponownie.'));
       }
@@ -697,9 +727,6 @@ document.getElementById('msgInput').addEventListener('focus', function() {
 
 // Wyrenderuj kartę startową dla domyślnej persony
 renderWelcome();
-
-// Set initial query limit hint for anonymous
-updateQl(5, 5);
 
 // Check if returning from login with return param - focus input
 if (window.location.search.includes('return')) {

@@ -59,11 +59,6 @@ const VALID_TYPES = Object.keys(DOCUMENT_MAP);
 
 // ── Pomocnicze ──────────────────────────────────────────────────────────
 
-function getClientIp(req) {
-  return (req.headers['x-forwarded-for'] || '').split(',')[0].trim()
-    || req.socket?.remoteAddress || 'unknown';
-}
-
 function todayKey() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
 }
@@ -91,7 +86,9 @@ async function checkAndIncrementLimit(key, max) {
 
 // Wspólny blok formatu — identyczny dla obu trybów, żeby nie rozjechał parser.
 const OUTPUT_FORMAT_BLOCK =
-`DOSTĘPNE typeId (używaj wyłącznie tych):
+`ZWIĘZŁOŚĆ: pisz gęsto i oszczędnie. NIE zostawiaj pustych linii między zdaniami, nie dawaj nagłówka do każdego zdania, nie rozbijaj krótkiej odpowiedzi na wiele akapitów. Używaj list tylko gdy naprawdę porządkują treść. Maks. jeden nagłówek "##" na odpowiedź (poza obowiązkową "### 📚 Podstawa prawna").
+
+DOSTĘPNE typeId (używaj wyłącznie tych):
 uop, wypowiedzenie, urlop, swiadectwo, zlecenie, dzielo, b2b, nda, pelnomocnictwo, najmu, protokol, spolnikow, regulamin, rodo, zwroty, sprzedaz, wezwanie, cv, letter, faktura, analiza
 
 FORMAT WYJŚCIA — NAJPIERW pełna odpowiedź w czystym Markdown. POTEM w NOWEJ linii separator "===DOKUMO_META===" i JEDNA linia JSON z metadanymi:
@@ -361,6 +358,11 @@ export default async function handler(req, res) {
     fileNote = ' 📎 ' + (typeof file.name === 'string' ? file.name.slice(0, 120) : 'dokument');
   }
 
+  // Wymagane logowanie — niezalogowani nie dostają odpowiedzi.
+  if (!uid) {
+    return res.status(401).json({ error: 'login_required' });
+  }
+
   if (!hasMessage && !fileBlock && !fileText) {
     return res.status(400).json({ error: 'Brak treści pytania lub załącznika' });
   }
@@ -368,9 +370,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
-  // Rate limit
-  const limitKey = uid || ('ip:' + getClientIp(req));
-  const limitMax = hasSub ? 100 : (uid ? 20 : 5);
+  // Rate limit (dzienny) — zalogowany bez sub 20, z aktywną subskrypcją 100.
+  const limitKey = uid;
+  const limitMax = hasSub ? 100 : 20;
   const rl = await checkAndIncrementLimit(limitKey, limitMax);
   if (!rl.allowed) {
     return res.status(429).json({
