@@ -1,7 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHmac, timingSafeEqual } from 'crypto';
 
 // ─────────────────────────────────────────────────────────────────────────
 // AI Windykator — Faza A (ukryty rollout za feature flagiem).
@@ -1011,6 +1011,144 @@ Zespół Dokumo`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────
+// Onboarding e-maili po rejestracji.
+// Jedzie na tym samym dziennym cronie co self-reminder-check (piggyback —
+// limity cronów na planie Hobby), plus osobna akcja `onboarding-check` do
+// ręcznego wywołania z x-cron-secret.
+//
+// Harmonogram (wiek konta w dniach, okna rozłączne):
+//   d1: 0–3   powitanie + co można zrobić
+//   d3: 3–7   asystent AI + dokończenie dokumentów
+//   d7: 7–12  zachęta do subskrypcji (pomijana, gdy sub już aktywna)
+// Status per user w users/{uid}.onboarding = { d1|d3|d7: Timestamp|'skipped_sub', unsubscribed: bool }.
+// Stare konta (wiek poza oknami) nie dostają nic.
+//
+// DEBUG: ustaw ONBOARDING_DEBUG_MODE='true', żeby sweep działał bez realnej wysyłki.
+// ─────────────────────────────────────────────────────────────────────────
+
+const ONBOARDING_DEBUG = process.env.ONBOARDING_DEBUG_MODE === 'true';
+
+function optoutToken(uid) {
+  return createHmac('sha256', process.env.CRON_SECRET || '')
+    .update('optout:' + uid).digest('hex').slice(0, 32);
+}
+
+function onboardFooter(uid) {
+  return `\n\n—\nNie chcesz takich wiadomości? Wypisz się: https://dokumoflow.com/api/dunning?action=email-optout&u=${uid}&t=${optoutToken(uid)}`;
+}
+
+const ONBOARD_STEPS = [
+  {
+    key: 'd1', minDays: 0, maxDays: 3,
+    subject: 'Witaj w Dokumo — co możesz zrobić na start',
+    body: (name, uid) =>
+`Dzień dobry${name ? ' ' + name : ''},
+
+dzięki za założenie konta w Dokumo. Kilka rzeczy, które możesz zrobić od razu:
+
+• Stworzyć CV i list motywacyjny z pomocą AI — https://dokumoflow.com/kreator-cv.html
+• Wygenerować umowę (zlecenie, o pracę, NDA, najem i inne) — https://dokumoflow.com/generator.html
+• Sprawdzić umowę przed podpisaniem — https://dokumoflow.com/analiza-umowy.html
+• Zapytać Asystenta Prawnego i Podatkowego AI — https://dokumoflow.com/asystent-prawny.html
+• Wystawić fakturę — https://dokumoflow.com/faktura.html
+
+Pozdrawiamy,
+Zespół Dokumo${onboardFooter(uid)}`,
+  },
+  {
+    key: 'd3', minDays: 3, maxDays: 7,
+    subject: 'Masz pytanie prawne lub podatkowe? Zapytaj AI',
+    body: (name, uid) =>
+`Dzień dobry${name ? ' ' + name : ''},
+
+w Dokumo masz teraz Asystenta Prawnego i Podatkowego AI — zadajesz pytanie po polsku, dostajesz odpowiedź z podstawą prawną i linkami do aktów w Dzienniku Ustaw. Możesz też wgrać umowę lub fakturę (PDF/zdjęcie), a AI wskaże ryzyka.
+
+Wypróbuj: https://dokumoflow.com/asystent-prawny.html
+
+Masz też niedokończone dokumenty? Znajdziesz je tutaj: https://dokumoflow.com/moje-dokumenty.html
+
+Pozdrawiamy,
+Zespół Dokumo${onboardFooter(uid)}`,
+  },
+  {
+    key: 'd7', minDays: 7, maxDays: 12, skipIfSub: true,
+    subject: 'Pełny dostęp do Dokumo — bez limitów',
+    body: (name, uid) =>
+`Dzień dobry${name ? ' ' + name : ''},
+
+korzystasz z Dokumo od tygodnia. Z subskrypcją dostajesz:
+
+• Nielimitowane generowanie i pobieranie dokumentów PDF
+• 100 pytań dziennie do Asystenta Prawnego i Podatkowego AI
+• Analizę umów bez limitu
+• Wszystkie szablony CV i dokumentów
+
+Zobacz plany: https://dokumoflow.com/subskrypcja.html
+
+Pozdrawiamy,
+Zespół Dokumo${onboardFooter(uid)}`,
+  },
+];
+
+async function sendOnboardEmail({ to, subject, body }) {
+  if (ONBOARDING_DEBUG) return 'debug-mode';
+  const key = process.env.RESEND_API_KEY;
+  if (!key) throw new Error('Brak RESEND_API_KEY');
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({ from: 'Dokumo <noreply@dokumoflow.com>', to, subject, text: body }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!r.ok) throw new Error('Resend HTTP ' + r.status);
+  const data = await r.json();
+  return data?.id || null;
+}
+
+async function runOnboardingSweep() {
+  const stats = { scanned: 0, sent: { d1: 0, d3: 0, d7: 0 }, skipped: 0, errors: 0, debug: ONBOARDING_DEBUG };
+  let pageToken;
+  let pages = 0;
+  do {
+    const page = await auth.listUsers(1000, pageToken);
+    pages++;
+    for (const u of page.users) {
+      stats.scanned++;
+      if (!u.email) continue;
+      const created = new Date(u.metadata.creationTime).getTime();
+      if (!created) continue;
+      const ageDays = (Date.now() - created) / DAY;
+      const step = ONBOARD_STEPS.find(s => ageDays >= s.minDays && ageDays < s.maxDays);
+      if (!step) continue;
+      try {
+        const userRef = db.collection('users').doc(u.uid);
+        const snap = await userRef.get();
+        const ob = (snap.exists && snap.data().onboarding) || {};
+        if (ob.unsubscribed || ob[step.key]) continue;
+        if (step.skipIfSub) {
+          const subSnap = await userRef.collection('subscription').doc('current').get();
+          const exp = subSnap.exists ? subSnap.data().expiresAt?.toDate?.() : null;
+          if (exp && exp > new Date()) {
+            await userRef.set({ onboarding: { [step.key]: 'skipped_sub' } }, { merge: true });
+            stats.skipped++;
+            continue;
+          }
+        }
+        const firstName = (u.displayName || '').trim().split(/\s+/)[0] || '';
+        await sendOnboardEmail({ to: u.email, subject: step.subject, body: step.body(firstName, u.uid) });
+        await userRef.set({ onboarding: { [step.key]: Timestamp.now() } }, { merge: true });
+        stats.sent[step.key]++;
+      } catch (e) {
+        console.error('onboarding error for', u.uid, e.message);
+        stats.errors++;
+      }
+    }
+    pageToken = page.pageToken;
+  } while (pageToken && pages < 20);
+  return stats;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://dokumoflow.com');
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -1054,7 +1192,35 @@ export default async function handler(req, res) {
           processed++;
         } catch (e) { /* skip */ }
       }
-      return res.status(200).json({ ok: true, processed, sent: totalSent });
+      // Piggyback: onboarding jedzie na tym samym dziennym cronie (limity cronów na Hobby).
+      let onboarding = null;
+      try { onboarding = await runOnboardingSweep(); }
+      catch (e) { onboarding = { error: e.message }; }
+      return res.status(200).json({ ok: true, processed, sent: totalSent, onboarding });
+    }
+
+    // ── Ręczne wywołanie sweepa onboardingowego (testy; x-cron-secret) ──
+    if (action === 'onboarding-check' && cronAuthed) {
+      const stats = await runOnboardingSweep();
+      return res.status(200).json({ ok: true, ...stats });
+    }
+
+    // ── Publiczny opt-out z maili onboardingowych (link w stopce) ──
+    if (action === 'email-optout') {
+      const u = (req.query?.u || '').toString();
+      const t = (req.query?.t || '').toString();
+      const expected = process.env.CRON_SECRET ? optoutToken(u) : null;
+      const valid = !!(u && t && expected && t.length === expected.length &&
+        timingSafeEqual(Buffer.from(t), Buffer.from(expected)));
+      if (!valid) return res.status(400).json({ error: 'Nieprawidłowy link' });
+      await db.collection('users').doc(u).set({ onboarding: { unsubscribed: true } }, { merge: true });
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.status(200).send(
+        '<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Wypisano | Dokumo</title></head>' +
+        '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:90vh;text-align:center">' +
+        '<div><h2>✓ Wypisano</h2><p>Nie będziesz już otrzymywać wiadomości powitalnych od Dokumo.</p>' +
+        '<a href="https://dokumoflow.com">Wróć na stronę główną</a></div></body></html>'
+      );
     }
 
     // ── Cron: radar zgodności prawnej (nowe akty -> flagowanie dokumentów) ──
