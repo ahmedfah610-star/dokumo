@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Asystent Prawny AI | Dokumo</title>
-<meta name="description" content="Zadaj pytanie prawne po polsku i otrzymaj odpowiedź AI. Sprawdź przepisy, umowy, prawa pracownicze — bezpłatnie, bez rejestracji.">
+<title>Asystent Prawny i Podatkowy AI | Dokumo</title>
+<meta name="description" content="Zadaj pytanie prawne lub podatkowe po polsku i otrzymaj odpowiedź AI z podstawą prawną. Przepisy, umowy, PIT, VAT, ZUS, ryczałt — bezpłatnie, bez rejestracji.">
 <link rel="icon" type="image/jpeg" href="logo2.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,6 +77,12 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 
 /* ── Main ── */
 .ap-main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--bg2)}
+
+/* ── Persona switcher ── */
+.ap-modebar{display:flex;gap:8px;justify-content:center;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);flex-shrink:0;z-index:5}
+.ap-mode-pill{font-family:var(--font);font-size:.86rem;font-weight:500;color:var(--t2);background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:7px 16px;cursor:pointer;transition:transform .15s,border-color .15s,color .15s,box-shadow .15s}
+.ap-mode-pill:hover{border-color:var(--border-strong);color:var(--t1)}
+.ap-mode-pill.active{color:#fff;background:var(--acc-grad);border-color:transparent;box-shadow:0 2px 10px rgba(124,58,237,.26)}
 
 /* ── Welcome ── */
 .ap-welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto;position:relative}
@@ -212,30 +218,19 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 
   <!-- Main -->
   <main class="ap-main" id="mainArea">
+    <!-- Persona switcher -->
+    <div class="ap-modebar">
+      <button class="ap-mode-pill active" id="modePillPrawny" onclick="setMode('prawny')">⚖️ Prawny</button>
+      <button class="ap-mode-pill" id="modePillPodatkowy" onclick="setMode('podatkowy')">🧾 Podatkowy</button>
+    </div>
+
     <!-- Welcome screen -->
     <div class="ap-welcome" id="welcomeScreen">
-      <div class="ap-welcome-ico">⚖️</div>
-      <h1>Twój <span class="grad">Asystent Prawny</span></h1>
-      <p>Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów i wiele więcej. Odpowiedź z podstawą prawną w kilka sekund.</p>
-      <div class="ap-quick-grid" id="quickGrid">
-        <div class="ap-quick-card" onclick="sendQuick(this)">
-          <strong>Wypowiedzenie umowy o pracę</strong>
-          Ile wynosi okres wypowiedzenia i jak go liczyć?
-        </div>
-        <div class="ap-quick-card" onclick="sendQuick(this)">
-          <strong>Umowa zlecenie a ZUS</strong>
-          Kiedy zlecenie jest ozusowane i jakie obowiązki ma zleceniodawca?
-        </div>
-        <div class="ap-quick-card" onclick="sendQuick(this)">
-          <strong>Zwrot towaru 14 dni</strong>
-          Jakie prawa ma konsument kupując online i ile czasu ma sprzedawca na zwrot pieniędzy?
-        </div>
-        <div class="ap-quick-card" onclick="sendQuick(this)">
-          <strong>Kaucja przy najmie</strong>
-          Ile może wynieść kaucja i kiedy wynajmujący musi ją oddać?
-        </div>
-      </div>
-      <p class="ap-disclaimer">⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.</p>
+      <div class="ap-welcome-ico" id="welcomeIco">⚖️</div>
+      <h1 id="welcomeTitle">Twój <span class="grad">Asystent Prawny</span></h1>
+      <p id="welcomeSub">Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów i wiele więcej. Odpowiedź z podstawą prawną w kilka sekund.</p>
+      <div class="ap-quick-grid" id="quickGrid"></div>
+      <p class="ap-disclaimer" id="welcomeDisclaimer">⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.</p>
     </div>
 
     <!-- Messages -->
@@ -297,6 +292,66 @@ var _history = []; // { role, content }
 var _loading = false;
 var _queriesLeft = null;
 var _queriesMax = null;
+var _mode = 'prawny';
+
+// ── Persony (tryby) ──
+var MODES = {
+  prawny: {
+    label: 'Asystent Prawny', icon: '⚖️',
+    title: 'Twój <span class="grad">Asystent Prawny</span>',
+    sub: 'Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów. Odpowiedź z podstawą prawną w kilka sekund.',
+    placeholder: 'Zadaj pytanie prawne lub wgraj dokument do analizy…',
+    disclaimer: '⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.',
+    cards: [
+      ['Wypowiedzenie umowy o pracę', 'Ile wynosi okres wypowiedzenia i jak go liczyć?'],
+      ['Umowa zlecenie a ZUS', 'Kiedy zlecenie jest ozusowane i jakie obowiązki ma zleceniodawca?'],
+      ['Zwrot towaru 14 dni', 'Jakie prawa ma konsument kupując online i ile czasu ma sprzedawca na zwrot pieniędzy?'],
+      ['Kaucja przy najmie', 'Ile może wynieść kaucja i kiedy wynajmujący musi ją oddać?']
+    ]
+  },
+  podatkowy: {
+    label: 'Asystent Podatkowy', icon: '🧾',
+    title: 'Twój <span class="grad">Asystent Podatkowy</span>',
+    sub: 'Zadaj pytanie o podatki i rozliczenia — PIT, VAT, ZUS, ryczałt, JDG, koszty, KSeF, faktury. Odpowiedź z podstawą prawną w kilka sekund.',
+    placeholder: 'Zadaj pytanie podatkowe lub wgraj dokument do analizy…',
+    disclaimer: '⚠️ Asystent udziela informacji ogólnych — nie jest to porada podatkowa. W indywidualnych sprawach skonsultuj się z księgowym lub doradcą podatkowym.',
+    cards: [
+      ['Ryczałt czy podatek liniowy', 'Jaka forma opodatkowania będzie dla mnie najkorzystniejsza na JDG?'],
+      ['Składka zdrowotna 2026', 'Jak liczy się składkę zdrowotną przy działalności gospodarczej?'],
+      ['Limit zwolnienia z VAT', 'Do jakiego obrotu mogę korzystać ze zwolnienia podmiotowego z VAT?'],
+      ['Koszty uzyskania przychodu', 'Co mogę wrzucić w koszty prowadząc jednoosobową działalność?']
+    ]
+  }
+};
+
+function renderWelcome() {
+  var m = MODES[_mode] || MODES.prawny;
+  document.getElementById('welcomeIco').textContent = m.icon;
+  document.getElementById('welcomeTitle').innerHTML = m.title;
+  document.getElementById('welcomeSub').textContent = m.sub;
+  document.getElementById('welcomeDisclaimer').textContent = m.disclaimer;
+  document.getElementById('msgInput').placeholder = m.placeholder;
+  document.getElementById('quickGrid').innerHTML = m.cards.map(function(c) {
+    return '<div class="ap-quick-card" onclick="sendQuick(this)"><strong>' +
+      escHtml(c[0]) + '</strong>' + escHtml(c[1]) + '</div>';
+  }).join('');
+}
+
+function setMode(mode, opts) {
+  opts = opts || {};
+  if (!MODES[mode]) mode = 'prawny';
+  _mode = mode;
+  document.getElementById('modePillPrawny').classList.toggle('active', mode === 'prawny');
+  document.getElementById('modePillPodatkowy').classList.toggle('active', mode === 'podatkowy');
+  renderWelcome();
+  // Zmiana persony rozpoczyna nową rozmowę (chyba że wczytujemy istniejącą)
+  if (!opts.keepChat) {
+    _currentChatId = null;
+    _history = [];
+    showWelcome();
+    document.getElementById('msgInput').focus();
+  }
+}
 
 // ── Auto-resize textarea ──
 function autoResize(el) {
@@ -428,7 +483,7 @@ function appendMsg(role, content, extras) {
   roleLabel.className = 'ap-msg-role';
   roleLabel.innerHTML = role === 'user'
     ? 'Ty'
-    : '<span class="dot"></span> Asystent Prawny';
+    : '<span class="dot"></span> ' + escHtml((MODES[_mode] || MODES.prawny).label);
   wrap.appendChild(roleLabel);
 
   var bubble = document.createElement('div');
@@ -519,7 +574,7 @@ async function sendMessage() {
     var headers = { 'Content-Type': 'application/json' };
     if (window._fbToken) headers['Authorization'] = 'Bearer ' + window._fbToken;
 
-    var body = { action: 'chat', message: msg, chatId: _currentChatId };
+    var body = { action: 'chat', message: msg, chatId: _currentChatId, mode: _mode };
     if (sentFile) body.file = sentFile;
     if (_history.length) body.history = _history.slice(-8);
 
@@ -606,6 +661,8 @@ async function openChat(chatId) {
     });
     if (!r.ok) throw new Error();
     var data = await r.json();
+    // Przywróć personę rozmowy (bez czyszczenia — dopiero co ją wczytujemy)
+    if (data.mode) setMode(data.mode, { keepChat: true });
     document.getElementById('messagesArea').innerHTML = '';
     for (var i = 0; i < data.messages.length; i++) {
       var m = data.messages[i];
@@ -637,6 +694,9 @@ document.getElementById('msgInput').addEventListener('focus', function() {
   if (window._authReady !== undefined) return;
   // Wait for auth
 });
+
+// Wyrenderuj kartę startową dla domyślnej persony
+renderWelcome();
 
 // Set initial query limit hint for anonymous
 updateQl(5, 5);

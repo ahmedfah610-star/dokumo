@@ -89,7 +89,21 @@ async function checkAndIncrementLimit(key, max) {
 
 // ── Anthropic ───────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT =
+// Wspólny blok formatu — identyczny dla obu trybów, żeby nie rozjechał parser.
+const OUTPUT_FORMAT_BLOCK =
+`DOSTĘPNE typeId (używaj wyłącznie tych):
+uop, wypowiedzenie, urlop, swiadectwo, zlecenie, dzielo, b2b, nda, pelnomocnictwo, najmu, protokol, spolnikow, regulamin, rodo, zwroty, sprzedaz, wezwanie, cv, letter, faktura, analiza
+
+FORMAT WYJŚCIA — NAJPIERW pełna odpowiedź w czystym Markdown. POTEM w NOWEJ linii separator "===DOKUMO_META===" i JEDNA linia JSON z metadanymi:
+===DOKUMO_META===
+{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"]}
+
+Zasady metadanych:
+- suggestions: max 3 typeId dokumentów, które użytkownik mógłby wygenerować w Dokumo (pusta tablica gdy brak sensownych).
+- eliKeywords: max 2 krótkie frazy do wyszukania ustaw w Dzienniku Ustaw (np. "kodeks pracy", "podatek dochodowy"). Pusta tablica gdy brak.
+NIGDY nie umieszczaj separatora ani JSON-a wewnątrz treści odpowiedzi — tylko na samym końcu.`;
+
+const SYSTEM_PROMPT_PRAWNY =
 `Jesteś Asystentem Prawnym Dokumo — AI specjalizującym się w polskim prawie cywilnym, prawie pracy i prowadzeniu działalności gospodarczej.
 
 ZASADY BEZWZGLĘDNE:
@@ -105,19 +119,32 @@ STRUKTURA odpowiedzi (Markdown):
 - Na końcu ZAWSZE sekcja "### 📚 Podstawa prawna" z wypunktowaną listą KONKRETNYCH przepisów, na których opierasz odpowiedź (art. + nazwa ustawy). Jeśli nie opierasz się na konkretnym przepisie — napisz to szczerze.
 - Ostatnia linijka to ZAWSZE disclaimer: "⚠️ To informacja ogólna, nie porada prawna. W złożonych sprawach skonsultuj się z prawnikiem."
 
-DOSTĘPNE typeId (używaj wyłącznie tych):
-uop, wypowiedzenie, urlop, swiadectwo, zlecenie, dzielo, b2b, nda, pelnomocnictwo, najmu, protokol, spolnikow, regulamin, rodo, zwroty, sprzedaz, wezwanie, cv, letter, faktura, analiza
+` + OUTPUT_FORMAT_BLOCK;
 
-FORMAT WYJŚCIA — NAJPIERW pełna odpowiedź w czystym Markdown. POTEM w NOWEJ linii separator "===DOKUMO_META===" i JEDNA linia JSON z metadanymi:
-===DOKUMO_META===
-{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"]}
+const SYSTEM_PROMPT_PODATKOWY =
+`Jesteś Asystentem Podatkowym Dokumo — AI specjalizującym się w polskim prawie podatkowym i rozliczeniach: PIT, CIT, VAT, ZUS, składka zdrowotna, ryczałt, podatek liniowy, skala podatkowa, JDG, koszty uzyskania przychodu, KSeF, faktury, amortyzacja.
 
-Zasady metadanych:
-- suggestions: max 3 typeId dokumentów, które użytkownik mógłby wygenerować w Dokumo (pusta tablica gdy brak sensownych).
-- eliKeywords: max 2 krótkie frazy do wyszukania ustaw w Dzienniku Ustaw (np. "kodeks pracy", "systemie ubezpieczeń społecznych"). Pusta tablica gdy brak.
-NIGDY nie umieszczaj separatora ani JSON-a wewnątrz treści odpowiedzi — tylko na samym końcu.`;
+ZASADY BEZWZGLĘDNE:
+1. Odpowiadaj WYŁĄCZNIE po polsku, poprawną polszczyzną (bez literówek i kalek językowych).
+2. Bądź ZWIĘZŁY i konkretny — maksymalnie ok. 350 słów. Odpowiadaj dokładnie na zadane pytanie.
+3. Podawaj konkretne podstawy prawne: numery artykułów i nazwy ustaw (np. "art. 22 ustawy o PIT", "art. 43 ustawy o VAT") oraz stawki/limity — ale TYLKO gdy jesteś pewien aktualnej wartości.
+4. Stawki, progi i limity podatkowe zmieniają się co roku. Jeśli nie masz pewności co do aktualnej kwoty (np. limit ryczałtu, kwota wolna, próg VAT), NAPISZ to wprost i odeślij do podatki.gov.pl lub isap.sejm.gov.pl. Nigdy nie zgaduj liczb.
+5. Nie zastępujesz księgowego ani doradcy podatkowego — przy złożonych rozliczeniach odsyłaj do specjalisty.
+6. Jeśli użytkownik prosi o analizę dokumentu (faktura, PIT, umowa) — wskaż istotne kwestie podatkowe i potencjalne ryzyka.
 
-async function callClaude(messages) {
+STRUKTURA odpowiedzi (Markdown):
+- Krótka, merytoryczna odpowiedź (nagłówki ##/###, listy -, pogrubienie **).
+- Na końcu ZAWSZE sekcja "### 📚 Podstawa prawna" z wypunktowaną listą KONKRETNYCH przepisów (art. + nazwa ustawy). Jeśli opierasz się na stawce, która mogła się zmienić — zaznacz to.
+- Ostatnia linijka to ZAWSZE disclaimer: "⚠️ To informacja ogólna, nie porada podatkowa. W indywidualnych sprawach skonsultuj się z księgowym lub doradcą podatkowym."
+
+` + OUTPUT_FORMAT_BLOCK;
+
+const SYSTEM_PROMPTS = { prawny: SYSTEM_PROMPT_PRAWNY, podatkowy: SYSTEM_PROMPT_PODATKOWY };
+function systemPromptFor(mode) {
+  return SYSTEM_PROMPTS[mode] || SYSTEM_PROMPT_PRAWNY;
+}
+
+async function callClaude(messages, systemPrompt) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error('Brak ANTHROPIC_API_KEY');
   const r = await fetch('https://api.anthropic.com/v1/messages', {
@@ -126,7 +153,7 @@ async function callClaude(messages) {
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt || SYSTEM_PROMPT_PRAWNY,
       messages,
     }),
     signal: AbortSignal.timeout(25000),
@@ -219,13 +246,13 @@ async function saveChatMessage(uid, chatId, role, content) {
   }, { merge: true });
 }
 
-async function getOrCreateChatId(uid, chatId, firstMessage) {
+async function getOrCreateChatId(uid, chatId, firstMessage, mode) {
   if (chatId) return chatId;
   const ref = db.collection('users').doc(uid).collection('legalChats').doc();
   // Tytuł rozmowy = temat pierwszego pytania użytkownika (skrócony).
   const title = (firstMessage || 'Nowa rozmowa')
     .replace(/\s+/g, ' ').trim().slice(0, 70) || 'Nowa rozmowa';
-  await ref.set({ createdAt: Timestamp.now(), updatedAt: Timestamp.now(), title, preview: '' });
+  await ref.set({ createdAt: Timestamp.now(), updatedAt: Timestamp.now(), title, preview: '', mode: mode || 'prawny' });
   return ref.id;
 }
 
@@ -265,6 +292,7 @@ export default async function handler(req, res) {
       id: d.id,
       title: d.data().title || d.data().preview || 'Rozmowa',
       preview: d.data().preview || '',
+      mode: d.data().mode || 'prawny',
       updatedAt: d.data().updatedAt?.toDate?.()?.toISOString() || null,
     }));
     return res.status(200).json({ chats });
@@ -275,13 +303,16 @@ export default async function handler(req, res) {
     if (!uid) return res.status(401).json({ error: 'Wymagane logowanie' });
     const chatId = (req.query.chatId || '').toString();
     if (!chatId) return res.status(400).json({ error: 'Brak chatId' });
-    const snap = await db.collection('users').doc(uid).collection('legalChats')
-      .doc(chatId).collection('messages').orderBy('createdAt').limit(100).get();
+    const chatRef = db.collection('users').doc(uid).collection('legalChats').doc(chatId);
+    const [chatSnap, snap] = await Promise.all([
+      chatRef.get(),
+      chatRef.collection('messages').orderBy('createdAt').limit(100).get(),
+    ]);
     const messages = snap.docs.map(d => ({
       id: d.id, role: d.data().role, content: d.data().content,
       createdAt: d.data().createdAt?.toDate?.()?.toISOString() || null,
     }));
-    return res.status(200).json({ messages });
+    return res.status(200).json({ messages, mode: (chatSnap.exists && chatSnap.data().mode) || 'prawny' });
   }
 
   // ── DELETE clear chat ───────────────────────────────────────────────
@@ -303,8 +334,9 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   if (action !== 'chat') return res.status(400).json({ error: 'Nieznana akcja' });
 
-  const { message, chatId: reqChatId, history, file } = req.body || {};
+  const { message, chatId: reqChatId, history, file, mode } = req.body || {};
   const hasMessage = typeof message === 'string' && message.trim().length > 0;
+  const chatMode = (mode === 'podatkowy') ? 'podatkowy' : 'prawny';
 
   // ── Walidacja załącznika (opcjonalny) ──
   let fileBlock = null;   // blok document/image dla Claude
@@ -375,7 +407,7 @@ export default async function handler(req, res) {
   // Wywołaj Claude
   let parsed;
   try {
-    const raw = await callClaude(claudeHistory);
+    const raw = await callClaude(claudeHistory, systemPromptFor(chatMode));
     parsed = parseClaudeResponse(raw);
   } catch (e) {
     console.error('legal-chat claude error:', e.message);
@@ -391,7 +423,7 @@ export default async function handler(req, res) {
     parsed.eliKeywords.length ? searchEliActs(parsed.eliKeywords) : Promise.resolve([]),
     uid ? (async () => {
       try {
-        const cid = await getOrCreateChatId(uid, reqChatId, savedUserMsg);
+        const cid = await getOrCreateChatId(uid, reqChatId, savedUserMsg, chatMode);
         savedChatId = cid;
         await saveChatMessage(uid, cid, 'user', savedUserMsg);
         await saveChatMessage(uid, cid, 'assistant', parsed.reply);
@@ -409,6 +441,7 @@ export default async function handler(req, res) {
     suggestions: suggestionObjects,
     relatedActs,
     chatId: savedChatId || null,
+    mode: chatMode,
     queriesLeft: rl.max - rl.used,
     queriesMax: rl.max,
   });
