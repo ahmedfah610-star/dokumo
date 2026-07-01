@@ -65,6 +65,44 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
+  // ── POST — utwórz nowy dokument (dawniej save-doc.js) ──
+  // Rozróżnienie: obecność docName = zapis nowego dokumentu (docId to tu typeId, nie Firestore ID).
+  if (req.body.docName) {
+    if (!checkRlPost(uid)) return res.status(429).json({ error: 'Zbyt wiele żądań. Spróbuj za chwilę.' });
+    const { docName, docCat, docIcon, docCatLabel, text, cvDataJson, covDataJson, fakDataJson } = req.body;
+    const MAX = 500000;
+    if (typeof docName !== 'string' || !docName) return res.status(400).json({ error: 'Brak nazwy dokumentu' });
+    if (docName.length > 200) return res.status(400).json({ error: 'Nazwa dokumentu zbyt długa' });
+    if (typeof text === 'string' && text.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+    if (typeof cvDataJson === 'string' && cvDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+    if (typeof covDataJson === 'string' && covDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+    if (typeof fakDataJson === 'string' && fakDataJson.length > MAX) return res.status(400).json({ error: 'Dane zbyt duże' });
+    if (hasSensitivePII(text) || hasSensitivePIIInJson(cvDataJson) ||
+        hasSensitivePIIInJson(covDataJson) || hasSensitivePIIInJson(fakDataJson)) {
+      return res.status(200).json({
+        ok: true, skipped: true, reason: 'pii_detected',
+        message: 'Dokument zawiera wrażliwe dane (PESEL, nr dowodu, paszportu lub karty płatniczej) — pobrano lokalnie, nie zapisano w chmurze.'
+      });
+    }
+    try {
+      const countSnap = await db.collection('users').doc(uid).collection('documents').count().get();
+      if (countSnap.data().count >= 500) return res.status(429).json({ error: 'Osiągnięto limit dokumentów' });
+    } catch(_) {}
+    const docId = req.body.docId || 'cv';
+    const ref = db.collection('users').doc(uid).collection('documents').doc();
+    const payload = {
+      id: ref.id, typeId: docId, name: docName,
+      text: text || '', cat: docCat || 'kariera',
+      icon: docIcon || '📄', catLabel: docCatLabel || 'Kariera',
+      status: 'generated', createdAt: new Date(), updatedAt: new Date(),
+    };
+    if (cvDataJson) payload.cvDataJson = cvDataJson;
+    if (covDataJson) payload.covDataJson = covDataJson;
+    if (fakDataJson) payload.fakDataJson = fakDataJson;
+    await ref.set(payload);
+    return res.status(200).json({ ok: true, id: ref.id });
+  }
+
   // ── POST — aktualizuj dokument (dawniej update-doc.js) ──
   if (!checkRlPost(uid)) {
     return res.status(429).json({ error: 'Zbyt wiele żądań. Spróbuj za chwilę.' });

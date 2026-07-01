@@ -26,6 +26,7 @@
     { "source": "/api/create-checkout", "destination": "/api/sub" },
     { "source": "/api/get-docs", "destination": "/api/documents" },
     { "source": "/api/update-doc", "destination": "/api/documents" },
+    { "source": "/api/save-doc", "destination": "/api/documents" },
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ],
