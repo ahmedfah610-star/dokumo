@@ -149,11 +149,18 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-input-textarea{flex:1;background:none;border:none;outline:none;font-family:var(--font);font-size:.95rem;color:var(--t1);resize:none;max-height:150px;line-height:1.55;padding:6px 0}
 .ap-input-textarea::placeholder{color:var(--t3)}
 .ap-input-btns{display:flex;gap:7px;align-items:flex-end;flex-shrink:0}
-.ap-btn-analyze{background:var(--bg3);border:1px solid var(--border);color:var(--t2);border-radius:11px;padding:9px 12px;cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:450;transition:border-color .15s,color .15s,background .15s;white-space:nowrap}
-.ap-btn-analyze:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
 .ap-btn-send{display:flex;align-items:center;justify-content:center;background:var(--acc-grad);border:none;color:#fff;border-radius:11px;width:44px;height:40px;cursor:pointer;font-size:1.1rem;font-weight:600;transition:transform .15s,box-shadow .15s,opacity .15s;flex-shrink:0;box-shadow:0 2px 10px rgba(124,58,237,.28)}
 .ap-btn-send:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,.36)}
 .ap-btn-send:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.ap-btn-attach{display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--t2);border-radius:11px;width:38px;height:40px;cursor:pointer;font-size:1.15rem;transition:background .15s,color .15s;flex-shrink:0;align-self:flex-end}
+.ap-btn-attach:hover{background:var(--acc-soft);color:var(--acc)}
+/* Attached-file chip */
+.ap-file-chip{display:flex;align-items:center;gap:9px;background:var(--acc-soft);border:1px solid rgba(124,58,237,.22);border-radius:12px;padding:9px 12px;margin-bottom:9px;animation:msgIn .2s ease}
+.ap-file-ico{font-size:1rem;flex-shrink:0}
+.ap-file-name{font-size:.85rem;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.ap-file-size{font-family:var(--mono);font-size:.72rem;color:var(--t3);flex-shrink:0}
+.ap-file-x{margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;font-size:.85rem;padding:3px 6px;border-radius:6px;flex-shrink:0;transition:background .15s,color .15s}
+.ap-file-x:hover{background:rgba(225,29,72,.1);color:#e11d48}
 .ap-input-hint{font-family:var(--mono);font-size:.68rem;color:var(--t3);padding:9px 4px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ap-input-hint a{color:var(--acc);text-decoration:none}
 .ap-input-hint kbd{font-family:var(--mono);background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:1px 5px;font-size:.92em}
@@ -169,20 +176,6 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
   .ap-msg{max-width:92%}
 }
 
-/* ── Modal: analiza dokumentu ── */
-.ap-modal-overlay{position:fixed;inset:0;background:rgba(20,20,28,.5);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
-.ap-modal-overlay.open{display:flex;animation:msgIn .2s ease}
-.ap-modal{background:var(--bg);border:1px solid var(--border);border-radius:22px;width:100%;max-width:580px;padding:30px 28px;box-shadow:0 32px 80px rgba(0,0,0,.24);animation:modalIn .26s cubic-bezier(.2,.6,.2,1)}
-@keyframes modalIn{from{transform:translateY(20px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-.ap-modal h2{font-size:1.2rem;font-weight:600;letter-spacing:-.02em;color:var(--t1);margin-bottom:7px}
-.ap-modal p{font-size:.86rem;color:var(--t2);margin-bottom:18px;line-height:1.5}
-.ap-modal textarea{width:100%;border:1.5px solid var(--border);border-radius:14px;padding:14px;font-family:var(--font);font-size:.9rem;color:var(--t1);resize:vertical;min-height:170px;outline:none;transition:border-color .15s,box-shadow .15s;background:var(--bg2)}
-.ap-modal textarea:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(124,58,237,.1);background:var(--bg)}
-.ap-modal-btns{display:flex;gap:10px;margin-top:16px;justify-content:flex-end}
-.ap-modal-cancel{background:var(--bg3);border:1px solid var(--border);color:var(--t2);border-radius:11px;padding:10px 18px;cursor:pointer;font-family:var(--font);font-size:.88rem;font-weight:450;transition:background .15s}
-.ap-modal-cancel:hover{background:var(--border)}
-.ap-modal-send{background:var(--acc-grad);border:none;color:#fff;border-radius:11px;padding:10px 22px;cursor:pointer;font-family:var(--font);font-size:.88rem;font-weight:500;box-shadow:0 2px 10px rgba(124,58,237,.28);transition:transform .15s,box-shadow .15s}
-.ap-modal-send:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,.36)}
 </style>
 </head>
 <body>
@@ -251,11 +244,13 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
     <!-- Input -->
     <div class="ap-input-wrap">
       <div class="ap-input-inner">
+        <div class="ap-file-chip" id="fileChip" style="display:none"></div>
         <div class="ap-input-row">
-          <textarea class="ap-input-textarea" id="msgInput" placeholder="Zadaj pytanie prawne… (np. Ile dni urlopu mi przysługuje?)" rows="1"
+          <input type="file" id="fileInput" accept=".pdf,.txt,image/jpeg,image/png,image/gif,image/webp" style="display:none" onchange="onFilePicked(this)">
+          <button class="ap-btn-attach" onclick="document.getElementById('fileInput').click()" title="Wgraj dokument (PDF, obraz lub .txt)">📎</button>
+          <textarea class="ap-input-textarea" id="msgInput" placeholder="Zadaj pytanie prawne lub wgraj dokument do analizy…" rows="1"
             onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
           <div class="ap-input-btns">
-            <button class="ap-btn-analyze" onclick="openAnalyzeModal()" title="Wklej treść umowy do analizy">📄 Analizuj</button>
             <button class="ap-btn-send" id="sendBtn" onclick="sendMessage()" title="Wyślij">↑</button>
           </div>
         </div>
@@ -266,19 +261,6 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
       </div>
     </div>
   </main>
-</div>
-
-<!-- Modal: analiza dokumentu -->
-<div class="ap-modal-overlay" id="analyzeModal">
-  <div class="ap-modal">
-    <h2>📄 Analizuj dokument</h2>
-    <p>Wklej treść umowy, regulaminu lub innego dokumentu. AI wskaże potencjalne ryzyka i niejasności.</p>
-    <textarea id="analyzeText" placeholder="Wklej tutaj treść dokumentu do analizy…"></textarea>
-    <div class="ap-modal-btns">
-      <button class="ap-modal-cancel" onclick="closeAnalyzeModal()">Anuluj</button>
-      <button class="ap-modal-send" onclick="sendAnalysis()">Analizuj →</button>
-    </div>
-  </div>
 </div>
 
 <!-- Firebase (module) -->
@@ -343,20 +325,48 @@ function sendQuick(el) {
   sendMessage();
 }
 
-// ── Analyze modal ──
-function openAnalyzeModal() {
-  document.getElementById('analyzeModal').classList.add('open');
-  setTimeout(function(){ document.getElementById('analyzeText').focus(); }, 100);
+// ── Upload / attach file ──
+var _pendingFile = null; // { name, mediaType, data(base64) }
+var _FILE_MAX = 3 * 1024 * 1024;
+var _FILE_OK = ['application/pdf','text/plain','image/jpeg','image/png','image/gif','image/webp'];
+
+function onFilePicked(input) {
+  var f = input.files && input.files[0];
+  input.value = ''; // pozwól wybrać ten sam plik ponownie
+  if (!f) return;
+  if (_FILE_OK.indexOf(f.type) < 0) {
+    alert('Nieobsługiwany typ pliku. Wgraj PDF, obraz (JPG/PNG) lub plik tekstowy (.txt).');
+    return;
+  }
+  if (f.size > _FILE_MAX) {
+    alert('Plik jest zbyt duży. Maksymalny rozmiar to 3 MB.');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function() {
+    var b64 = String(reader.result || '').split(',')[1] || '';
+    _pendingFile = { name: f.name, mediaType: f.type, data: b64 };
+    showFileChip(f.name, f.size);
+  };
+  reader.onerror = function() { alert('Nie udało się odczytać pliku.'); };
+  reader.readAsDataURL(f);
 }
-function closeAnalyzeModal() {
-  document.getElementById('analyzeModal').classList.remove('open');
+
+function showFileChip(name, size) {
+  var chip = document.getElementById('fileChip');
+  var kb = size ? ' · ' + (size < 1048576 ? Math.round(size/1024) + ' KB' : (size/1048576).toFixed(1) + ' MB') : '';
+  chip.style.display = 'flex';
+  chip.innerHTML = '<span class="ap-file-ico">📎</span>' +
+    '<span class="ap-file-name">' + escHtml(name) + '</span>' +
+    '<span class="ap-file-size">' + kb + '</span>' +
+    '<button class="ap-file-x" onclick="clearFile()" title="Usuń załącznik">✕</button>';
 }
-function sendAnalysis() {
-  var text = (document.getElementById('analyzeText').value || '').trim();
-  if (!text) return;
-  closeAnalyzeModal();
-  document.getElementById('msgInput').value = 'Proszę przeanalizuj poniższy dokument i wskaż potencjalne ryzyka, niejasności i klauzule wymagające uwagi:\n\n' + text;
-  sendMessage();
+
+function clearFile() {
+  _pendingFile = null;
+  var chip = document.getElementById('fileChip');
+  chip.style.display = 'none';
+  chip.innerHTML = '';
 }
 
 // ── New chat ──
@@ -488,21 +498,29 @@ async function sendMessage() {
   if (_loading) return;
   var input = document.getElementById('msgInput');
   var msg = (input.value || '').trim();
-  if (!msg) return;
+  var sentFile = _pendingFile;
+  if (!msg && !sentFile) return;
 
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
   _loading = true;
 
-  appendMsg('user', msg);
+  // Wyświetl wiadomość użytkownika (z adnotacją o załączniku)
+  var displayMsg = msg || 'Przeanalizuj załączony dokument.';
+  if (sentFile) displayMsg += '\n\n📎 ' + sentFile.name;
+  appendMsg('user', displayMsg);
   appendMsg('typing');
+
+  // Wyczyść załącznik z paska po wysłaniu
+  clearFile();
 
   try {
     var headers = { 'Content-Type': 'application/json' };
     if (window._fbToken) headers['Authorization'] = 'Bearer ' + window._fbToken;
 
     var body = { action: 'chat', message: msg, chatId: _currentChatId };
+    if (sentFile) body.file = sentFile;
     if (_history.length) body.history = _history.slice(-8);
 
     var r = await fetch('/api/legal-chat', { method: 'POST', headers: headers, body: JSON.stringify(body) });
@@ -521,7 +539,7 @@ async function sendMessage() {
     }
 
     _currentChatId = data.chatId || _currentChatId;
-    _history.push({ role: 'user', content: msg });
+    _history.push({ role: 'user', content: displayMsg });
     _history.push({ role: 'assistant', content: data.reply });
 
     appendMsg('assistant', data.reply, {

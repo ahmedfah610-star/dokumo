@@ -8,6 +8,13 @@ if (!getApps().length) {
 const db = getFirestore();
 const auth = getAuth();
 
+// Zwiększamy limit body — załączniki (PDF/obraz) przychodzą jako base64.
+export const config = { api: { bodyParser: { sizeLimit: '8mb' } } };
+
+const FILE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+// 3 MB — po zakodowaniu base64 (~4 MB) mieści się pod limitem ciała żądania Vercel (4.5 MB).
+const FILE_MAX_BYTES = 3 * 1024 * 1024;
+
 // ─────────────────────────────────────────────────────────────────────────
 // Asystent Prawny Dokumo — AI chat o polskim prawie.
 // Routing po action (query lub body).
@@ -296,11 +303,36 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   if (action !== 'chat') return res.status(400).json({ error: 'Nieznana akcja' });
 
-  const { message, chatId: reqChatId, history } = req.body || {};
-  if (!message || typeof message !== 'string' || message.trim().length === 0) {
-    return res.status(400).json({ error: 'Brak treści pytania' });
+  const { message, chatId: reqChatId, history, file } = req.body || {};
+  const hasMessage = typeof message === 'string' && message.trim().length > 0;
+
+  // ── Walidacja załącznika (opcjonalny) ──
+  let fileBlock = null;   // blok document/image dla Claude
+  let fileText = null;    // treść pliku .txt (doklejamy do promptu)
+  let fileNote = '';      // adnotacja do zapisu/tytułu
+  if (file && typeof file === 'object' && file.data && file.mediaType) {
+    const approxBytes = Math.floor(String(file.data).length * 0.75);
+    if (approxBytes > FILE_MAX_BYTES) {
+      return res.status(413).json({ error: 'Plik zbyt duży (max 3 MB).' });
+    }
+    const mt = String(file.mediaType);
+    if (mt === 'application/pdf') {
+      fileBlock = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: file.data } };
+    } else if (FILE_IMAGE_TYPES.includes(mt)) {
+      fileBlock = { type: 'image', source: { type: 'base64', media_type: mt, data: file.data } };
+    } else if (mt === 'text/plain') {
+      try { fileText = Buffer.from(file.data, 'base64').toString('utf8').slice(0, 20000); }
+      catch { return res.status(400).json({ error: 'Nie udało się odczytać pliku tekstowego.' }); }
+    } else {
+      return res.status(415).json({ error: 'Nieobsługiwany typ pliku. Wgraj PDF, obraz (JPG/PNG) lub plik tekstowy (.txt).' });
+    }
+    fileNote = ' 📎 ' + (typeof file.name === 'string' ? file.name.slice(0, 120) : 'dokument');
   }
-  if (message.length > 8000) {
+
+  if (!hasMessage && !fileBlock && !fileText) {
+    return res.status(400).json({ error: 'Brak treści pytania lub załącznika' });
+  }
+  if (hasMessage && message.length > 8000) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
@@ -324,7 +356,21 @@ export default async function handler(req, res) {
       }
     }
   }
-  claudeHistory.push({ role: 'user', content: message.trim() });
+  // Tekst pytania: użyj wpisanego, a przy samym załączniku bez pytania — domyślne polecenie.
+  const userText = hasMessage
+    ? message.trim()
+    : 'Przeanalizuj załączony dokument: wypunktuj najważniejsze postanowienia oraz wskaż potencjalne ryzyka lub niejasności.';
+
+  // Zbuduj treść ostatniej wiadomości użytkownika (string lub bloki z załącznikiem).
+  let userContent;
+  if (fileBlock) {
+    userContent = [fileBlock, { type: 'text', text: userText }];
+  } else if (fileText) {
+    userContent = userText + '\n\nTREŚĆ DOKUMENTU:\n' + fileText;
+  } else {
+    userContent = userText;
+  }
+  claudeHistory.push({ role: 'user', content: userContent });
 
   // Wywołaj Claude
   let parsed;
@@ -336,15 +382,18 @@ export default async function handler(req, res) {
     return res.status(503).json({ error: 'Chwilowy problem z AI. Spróbuj ponownie.' });
   }
 
+  // Do zapisu/tytułu używamy tekstu + adnotacji o pliku (base64 nie zapisujemy).
+  const savedUserMsg = (userText + fileNote).slice(0, 4000);
+
   // Zapis do Firestore i wyszukanie aktów prawnych równolegle
   let savedChatId = reqChatId;
   const [relatedActs] = await Promise.all([
     parsed.eliKeywords.length ? searchEliActs(parsed.eliKeywords) : Promise.resolve([]),
     uid ? (async () => {
       try {
-        const cid = await getOrCreateChatId(uid, reqChatId, message.trim());
+        const cid = await getOrCreateChatId(uid, reqChatId, savedUserMsg);
         savedChatId = cid;
-        await saveChatMessage(uid, cid, 'user', message.trim());
+        await saveChatMessage(uid, cid, 'user', savedUserMsg);
         await saveChatMessage(uid, cid, 'assistant', parsed.reply);
       } catch (e) { console.error('legal-chat save error:', e.message); }
     })() : Promise.resolve(),
