@@ -506,7 +506,7 @@ async function loadHistory() {
     hist.innerHTML = data.chats.map(function(c) {
       return '<div class="ap-hist-item' + (c.id === _currentChatId ? ' active' : '') + '" data-id="' + c.id + '" onclick="openChat(\'' + c.id + '\')">' +
         '<span class="ap-hist-ico">💬</span>' +
-        '<span class="ap-hist-text">' + escHtml(c.preview || 'Rozmowa') + '</span>' +
+        '<span class="ap-hist-text">' + escHtml(c.title || c.preview || 'Rozmowa') + '</span>' +
         '<button class="ap-hist-del" onclick="deleteChat(event,\'' + c.id + '\')" title="Usuń">🗑</button>' +
       '</div>';
     }).join('');

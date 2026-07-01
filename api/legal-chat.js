@@ -212,10 +212,13 @@ async function saveChatMessage(uid, chatId, role, content) {
   }, { merge: true });
 }
 
-async function getOrCreateChatId(uid, chatId) {
+async function getOrCreateChatId(uid, chatId, firstMessage) {
   if (chatId) return chatId;
   const ref = db.collection('users').doc(uid).collection('legalChats').doc();
-  await ref.set({ createdAt: Timestamp.now(), updatedAt: Timestamp.now(), preview: '' });
+  // Tytuł rozmowy = temat pierwszego pytania użytkownika (skrócony).
+  const title = (firstMessage || 'Nowa rozmowa')
+    .replace(/\s+/g, ' ').trim().slice(0, 70) || 'Nowa rozmowa';
+  await ref.set({ createdAt: Timestamp.now(), updatedAt: Timestamp.now(), title, preview: '' });
   return ref.id;
 }
 
@@ -253,6 +256,7 @@ export default async function handler(req, res) {
       .orderBy('updatedAt', 'desc').limit(30).get();
     const chats = snap.docs.map(d => ({
       id: d.id,
+      title: d.data().title || d.data().preview || 'Rozmowa',
       preview: d.data().preview || '',
       updatedAt: d.data().updatedAt?.toDate?.()?.toISOString() || null,
     }));
@@ -338,7 +342,7 @@ export default async function handler(req, res) {
     parsed.eliKeywords.length ? searchEliActs(parsed.eliKeywords) : Promise.resolve([]),
     uid ? (async () => {
       try {
-        const cid = await getOrCreateChatId(uid, reqChatId);
+        const cid = await getOrCreateChatId(uid, reqChatId, message.trim());
         savedChatId = cid;
         await saveChatMessage(uid, cid, 'user', message.trim());
         await saveChatMessage(uid, cid, 'assistant', parsed.reply);
