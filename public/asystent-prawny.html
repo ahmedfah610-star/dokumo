@@ -3,9 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Asystent Prawny i Podatkowy AI | Dokumo</title>
-<meta name="description" content="Zadaj pytanie prawne lub podatkowe po polsku i otrzymaj odpowiedź AI z podstawą prawną. Przepisy, umowy, PIT, VAT, ZUS, ryczałt — bezpłatnie, bez rejestracji.">
-<link rel="icon" type="image/jpeg" href="logo2.png">
+<title>Asystent Prawny i Podatkowy AI za darmo | Dokumo</title>
+<meta name="description" content="Zadaj pytanie prawne lub podatkowe po polsku i otrzymaj odpowiedź AI z podstawą prawną i linkami do ustaw. Umowy, prawo pracy, PIT, VAT, ZUS, ryczałt — za darmo.">
+<link rel="canonical" href="https://dokumoflow.com/asystent-prawny.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dokumoflow.com/asystent-prawny.html">
+<meta property="og:title" content="Asystent Prawny i Podatkowy AI za darmo | Dokumo">
+<meta property="og:description" content="Pytania prawne i podatkowe po polsku — odpowiedź AI z podstawą prawną i linkami do ustaw w Dzienniku Ustaw. Wgraj umowę, a AI wskaże ryzyka.">
+<meta property="og:image" content="https://dokumoflow.com/logo2.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Asystent Prawny i Podatkowy AI za darmo | Dokumo">
+<meta name="twitter:description" content="Pytania prawne i podatkowe po polsku — odpowiedź AI z podstawą prawną i linkami do ustaw.">
+<meta name="twitter:image" content="https://dokumoflow.com/logo2.png">
+<link rel="icon" type="image/png" href="logo2-64.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Asystent Prawny i Podatkowy AI — Dokumo","url":"https://dokumoflow.com/asystent-prawny.html","applicationCategory":"LegalService","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"},"inLanguage":"pl","description":"Asystent AI odpowiadający na pytania prawne i podatkowe po polsku, z podstawą prawną i odnośnikami do aktów w Dzienniku Ustaw."}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Czy AI może odpowiadać na pytania prawne?","acceptedAnswer":{"@type":"Answer","text":"Tak — Asystent udziela informacji ogólnych o polskim prawie i wskazuje konkretne przepisy (artykuł i nazwę ustawy), na których opiera odpowiedź. Nie jest to jednak porada prawna: w złożonych lub spornych sprawach należy skonsultować się z prawnikiem, radcą prawnym lub doradcą podatkowym."}},
+{"@type":"Question","name":"Ile kosztuje Asystent Prawny i Podatkowy?","acceptedAnswer":{"@type":"Answer","text":"Po założeniu darmowego konta możesz zadać do 20 pytań dziennie bez żadnych opłat. Subskrybenci Dokumo mają limit 100 pytań dziennie."}},
+{"@type":"Question","name":"Jakie tematy obejmuje asystent?","acceptedAnswer":{"@type":"Answer","text":"Tryb prawny: umowy (o pracę, zlecenie, o dzieło, B2B, najem), prawa pracownicze, wypowiedzenia, urlopy, prawa konsumenta, RODO. Tryb podatkowy: PIT, CIT, VAT, ZUS, składka zdrowotna, ryczałt, podatek liniowy, koszty firmowe, KSeF i faktury."}},
+{"@type":"Question","name":"Czy mogę wgrać umowę lub fakturę do analizy?","acceptedAnswer":{"@type":"Answer","text":"Tak. Wgraj plik PDF, zdjęcie (JPG/PNG) lub plik tekstowy do 3 MB, a AI przeanalizuje dokument i wskaże najważniejsze postanowienia oraz potencjalne ryzyka."}},
+{"@type":"Question","name":"Skąd asystent bierze przepisy?","acceptedAnswer":{"@type":"Answer","text":"Każda odpowiedź kończy się sekcją z podstawą prawną. Dodatkowo asystent przeszukuje Dziennik Ustaw (api.sejm.gov.pl) i podaje linki do pełnej treści aktów prawnych w systemie ISAP, z oznaczeniem, czy akt nadal obowiązuje."}},
+{"@type":"Question","name":"Czy odpowiedzi AI zastępują prawnika lub księgowego?","acceptedAnswer":{"@type":"Answer","text":"Nie. Asystent pomaga szybko zrozumieć przepisy i przygotować się do rozmowy ze specjalistą, ale w indywidualnych sprawach — zwłaszcza sądowych i złożonych rozliczeniach — zawsze warto potwierdzić odpowiedź u prawnika lub doradcy podatkowego."}}
+]}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -85,7 +108,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-mode-pill.active{color:#fff;background:var(--acc-grad);border-color:transparent;box-shadow:0 2px 10px rgba(124,58,237,.26)}
 
 /* ── Welcome ── */
-.ap-welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto;position:relative}
+.ap-welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6vh 24px 40px;text-align:center;overflow-y:auto;position:relative}
 .ap-welcome::before{content:'';position:absolute;top:12%;left:50%;transform:translateX(-50%);width:520px;height:320px;max-width:90%;background:radial-gradient(ellipse at center,rgba(124,58,237,.12),rgba(219,39,119,.06) 45%,transparent 70%);filter:blur(20px);pointer-events:none;z-index:0}
 .ap-welcome>*{position:relative;z-index:1}
 .ap-welcome-ico{width:76px;height:76px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin:0 auto 20px;border-radius:22px;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(8,145,178,.10));border:1px solid var(--border);box-shadow:var(--shadow)}
@@ -100,6 +123,15 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-quick-card:hover::after{transform:translateX(3px);color:var(--acc)}
 .ap-quick-card strong{display:block;font-size:.92rem;font-weight:550;color:var(--t1);margin-bottom:4px;letter-spacing:-.01em;padding-right:18px}
 .ap-disclaimer{font-size:.78rem;color:var(--t3);max-width:500px;line-height:1.55}
+/* FAQ (SEO + realna pomoc) — pod hero na ekranie powitalnym */
+.ap-faq{max-width:560px;width:100%;margin-top:48px;text-align:left}
+.ap-faq h2{font-size:1.1rem;font-weight:600;letter-spacing:-.02em;color:var(--t1);margin-bottom:14px;text-align:center}
+.ap-faq details{background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.ap-faq summary{padding:13px 16px;font-size:.9rem;font-weight:550;color:var(--t1);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ap-faq summary::-webkit-details-marker{display:none}
+.ap-faq summary::after{content:'+';color:var(--t3);font-size:1.1rem;flex-shrink:0;transition:transform .18s}
+.ap-faq details[open] summary::after{transform:rotate(45deg)}
+.ap-faq details p{padding:0 16px 14px;font-size:.86rem;color:var(--t2);line-height:1.6;margin:0}
 
 /* ── Chat messages ── */
 .ap-messages{flex:1;overflow-y:auto;padding:28px 20px;display:flex;flex-direction:column;gap:20px;max-width:860px;width:100%;margin:0 auto}
@@ -193,7 +225,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 <!-- Nav -->
 <nav class="ap-nav">
   <button class="ap-menu-btn" onclick="toggleSidebar()">☰</button>
-  <a href="index.html" class="ap-nav-logo"><img src="logo2.png" alt="Dokumo" width="24" height="24">Dokumo <span class="ap-nav-badge">Asystent Prawny</span></a>
+  <a href="index.html" class="ap-nav-logo"><img src="logo2-64.png" alt="Dokumo" width="24" height="24">Dokumo <span class="ap-nav-badge">Asystent Prawny</span></a>
   <div class="ap-nav-spacer"></div>
   <div class="ap-nav-ql" id="navQl" style="display:none">Zapytania <strong id="navQlVal">?</strong></div>
   <div id="navUserArea"></div>
@@ -232,6 +264,35 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
       <p id="welcomeSub">Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów i wiele więcej. Odpowiedź z podstawą prawną w kilka sekund.</p>
       <div class="ap-quick-grid" id="quickGrid"></div>
       <p class="ap-disclaimer" id="welcomeDisclaimer">⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.</p>
+
+      <!-- FAQ — widoczna treść odpowiadająca schemie FAQPage -->
+      <section class="ap-faq" aria-label="Najczęstsze pytania">
+        <h2>Najczęstsze pytania</h2>
+        <details>
+          <summary>Czy AI może odpowiadać na pytania prawne?</summary>
+          <p>Tak — Asystent udziela informacji ogólnych o polskim prawie i wskazuje konkretne przepisy (artykuł i nazwę ustawy), na których opiera odpowiedź. Nie jest to jednak porada prawna: w złożonych lub spornych sprawach skonsultuj się z prawnikiem, radcą prawnym lub doradcą podatkowym.</p>
+        </details>
+        <details>
+          <summary>Ile kosztuje Asystent Prawny i Podatkowy?</summary>
+          <p>Po założeniu darmowego konta możesz zadać do 20 pytań dziennie bez żadnych opłat. Subskrybenci Dokumo mają limit 100 pytań dziennie.</p>
+        </details>
+        <details>
+          <summary>Jakie tematy obejmuje asystent?</summary>
+          <p>Tryb prawny: umowy (o pracę, zlecenie, o dzieło, B2B, najem), prawa pracownicze, wypowiedzenia, urlopy, prawa konsumenta, RODO. Tryb podatkowy: PIT, CIT, VAT, ZUS, składka zdrowotna, ryczałt, podatek liniowy, koszty firmowe, KSeF i faktury.</p>
+        </details>
+        <details>
+          <summary>Czy mogę wgrać umowę lub fakturę do analizy?</summary>
+          <p>Tak. Wgraj plik PDF, zdjęcie (JPG/PNG) lub plik tekstowy do 3 MB, a AI przeanalizuje dokument i wskaże najważniejsze postanowienia oraz potencjalne ryzyka.</p>
+        </details>
+        <details>
+          <summary>Skąd asystent bierze przepisy?</summary>
+          <p>Każda odpowiedź kończy się sekcją z podstawą prawną. Dodatkowo asystent przeszukuje Dziennik Ustaw (api.sejm.gov.pl) i podaje linki do pełnej treści aktów prawnych w systemie ISAP, z oznaczeniem, czy akt nadal obowiązuje.</p>
+        </details>
+        <details>
+          <summary>Czy odpowiedzi AI zastępują prawnika lub księgowego?</summary>
+          <p>Nie. Asystent pomaga szybko zrozumieć przepisy i przygotować się do rozmowy ze specjalistą, ale w indywidualnych sprawach — zwłaszcza sądowych i złożonych rozliczeniach — zawsze warto potwierdzić odpowiedź u specjalisty. Gotowe dokumenty wygenerujesz w <a href="https://dokumoflow.com/">generatorach Dokumo</a>.</p>
+        </details>
+      </section>
     </div>
 
     <!-- Messages -->
