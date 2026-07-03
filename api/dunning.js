@@ -1047,7 +1047,7 @@ const ONBOARD_STEPS = [
 dzięki za założenie konta w Dokumo. Kilka rzeczy, które możesz zrobić od razu:
 
 • Stworzyć CV i list motywacyjny z pomocą AI — https://dokumoflow.com/kreator-cv.html
-• Wygenerować umowę (zlecenie, o pracę, NDA, najem i inne) — https://dokumoflow.com/generator.html
+• Wygenerować umowę (zlecenie, o pracę, NDA, najem i inne) — https://dokumoflow.com/#funkcje
 • Sprawdzić umowę przed podpisaniem — https://dokumoflow.com/analiza-umowy.html
 • Zapytać Asystenta Prawnego i Podatkowego AI — https://dokumoflow.com/asystent-prawny.html
 • Wystawić fakturę — https://dokumoflow.com/faktura.html
