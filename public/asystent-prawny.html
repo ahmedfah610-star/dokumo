@@ -173,6 +173,12 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;max-width:85%;align-self:flex-start}
 .ap-sugg-chip{display:inline-flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);color:var(--t1);border-radius:100px;padding:8px 15px;font-size:.83rem;font-weight:500;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
 .ap-sugg-chip:hover{transform:translateY(-1px);border-color:var(--acc);box-shadow:0 2px 10px rgba(124,58,237,.14)}
+.ap-sugg-chip.pref{background:var(--acc-grad);color:#fff;border-color:transparent;box-shadow:0 2px 10px rgba(124,58,237,.24)}
+.ap-sugg-chip.pref:hover{box-shadow:0 4px 16px rgba(124,58,237,.34)}
+/* Pytania kontynuujące */
+.ap-followups{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;max-width:85%;align-self:flex-start}
+.ap-fu-chip{font-family:var(--font);background:var(--bg3);border:1px solid var(--border);color:var(--t2);border-radius:100px;padding:7px 13px;font-size:.8rem;font-weight:450;cursor:pointer;transition:border-color .15s,color .15s,background .15s;text-align:left}
+.ap-fu-chip:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
 /* Typing indicator */
 .ap-typing{display:flex;align-items:center;gap:5px;padding:15px 18px;background:var(--bg);border:1px solid var(--border);border-radius:18px;border-bottom-left-radius:5px;width:72px;box-shadow:var(--shadow)}
 .ap-typing span{width:7px;height:7px;border-radius:50%;background:var(--acc);opacity:.35;animation:blink 1.3s infinite}
@@ -535,62 +541,92 @@ function md(text) {
   return html;
 }
 
-// ── Append message to DOM ──
-function appendMsg(role, content, extras) {
+// ── Budowa wiadomości w DOM ──
+function scrollBottom() {
+  var area = document.getElementById('messagesArea');
+  area.scrollTop = area.scrollHeight;
+}
+
+// Szkielet wiadomości (etykieta roli + pusty bąbelek) — bąbelek wypełniamy
+// od razu (appendMsg) albo strumieniowo (sendMessage).
+function createMsgShell(role) {
   showMessages();
   var area = document.getElementById('messagesArea');
   var wrap = document.createElement('div');
   wrap.className = 'ap-msg ' + role;
-
-  if (role === 'typing') {
-    wrap.id = 'typingIndicator';
-    wrap.className = 'ap-msg assistant';
-    wrap.innerHTML = '<div class="ap-typing"><span></span><span></span><span></span></div>';
-    area.appendChild(wrap);
-    area.scrollTop = area.scrollHeight;
-    return;
-  }
-
   var roleLabel = document.createElement('div');
   roleLabel.className = 'ap-msg-role';
   roleLabel.innerHTML = role === 'user'
     ? 'Ty'
     : '<span class="dot"></span> ' + escHtml((MODES[_mode] || MODES.prawny).label);
   wrap.appendChild(roleLabel);
-
   var bubble = document.createElement('div');
   bubble.className = 'ap-bubble';
-  bubble.innerHTML = role === 'user' ? escHtml(content) : md(content);
   wrap.appendChild(bubble);
-
-  if (extras) {
-    // Related acts
-    if (extras.relatedActs && extras.relatedActs.length) {
-      var actsDiv = document.createElement('div');
-      actsDiv.className = 'ap-acts';
-      actsDiv.innerHTML = '<div class="ap-acts-label">📚 Źródła — akty w Dzienniku Ustaw</div>' +
-        extras.relatedActs.slice(0, 4).map(function(a) {
-          return '<a class="ap-act-card" href="' + (a.url || '#') + '" target="_blank" rel="noopener">' +
-            '<span class="ap-act-badge ' + (a.inForce ? 'force' : 'old') + '">' + (a.inForce ? 'obowiązuje' : 'nieaktualny') + '</span>' +
-            '<div class="ap-act-info"><div class="ap-act-title">' + escHtml(a.title) + '</div>' +
-            '<div class="ap-act-date">' + (a.type || '') + (a.date ? ' · ' + a.date : '') + '</div></div></a>';
-        }).join('');
-      wrap.appendChild(actsDiv);
-    }
-    // Document suggestions
-    if (extras.suggestions && extras.suggestions.length) {
-      var suggDiv = document.createElement('div');
-      suggDiv.className = 'ap-sugg';
-      suggDiv.innerHTML = '<div class="ap-sugg-label" style="width:100%">✦ Wygeneruj gotowy dokument</div>' +
-        extras.suggestions.map(function(s) {
-        return '<a class="ap-sugg-chip" href="' + s.url + '">' + s.icon + ' ' + s.label + '</a>';
-      }).join('');
-      wrap.appendChild(suggDiv);
-    }
-  }
-
   area.appendChild(wrap);
-  area.scrollTop = area.scrollHeight;
+  scrollBottom();
+  return { wrap: wrap, bubble: bubble };
+}
+
+// Dodatki pod odpowiedzią: źródła, sugestie dokumentów, pytania kontynuujące.
+function appendExtras(wrap, extras) {
+  if (!extras) return;
+  if (extras.relatedActs && extras.relatedActs.length) {
+    var actsDiv = document.createElement('div');
+    actsDiv.className = 'ap-acts';
+    actsDiv.innerHTML = '<div class="ap-acts-label">📚 Źródła — akty w Dzienniku Ustaw</div>' +
+      extras.relatedActs.slice(0, 4).map(function(a) {
+        return '<a class="ap-act-card" href="' + escHtml(a.url || '#') + '" target="_blank" rel="noopener">' +
+          '<span class="ap-act-badge ' + (a.inForce ? 'force' : 'old') + '">' + (a.inForce ? 'obowiązuje' : 'nieaktualny') + '</span>' +
+          '<div class="ap-act-info"><div class="ap-act-title">' + escHtml(a.title) + '</div>' +
+          '<div class="ap-act-date">' + (a.type || '') + (a.date ? ' · ' + a.date : '') + '</div></div></a>';
+      }).join('');
+    wrap.appendChild(actsDiv);
+  }
+  if (extras.suggestions && extras.suggestions.length) {
+    var suggDiv = document.createElement('div');
+    suggDiv.className = 'ap-sugg';
+    suggDiv.innerHTML = '<div class="ap-sugg-label" style="width:100%">✦ Wygeneruj gotowy dokument</div>' +
+      extras.suggestions.map(function(s) {
+        var label = s.prefilled ? 'Przygotuj: ' + s.label + ' ⚡' : s.label;
+        var title = s.prefilled ? ' title="Formularz zostanie wypełniony danymi z rozmowy"' : '';
+        return '<a class="ap-sugg-chip' + (s.prefilled ? ' pref' : '') + '" href="' + escHtml(s.url) + '"' + title + '>' + s.icon + ' ' + escHtml(label) + '</a>';
+      }).join('');
+    wrap.appendChild(suggDiv);
+  }
+  if (extras.followups && extras.followups.length) {
+    var fuDiv = document.createElement('div');
+    fuDiv.className = 'ap-followups';
+    fuDiv.innerHTML = extras.followups.slice(0, 3).map(function(q) {
+      return '<button type="button" class="ap-fu-chip" onclick="askFollowup(this)">' + escHtml(q) + '</button>';
+    }).join('');
+    wrap.appendChild(fuDiv);
+  }
+  scrollBottom();
+}
+
+function askFollowup(el) {
+  if (_loading) return;
+  document.getElementById('msgInput').value = el.textContent;
+  sendMessage();
+}
+
+function appendMsg(role, content, extras) {
+  if (role === 'typing') {
+    showMessages();
+    var area = document.getElementById('messagesArea');
+    var t = document.createElement('div');
+    t.id = 'typingIndicator';
+    t.className = 'ap-msg assistant';
+    t.innerHTML = '<div class="ap-typing"><span></span><span></span><span></span></div>';
+    area.appendChild(t);
+    scrollBottom();
+    return;
+  }
+  var shell = createMsgShell(role);
+  shell.bubble.innerHTML = role === 'user' ? escHtml(content) : md(content);
+  appendExtras(shell.wrap, extras);
+  scrollBottom();
 }
 
 function escHtml(s) {
@@ -663,36 +699,94 @@ async function sendMessage() {
     var headers = { 'Content-Type': 'application/json' };
     if (window._fbToken) headers['Authorization'] = 'Bearer ' + window._fbToken;
 
-    var body = { action: 'chat', message: msg, chatId: _currentChatId, mode: _mode };
+    var canStream = !!(window.TextDecoder && window.ReadableStream);
+    var body = { action: 'chat', message: msg, chatId: _currentChatId, mode: _mode, stream: canStream };
     if (sentFile) body.file = sentFile;
     if (_history.length) body.history = _history.slice(-8);
 
     var r = await fetch('/api/legal-chat', { method: 'POST', headers: headers, body: JSON.stringify(body) });
-    var data = await r.json();
-
-    removeTyping();
 
     if (!r.ok) {
+      var data0 = null;
+      try { data0 = await r.json(); } catch(e) {}
+      removeTyping();
       if (r.status === 401) {
         requireLogin();
       } else if (r.status === 429) {
         appendMsg('assistant', '⚠️ Dzienny limit zapytań został wyczerpany. [Ulepsz plan](subskrypcja.html), by kontynuować.');
-        updateQl(0, data.queriesMax || _queriesMax || 20);
+        updateQl(0, (data0 && data0.queriesMax) || _queriesMax || 20);
       } else {
-        appendMsg('assistant', '⚠️ Coś poszło nie tak: ' + (data.error || 'Spróbuj ponownie.'));
+        appendMsg('assistant', '⚠️ Coś poszło nie tak: ' + ((data0 && data0.error) || 'Spróbuj ponownie.'));
       }
       return;
     }
 
+    var ctype = (r.headers.get('content-type') || '');
+
+    // ── Strumień NDJSON: tekst pojawia się na żywo ──
+    if (ctype.indexOf('ndjson') >= 0 && r.body) {
+      var shell = null;
+      var acc = '';
+      var extrasData = null;
+      var gotErr = false;
+      var reader = r.body.getReader();
+      var dec = new TextDecoder();
+      var buf = '';
+      while (true) {
+        var st = await reader.read();
+        if (st.done) break;
+        buf += dec.decode(st.value, { stream: true });
+        var nl;
+        while ((nl = buf.indexOf('\n')) >= 0) {
+          var line = buf.slice(0, nl); buf = buf.slice(nl + 1);
+          if (!line.trim()) continue;
+          var ev;
+          try { ev = JSON.parse(line); } catch(e) { continue; }
+          if (ev.t === 'meta') {
+            updateQl(ev.queriesLeft, ev.queriesMax);
+          } else if (ev.t === 'd') {
+            if (!shell) { removeTyping(); shell = createMsgShell('assistant'); }
+            acc += ev.x;
+            shell.bubble.innerHTML = md(acc);
+            scrollBottom();
+          } else if (ev.t === 'extras') {
+            extrasData = ev;
+          } else if (ev.t === 'err') {
+            gotErr = true;
+            removeTyping();
+            if (!shell) shell = createMsgShell('assistant');
+            shell.bubble.innerHTML = md('⚠️ ' + ev.error);
+          }
+        }
+      }
+      if (gotErr) return;
+      removeTyping();
+      acc = acc.trim();
+      if (!acc) {
+        appendMsg('assistant', '⚠️ Pusta odpowiedź. Spróbuj ponownie.');
+        return;
+      }
+      if (extrasData) {
+        _currentChatId = extrasData.chatId || _currentChatId;
+        if (shell) appendExtras(shell.wrap, extrasData);
+      }
+      _history.push({ role: 'user', content: displayMsg });
+      _history.push({ role: 'assistant', content: acc });
+      if (window._firebaseUser) loadHistory();
+      return;
+    }
+
+    // ── Fallback: klasyczna odpowiedź JSON ──
+    var data = await r.json();
+    removeTyping();
     _currentChatId = data.chatId || _currentChatId;
     _history.push({ role: 'user', content: displayMsg });
     _history.push({ role: 'assistant', content: data.reply });
-
     appendMsg('assistant', data.reply, {
       relatedActs: data.relatedActs || [],
       suggestions: data.suggestions || [],
+      followups: data.followups || [],
     });
-
     updateQl(data.queriesLeft, data.queriesMax);
     if (window._firebaseUser) loadHistory();
 

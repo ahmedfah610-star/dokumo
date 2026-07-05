@@ -348,6 +348,29 @@ var FORMS={
 var NIP_FIELD_MAP={wierz_nip:{name:'wierz_nazwa',adres:'wierz_adres'}};
 
 var mainStep=0, subStep=0, selDoc='wezwanie', wizVals={}, genText='';
+
+// ── Prefill z Asystenta AI: ?prefill=<base64url JSON> ──
+// Twarda sanityzacja: wartości idą do innerHTML formularza, więc wycinamy
+// wszystko poza bezpiecznymi znakami i ograniczamy długość.
+(function(){
+  try{
+    var p=new URLSearchParams(location.search).get('prefill');
+    if(!p)return;
+    var s=p.replace(/-/g,'+').replace(/_/g,'/');
+    while(s.length%4)s+='=';
+    var bin=atob(s);
+    var bytes=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    var data=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    var ALLOW=['wierz_nazwa','wierz_adres','dluz_nazwa','dluz_adres','kwota','nr_dok','data_wymagalnosci'];
+    ALLOW.forEach(function(k){
+      var v=data[k];
+      if(typeof v!=='string')return;
+      v=v.replace(/[^0-9A-Za-złąćęńóśźżŁĄĆĘŃÓŚŹŻ .,\/\\:()\-–—]/g,'').slice(0,160).trim();
+      if(v)wizVals[k]=v;
+    });
+  }catch(e){/* nieprawidłowy prefill — ignoruj */}
+})();
 var STEP_LABELS=["Formularz","Podgląd","Gotowe"];
 
 function renderNavSteps(){

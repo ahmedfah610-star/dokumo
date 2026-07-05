@@ -9,7 +9,11 @@ const db = getFirestore();
 const auth = getAuth();
 
 // Zwiększamy limit body — załączniki (PDF/obraz) przychodzą jako base64.
-export const config = { api: { bodyParser: { sizeLimit: '8mb' } } };
+// supportsResponseStreaming: odpowiedzi czatu płyną strumieniem (NDJSON).
+export const config = {
+  supportsResponseStreaming: true,
+  api: { bodyParser: { sizeLimit: '8mb' } },
+};
 
 const FILE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 // 3 MB — po zakodowaniu base64 (~4 MB) mieści się pod limitem ciała żądania Vercel (4.5 MB).
@@ -93,11 +97,16 @@ uop, wypowiedzenie, urlop, swiadectwo, zlecenie, dzielo, b2b, nda, pelnomocnictw
 
 FORMAT WYJŚCIA — NAJPIERW pełna odpowiedź w czystym Markdown. POTEM w NOWEJ linii separator "===DOKUMO_META===" i JEDNA linia JSON z metadanymi:
 ===DOKUMO_META===
-{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"]}
+{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"],"followups":["Krótkie pytanie kontynuujące?"],"docParams":{}}
 
 Zasady metadanych:
 - suggestions: max 3 typeId dokumentów, które użytkownik mógłby wygenerować w Dokumo (pusta tablica gdy brak sensownych).
 - eliKeywords: max 2 krótkie frazy do wyszukania ustaw w Dzienniku Ustaw (np. "kodeks pracy", "podatek dochodowy"). Pusta tablica gdy brak.
+- followups: 2-3 krótkie (max 70 znaków) pytania kontynuujące, które użytkownik mógłby naturalnie zadać jako następne — pisane z perspektywy użytkownika (np. "A co jeśli pracuję na pół etatu?"). Zawsze podaj.
+- docParams: TYLKO gdy suggestions zawiera "wezwanie" lub "letter" I użytkownik podał w rozmowie konkretne dane. Wyciągnij je z rozmowy:
+  dla "wezwanie": {"dluz_nazwa":"dłużnik","dluz_adres":"","kwota":"np. 5 000 zł","nr_dok":"nr faktury/umowy","data_wymagalnosci":"RRRR-MM-DD","wierz_nazwa":"wierzyciel"}
+  dla "letter": {"position":"stanowisko","company":"firma","about":"umiejętności kandydata"}
+  Pomiń pola, których nie znasz. Pomiń cały docParams, gdy użytkownik nie podał żadnych konkretów.
 NIGDY nie umieszczaj separatora ani JSON-a wewnątrz treści odpowiedzi — tylko na samym końcu.`;
 
 const SYSTEM_PROMPT_PRAWNY =
@@ -160,6 +169,48 @@ async function callClaude(messages, systemPrompt) {
   return data?.content?.[0]?.text || '';
 }
 
+// Wariant streamujący: woła onText(delta, całośćDoTejPory) dla każdego
+// fragmentu tekstu i zwraca pełną odpowiedź po zakończeniu strumienia.
+async function callClaudeStream(messages, systemPrompt, onText) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error('Brak ANTHROPIC_API_KEY');
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2500,
+      system: systemPrompt || SYSTEM_PROMPT_PRAWNY,
+      messages,
+      stream: true,
+    }),
+    signal: AbortSignal.timeout(55000),
+  });
+  if (!r.ok) throw new Error('Anthropic HTTP ' + r.status);
+  let raw = '', buf = '';
+  const decoder = new TextDecoder();
+  for await (const chunk of r.body) {
+    buf += decoder.decode(chunk, { stream: true });
+    let nl;
+    while ((nl = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, nl).trim();
+      buf = buf.slice(nl + 1);
+      if (!line.startsWith('data:')) continue;
+      const payload = line.slice(5).trim();
+      if (!payload || payload === '[DONE]') continue;
+      let ev;
+      try { ev = JSON.parse(payload); } catch { continue; }
+      if (ev.type === 'content_block_delta' && ev.delta && typeof ev.delta.text === 'string') {
+        raw += ev.delta.text;
+        try { onText(ev.delta.text, raw); } catch { /* ignore callback errors */ }
+      } else if (ev.type === 'error') {
+        throw new Error(ev.error?.message || 'Błąd strumienia AI');
+      }
+    }
+  }
+  return raw;
+}
+
 // Parser odporny na obcięcie: treść to zawsze czysty Markdown przed
 // separatorem "===DOKUMO_META===". Metadane (JSON) idą po separatorze —
 // jeśli odpowiedź zostanie ucięta, tracimy tylko metadane, nie treść.
@@ -183,7 +234,7 @@ function parseClaudeResponse(raw) {
     } catch { /* zostaw reply jak jest */ }
   }
 
-  let suggestions = [], eliKeywords = [];
+  let suggestions = [], eliKeywords = [], followups = [], docParams = null;
   if (metaStr) {
     try {
       const m = JSON.parse(metaStr);
@@ -191,11 +242,44 @@ function parseClaudeResponse(raw) {
         .filter(s => VALID_TYPES.includes(s)).slice(0, 3);
       eliKeywords = (Array.isArray(m.eliKeywords) ? m.eliKeywords : [])
         .filter(k => typeof k === 'string' && k.trim()).slice(0, 2);
+      followups = (Array.isArray(m.followups) ? m.followups : [])
+        .filter(q => typeof q === 'string' && q.trim() && q.length <= 120).slice(0, 3);
+      // docParams: sanityzacja twarda — wartości trafiają do URL-i i formularzy
+      if (m.docParams && typeof m.docParams === 'object' && !Array.isArray(m.docParams)) {
+        const clean = {};
+        for (const [k, v] of Object.entries(m.docParams)) {
+          if (typeof v !== 'string' || !v.trim()) continue;
+          if (!/^[a-z_]{2,30}$/.test(k)) continue;
+          clean[k] = v.replace(/[<>"'&`]/g, '').slice(0, 160).trim();
+        }
+        if (Object.keys(clean).length) docParams = clean;
+      }
     } catch { /* ignore metadane */ }
   }
 
   if (!reply) reply = 'Przepraszam, nie udało się przygotować odpowiedzi. Spróbuj przeformułować pytanie.';
-  return { reply: reply.slice(0, 6000), suggestions, eliKeywords };
+  return { reply: reply.slice(0, 6000), suggestions, eliKeywords, followups, docParams };
+}
+
+// ── Prefill: buduje URL generatora z danymi wyciągniętymi z rozmowy ─────
+function buildSuggestionUrl(typeId, baseUrl, dp) {
+  if (!dp) return baseUrl;
+  try {
+    if (typeId === 'letter') {
+      const qs = new URLSearchParams();
+      for (const k of ['position', 'company', 'about']) if (dp[k]) qs.set(k, dp[k]);
+      const s = qs.toString();
+      return s ? baseUrl + '?' + s : baseUrl;
+    }
+    if (typeId === 'wezwanie') {
+      const allow = ['wierz_nazwa', 'dluz_nazwa', 'dluz_adres', 'kwota', 'nr_dok', 'data_wymagalnosci'];
+      const obj = {};
+      for (const k of allow) if (dp[k]) obj[k] = dp[k];
+      if (!Object.keys(obj).length) return baseUrl;
+      return baseUrl + '?prefill=' + Buffer.from(JSON.stringify(obj), 'utf8').toString('base64url');
+    }
+  } catch { /* fallthrough */ }
+  return baseUrl;
 }
 
 // ── ELI: wyszukiwanie aktów prawnych ───────────────────────────────────
@@ -406,7 +490,84 @@ export default async function handler(req, res) {
   }
   claudeHistory.push({ role: 'user', content: userContent });
 
-  // Wywołaj Claude
+  // Do zapisu/tytułu używamy tekstu + adnotacji o pliku (base64 nie zapisujemy).
+  const savedUserMsg = (userText + fileNote).slice(0, 4000);
+
+  // Wspólny finisher: ELI + zapis Firestore + zbudowanie extras.
+  async function buildExtras(parsed) {
+    let savedChatId = reqChatId;
+    const [relatedActs] = await Promise.all([
+      parsed.eliKeywords.length ? searchEliActs(parsed.eliKeywords) : Promise.resolve([]),
+      (async () => {
+        try {
+          const cid = await getOrCreateChatId(uid, reqChatId, savedUserMsg, chatMode);
+          savedChatId = cid;
+          await saveChatMessage(uid, cid, 'user', savedUserMsg);
+          await saveChatMessage(uid, cid, 'assistant', parsed.reply);
+        } catch (e) { console.error('legal-chat save error:', e.message); }
+      })(),
+    ]);
+    const suggestionObjects = parsed.suggestions
+      .map(s => {
+        if (!DOCUMENT_MAP[s]) return null;
+        const url = buildSuggestionUrl(s, DOCUMENT_MAP[s].url, parsed.docParams);
+        return { typeId: s, ...DOCUMENT_MAP[s], url, prefilled: url !== DOCUMENT_MAP[s].url };
+      })
+      .filter(Boolean);
+    return {
+      suggestions: suggestionObjects,
+      relatedActs,
+      followups: parsed.followups || [],
+      chatId: savedChatId || null,
+      mode: chatMode,
+      queriesLeft: rl.max - rl.used,
+      queriesMax: rl.max,
+    };
+  }
+
+  // ── Ścieżka streamująca (NDJSON): meta → delty tekstu → extras → done ──
+  if (req.body.stream === true) {
+    res.writeHead(200, {
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'X-Accel-Buffering': 'no',
+    });
+    const send = (o) => res.write(JSON.stringify(o) + '\n');
+    send({ t: 'meta', queriesLeft: rl.max - rl.used, queriesMax: rl.max, mode: chatMode });
+
+    // Filtr: nie wypuszczamy do klienta separatora metadanych ani niczego po nim.
+    let shown = 0;
+    let raw = '';
+    try {
+      raw = await callClaudeStream(claudeHistory, systemPromptFor(chatMode), (_delta, soFar) => {
+        const idx = soFar.indexOf(META_SEP);
+        const visEnd = idx >= 0 ? idx : Math.max(shown, soFar.length - META_SEP.length);
+        if (visEnd > shown) {
+          send({ t: 'd', x: soFar.slice(shown, visEnd) });
+          shown = visEnd;
+        }
+      });
+    } catch (e) {
+      console.error('legal-chat stream error:', e.message);
+      send({ t: 'err', error: 'Chwilowy problem z AI. Spróbuj ponownie.' });
+      return res.end();
+    }
+    const parsed = parseClaudeResponse(raw);
+    // Dopchnij końcówkę widocznego tekstu wstrzymaną przez filtr separatora.
+    const sepIdx = raw.indexOf(META_SEP);
+    const visTotal = sepIdx >= 0 ? sepIdx : raw.length;
+    if (visTotal > shown) send({ t: 'd', x: raw.slice(shown, visTotal) });
+    try {
+      const extras = await buildExtras(parsed);
+      send({ t: 'extras', ...extras });
+    } catch (e) {
+      console.error('legal-chat extras error:', e.message);
+    }
+    send({ t: 'done' });
+    return res.end();
+  }
+
+  // ── Ścieżka klasyczna (JSON) ──
   let parsed;
   try {
     const raw = await callClaude(claudeHistory, systemPromptFor(chatMode));
@@ -416,35 +577,6 @@ export default async function handler(req, res) {
     return res.status(503).json({ error: 'Chwilowy problem z AI. Spróbuj ponownie.' });
   }
 
-  // Do zapisu/tytułu używamy tekstu + adnotacji o pliku (base64 nie zapisujemy).
-  const savedUserMsg = (userText + fileNote).slice(0, 4000);
-
-  // Zapis do Firestore i wyszukanie aktów prawnych równolegle
-  let savedChatId = reqChatId;
-  const [relatedActs] = await Promise.all([
-    parsed.eliKeywords.length ? searchEliActs(parsed.eliKeywords) : Promise.resolve([]),
-    uid ? (async () => {
-      try {
-        const cid = await getOrCreateChatId(uid, reqChatId, savedUserMsg, chatMode);
-        savedChatId = cid;
-        await saveChatMessage(uid, cid, 'user', savedUserMsg);
-        await saveChatMessage(uid, cid, 'assistant', parsed.reply);
-      } catch (e) { console.error('legal-chat save error:', e.message); }
-    })() : Promise.resolve(),
-  ]);
-
-  // Mapuj suggestions na pełne obiekty
-  const suggestionObjects = parsed.suggestions
-    .map(s => DOCUMENT_MAP[s] ? { typeId: s, ...DOCUMENT_MAP[s] } : null)
-    .filter(Boolean);
-
-  return res.status(200).json({
-    reply: parsed.reply,
-    suggestions: suggestionObjects,
-    relatedActs,
-    chatId: savedChatId || null,
-    mode: chatMode,
-    queriesLeft: rl.max - rl.used,
-    queriesMax: rl.max,
-  });
+  const extras = await buildExtras(parsed);
+  return res.status(200).json({ reply: parsed.reply, ...extras });
 }
