@@ -383,11 +383,15 @@ export default async function handler(req, res) {
   // ── Opcjonalna autoryzacja ──────────────────────────────────────────
   let uid = null;
   let hasSub = false;
+  let isAdmin = false;
   const rawToken = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (rawToken) {
     try {
       const decoded = await auth.verifyIdToken(rawToken);
       uid = decoded.uid;
+      // Administratorzy (ta sama lista co w api/admin.js) — bez limitu dziennego
+      const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+      isAdmin = !!decoded.email && ADMIN_EMAILS.includes(decoded.email.toLowerCase());
       // Sprawdź subskrypcję
       const subSnap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
       if (subSnap.exists) {
@@ -395,6 +399,23 @@ export default async function handler(req, res) {
         hasSub = exp && exp > new Date();
       }
     } catch { uid = null; }
+  }
+
+  const dailyMax = isAdmin ? 100000 : (hasSub ? 100 : 20);
+
+  // ── GET quota — stan licznika bez zużywania pytania ─────────────────
+  if (req.method === 'GET' && action === 'quota') {
+    if (!uid) return res.status(401).json({ error: 'Wymagane logowanie' });
+    let used = 0;
+    try {
+      const snap = await db.collection('legalChatUsage').doc(uid.replace(/[\/:.]/g, '_')).get();
+      if (snap.exists && snap.data().date === todayKey()) used = snap.data().count || 0;
+    } catch { /* fail-open: pokaż pełny limit */ }
+    return res.status(200).json({
+      queriesLeft: Math.max(0, dailyMax - used),
+      queriesMax: dailyMax,
+      unlimited: isAdmin,
+    });
   }
 
   // ── GET history ─────────────────────────────────────────────────────
@@ -487,14 +508,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
-  // Rate limit (dzienny) — zalogowany bez sub 20, z aktywną subskrypcją 100.
-  const limitKey = uid;
-  const limitMax = hasSub ? 100 : 20;
-  const rl = await checkAndIncrementLimit(limitKey, limitMax);
+  // Rate limit (dzienny) — zalogowany bez sub 20, z aktywną subskrypcją 100, admin bez limitu.
+  const rl = await checkAndIncrementLimit(uid, dailyMax);
   if (!rl.allowed) {
     return res.status(429).json({
-      error: `Wykorzystano dzienny limit ${limitMax} zapytań. Limit odnawia się o północy (UTC).`,
-      queriesLeft: 0, queriesMax: limitMax,
+      error: `Wykorzystano dzienny limit ${dailyMax} pytań (licznik obejmuje wszystkie dzisiejsze pytania, także z widgetu). Limit odnawia się o północy czasu UTC${hasSub ? '' : ' — subskrypcja zwiększa go do 100/dzień'}.`,
+      queriesLeft: 0, queriesMax: dailyMax,
     });
   }
 

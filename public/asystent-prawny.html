@@ -342,6 +342,7 @@ onAuthStateChanged(getAuth(app), async u => {
       `<div class="ap-nav-user"><img src="${u.photoURL||'https://ui-avatars.com/api/?name='+encodeURIComponent(u.displayName||'U')+'&size=56'}" alt=""><span>${(u.displayName||u.email||'').split(' ')[0]}</span></div>`;
     document.getElementById('sidebarLoginHint').style.display = 'none';
     loadHistory();
+    loadQuota();
   } else {
     window._fbToken = null;
     window._firebaseUser = null;
@@ -811,6 +812,25 @@ async function sendMessage() {
     document.getElementById('sendBtn').disabled = false;
     document.getElementById('msgInput').focus();
   }
+}
+
+// ── Stan dziennego licznika pytań (bez zużywania pytania) ──
+async function loadQuota() {
+  if (!window._fbToken) return;
+  try {
+    var r = await fetch('/api/legal-chat?action=quota', {
+      headers: { 'Authorization': 'Bearer ' + window._fbToken }
+    });
+    if (!r.ok) return;
+    var d = await r.json();
+    if (d.unlimited) {
+      var navQl = document.getElementById('navQl');
+      document.getElementById('navQlVal').textContent = '∞';
+      navQl.style.display = '';
+      return;
+    }
+    updateQl(d.queriesLeft, d.queriesMax);
+  } catch(e) { /* ignore */ }
 }
 
 // ── Load chat history (sidebar) ──
