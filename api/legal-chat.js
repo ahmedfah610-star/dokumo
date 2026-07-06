@@ -97,12 +97,13 @@ uop, wypowiedzenie, urlop, swiadectwo, zlecenie, dzielo, b2b, nda, pelnomocnictw
 
 FORMAT WYJŚCIA — NAJPIERW pełna odpowiedź w czystym Markdown. POTEM w NOWEJ linii separator "===DOKUMO_META===" i JEDNA linia JSON z metadanymi:
 ===DOKUMO_META===
-{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"],"followups":["Krótkie pytanie kontynuujące?"],"docParams":{}}
+{"suggestions":["typeId"],"eliKeywords":["kodeks pracy"],"followups":["Krótkie pytanie kontynuujące?"],"saosQuery":"fraza do orzeczeń","docParams":{}}
 
 Zasady metadanych:
 - suggestions: max 3 typeId dokumentów, które użytkownik mógłby wygenerować w Dokumo (pusta tablica gdy brak sensownych).
 - eliKeywords: max 2 krótkie frazy do wyszukania ustaw w Dzienniku Ustaw (np. "kodeks pracy", "podatek dochodowy"). Pusta tablica gdy brak.
 - followups: 2-3 krótkie (max 70 znaków) pytania kontynuujące, które użytkownik mógłby naturalnie zadać jako następne — pisane z perspektywy użytkownika (np. "A co jeśli pracuję na pół etatu?"). Zawsze podaj.
+- saosQuery: krótka fraza (3-6 słów) do wyszukiwarki orzeczeń sądowych, TYLKO gdy orzecznictwo realnie pomoże (spór, roszczenie, odszkodowanie, interpretacja przepisu). Pomiń przy prostych pytaniach informacyjnych i o stawki podatkowe.
 - docParams: TYLKO gdy suggestions zawiera "wezwanie" lub "letter" I użytkownik podał w rozmowie konkretne dane. Wyciągnij je z rozmowy:
   dla "wezwanie": {"dluz_nazwa":"dłużnik","dluz_adres":"","kwota":"np. 5 000 zł","nr_dok":"nr faktury/umowy","data_wymagalnosci":"RRRR-MM-DD","wierz_nazwa":"wierzyciel"}
   dla "letter": {"position":"stanowisko","company":"firma","about":"umiejętności kandydata"}
@@ -234,7 +235,7 @@ function parseClaudeResponse(raw) {
     } catch { /* zostaw reply jak jest */ }
   }
 
-  let suggestions = [], eliKeywords = [], followups = [], docParams = null;
+  let suggestions = [], eliKeywords = [], followups = [], docParams = null, saosQuery = null;
   if (metaStr) {
     try {
       const m = JSON.parse(metaStr);
@@ -244,6 +245,9 @@ function parseClaudeResponse(raw) {
         .filter(k => typeof k === 'string' && k.trim()).slice(0, 2);
       followups = (Array.isArray(m.followups) ? m.followups : [])
         .filter(q => typeof q === 'string' && q.trim() && q.length <= 120).slice(0, 3);
+      if (typeof m.saosQuery === 'string' && m.saosQuery.trim() && m.saosQuery.length <= 80) {
+        saosQuery = m.saosQuery.trim();
+      }
       // docParams: sanityzacja twarda — wartości trafiają do URL-i i formularzy
       if (m.docParams && typeof m.docParams === 'object' && !Array.isArray(m.docParams)) {
         const clean = {};
@@ -258,7 +262,7 @@ function parseClaudeResponse(raw) {
   }
 
   if (!reply) reply = 'Przepraszam, nie udało się przygotować odpowiedzi. Spróbuj przeformułować pytanie.';
-  return { reply: reply.slice(0, 6000), suggestions, eliKeywords, followups, docParams };
+  return { reply: reply.slice(0, 6000), suggestions, eliKeywords, followups, docParams, saosQuery };
 }
 
 // ── Prefill: buduje URL generatora z danymi wyciągniętymi z rozmowy ─────
@@ -311,6 +315,35 @@ async function searchEliActs(keywords) {
     }
   }
   return results;
+}
+
+// ── SAOS: wyszukiwanie orzeczeń sądowych (api.saos.org.pl, publiczne) ───
+
+const SAOS_COURT_LABELS = {
+  COMMON: 'Sąd',
+  SUPREME: 'SN',
+  ADMINISTRATIVE: 'NSA/WSA',
+  CONSTITUTIONAL_TRIBUNAL: 'TK',
+  NATIONAL_APPEAL_CHAMBER: 'KIO',
+};
+
+async function searchSaosJudgments(query) {
+  try {
+    const url = 'https://www.saos.org.pl/api/search/judgments?all=' + encodeURIComponent(query) + '&pageSize=3';
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.items || []).slice(0, 3).map(it => ({
+      caseNumber: it.courtCases?.[0]?.caseNumber || '',
+      court: (it.division?.court?.name || '').slice(0, 80),
+      courtLabel: SAOS_COURT_LABELS[it.courtType] || 'Sąd',
+      date: it.judgmentDate || null,
+      url: 'https://www.saos.org.pl/judgments/' + it.id,
+    })).filter(j => j.caseNumber);
+  } catch (e) {
+    console.error('SAOS search error:', e.message);
+    return [];
+  }
 }
 
 // ── Firestore: historia chatów ─────────────────────────────────────────
@@ -496,8 +529,9 @@ export default async function handler(req, res) {
   // Wspólny finisher: ELI + zapis Firestore + zbudowanie extras.
   async function buildExtras(parsed) {
     let savedChatId = reqChatId;
-    const [relatedActs] = await Promise.all([
+    const [relatedActs, relatedJudgments] = await Promise.all([
       parsed.eliKeywords.length ? searchEliActs(parsed.eliKeywords) : Promise.resolve([]),
+      parsed.saosQuery ? searchSaosJudgments(parsed.saosQuery) : Promise.resolve([]),
       (async () => {
         try {
           const cid = await getOrCreateChatId(uid, reqChatId, savedUserMsg, chatMode);
@@ -517,6 +551,7 @@ export default async function handler(req, res) {
     return {
       suggestions: suggestionObjects,
       relatedActs,
+      relatedJudgments,
       followups: parsed.followups || [],
       chatId: savedChatId || null,
       mode: chatMode,

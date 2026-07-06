@@ -166,6 +166,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-act-badge{font-family:var(--mono);font-size:.6rem;font-weight:500;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:1px;letter-spacing:.03em;text-transform:uppercase}
 .ap-act-badge.force{background:rgba(5,150,105,.12);color:#047857}
 .ap-act-badge.old{background:rgba(225,29,72,.1);color:#be123c}
+.ap-act-badge.jud{background:rgba(124,58,237,.1);color:#6d28d9}
 .ap-act-info{flex:1;min-width:0}
 .ap-act-title{font-size:.82rem;color:var(--t1);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ap-act-date{font-family:var(--mono);font-size:.68rem;color:var(--t3);margin-top:3px}
@@ -582,6 +583,18 @@ function appendExtras(wrap, extras) {
           '<div class="ap-act-date">' + (a.type || '') + (a.date ? ' · ' + a.date : '') + '</div></div></a>';
       }).join('');
     wrap.appendChild(actsDiv);
+  }
+  if (extras.relatedJudgments && extras.relatedJudgments.length) {
+    var judDiv = document.createElement('div');
+    judDiv.className = 'ap-acts';
+    judDiv.innerHTML = '<div class="ap-acts-label">⚖️ Powiązane orzeczenia sądów</div>' +
+      extras.relatedJudgments.slice(0, 3).map(function(j) {
+        return '<a class="ap-act-card" href="' + escHtml(j.url) + '" target="_blank" rel="noopener">' +
+          '<span class="ap-act-badge jud">' + escHtml(j.courtLabel || 'Sąd') + '</span>' +
+          '<div class="ap-act-info"><div class="ap-act-title">Sygn. ' + escHtml(j.caseNumber) + (j.court ? ' — ' + escHtml(j.court) : '') + '</div>' +
+          '<div class="ap-act-date">' + (j.date ? 'Wyrok z ' + escHtml(j.date) : '') + ' · saos.org.pl</div></div></a>';
+      }).join('');
+    wrap.appendChild(judDiv);
   }
   if (extras.suggestions && extras.suggestions.length) {
     var suggDiv = document.createElement('div');
