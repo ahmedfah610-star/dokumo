@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { bump } from '../lib/analytics.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -511,11 +512,13 @@ export default async function handler(req, res) {
   // Rate limit (dzienny) — zalogowany bez sub 20, z aktywną subskrypcją 100, admin bez limitu.
   const rl = await checkAndIncrementLimit(uid, dailyMax);
   if (!rl.allowed) {
+    bump(db, 'chat_limit_hit', { mode: chatMode });
     return res.status(429).json({
       error: `Wykorzystano dzienny limit ${dailyMax} pytań (licznik obejmuje wszystkie dzisiejsze pytania, także z widgetu). Limit odnawia się o północy czasu UTC${hasSub ? '' : ' — subskrypcja zwiększa go do 100/dzień'}.`,
-      queriesLeft: 0, queriesMax: dailyMax,
+      queriesLeft: 0, queriesMax: dailyMax, limitReached: true, hasSub,
     });
   }
+  bump(db, 'chat_question', { mode: chatMode });
 
   // Buduj historię wiadomości dla Claude
   const claudeHistory = [];

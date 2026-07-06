@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import crypto from 'crypto';
+import { bump } from '../lib/analytics.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -81,6 +82,7 @@ export default async function handler(req, res) {
           currency: session.currency || 'pln',
           ts: Timestamp.now(),
         });
+        bump(db, 'subscription_active', { plan });
         console.log(`Plan "${plan}" saved for uid: ${user.uid}`);
       } catch(e) {
         console.error('Firestore save failed:', e.message);

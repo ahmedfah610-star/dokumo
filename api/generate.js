@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { hasSensitivePII } from '../lib/pii.js';
+import { bump } from '../lib/analytics.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -92,8 +93,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
     try {
       const sub = await checkSubscription(uid);
-      if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan))
+      if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan)) {
+        bump(db, 'paywall_hit', { source: freeType === 'cv' ? 'cv' : 'letter' });
         return res.status(403).json({ error: 'subscription_required' });
+      }
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
@@ -128,6 +131,7 @@ export default async function handler(req, res) {
         if (rollbackAi) rollbackAi();
         return res.status(500).json({ error: 'Pusta odpowiedź AI' });
       }
+      bump(db, 'generate', { type: freeType });
       return res.status(200).json({ text });
     } catch(e) {
       if (rollbackAi) rollbackAi();
@@ -310,6 +314,7 @@ ${truncated}`;
       } catch(createErr) {
         // gRPC ALREADY_EXISTS = kod 6
         if (createErr.code === 6) {
+          bump(db, 'paywall_hit', { source: 'free_used' });
           return res.status(403).json({ error: 'free_used' });
         }
         throw createErr;
@@ -317,10 +322,12 @@ ${truncated}`;
     } else {
       const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
       if (!requiredPlans.includes(sub.plan)) {
+        bump(db, 'paywall_hit', { source: 'plan_mismatch' });
         return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
       }
       // Start plan — serwer-side enforcement limitu 1 pobrania
       if (sub.plan === 'start' && (sub.downloadsLeft ?? 0) <= 0) {
+        bump(db, 'paywall_hit', { source: 'start_limit' });
         return res.status(403).json({ error: 'start_limit' });
       }
     }
@@ -451,6 +458,7 @@ ${truncated}`;
     // Email cross-sell po pierwszym wygenerowanym dokumencie (fire-and-forget)
     sendFirstDocEmail(uid, docName || 'Dokument', cat).catch(e => console.error('First-doc email:', e.message));
 
+    bump(db, 'generate', { type: docId || 'doc', tier: isFree ? 'free' : 'sub' });
     return res.status(200).json(piiDetected
       ? { text, skipped: true, reason: 'pii_detected', message: 'Dokument zawiera wrażliwe dane (PESEL, nr dowodu, paszportu lub karty płatniczej) — nie zapisano w Twoich dokumentach.' }
       : { text });

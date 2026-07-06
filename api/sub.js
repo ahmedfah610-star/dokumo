@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { bump } from '../lib/analytics.js';
 
 // Kody rabatowe — ustaw w Vercel env: DISCOUNT_CODES=KOD1:50,KOD2:30
 const DISCOUNT_CODES = (() => {
@@ -196,6 +197,7 @@ export default async function handler(req, res) {
 
     const session = await stripePost('/checkout/sessions', sessionParams);
     if (!session.url) return res.status(500).json({ error: session.error?.message || 'Błąd Stripe' });
+    bump(db, 'checkout_started', { plan });
     return res.status(200).json({ url: session.url });
   }
 

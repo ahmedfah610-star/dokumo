@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { hasSensitivePIIInJson } from '../lib/pii.js';
+import { bump } from '../lib/analytics.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -177,6 +178,7 @@ export default async function handler(req, res) {
     const safeFn = (filename || 'CV').replace(/"/g, '').replace(/[^\x20-\x7E]/g, '_');
     res.setHeader('Content-Disposition', `attachment; filename="${safeFn}.pdf"; filename*=UTF-8''${encodeURIComponent((filename || 'CV') + '.pdf')}`);
     res.setHeader('Content-Length', buffer.length);
+    bump(db, 'pdf_download');
     return res.status(200).send(buffer);
   } catch (err) {
     console.error('PDF proxy error:', err.message);

@@ -102,6 +102,11 @@ tr:hover td{background:#faf8f4;}
     <div class="stats-grid" id="kpiGrid"></div>
 
     <div class="panel-section">
+      <div class="panel-section-head"><h2>Lejek zdarzeń</h2><span>ostatnie 14 dni · dane zbierane od wdrożenia</span></div>
+      <div class="section-body" id="analyticsBody"></div>
+    </div>
+
+    <div class="panel-section">
       <div class="panel-section-head"><h2>Ruch i aktywność</h2><span>ostatnie 14 dni</span></div>
       <div class="section-body cols-2" id="activityBody"></div>
     </div>
@@ -209,8 +214,9 @@ async function loadStats(token) {
       return;
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const { payments, stats } = await res.json();
+    const { payments, stats, analytics } = await res.json();
     document.getElementById('panelContent').style.display = 'block';
+    renderAnalytics(analytics || []);
     renderDashboard(stats);
     renderPayments(payments || []);
   } catch(e) {
@@ -260,6 +266,56 @@ function delta(cur, prev){
   if(pct===0) return ' <span style="color:#9b948c">0%</span>';
   const cls=pct>0?'stat-up':'stat-down';
   return ` <span class="${cls}">${pct>0?'▲':'▼'} ${Math.abs(pct)}%</span>`;
+}
+
+// ── Lejek zdarzeń (analityka serwerowa) ──
+function renderAnalytics(days){
+  const el = document.getElementById('analyticsBody');
+  if(!el) return;
+  if(!days.length){ el.innerHTML = '<div class="empty-msg">Brak danych.</div>'; return; }
+  // Suma po typach + rozkład trybu czatu
+  const tot = {};
+  const chatMode = {};
+  const perDay = days.map(d => ({ label: (d.day||'').slice(5), events: d.events||{} }));
+  for(const d of days){
+    for(const [k,v] of Object.entries(d.events||{})) tot[k] = (tot[k]||0) + (v||0);
+    const bm = (d.breakdown && d.breakdown.chat_question && d.breakdown.chat_question.mode) || {};
+    for(const [k,v] of Object.entries(bm)) chatMode[k] = (chatMode[k]||0) + (v||0);
+  }
+  const g = k => tot[k]||0;
+  // KPI lejka
+  const funnel = [
+    { k:'chat_question', label:'Pytania do AI', ic:'💬' },
+    { k:'generate', label:'Wygenerowane dok.', ic:'📄' },
+    { k:'pdf_download', label:'Pobrania PDF', ic:'⬇️' },
+    { k:'paywall_hit', label:'Trafienia w paywall', ic:'🔒' },
+    { k:'chat_limit_hit', label:'Limit AI wyczerpany', ic:'⛔' },
+    { k:'checkout_started', label:'Rozpoczęte płatności', ic:'🛒' },
+    { k:'subscription_active', label:'Nowe subskrypcje', ic:'✅' },
+  ];
+  let html = '<div class="stats-grid" style="margin-bottom:20px">';
+  html += funnel.map(f => `<div class="stat-card"><div class="stat-label">${f.ic} ${f.label}</div><div class="stat-value">${N(g(f.k))}</div></div>`).join('');
+  html += '</div>';
+  // Wykres pytań AI / dzień + rozkład person
+  const chatDaily = perDay.map(d => ({ label: d.label, count: d.events.chat_question||0 }));
+  const genDaily = perDay.map(d => ({ label: d.label, count: d.events.generate||0 }));
+  html += '<div class="cols-2">';
+  html += `<div><div class="chart-title">Pytania do AI / dzień</div>${barChart(chatDaily,false)}</div>`;
+  html += `<div><div class="chart-title">Wygenerowane dokumenty / dzień</div>${barChart(genDaily,true)}</div>`;
+  html += '</div>';
+  // Rozkład person czatu
+  const modeRows = Object.entries(chatMode).map(([k,v]) => ({ name: k==='prawny'?'Prawny':k==='podatkowy'?'Podatkowy':k, count:v })).sort((a,b)=>b.count-a.count);
+  if(modeRows.length){
+    html += `<div style="margin-top:18px"><div class="chart-title">Tryb czatu (podział pytań)</div>${rankList(modeRows)}</div>`;
+  }
+  // Prosta konwersja paywall → checkout
+  const pw = g('paywall_hit') + g('chat_limit_hit');
+  const co = g('checkout_started');
+  if(pw > 0){
+    const rate = Math.round(co/pw*100);
+    html += `<div style="margin-top:16px;font-size:.85rem;color:var(--t2,#555)">Konwersja z paywalla: <b>${co}</b> rozpoczętych płatności na <b>${pw}</b> trafień w limit/paywall (${rate}%).</div>`;
+  }
+  el.innerHTML = html;
 }
 
 function renderDashboard(s){

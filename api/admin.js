@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { readDaily } from '../lib/analytics.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -220,9 +221,9 @@ export default async function handler(req, res) {
     // GET — pełne statystyki dashboardu
     if (req.method === 'GET') {
       await verifyAdmin(req);
-      const stats = await buildStats();
+      const [stats, analytics] = await Promise.all([buildStats(), readDaily(db, 14)]);
       const { payments, ...rest } = stats;
-      return res.status(200).json({ payments, stats: rest });
+      return res.status(200).json({ payments, stats: rest, analytics });
     }
 
     if (req.method !== 'POST') return res.status(405).end();
