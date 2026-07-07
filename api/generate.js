@@ -81,6 +81,38 @@ async function tryReserveSlot(uid, type, limit) {
   }).catch(() => {});
 }
 
+// Miesięczny limit generowań dokumentów wg planu (Start ma osobny model — 1 pobranie).
+const GEN_LIMITS = { kariera: 30, biznes: 30, promax: 100 };
+
+// Atomowa rezerwacja jednego generowania w bieżącym miesiącu kalendarzowym.
+// Zwraca { ok:true, rollback } albo { ok:false } gdy limit wyczerpany.
+async function reserveMonthlyGen(uid, limit) {
+  const ref = db.collection('genUsage').doc(uid);
+  const month = new Date().toISOString().slice(0, 7); // YYYY-MM
+  try {
+    const reserved = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const data = snap.exists ? snap.data() : {};
+      const count = data.month === month ? (data.count || 0) : 0;
+      if (count >= limit) return false;
+      tx.set(ref, { month, count: count + 1, updatedAt: Timestamp.now() }, { merge: true });
+      return true;
+    });
+    if (!reserved) return { ok: false };
+    return {
+      ok: true,
+      rollback: () => db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists || snap.data().month !== month) return;
+        const count = Math.max(0, (snap.data().count || 0) - 1);
+        tx.set(ref, { count }, { merge: true });
+      }).catch(() => {}),
+    };
+  } catch {
+    return { ok: true, rollback: () => {} }; // fail-open na błędach Firestore
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -95,12 +127,15 @@ export default async function handler(req, res) {
     catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
     if (!prompt || typeof prompt !== 'string' || prompt.length > 15000)
       return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
+    let cvPlan = null;
     try {
       const sub = await checkSubscription(uid);
-      if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan)) {
+      // CV i list motywacyjny to dokumenty Kariery (Biznes ich nie obejmuje)
+      if (!sub || !['kariera','promax','start'].includes(sub.plan)) {
         bump(db, 'paywall_hit', { source: freeType === 'cv' ? 'cv' : 'letter' });
         return res.status(403).json({ error: 'subscription_required' });
       }
+      cvPlan = sub.plan;
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
@@ -114,8 +149,20 @@ export default async function handler(req, res) {
     } catch(e) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
+    // Miesięczny limit generowań wg planu (Start pomija — ma model 1 pobrania)
+    let rollbackGen = null;
+    if (GEN_LIMITS[cvPlan]) {
+      const g = await reserveMonthlyGen(uid, GEN_LIMITS[cvPlan]);
+      if (!g.ok) {
+        if (rollbackAi) rollbackAi();
+        bump(db, 'paywall_hit', { source: 'gen_limit' });
+        return res.status(403).json({ error: 'gen_limit', limit: GEN_LIMITS[cvPlan] });
+      }
+      rollbackGen = g.rollback;
+    }
+    const releaseCv = () => { if (rollbackAi) rollbackAi(); if (rollbackGen) { rollbackGen(); rollbackGen = null; } };
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'Brak klucza API' });
+    if (!apiKey) { releaseCv(); return res.status(500).json({ error: 'Brak klucza API' }); }
     try {
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -127,18 +174,18 @@ export default async function handler(req, res) {
       });
       const data = await r.json();
       if (data.error) {
-        if (rollbackAi) rollbackAi();
+        releaseCv();
         return res.status(500).json({ error: data.error.message });
       }
       const text = data.content?.[0]?.text || '';
       if (!text) {
-        if (rollbackAi) rollbackAi();
+        releaseCv();
         return res.status(500).json({ error: 'Pusta odpowiedź AI' });
       }
       bump(db, 'generate', { type: freeType });
       return res.status(200).json({ text });
     } catch(e) {
-      if (rollbackAi) rollbackAi();
+      releaseCv();
       return res.status(500).json({ error: e.name === 'TimeoutError' ? 'Przekroczono czas — spróbuj ponownie.' : e.message });
     }
   }
@@ -276,6 +323,7 @@ ${truncated}`;
 
   // ── 3. Wymagana aktywna subskrypcja — każdy dokument jest płatny ──
   const isFree = false; // brak darmowego slotu; utrzymane dla zgodności downstream
+  let subPlan = null;
   try {
     const sub = await checkSubscription(uid);
     if (!sub) {
@@ -292,6 +340,7 @@ ${truncated}`;
       bump(db, 'paywall_hit', { source: 'start_limit' });
       return res.status(403).json({ error: 'start_limit' });
     }
+    subPlan = sub.plan;
   } catch(e) {
     console.error('Subscription check error:', e.message);
     return res.status(500).json({ error: 'Błąd weryfikacji subskrypcji' });
@@ -357,11 +406,24 @@ ${truncated}`;
     }
   }
 
-  if (!prompt) return res.status(400).json({ error: 'Brak zapytania' });
-  if (typeof prompt !== 'string' || prompt.length > 20000) return res.status(400).json({ error: 'Zapytanie zbyt długie' });
+  if (!prompt) { if (rollbackUsage) rollbackUsage(); return res.status(400).json({ error: 'Brak zapytania' }); }
+  if (typeof prompt !== 'string' || prompt.length > 20000) { if (rollbackUsage) rollbackUsage(); return res.status(400).json({ error: 'Zapytanie zbyt długie' }); }
+
+  // ── Miesięczny limit generowań wg planu (Start pomija — model 1 pobrania) ──
+  if (GEN_LIMITS[subPlan]) {
+    const g = await reserveMonthlyGen(uid, GEN_LIMITS[subPlan]);
+    if (!g.ok) {
+      if (rollbackUsage) rollbackUsage();
+      bump(db, 'paywall_hit', { source: 'gen_limit' });
+      return res.status(403).json({ error: 'gen_limit', limit: GEN_LIMITS[subPlan] });
+    }
+    // Dopnij rollback generowania do istniejącego rollbacku rate-limitu.
+    const _rb = rollbackUsage;
+    rollbackUsage = () => { if (_rb) _rb(); g.rollback(); };
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' });
+  if (!apiKey) { if (rollbackUsage) rollbackUsage(); return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' }); }
 
   const safeSystemPrompt = 'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.';
 

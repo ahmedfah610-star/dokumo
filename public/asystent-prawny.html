@@ -375,6 +375,7 @@ var _currentChatId = null;
 var _history = []; // { role, content }
 var _loading = false;
 var _quotaUnlimited = false;
+var _quotaPaid = false;
 var _freeLeft = null;
 var _mode = 'prawny';
 
@@ -666,8 +667,9 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-// ── Licznik darmowej puli (5 pytań łącznie, potem Pro Max) ──
-// Przyjmuje obiekt z backendu: { unlimited } albo { freeLeft, freeMax }.
+// ── Licznik puli ──
+// Backend zwraca: { unlimited } | { paid:true, freeLeft, freeMax } (Pro Max 100/mies.)
+//               | { freeLeft, freeMax } (5 darmowych łącznie).
 function applyQuota(q) {
   if (!q) return;
   var navQl = document.getElementById('navQl');
@@ -676,7 +678,7 @@ function applyQuota(q) {
   navQl.style.display = '';
   if (q.unlimited) {
     _quotaUnlimited = true;
-    navQlVal.textContent = 'Pro Max';
+    navQlVal.textContent = 'Bez limitu';
     navQlVal.style.color = '';
     hint.textContent = 'Odpowiedzi AI mogą zawierać błędy — zweryfikuj w źródłach.';
     renderQuotaNudge(null);
@@ -686,14 +688,17 @@ function applyQuota(q) {
   _quotaUnlimited = false;
   _freeLeft = q.freeLeft;
   var max = q.freeMax || 5;
-  navQlVal.textContent = q.freeLeft + ' / ' + max + ' darmowych';
-  navQlVal.style.color = q.freeLeft <= 1 ? '#e11d48' : '';
+  _quotaPaid = !!q.paid;
+  navQlVal.textContent = q.freeLeft + ' / ' + max + (q.paid ? ' pytań' : ' darmowych');
+  navQlVal.style.color = (q.freeLeft <= (q.paid ? 5 : 1)) ? '#e11d48' : '';
   if (q.freeLeft <= 0) {
-    hint.innerHTML = '<span style="color:#e11d48">Wykorzystano darmowe pytania.</span> <a href="subskrypcja.html">Kup Pro Max →</a>';
+    hint.innerHTML = q.paid
+      ? '<span style="color:#e11d48">Limit 100 pytań w tym miesiącu wykorzystany.</span> Odnawia się 1. dnia miesiąca.'
+      : '<span style="color:#e11d48">Wykorzystano darmowe pytania.</span> <a href="subskrypcja.html">Kup Pro Max →</a>';
   } else {
     hint.textContent = 'Odpowiedzi AI mogą zawierać błędy — zweryfikuj w źródłach.';
   }
-  renderQuotaNudge(q.freeLeft);
+  renderQuotaNudge(q.paid ? null : q.freeLeft);
 }
 
 // Pasek nad polem wpisu, gdy kończy się darmowa pula (tylko konta bez Pro Max).
@@ -773,6 +778,9 @@ async function sendMessage() {
       } else if (r.status === 403 && data0 && data0.error === 'promax_required') {
         applyQuota({ unlimited: false, freeLeft: 0, freeMax: (data0.freeMax || 5) });
         showPaywall();
+      } else if (r.status === 403 && data0 && data0.error === 'promax_limit') {
+        applyQuota({ paid: true, freeLeft: 0, freeMax: (data0.freeMax || 100) });
+        appendMsg('assistant', '⚠️ Wykorzystałeś limit 100 pytań w tym miesiącu. Pula odnawia się 1. dnia następnego miesiąca.');
       } else {
         appendMsg('assistant', '⚠️ Coś poszło nie tak: ' + ((data0 && data0.error) || 'Spróbuj ponownie.'));
       }

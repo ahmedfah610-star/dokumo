@@ -125,6 +125,24 @@
   // Alias wstecznej zgodności (dawny darmowy slot)
   window.showFreeDocModal = window.showSubRequiredModal;
 
+  // Modal — wyczerpany miesięczny limit generowań w ramach planu
+  window.showGenLimitModal = function (limit) {
+    var el = document.getElementById('pgOverlay');
+    if (el) el.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'pgOverlay';
+    overlay.innerHTML =
+      '<div id="pgModal">' +
+        '<div class="pg-ico">📄</div>' +
+        '<h2>Wykorzystano limit dokumentów</h2>' +
+        '<p>W tym miesiącu wygenerowałeś maksymalną liczbę dokumentów' + (limit ? ' (' + limit + ')' : '') + ' w swoim pakiecie. Limit odnawia się 1. dnia miesiąca — lub przejdź na <strong>Pro Max</strong> (100 dokumentów / mies.).</p>' +
+        '<a href="subskrypcja.html" class="pg-upgrade">Zobacz Pro Max →</a>' +
+        '<button class="pg-close" onclick="document.getElementById(\'pgOverlay\').remove()">Zamknij</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+  };
+
   // Pokazuje w #checkSaved ostrzeżenie gdy serwer pominął zapis z powodu PII
   // (zamiast domyslnego "✓ Zapisano" ktore strona ustawia od razu po fetchu).
   function showPiiSkippedWarning(message) {
@@ -159,6 +177,8 @@
                 window.showSubRequiredModal();
               } else if (d.error === 'start_limit' && window.showStartUsedModal) {
                 window.showStartUsedModal();
+              } else if (d.error === 'gen_limit' && window.showGenLimitModal) {
+                window.showGenLimitModal(d.limit);
               }
             }).catch(function () {});
           }

@@ -7,6 +7,10 @@
 
   var css = [
     '#apwBtn{position:fixed;bottom:22px;right:22px;z-index:99990;display:flex;align-items:center;gap:8px;height:54px;padding:0 16px 0 14px;border:none;border-radius:100px;cursor:pointer;font-family:inherit;font-size:22px;color:#fff;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);box-shadow:0 4px 20px rgba(124,58,237,.38);transition:transform .18s,box-shadow .18s,opacity .2s}',
+    // Generatory mają sticky dolny pasek (.bot-bar, 72px) z przyciskiem „Dalej" —
+    // podnosimy widget nad niego, żeby nie zasłaniał nawigacji.
+    'body:has(.bot-bar) #apwBtn{bottom:86px}',
+    'body:has(.bot-bar) #apwPanel{bottom:82px}',
     '#apwBtn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.48)}',
     '#apwBtn.hidden{opacity:0;pointer-events:none}',
     '#apwBtn .apw-lbl{font-size:13.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}',

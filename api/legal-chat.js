@@ -68,6 +68,8 @@ function todayKey() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
 }
 
+function monthKey() { return new Date().toISOString().slice(0, 7); } // YYYY-MM
+
 // Darmowa pula ŁĄCZNA (na zawsze) — atomowa konsumpcja przez transakcję.
 // Zwraca { allowed, used } gdzie used = liczba wykorzystanych po tej próbie.
 async function consumeFreeQuery(usageDocId, max) {
@@ -83,6 +85,31 @@ async function consumeFreeQuery(usageDocId, max) {
   } catch {
     return { allowed: true, used: 0 }; // fail-open na błędach Firestore
   }
+}
+
+// Pula MIESIĘCZNA (Pro Max) — reset co miesiąc kalendarzowy.
+async function consumeMonthlyQuery(usageDocId, max) {
+  const ref = db.collection('legalChatUsage').doc(usageDocId);
+  const month = monthKey();
+  try {
+    return await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const data = snap.exists ? snap.data() : {};
+      const used = data.month === month ? (data.monthCount || 0) : 0;
+      if (used >= max) return { allowed: false, used };
+      tx.set(ref, { month, monthCount: used + 1, updatedAt: new Date() }, { merge: true });
+      return { allowed: true, used: used + 1 };
+    });
+  } catch {
+    return { allowed: true, used: 0 };
+  }
+}
+async function readMonthlyUsed(usageDocId) {
+  try {
+    const snap = await db.collection('legalChatUsage').doc(usageDocId).get();
+    if (snap.exists && snap.data().month === monthKey()) return snap.data().monthCount || 0;
+  } catch { /* ignore */ }
+  return 0;
 }
 
 // ── Anthropic ───────────────────────────────────────────────────────────
@@ -400,15 +427,23 @@ export default async function handler(req, res) {
     } catch { uid = null; }
   }
 
-  // Model dostępu: 5 darmowych pytań ŁĄCZNIE (na zawsze), potem wyłącznie Pro Max.
+  // Model dostępu:
+  //  • admin  → bez limitu
+  //  • Pro Max → 100 pytań / miesiąc kalendarzowy
+  //  • reszta (brak planu / Kariera / Biznes) → 5 pytań darmowych ŁĄCZNIE (na zawsze), potem Pro Max
   const FREE_LIFETIME = 5;
-  const unlimited = isAdmin || subPlan === 'promax';
+  const PROMAX_MONTHLY = 100;
+  const isPromax = subPlan === 'promax';
   const usageDocId = uid ? uid.replace(/[\/:.]/g, '_') : null;
 
-  // ── GET quota — stan darmowej puli bez zużywania pytania ────────────
+  // ── GET quota — stan puli bez zużywania pytania ─────────────────────
   if (req.method === 'GET' && action === 'quota') {
     if (!uid) return res.status(401).json({ error: 'Wymagane logowanie' });
-    if (unlimited) return res.status(200).json({ unlimited: true });
+    if (isAdmin) return res.status(200).json({ unlimited: true });
+    if (isPromax) {
+      const used = await readMonthlyUsed(usageDocId);
+      return res.status(200).json({ paid: true, freeLeft: Math.max(0, PROMAX_MONTHLY - used), freeMax: PROMAX_MONTHLY });
+    }
     let freeUsed = 0;
     try {
       const snap = await db.collection('legalChatUsage').doc(usageDocId).get();
@@ -512,10 +547,20 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
-  // Dostęp: Pro Max / admin bez limitu; pozostali mają 5 darmowych pytań łącznie.
+  // Dostęp: admin bez limitu; Pro Max 100/mies.; reszta 5 darmowych łącznie.
   let quotaInfo;
-  if (unlimited) {
+  if (isAdmin) {
     quotaInfo = { unlimited: true };
+  } else if (isPromax) {
+    const c = await consumeMonthlyQuery(usageDocId, PROMAX_MONTHLY);
+    if (!c.allowed) {
+      bump(db, 'chat_limit_hit', { mode: chatMode });
+      return res.status(403).json({
+        error: 'promax_limit',
+        freeMax: PROMAX_MONTHLY, freeLeft: 0,
+      });
+    }
+    quotaInfo = { paid: true, freeMax: PROMAX_MONTHLY, freeLeft: Math.max(0, PROMAX_MONTHLY - c.used) };
   } else {
     const c = await consumeFreeQuery(usageDocId, FREE_LIFETIME);
     if (!c.allowed) {
