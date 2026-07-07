@@ -801,7 +801,7 @@ function _hasPdfAccess(){
   var p=sub.plan.toLowerCase();
   if(p==='biznes'||p==='promax') return true;
   if(p==='start'){
-    var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:1;
+    var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:5;
     return left>0;
   }
   return false;
@@ -809,7 +809,7 @@ function _hasPdfAccess(){
 function _useStartDownload(){
   var sub=_getSub();
   if(!sub||sub.plan!=='start') return;
-  var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:1;
+  var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:5;
   sub.downloadsLeft=Math.max(0,left-1);
   localStorage.setItem('dokumo_sub',JSON.stringify(sub));
   if(window._fbToken){

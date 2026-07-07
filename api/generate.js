@@ -81,7 +81,7 @@ async function tryReserveSlot(uid, type, limit) {
   }).catch(() => {});
 }
 
-// Miesięczny limit generowań dokumentów wg planu (Start ma osobny model — 1 pobranie).
+// Miesięczny limit generowań dokumentów wg planu (Start ma osobny model — pula 5 pobrań).
 const GEN_LIMITS = { kariera: 30, biznes: 30, promax: 100 };
 
 // Atomowa rezerwacja jednego generowania w bieżącym miesiącu kalendarzowym.

@@ -247,6 +247,7 @@ export default async function handler(req, res) {
         grantedByAdmin: true,
         email: emailClean,
       };
+      if (plan === 'start') subData.downloadsLeft = 5;
 
       try {
         const user = await auth.getUserByEmail(emailClean);

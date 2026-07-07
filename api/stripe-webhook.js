@@ -73,7 +73,7 @@ export default async function handler(req, res) {
           stripeSubscriptionId: session.subscription || null,
           email,
         };
-        if (plan === 'start') subDoc.downloadsLeft = 1;
+        if (plan === 'start') subDoc.downloadsLeft = 5;
         await db.collection('users').doc(user.uid).collection('subscription').doc('current').set(subDoc);
         await db.collection('payments').add({
           uid: user.uid, email, plan,

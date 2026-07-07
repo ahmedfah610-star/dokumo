@@ -89,7 +89,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Brak aktywnej subskrypcji' });
   }
 
-  // Start plan — atomowy dekrement downloadsLeft (1 pobranie)
+  // Start plan — atomowy dekrement downloadsLeft (pula 5 pobrań)
   if (hasSub) {
     try {
       const subRef = subSnap.ref;

@@ -51,8 +51,8 @@
     overlay.innerHTML =
       '<div id="pgModal">' +
         '<div class="pg-ico">📄</div>' +
-        '<h2>Pobranie już wykorzystane</h2>' +
-        '<p>Twój Pakiet Start pozwala na <strong>jedno pobranie</strong>.<br>Kup subskrypcję, żeby pobierać bez limitu.</p>' +
+        '<h2>Pobrania już wykorzystane</h2>' +
+        '<p>Twój Pakiet Start pozwala na <strong>5 pobrań</strong> — wykorzystałeś wszystkie.<br>Kup subskrypcję, żeby pobierać co miesiąc.</p>' +
         '<a href="subskrypcja.html" class="pg-upgrade">Zobacz plany →</a>' +
         '<button class="pg-close" onclick="document.getElementById(\'pgOverlay\').remove()">Zamknij</button>' +
       '</div>';
@@ -80,9 +80,9 @@
       return false;
     }
 
-    // Pakiet Start — jednorazowe pobranie
+    // Pakiet Start — pula 5 pobrań
     if (sub.plan === 'start') {
-      var left = typeof sub.downloadsLeft === 'number' ? sub.downloadsLeft : 1;
+      var left = typeof sub.downloadsLeft === 'number' ? sub.downloadsLeft : 5;
       if (left <= 0) {
         window.showStartUsedModal();
         return false;
