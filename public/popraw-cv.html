@@ -280,7 +280,7 @@ ${cvText.substring(0, 8000)}`;
   var response = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-    body: JSON.stringify({ prompt: prompt, docCat: 'kariera' })
+    body: JSON.stringify({ prompt: prompt, type: 'analyze-cv' })
   });
 
   if (!response.ok) throw new Error('Błąd API: ' + response.status);

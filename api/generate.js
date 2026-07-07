@@ -303,6 +303,51 @@ ${truncated}`;
     }
   }
 
+  // ── Analiza/poprawa CV (popraw-cv.html) — DARMOWA, bez subskrypcji ──
+  // Narzędzie lead-generacyjne: sama analiza jest bezpłatna (płatność dopiero
+  // za pobranie poprawionego CV w kreatorze). Działa też bez konta.
+  // Ochrona przed nadużyciem: limit 15/godz. per uid (gdy zalogowany) lub per IP.
+  if (freeType === 'analyze-cv') {
+    if (!prompt || typeof prompt !== 'string' || prompt.length > 15000)
+      return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
+
+    // Rozpoznaj usera opcjonalnie — sam token nie jest wymagany
+    const cvToken = (req.headers.authorization || '').replace('Bearer ', '').trim();
+    let limiterKey = null;
+    if (cvToken) {
+      try { limiterKey = (await auth.verifyIdToken(cvToken)).uid; } catch { limiterKey = null; }
+    }
+    if (!limiterKey) limiterKey = 'ip_' + getIpPrefix(req);
+
+    let rollbackAi = null;
+    try {
+      rollbackAi = await tryReserveSlot(limiterKey, 'cvAnalyze', 15);
+      if (!rollbackAi) return res.status(429).json({ error: 'Przekroczono limit analiz CV (15/godz.). Spróbuj później.' });
+    } catch { /* fail-open na błędach Firestore */ }
+
+    const cvApiKey = process.env.ANTHROPIC_API_KEY;
+    if (!cvApiKey) { if (rollbackAi) rollbackAi(); return res.status(500).json({ error: 'Brak klucza API' }); }
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': cvApiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000,
+          system: 'Piszesz wyłącznie po polsku. Zwracasz wyłącznie poprawny JSON, bez markdown i bez backticks.',
+          messages: [{ role: 'user', content: prompt }] }),
+        signal: AbortSignal.timeout(30000)
+      });
+      const data = await r.json();
+      if (data.error) { if (rollbackAi) rollbackAi(); return res.status(500).json({ error: data.error.message }); }
+      const text = data.content?.[0]?.text || '';
+      if (!text) { if (rollbackAi) rollbackAi(); return res.status(500).json({ error: 'Pusta odpowiedź AI' }); }
+      bump(db, 'generate', { type: 'analyze-cv' });
+      return res.status(200).json({ text });
+    } catch(e) {
+      if (rollbackAi) rollbackAi();
+      return res.status(500).json({ error: e.name === 'TimeoutError' ? 'Przekroczono czas — spróbuj ponownie.' : e.message });
+    }
+  }
+
   // ── 1. Wymagane uwierzytelnienie ──
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
