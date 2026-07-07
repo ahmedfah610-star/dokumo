@@ -192,6 +192,30 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 .btn-preview:hover{border-color:#999;background:var(--surface);}
 .btn-tpl{position:relative;padding:8px 18px;border-radius:var(--pill);border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:5px;transition:all .2s;}
 .btn-tpl:hover{border-color:#999;background:var(--surface);}
+/* ── AI toolbar + siła listu + ogłoszenie ── */
+.lm-ai-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;}
+.lm-ai-btn{padding:6px 11px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-family:'Figtree',sans-serif;font-size:.74rem;font-weight:700;color:var(--ink);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;}
+.lm-ai-btn:hover{border-color:#999;background:var(--surface);}
+.lm-ai-btn:disabled{opacity:.5;cursor:wait;}
+.lm-ai-btn.primary{background:#111;color:#fff;border-color:#111;}
+.lm-ai-btn.primary:hover{background:#333;}
+.lm-tone{padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-family:'Figtree',sans-serif;font-size:.74rem;font-weight:600;color:var(--ink2);background:#fff;cursor:pointer;max-width:150px;}
+.lm-count{font-size:.72rem;color:var(--ink3);margin-top:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+.lm-count b.ok{color:#16a34a}.lm-count b.warn{color:#d97706}
+.lm-meter{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.lm-meter-top{display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:8px;}
+.lm-meter-label{font-size:.74rem;font-weight:800;color:var(--ink);}
+.lm-meter-score{font-size:.74rem;font-weight:800;white-space:nowrap;}
+.lm-meter-bar{height:6px;background:#e8e8e8;border-radius:4px;margin-top:8px;overflow:hidden;}
+.lm-meter-fill{height:100%;border-radius:4px;transition:width .4s,background .4s;background:#d97706;width:0;}
+.lm-meter-list{display:none;margin-top:10px;flex-direction:column;gap:4px;}
+.lm-meter.open .lm-meter-list{display:flex;}
+.lm-meter-item{font-size:.72rem;color:var(--ink2);display:flex;gap:6px;align-items:flex-start;line-height:1.4;}
+.lm-meter-item.done{color:#16a34a;}
+.lm-posting-toggle{font-size:.76rem;font-weight:700;color:var(--ink2);background:none;border:none;cursor:pointer;padding:2px 0;font-family:'Figtree',sans-serif;display:inline-flex;align-items:center;gap:5px;margin-top:10px;}
+.lm-posting-toggle:hover{color:var(--ink);}
+#fPosting{display:none;margin-top:8px;min-height:90px;font-size:.78rem;}
+#fPosting.open{display:block;}
 
 /* TEMPLATE PICKER */
 .tpl-picker{display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,.12);min-width:220px;z-index:100;}
@@ -396,8 +420,43 @@ onAuthStateChanged(getAuth(app),async u=>{
       <!-- Treść -->
       <div class="lm-section">
         <div class="lm-section-head"><span class="lm-section-title">Treść listu</span></div>
+
+        <!-- Siła listu -->
+        <div class="lm-meter" id="lmMeter">
+          <div class="lm-meter-top" onclick="document.getElementById('lmMeter').classList.toggle('open')">
+            <span class="lm-meter-label">💪 Siła listu</span>
+            <span class="lm-meter-score" id="lmMeterScore">—</span>
+          </div>
+          <div class="lm-meter-bar"><div class="lm-meter-fill" id="lmMeterFill"></div></div>
+          <div class="lm-meter-list" id="lmMeterList"></div>
+        </div>
+
+        <!-- Pasek AI -->
+        <div class="lm-ai-bar">
+          <button class="lm-ai-btn primary" id="aiWrite" onclick="aiLetter('write')">✨ Napisz z AI</button>
+          <button class="lm-ai-btn" id="aiImprove" onclick="aiLetter('improve')">Popraw</button>
+          <button class="lm-ai-btn" id="aiShorten" onclick="aiLetter('shorten')">Skróć</button>
+          <button class="lm-ai-btn" id="aiExpand" onclick="aiLetter('expand')">Rozwiń</button>
+          <select class="lm-tone" id="fTone" onchange="renderPreview()" aria-label="Ton listu">
+            <option value="formalny">Ton: formalny</option>
+            <option value="naturalny">Ton: naturalny</option>
+            <option value="pewny">Ton: pewny siebie</option>
+            <option value="entuzjastyczny">Ton: entuzjastyczny</option>
+          </select>
+          <select class="lm-tone" id="lmExample" onchange="insertExample(this.value)" aria-label="Wstaw przykładową treść">
+            <option value="">📚 Przykład…</option>
+          </select>
+        </div>
+
         <div class="lm-field">
-          <label class="lm-label" for="fBody" style="display:none;">Treść listu</label><textarea class="lm-input lm-textarea" id="fBody" placeholder="Opisz w 3-4 zdaniach, dlaczego jesteś idealnym kandydatem na to stanowisko." oninput="renderPreview()"></textarea>
+          <label class="lm-label" for="fBody" style="display:none;">Treść listu</label><textarea class="lm-input lm-textarea" id="fBody" placeholder="Napisz sam lub kliknij „✨ Napisz z AI” — a jeśli wkleisz niżej ogłoszenie, AI wplecie w list wymagania rekrutera." oninput="renderPreview()"></textarea>
+          <div class="lm-count"><span id="lmWordCount">0 słów</span><span style="color:var(--ink3);">cel: 250–400 słów (1 strona A4)</span></div>
+        </div>
+
+        <!-- Ogłoszenie o pracę -->
+        <button class="lm-posting-toggle" id="postingToggle" onclick="togglePosting()" aria-expanded="false">📋 Wklej ogłoszenie o pracę (opcjonalnie) <span id="postingArrow">▾</span></button>
+        <div class="lm-field">
+          <textarea class="lm-input lm-textarea" id="fPosting" placeholder="Wklej treść ogłoszenia — AI wplecie w list najważniejsze wymagania i słowa kluczowe, a „Siła listu” sprawdzi dopasowanie." oninput="renderPreview()"></textarea>
         </div>
       </div>
 
@@ -453,6 +512,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 
 <div class="lm-bar" id="lmBar" style="display:none;">
   <button class="btn-dl" onclick="downloadPdf()">⬇ Pobierz PDF</button>
+  <button class="btn-dl" style="background:#fff;color:var(--ink);border:1.5px solid var(--border);" onclick="downloadDoc()" title="Pobierz jako dokument Word">⬇ DOC</button>
   <div style="position:relative;">
     <button class="btn-tpl" id="btnTpl" onclick="toggleTplPicker()" aria-expanded="false" aria-controls="tplPicker" aria-label="Wybierz szablon">🎨 Szablon <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
     <div class="tpl-picker" id="tplPicker">
@@ -480,6 +540,10 @@ onAuthStateChanged(getAuth(app),async u=>{
         <div class="tpl-opt-preview" style="border-color:#bbb;padding:5px 4px;"><div style="height:1.5px;background:#333;margin-bottom:3px;border-radius:1px;width:45%;"></div><div style="height:0.5px;background:#ddd;width:100%;margin-bottom:5px;"></div><div style="height:1.5px;background:#e5e5e5;border-radius:1px;width:85%;margin-bottom:3px;"></div><div style="height:1.5px;background:#efefef;border-radius:1px;width:70%;"></div></div>
         <div><div class="tpl-opt-label">Minimalistyczny</div><div class="tpl-opt-sub">Dużo światła, subtelny</div></div>
       </button>
+      <div style="border-top:1px solid #eee;margin-top:6px;padding:10px 12px 6px;">
+        <div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;color:#999;margin-bottom:8px;">KOLOR AKCENTU</div>
+        <div id="accentSwatches" style="display:flex;gap:8px;"></div>
+      </div>
     </div>
   </div>
   <button class="btn-preview" onclick="openPreview()">👁 Podgląd</button>
@@ -570,12 +634,12 @@ function wizShow(){
 function val(id){ return (document.getElementById(id)||{}).value || ''; }
 
 /* ── AUTOZAPIS ROBOCZEJ WERSJI (localStorage) ── */
-var LM_DRAFT_FIELDS = ['fPos','fCompany','fFirstName','fLastName','fEmail','fPhone','fStreet','fZip','fCity','rCompany','rContact','rStreet','rZip','rCity','fBody'];
+var LM_DRAFT_FIELDS = ['fPos','fCompany','fFirstName','fLastName','fEmail','fPhone','fStreet','fZip','fCity','rCompany','rContact','rStreet','rZip','rCity','fBody','fPosting','fTone'];
 var _lmDraftTimer = null;
 function _collectLmDraft(){
   var f={};
   LM_DRAFT_FIELDS.forEach(function(id){ var el=document.getElementById(id); if(el) f[id]=el.value; });
-  return { fields:f, recOpen:(typeof _recOpen!=='undefined'?_recOpen:false), tpl:(typeof _currentTpl!=='undefined'?_currentTpl:'klasyczny') };
+  return { fields:f, recOpen:(typeof _recOpen!=='undefined'?_recOpen:false), tpl:(typeof _currentTpl!=='undefined'?_currentTpl:'klasyczny'), accent:(typeof _accentColor!=='undefined'?_accentColor:null) };
 }
 function _saveLmDraft(immediate){
   if(!window.DokumoDraft) return;
@@ -590,13 +654,15 @@ function _restoreLmDraft(){
     var d=window.DokumoDraft.load();
     if(!d||!d.fields) return false;
     var any=false;
-    LM_DRAFT_FIELDS.forEach(function(id){ var v=d.fields[id]; if(v!=null){ var el=document.getElementById(id); if(el) el.value=v; if(v) any=true; } });
+    LM_DRAFT_FIELDS.forEach(function(id){ var v=d.fields[id]; if(v!=null){ var el=document.getElementById(id); if(el) el.value=v; if(v && id!=='fTone') any=true; } });
     if(!any) return false;
     if(d.recOpen){
       _recOpen=true;
       var rf=document.getElementById('recFields'); if(rf) rf.classList.add('open');
       var rb=document.getElementById('recToggle'); if(rb){ rb.classList.add('open'); rb.setAttribute('aria-expanded','true'); }
     }
+    if(d.accent && typeof _accentColor!=='undefined'){ _accentColor=d.accent; if(typeof _renderSwatches==='function') _renderSwatches(); }
+    if(d.fields.fPosting && typeof togglePosting==='function'){ var pt=document.getElementById('fPosting'); if(pt && !pt.classList.contains('open')) togglePosting(); }
     if(d.tpl && typeof _currentTpl!=='undefined' && d.tpl!==_currentTpl && typeof setTpl==='function') setTpl(d.tpl);
     if(window.DokumoDraft.toast) setTimeout(function(){ window.DokumoDraft.toast(); }, 300);
     return true;
@@ -1046,13 +1112,13 @@ function renderPreview() {
       // Header
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
         '<div>' +
-          '<div style="font-size:26px;font-weight:800;letter-spacing:-0.02em;color:#111;line-height:1.1;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+          '<div style="font-size:26px;font-weight:800;letter-spacing:-0.02em;color:' + (_accentColor === '#1f2937' ? '#111' : _accentColor) + ';line-height:1.1;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
           (pos ? '<div style="font-size:12px;color:#777;margin-top:5px;">' + esc(pos) + '</div>' : '') +
         '</div>' +
         photoHtml +
       '</div>' +
       // Divider
-      '<div style="border-top:1.5px solid #111;margin:14px 0 12px;"></div>' +
+      '<div style="border-top:1.5px solid ' + (_accentColor === '#1f2937' ? '#111' : _accentColor) + ';margin:14px 0 12px;"></div>' +
       // Contact row
       (contactParts.length ? '<div style="display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:#333;margin-bottom:22px;">' + contactParts.join('') + '</div>' : '<div style="margin-bottom:22px;"></div>') +
       // Recipient + date
@@ -1098,19 +1164,19 @@ function renderPreview() {
       '<div style="font-family:\'Figtree\',-apple-system,sans-serif;font-size:11.5px;line-height:1.8;color:#222;">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
           '<div>' +
-            '<div style="font-size:25px;font-weight:800;letter-spacing:-0.02em;color:#1e3a5f;line-height:1.1;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+            '<div style="font-size:25px;font-weight:800;letter-spacing:-0.02em;color:' + _accentColor + ';line-height:1.1;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
             (pos ? '<div style="font-size:11.5px;color:#555;margin-top:5px;">' + esc(pos) + '</div>' : '') +
-            '<div style="width:46px;height:3.5px;background:#1e3a5f;margin-top:12px;"></div>' +
+            '<div style="width:46px;height:3.5px;background:' + _accentColor + ';margin-top:12px;"></div>' +
           '</div>' + akcPhoto +
         '</div>' +
-        (contactBits.length ? '<div style="font-size:10.5px;color:#444;margin:16px 0 24px;">' + contactBits.join(' &nbsp;<span style="color:#1e3a5f;">•</span>&nbsp; ') + '</div>' : '<div style="margin-bottom:24px;"></div>') +
+        (contactBits.length ? '<div style="font-size:10.5px;color:#444;margin:16px 0 24px;">' + contactBits.join(' &nbsp;<span style="color:' + _accentColor + ';">•</span>&nbsp; ') + '</div>' : '<div style="margin-bottom:24px;"></div>') +
         (akcRcpt.length ? '<div style="text-align:right;line-height:1.7;font-size:11px;margin-bottom:14px;">' + akcRcpt.join('<br>') + '</div>' : '') +
         '<div style="text-align:right;font-size:10.5px;color:#777;margin-bottom:20px;">' + esc((city || 'Miejscowość') + ', ' + today) + '</div>' +
-        (pos ? '<div style="margin-bottom:16px;">Dotyczy: Aplikacja na stanowisko <b style="color:#1e3a5f;">' + esc(pos) + '</b>' + (company ? ' w firmie <b style="color:#1e3a5f;">' + esc(company) + '</b>' : '') + '</div>' : '') +
+        (pos ? '<div style="margin-bottom:16px;">Dotyczy: Aplikacja na stanowisko <b style="color:' + _accentColor + ';">' + esc(pos) + '</b>' + (company ? ' w firmie <b style="color:' + _accentColor + ';">' + esc(company) + '</b>' : '') + '</div>' : '') +
         '<div style="margin-bottom:14px;">' + salutation + '</div>' +
         '<div style="margin-bottom:28px;">' + bodyHtml + '</div>' +
         '<div>Z poważaniem,</div>' +
-        '<div style="margin-top:24px;font-size:13px;font-weight:700;color:#1e3a5f;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+        '<div style="margin-top:24px;font-size:13px;font-weight:700;color:' + _accentColor + ';">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
       '</div>';
   } else if (_currentTpl === 'belka') {
     // ── Executive: ciemna belka nagłówka na całą szerokość ──
@@ -1120,7 +1186,7 @@ function renderPreview() {
     var belkaRcpt = rcptLines();
     html =
       '<div style="font-family:\'Figtree\',-apple-system,sans-serif;font-size:11.5px;line-height:1.8;color:#222;">' +
-        '<div style="background:#1c2430;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">' +
+        '<div style="background:' + _accentColor + ';padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">' +
           '<div>' +
             '<div style="font-size:21px;font-weight:700;color:#fff;letter-spacing:0.01em;line-height:1.15;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
             (pos ? '<div style="font-size:10.5px;color:rgba(255,255,255,0.72);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase;">' + esc(pos) + '</div>' : '') +
@@ -1188,7 +1254,219 @@ function renderPreview() {
   document.getElementById('lmPaper').innerHTML = html;
   var modal = document.getElementById('lmPaperModal');
   if (modal) modal.innerHTML = html;
+  if (typeof updateLetterMeter === 'function') updateLetterMeter();
   scheduleAutoSave();
+}
+
+// ── Kolor akcentu szablonów ──
+var _accentColor = '#1e3a5f';
+var LM_ACCENTS = [
+  ['#1e3a5f','Granat'], ['#0f6b4f','Szmaragd'], ['#7a2231','Bordo'],
+  ['#5b21b6','Fiolet'], ['#1f2937','Grafit']
+];
+function setAccent(c) {
+  _accentColor = c;
+  _renderSwatches();
+  renderPreview();
+}
+function _renderSwatches() {
+  var box = document.getElementById('accentSwatches');
+  if (!box) return;
+  box.innerHTML = LM_ACCENTS.map(function(a) {
+    var on = a[0] === _accentColor;
+    return '<button title="' + a[1] + '" onclick="setAccent(\'' + a[0] + '\')" style="width:22px;height:22px;border-radius:50%;background:' + a[0] + ';cursor:pointer;border:2px solid ' + (on ? '#111' : 'transparent') + ';box-shadow:' + (on ? '0 0 0 2px #fff inset' : 'none') + ';"></button>';
+  }).join('');
+}
+_renderSwatches();
+
+// ── Ogłoszenie o pracę (toggle) ──
+function togglePosting() {
+  var t = document.getElementById('fPosting');
+  var open = !t.classList.contains('open');
+  t.classList.toggle('open', open);
+  document.getElementById('postingToggle').setAttribute('aria-expanded', String(open));
+  document.getElementById('postingArrow').textContent = open ? '▴' : '▾';
+  if (open) t.focus();
+}
+
+// ── Przykładowe treści per zawód ──
+var LM_EXAMPLES = {
+  sprzedawca: ['Sprzedawca / doradca klienta',
+'Z zainteresowaniem aplikuję na stanowisko {POS} w {COMP}. Od [X] lat pracuję w sprzedaży detalicznej — obsługuję klientów przy kasie i na sali, dbam o ekspozycję towaru i realizuję plany sprzedażowe. W ostatnim miejscu pracy regularnie osiągałem [X]% celu miesięcznego.\n\nNajlepiej czuję się w bezpośrednim kontakcie z klientem: potrafię doradzić, dopasować produkt do potrzeb i spokojnie rozwiązać reklamację. Znam zasady rotacji towaru i inwentaryzacji, sprawnie obsługuję kasę fiskalną i terminal płatniczy.\n\nChętnie wykorzystam to doświadczenie w {COMP}. Jestem dyspozycyjny, uczciwy i szybko się uczę — co potwierdzą moi dotychczasowi pracodawcy.'],
+  obsluga: ['Specjalista obsługi klienta',
+'Aplikuję na stanowisko {POS} w {COMP}, ponieważ od [X] lat zawodowo zajmuję się obsługą klienta i wiem, że to obszar, w którym jestem naprawdę skuteczny. Obsługiwałem średnio [X] zgłoszeń dziennie — telefonicznie, mailowo i na czacie — utrzymując ocenę zadowolenia klientów na poziomie [X]%.\n\nPotrafię zachować spokój w trudnych rozmowach, jasno tłumaczyć skomplikowane kwestie i doprowadzać sprawy do końca. Sprawnie posługuję się systemami zgłoszeniowymi i pakietem biurowym, a wiedzę o produkcie przyswajam bardzo szybko.\n\nW {COMP} przyciąga mnie nacisk na jakość obsługi. Chętnie opowiem podczas rozmowy, jak moje doświadczenie może przełożyć się na zadowolenie Państwa klientów.'],
+  magazynier: ['Magazynier / logistyka',
+'Zgłaszam swoją kandydaturę na stanowisko {POS} w {COMP}. Mam [X] lata doświadczenia w pracy magazynowej: kompletacja zamówień, przyjęcia i wydania towaru, praca ze skanerem oraz systemem magazynowym. Posiadam uprawnienia na wózki widłowe (UDT).\n\nPracuję dokładnie i dbam o porządek na stanowisku — w poprzedniej firmie mój wskaźnik błędów kompletacji utrzymywał się poniżej [X]%. Jestem przyzwyczajony do pracy zmianowej i pracy pod presją czasu w sezonie.\n\nJestem gotowy podjąć pracę od zaraz. Chętnie pokażę swoje umiejętności podczas dnia próbnego w {COMP}.'],
+  kierowca: ['Kierowca',
+'Aplikuję na stanowisko {POS} w {COMP}. Posiadam prawo jazdy kat. [B/C/C+E], ważne badania psychotechniczne oraz [X] lat doświadczenia w transporcie i dostawach. Dotychczas realizowałem dziennie [X] dostaw, dbając o terminowość i dobry kontakt z klientami.\n\nJeżdżę bezpiecznie i ekonomicznie — przez ostatnie [X] lata bez szkody z mojej winy. Znam bardzo dobrze region, sprawnie korzystam z nawigacji i aplikacji kurierskich, dbam o powierzony pojazd i dokumentację przewozową.\n\nJestem dyspozycyjny, punktualny i samodzielny. Chętnie dołączę do zespołu {COMP} i od pierwszego dnia wezmę pełną odpowiedzialność za swoją trasę.'],
+  ksiegowosc: ['Księgowość / finanse',
+'Z przyjemnością aplikuję na stanowisko {POS} w {COMP}. Przez ostatnie [X] lat samodzielnie prowadziłam pełną księgowość spółek oraz księgę przychodów i rozchodów — łącznie dla [X] podmiotów. Odpowiadałam za deklaracje VAT, JPK, rozliczenia ZUS i sprawozdania finansowe.\n\nPracuję terminowo i bezbłędnie — moje deklaracje nie wymagały korekt z winy biura. Bardzo dobrze znam programy księgowe oraz arkusz kalkulacyjny, na bieżąco śledzę zmiany w przepisach podatkowych, w tym KSeF.\n\nSzukam miejsca, w którym dokładność i samodzielność są doceniane — dlatego {COMP} to naturalny wybór. Chętnie przedstawię szczegóły mojego doświadczenia podczas rozmowy.'],
+  it: ['Programista / IT',
+'Aplikuję na stanowisko {POS} w {COMP}. Od [X] lat tworzę i utrzymuję aplikacje internetowe — od projektowania interfejsu po wdrożenia na serwerach. W ostatnim projekcie skróciłem czas ładowania kluczowego widoku o [X]%, co bezpośrednio przełożyło się na wzrost konwersji.\n\nNa co dzień pracuję zespołowo: przeglądy kodu, planowanie zadań, ścisła współpraca z projektantami i testerami. Dbam o jakość — piszę testy automatyczne i dokumentację, a mój kod trafia na produkcję bez poprawek krytycznych.\n\nProdukt {COMP} znam i cenię, dlatego chcę rozwijać go od środka. Chętnie pokażę moje projekty i omówię, jak mogę wnieść wartość do zespołu od pierwszego tygodnia.'],
+  marketing: ['Marketing / media społecznościowe',
+'Z entuzjazmem aplikuję na stanowisko {POS} w {COMP}. Przez ostatnie [X] lata prowadziłam działania marketingowe marek z branży [branża]: kampanie płatne, media społecznościowe i współprace z twórcami. Kampanie pod moją opieką zwiększyły sprzedaż o [X]% przy budżecie [X] zł miesięcznie.\n\nŁączę kreatywność z analizą danych — każdą kampanię rozliczam z konkretnych wyników, a treści dopasowuję do grupy odbiorców. Samodzielnie przygotowuję grafiki, krótkie wideo i teksty reklamowe.\n\nMarkę {COMP} obserwuję od dawna i mam gotowe pomysły na jej komunikację — chętnie przedstawię je podczas rozmowy.'],
+  nauczyciel: ['Nauczyciel / edukacja',
+'Zgłaszam swoją kandydaturę na stanowisko {POS} w {COMP}. Posiadam przygotowanie pedagogiczne oraz [X] lat doświadczenia w nauczaniu. Moi uczniowie regularnie osiągają wyniki powyżej średniej — w ubiegłym roku [X]% zdało egzamin z wynikiem dobrym lub bardzo dobrym.\n\nStawiam na zaangażowanie uczniów: pracuję metodą projektów, wykorzystuję narzędzia cyfrowe i dostosowuję tempo do możliwości klasy. Dobrze współpracuję z rodzicami i gronem pedagogicznym, prowadziłam też koło zainteresowań.\n\nChętnie dołączę do zespołu {COMP} i wniosę do niego energię, cierpliwość oraz sprawdzone metody pracy z młodzieżą.'],
+  gastronomia: ['Kelner / gastronomia',
+'Aplikuję na stanowisko {POS} w {COMP}. Mam [X] lata doświadczenia w gastronomii — obsługiwałem sale na [X] miejsc, przyjmowałem zamówienia, doradzałem gościom i obsługiwałem systemy kasowe. Posiadam aktualną książeczkę sanepidowską.\n\nPracuję szybko i z uśmiechem nawet przy pełnej sali. Znam zasady serwisu, potrafię polecić danie i wino, a trudne sytuacje rozwiązuję tak, by gość wyszedł zadowolony. Dobrze czuję się w pracy zespołowej i pomagam kolegom, gdy jest ruch.\n\nChętnie dołączę do zespołu {COMP} — jestem dyspozycyjny w weekendy i wieczory, mogę zacząć od zaraz.'],
+  opiekunka: ['Opiekunka / opiekun',
+'Z sercem aplikuję na stanowisko {POS} w {COMP}. Od [X] lat opiekuję się osobami starszymi i dziećmi — pomagam w codziennych czynnościach, pilnuję przyjmowania leków, przygotowuję posiłki i organizuję czas. Posiadam ukończony kurs pierwszej pomocy.\n\nJestem osobą cierpliwą, punktualną i godną zaufania — rodziny, z którymi współpracowałam, chętnie udzielą mi referencji. Dbam nie tylko o bezpieczeństwo podopiecznych, ale też o ich dobre samopoczucie i kontakt z bliskimi.\n\nChętnie poznam Państwa oczekiwania i dopasuję się do potrzeb podopiecznego. Jestem dyspozycyjna również w weekendy.'],
+  hr: ['Specjalista HR / rekrutacja',
+'Aplikuję na stanowisko {POS} w {COMP}. Przez [X] lata prowadziłam pełne procesy rekrutacyjne — od profilu stanowiska, przez selekcję, po zatrudnienie. Zamykałam średnio [X] rekrutacji miesięcznie, skracając czas zatrudnienia o [X]%.\n\nDbam o doświadczenie kandydata na każdym etapie: jasna komunikacja, informacja zwrotna, sprawny proces. Znam prawo pracy w praktyce, prowadziłam też wdrożenia nowych pracowników i badania zaangażowania.\n\nChętnie wykorzystam te doświadczenia, by wzmocnić zespół {COMP}. Z przyjemnością opowiem o konkretnych rekrutacjach podczas spotkania.'],
+  biuro: ['Pracownik biurowy / administracja',
+'Zgłaszam swoją kandydaturę na stanowisko {POS} w {COMP}. Mam [X] lata doświadczenia w pracy biurowej: obieg dokumentów, wystawianie faktur, obsługa korespondencji i telefonów oraz wsparcie zarządu w codziennych sprawach.\n\nPracuję dokładnie i samodzielnie — powierzone zadania kończę przed terminem, a dokumentację prowadzę tak, że wszystko można znaleźć w minutę. Bardzo dobrze znam pakiet biurowy i szybko uczę się nowych systemów.\n\nJestem osobą zorganizowaną, dyskretną i komunikatywną. Chętnie zadbam o to, by biuro {COMP} działało sprawnie każdego dnia.']
+};
+(function populateExamples() {
+  var sel = document.getElementById('lmExample');
+  if (!sel) return;
+  Object.keys(LM_EXAMPLES).forEach(function(k) {
+    var o = document.createElement('option');
+    o.value = k; o.textContent = LM_EXAMPLES[k][0];
+    sel.appendChild(o);
+  });
+})();
+function insertExample(key) {
+  var sel = document.getElementById('lmExample');
+  if (!key) return;
+  var cur = val('fBody');
+  if (cur.trim() && !confirm('Zastąpić obecną treść przykładem? Obecny tekst zostanie nadpisany.')) { sel.value = ''; return; }
+  var tpl = LM_EXAMPLES[key][1]
+    .replace(/{POS}/g, val('fPos') || '[stanowisko]')
+    .replace(/{COMP}/g, val('fCompany') || '[nazwa firmy]');
+  document.getElementById('fBody').value = tpl;
+  sel.value = '';
+  renderPreview();
+}
+
+// ── Siła listu (licznik słów + checklist) ──
+var LM_STOPWORDS = ['oferujemy','wymagania','wymagane','widziane','pracy','praca','pracę','osoby','osób','umowa','umowy','godzin','pełny','etat','firma','firmy','firmie','zespołu','zespół','zespole','doświadczenie','doświadczenia','znajomość','umiejętność','umiejętności','obowiązki','zakres','miejsce','stanowisko','stanowisku','stanowiska','kandydat','kandydata','kandydatów','będzie','które','która','który','także','również','możliwość','zapewniamy','poszukujemy','szukamy','oferta','ofertę','benefity','wynagrodzenie','miesięcznie'];
+function updateLetterMeter() {
+  var scoreEl = document.getElementById('lmMeterScore');
+  if (!scoreEl) return;
+  var body = val('fBody'), posting = val('fPosting');
+  var words = body.trim() ? body.trim().split(/\s+/).length : 0;
+
+  // licznik słów
+  var wc = document.getElementById('lmWordCount');
+  if (wc) {
+    var cls = (words >= 250 && words <= 400) ? 'ok' : 'warn';
+    wc.innerHTML = '<b class="' + cls + '">' + words + ' słów</b>';
+  }
+
+  var items = [];
+  function add(label, done, weight, hint) { items.push({ l: label, d: done, w: weight, h: hint }); }
+  add('Podane stanowisko', !!val('fPos'), 10, 'Uzupełnij pole „Stanowisko” w kroku 1.');
+  add('Podana firma', !!val('fCompany'), 10, 'Uzupełnij pole „Firma” — list ogólny działa słabiej.');
+  add('List do konkretnej osoby', !!val('rContact'), 15, 'Dodaj osobę kontaktową w sekcji „Odbiorca” — listy imienne czyta się częściej.');
+  var lenOk = words >= 250 && words <= 400, lenNear = (words >= 170 && words < 250) || (words > 400 && words <= 480);
+  add('Długość 250–400 słów', lenOk, 20, words < 250 ? 'Rozwiń treść — dobry list ma 250–400 słów.' : 'Skróć treść — rekruter poświęca listowi ok. 30 sekund.');
+  add('Konkrety i liczby w treści', /\d/.test(body), 10, 'Dodaj liczby: wyniki, lata doświadczenia, skalę („obsługiwałem 50 klientów dziennie”).');
+  var comp = val('fCompany');
+  add('Nazwa firmy wpleciona w treść', !!(comp && body.toLowerCase().indexOf(comp.toLowerCase()) >= 0), 10, 'Wspomnij firmę w treści — pokaż, że list nie jest kopiuj-wklej.');
+  add('Twój e-mail i telefon', !!(val('fEmail') && val('fPhone')), 10, 'Uzupełnij e-mail i telefon — rekruter musi móc oddzwonić.');
+  var kwMatched = 0;
+  if (posting.trim()) {
+    var bl = body.toLowerCase();
+    var kws = posting.toLowerCase().replace(/[^a-ząćęłńóśźż0-9\s]/g, ' ').split(/\s+/)
+      .filter(function(w) { return w.length > 4 && LM_STOPWORDS.indexOf(w) < 0; });
+    var uniq = {}; kws.forEach(function(w) { uniq[w] = 1; });
+    Object.keys(uniq).forEach(function(w) { if (bl.indexOf(w) >= 0) kwMatched++; });
+    add('Słowa kluczowe z ogłoszenia (' + kwMatched + ')', kwMatched >= 4, 15, 'Kliknij „✨ Napisz z AI” lub „Popraw” — AI wplecie wymagania z ogłoszenia.');
+  }
+  var earned = 0, max = 0;
+  items.forEach(function(it) { max += it.w; if (it.d) earned += it.w; else if (it.l.indexOf('Długość') === 0 && lenNear) earned += 10; });
+  var pct = max ? Math.round(earned / max * 100) : 0;
+  var label = pct >= 90 ? 'świetny' : pct >= 75 ? 'silny' : pct >= 50 ? 'dobry' : 'do dopracowania';
+  var color = pct >= 75 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
+  scoreEl.textContent = pct + '/100 — ' + label;
+  scoreEl.style.color = color;
+  var fill = document.getElementById('lmMeterFill');
+  if (fill) { fill.style.width = pct + '%'; fill.style.background = color; }
+  var list = document.getElementById('lmMeterList');
+  if (list) {
+    list.innerHTML = items.map(function(it) {
+      return '<div class="lm-meter-item' + (it.d ? ' done' : '') + '"><span>' + (it.d ? '✓' : '○') + '</span><span>' + it.l + (it.d ? '' : ' — <span style="color:var(--ink3);">' + it.h + '</span>') + '</span></div>';
+    }).join('');
+  }
+}
+
+// ── Akcje AI na treści (pisz / popraw / skróć / rozwiń) ──
+var _aiBusy = false;
+async function aiLetter(action) {
+  if (_aiBusy) return;
+  if (window.DokumoDraft && !window.DokumoDraft.hasUser()) { _saveLmDraft(true); window.DokumoDraft.gateLogin(); return; }
+  var body = val('fBody');
+  if (action !== 'write' && !body.trim()) action = 'write';
+
+  var toneMap = {
+    formalny: 'formalny, klasyczny — pełen szacunku, bez poufałości',
+    naturalny: 'naturalny i ludzki — profesjonalny, ale bez sztywnych formułek',
+    pewny: 'pewny siebie i zdecydowany — mocne czasowniki, konkretne deklaracje',
+    entuzjastyczny: 'energiczny i entuzjastyczny — widać autentyczne zaangażowanie (bez przesady)'
+  };
+  var tone = toneMap[(document.getElementById('fTone') || {}).value] || toneMap.formalny;
+  var fullName = [val('fFirstName'), val('fLastName')].filter(Boolean).join(' ');
+  var posting = val('fPosting').slice(0, 2500);
+  var ctx = 'DANE:\n- Stanowisko: ' + (val('fPos') || '[stanowisko]') + '\n'
+    + (val('fCompany') ? '- Firma: ' + val('fCompany') + '\n' : '')
+    + (fullName ? '- Kandydat: ' + fullName + '\n' : '')
+    + (posting ? '\nOGŁOSZENIE O PRACĘ (wpleć naturalnie 3–5 najważniejszych wymagań i słów kluczowych, nie cytuj dosłownie):\n' + posting + '\n' : '');
+  var rules = '\nZASADY: Zwróć TYLKO główną treść listu — bez nagłówka adresowego, bez "Szanowni Państwo" i bez "Z poważaniem". 3 akapity po 2–4 zdania. Liczby zawsze cyframi. Ton: ' + tone + '. Zero markdown, zero emoji, zero angielskich słów — pisz wyłącznie po polsku.';
+  var prompt;
+  if (action === 'improve') {
+    prompt = 'Popraw poniższą treść listu motywacyjnego: usuń oklepane frazesy, wzmocnij konkrety, zachowaj fakty i podobną długość.\n\nTREŚĆ DO POPRAWY:\n' + body + '\n\n' + ctx + rules;
+  } else if (action === 'shorten') {
+    prompt = 'Skróć poniższą treść listu motywacyjnego do ok. 180–230 słów, zachowując najmocniejsze argumenty i wszystkie fakty.\n\nTREŚĆ DO SKRÓCENIA:\n' + body + '\n\n' + ctx + rules;
+  } else if (action === 'expand') {
+    prompt = 'Rozwiń poniższą treść listu motywacyjnego do ok. 300–380 słów — dodaj szczegóły i konkretne argumenty spójne z podanymi danymi, niczego nie zmyślaj ponad to, co wynika z treści.\n\nTREŚĆ DO ROZWINIĘCIA:\n' + body + '\n\n' + ctx + rules;
+  } else {
+    prompt = 'Napisz treść listu motywacyjnego po polsku.\n\n' + ctx + rules + ' Długość: 250–350 słów.';
+  }
+
+  var btns = document.querySelectorAll('.lm-ai-btn');
+  var active = document.getElementById(action === 'write' ? 'aiWrite' : action === 'improve' ? 'aiImprove' : action === 'shorten' ? 'aiShorten' : 'aiExpand');
+  var orig = active ? active.innerHTML : '';
+  _aiBusy = true;
+  btns.forEach(function(b) { b.disabled = true; });
+  if (active) active.innerHTML = '⏳ Piszę…';
+  try {
+    var token = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
+    var res = await fetch('/api/generate-free', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ prompt: prompt, type: 'letter' })
+    });
+    if (res.status === 401) { _saveLmDraft(true); window.location.href = 'konto.html?return=/list-motywacyjny.html'; return; }
+    if (res.status === 403 || res.status === 429) { _showLetterLimitModal(); return; }
+    var data = await res.json();
+    var text = data.text || data.result || '';
+    if (!text) throw new Error('empty');
+    document.getElementById('fBody').value = text.trim();
+    renderPreview();
+  } catch (e) {
+    alert('Nie udało się wygenerować treści. Spróbuj ponownie za chwilę.');
+  } finally {
+    _aiBusy = false;
+    btns.forEach(function(b) { b.disabled = false; });
+    if (active) active.innerHTML = orig;
+  }
+}
+
+// ── Eksport DOC (Word) ──
+function downloadDoc() {
+  if (window.DokumoDraft && !window.DokumoDraft.hasUser()) _saveLmDraft(true);
+  if (!window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
+  var company = val('fCompany') || 'dokumo';
+  var inner = document.getElementById('lmPaper').innerHTML;
+  var docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>@page{size:A4;margin:2cm}body{font-family:Georgia,serif;font-size:12.5pt;line-height:1.6;color:#1a1a1a}</style></head><body>' + inner + '</body></html>';
+  var blob = new Blob(['﻿' + docHtml], { type: 'application/msword' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'list-motywacyjny-' + company.replace(/\s+/g, '-').toLowerCase() + '.doc';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  if (window.DokumoDraft && window.DokumoDraft.clear) window.DokumoDraft.clear();
 }
 
 // ── Export ──
