@@ -43,6 +43,15 @@ onAuthStateChanged(getAuth(app), async u => {
 
 <link rel="preload" href="index-v4.css?v=20260602b" as="style">
 <link rel="stylesheet" href="index-v4.css?v=20260602b">
+<style>
+/* Nawigacja: stała wysokość niezależnie od stanu logowania.
+   „Spróbuj za darmo" nie może się zawijać ani rozciągać na 100% szerokości. */
+.nav{min-height:52px}
+.nav #navAuth{flex-shrink:0}
+.nav #navLoginBtn,.nav #navRegisterBtn.btn-glow{white-space:nowrap;width:auto;flex-shrink:0;line-height:1.2}
+.nav .nav-items a{white-space:nowrap}
+.nav .nav-profile{flex-shrink:0}
+</style>
 </head>
 <body>
 
@@ -1681,6 +1690,6 @@ updateNavAuth();
 window._renderNav = updateNavAuth;
 </script>
 
-<script src="asystent-widget.js?v=1" defer></script>
+<script src="asystent-widget.js?v=2" defer></script>
 </body>
 </html>
