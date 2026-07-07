@@ -14,13 +14,15 @@ const auth = getAuth();
 const ALLOWED_CATS = new Set(['hr','kariera','biznes','najem','sprzedaz','inne']);
 
 // Wymagane plany per kategoria (serwer-side)
+// Plan „biznes" odblokowuje WYŁĄCZNIE dokumenty biznesowe (kategoria biznes).
+// Kariera = dokumenty osobiste/pracownicze; Pro Max i Start = wszystko.
 const CAT_REQUIRED_PLANS = {
-  hr:       ['kariera','biznes','promax','start'],
-  kariera:  ['kariera','biznes','promax','start'],
+  hr:       ['kariera','promax','start'],
+  kariera:  ['kariera','promax','start'],
   biznes:   ['biznes','promax','start'],
-  najem:    ['kariera','biznes','promax','start'],
-  sprzedaz: ['kariera','biznes','promax','start'],
-  inne:     ['kariera','biznes','promax','start'],
+  najem:    ['kariera','promax','start'],
+  sprzedaz: ['kariera','promax','start'],
+  inne:     ['kariera','promax','start'],
 };
 
 const RATE_LIMIT = 25;
@@ -278,7 +280,7 @@ ${truncated}`;
       bump(db, 'paywall_hit', { source: 'no_sub' });
       return res.status(403).json({ error: 'subscription_required' });
     }
-    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
+    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','promax','start'];
     if (!requiredPlans.includes(sub.plan)) {
       bump(db, 'paywall_hit', { source: 'plan_mismatch' });
       return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });

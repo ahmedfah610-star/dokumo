@@ -225,6 +225,10 @@ updateNavAuth();window._renderUNav=updateNavAuth;
 
 <div style="padding:24px 1.5rem 0;max-width:1120px;margin:0 auto;text-align:center;">
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:#1a1714;letter-spacing:-.02em;">Wybierz pakiet</h1>
+  <p style="font-size:.82rem;color:#6b6560;margin-top:6px;line-height:1.5;max-width:560px;margin-left:auto;margin-right:auto;">
+    Generowanie dokumentów jest w ramach pakietu. <strong>Asystent Prawny i Podatkowy AI</strong> ma 5 darmowych pytań dla każdego —
+    bez limitu tylko w <strong>Pro Max</strong>.
+  </p>
 </div>
 
 <!-- Overlay oczekiwania na płatność -->
@@ -245,13 +249,14 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-start">
     <div class="plan-icon">⚡</div>
     <div class="plan-name">Pakiet Start</div>
-    <div class="plan-tagline">Jedno pobranie dowolnego dokumentu</div>
+    <div class="plan-tagline">Jednorazowe pobranie dowolnego dokumentu</div>
     <div class="plan-price" id="price-start">4,99 zł <span>/ jednorazowo</span></div>
     <ul class="plan-features">
-      <li><span class="ck">✓</span> 1 pobranie PDF (dowolny dok.)</li>
-      <li><span class="ck">✓</span> Kreator CV, list, faktura</li>
-      <li><span class="ck">✓</span> Bez subskrypcji</li>
-      <li><span class="no">✕</span> Nieograniczony dostęp</li>
+      <li><span class="ck">✓</span> 1 dokument PDF — dowolny z całej oferty</li>
+      <li><span class="ck">✓</span> CV, umowy, faktura, pisma…</li>
+      <li><span class="ck">✓</span> Bez subskrypcji, płacisz raz</li>
+      <li><span class="no">✕</span> Kolejne dokumenty</li>
+      <li><span class="no">✕</span> Asystent Prawny AI bez limitu</li>
     </ul>
     <button class="plan-btn dark" id="btn-start" onclick="kupPakiet('start')">Kup Pakiet Start →</button>
   </div>
@@ -260,16 +265,17 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-kariera">
     <div class="plan-icon">🎯</div>
     <div class="plan-name">Pakiet Kariera</div>
-    <div class="plan-tagline">CV, wypowiedzenia, kalkulator wynagrodzeń</div>
+    <div class="plan-tagline">Dokumenty osobiste i pracownicze bez limitu</div>
     <div class="plan-price" id="price-kariera">9,99 zł <span>/ miesiąc</span></div>
 
     <ul class="plan-features">
-      <li><span class="ck">✓</span> Kreator CV z AI</li>
-      <li><span class="ck">✓</span> Wypowiedzenie umowy</li>
-      <li><span class="ck">✓</span> Wniosek o urlop</li>
-      <li><span class="ck">✓</span> Świadectwo pracy</li>
+      <li><span class="ck">✓</span> Kreator CV i list motywacyjny z AI</li>
+      <li><span class="ck">✓</span> Umowy pracownicze: o pracę, zlecenie, B2B, dzieło</li>
+      <li><span class="ck">✓</span> Wypowiedzenie, urlop, świadectwo pracy</li>
+      <li><span class="ck">✓</span> Umowy najmu i sprzedaży</li>
       <li><span class="ck">✓</span> Kalkulator wynagrodzeń</li>
-      <li><span class="no">✕</span> Strefa Biznesu</li>
+      <li><span class="no">✕</span> Dokumenty biznesowe firmy</li>
+      <li><span class="no">✕</span> Asystent Prawny AI bez limitu</li>
     </ul>
     <button class="plan-btn dark" id="btn-kariera" onclick="kupPakiet('kariera')">Kup Pakiet Kariera →</button>
   </div>
@@ -279,17 +285,16 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <div class="plan-top-badge popular" id="badge-promax">⭐ Najpopularniejszy</div>
     <div class="plan-icon">🚀</div>
     <div class="plan-name">Pro Max</div>
-    <div class="plan-tagline">Dostęp do wszystkiego bez ograniczeń</div>
+    <div class="plan-tagline">Wszystkie dokumenty + Asystent Prawny AI bez limitu</div>
     <div class="plan-price" id="price-promax">31,99 zł <span>/ miesiąc</span></div>
 
     <ul class="plan-features">
-      <li><span class="ck">✓</span> Kreator CV z AI</li>
-      <li><span class="ck">✓</span> Wypowiedzenie umowy</li>
-      <li><span class="ck">✓</span> Wniosek o urlop</li>
-      <li><span class="ck">✓</span> Świadectwo pracy</li>
-      <li><span class="ck">✓</span> Kalkulator wynagrodzeń</li>
-      <li><span class="ck">✓</span> Wszystkie dokumenty biznesowe</li>
-      <li><span class="ck">✓</span> Umowy, regulaminy, biznesplany</li>
+      <li><span class="ck">✓</span> <strong>Wszystkie dokumenty</strong> — Kariera + Biznes razem</li>
+      <li><span class="ck">✓</span> <strong>Asystent Prawny i Podatkowy AI — bez limitu pytań</strong></li>
+      <li><span class="ck">✓</span> Analiza umów AI bez limitu</li>
+      <li><span class="ck">✓</span> Kreator CV, list motywacyjny</li>
+      <li><span class="ck">✓</span> Umowy, regulaminy, biznesplany, faktury</li>
+      <li><span class="ck">✓</span> Priorytet i wszystkie przyszłe funkcje</li>
     </ul>
     <button class="plan-btn gold" id="btn-promax" onclick="kupPakiet('promax')">Kup Pro Max →</button>
   </div>
@@ -298,16 +303,16 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-biznes">
     <div class="plan-icon">💼</div>
     <div class="plan-name">Pakiet Biznes</div>
-    <div class="plan-tagline">Umowy, regulaminy i dokumenty firmowe</div>
-    <div class="plan-price" id="price-biznes">29,99 zł <span>/ miesiąc</span></div>
+    <div class="plan-tagline">Wyłącznie dokumenty biznesowe firmy</div>
+    <div class="plan-price" id="price-biznes">11,99 zł <span>/ miesiąc</span></div>
 
     <ul class="plan-features">
-      <li><span class="no">✕</span> Strefa Kariery</li>
-      <li><span class="ck">✓</span> Umowa o pracę / B2B</li>
-      <li><span class="ck">✓</span> Regulamin sklepu / pracy</li>
-      <li><span class="ck">✓</span> Polityka prywatności</li>
-      <li><span class="ck">✓</span> Biznesplan i SWOT</li>
-      <li><span class="ck">✓</span> Wszystkie dokumenty firmowe</li>
+      <li><span class="ck">✓</span> Regulamin sklepu i polityki (prywatność, zwroty)</li>
+      <li><span class="ck">✓</span> Biznesplan dla banku i analiza SWOT</li>
+      <li><span class="ck">✓</span> Umowa wspólników, faktury</li>
+      <li><span class="ck">✓</span> Dokumenty e-commerce i administracyjne</li>
+      <li><span class="no">✕</span> Dokumenty osobiste i pracownicze (Kariera)</li>
+      <li><span class="no">✕</span> Asystent Prawny AI bez limitu</li>
     </ul>
     <button class="plan-btn green" id="btn-biznes" onclick="kupPakiet('biznes')">Kup Pakiet Biznes →</button>
   </div>
@@ -347,7 +352,7 @@ const STRIPE_LINKS = {
 const BASE_PRICES = {
   start:   { amount: 4.99,  period: '/ jednorazowo', note: null },
   kariera: { amount: 9.99,  period: '/ miesiąc', note: '1. miesiąc' },
-  biznes:  { amount: 29.99, period: '/ miesiąc', note: '1. miesiąc' },
+  biznes:  { amount: 11.99, period: '/ miesiąc', note: '1. miesiąc' },
   promax:  { amount: 31.99, period: '/ miesiąc', note: '1. miesiąc' },
 };
 
