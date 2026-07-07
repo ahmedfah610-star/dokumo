@@ -1195,24 +1195,19 @@ function initCreateDocWizard() {
     backBtn.disabled = n === 1;
     const arrowSvg = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
     if (n === 1) {
+      nextBtn.style.display = '';
       nextBtn.disabled = !selectedCat;
       nextBtn.innerHTML = 'Dalej ' + arrowSvg;
     } else if (n === 2) {
-      nextBtn.disabled = !selectedTool;
-      nextBtn.innerHTML = 'Dalej ' + arrowSvg;
+      // Kliknięcie dokumentu przekierowuje od razu — przycisk „Dalej" zbędny
+      nextBtn.style.display = 'none';
+      nextBtn.disabled = true;
     } else {
-      // Step 3 — variants mode vs final mode
-      const hasVariants = selectedTool && Array.isArray(selectedTool.variants) && selectedTool.variants.length > 0;
-      if (hasVariants) {
-        step3Variants.style.display = 'block';
-        step3Final.style.display = 'none';
-        nextBtn.disabled = !selectedVariant;
-      } else {
-        step3Variants.style.display = 'none';
-        step3Final.style.display = 'block';
-        nextBtn.disabled = false;
-      }
-      nextBtn.innerHTML = 'Stwórz dokument →';
+      // Step 3 — tylko wybór rodzaju (podtypu); klik przekierowuje od razu
+      step3Variants.style.display = 'block';
+      step3Final.style.display = 'none';
+      nextBtn.style.display = 'none';
+      nextBtn.disabled = true;
     }
   }
 
@@ -1236,9 +1231,15 @@ function initCreateDocWizard() {
       el.addEventListener('click', () => {
         selectedTool = tools[i];
         selectedVariant = null;
-        toolsList.querySelectorAll('.cdw-tool').forEach(t => t.classList.remove('selected'));
-        el.classList.add('selected');
-        nextBtn.disabled = false;
+        const hasVariants = Array.isArray(selectedTool.variants) && selectedTool.variants.length > 0;
+        if (hasVariants) {
+          // Dokument ma podtypy → pokaż wybór rodzaju (bez ekranu podsumowania)
+          renderVariants();
+          setStep(3);
+        } else {
+          // Brak podtypów → od razu przejdź do generatora
+          window.location.href = selectedTool.url || 'konto.html?rejestracja=1';
+        }
       });
     });
   }
@@ -1255,9 +1256,8 @@ function initCreateDocWizard() {
     variantsList.querySelectorAll('.cdw-tool').forEach((el, i) => {
       el.addEventListener('click', () => {
         selectedVariant = variants[i];
-        variantsList.querySelectorAll('.cdw-tool').forEach(t => t.classList.remove('selected'));
-        el.classList.add('selected');
-        nextBtn.disabled = false;
+        // Wybór rodzaju → od razu do generatora
+        window.location.href = selectedVariant.url || selectedTool.url || 'konto.html?rejestracja=1';
       });
     });
   }
@@ -1287,21 +1287,10 @@ function initCreateDocWizard() {
   cats.forEach(c => c.addEventListener('click', () => selectCat(c.dataset.cat)));
 
   nextBtn.addEventListener('click', () => {
+    // „Dalej" używane tylko po wyborze kategorii — dalej klik dokumentu przekierowuje od razu
     if (step === 1 && selectedCat) {
       renderTools();
       setStep(2);
-    } else if (step === 2 && selectedTool) {
-      const hasVariants = Array.isArray(selectedTool.variants) && selectedTool.variants.length > 0;
-      if (hasVariants) {
-        renderVariants();
-      } else {
-        renderFinal();
-      }
-      setStep(3);
-    } else if (step === 3 && selectedTool) {
-      // Open the actual tool / variant selected by the user
-      const target = (selectedVariant && selectedVariant.url) || selectedTool.url || 'konto.html?rejestracja=1';
-      window.location.href = target;
     }
   });
   backBtn.addEventListener('click', () => { if (step > 1) setStep(step - 1); });
