@@ -38,36 +38,44 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .badge-free{background:rgba(26,23,20,.07);color:var(--ink2);}
 
 /* PLANS GRID */
-.plans{max-width:1120px;margin:0 auto 40px;padding:0 1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.plans{max-width:1160px;margin:20px auto 44px;padding:0 1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:stretch;}
 
-.plan-card{background:var(--cream);border:1.5px solid var(--border);border-radius:16px;padding:18px;display:flex;flex-direction:column;position:relative;transition:box-shadow .25s,border-color .25s;}
-.plan-card:hover{box-shadow:0 6px 28px rgba(26,23,20,.08);}
-.plan-card.featured{border-color:var(--ink);box-shadow:0 4px 20px rgba(26,23,20,.1);}
+.plan-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px 20px;display:flex;flex-direction:column;position:relative;transition:transform .2s,box-shadow .25s,border-color .25s;}
+.plan-card:hover{transform:translateY(-3px);box-shadow:0 12px 34px rgba(26,23,20,.10);border-color:rgba(26,23,20,.18);}
+.plan-card.featured{border-color:var(--gold);border-width:2px;box-shadow:0 10px 34px rgba(201,144,58,.18);}
 .plan-card.active-plan{border-color:var(--green);background:#f0fdf4;}
 
-.plan-top-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:3px 12px;border-radius:0 0 8px 8px;white-space:nowrap;}
-.plan-top-badge.popular{background:var(--ink);color:#fff;}
+.plan-top-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:0 0 10px 10px;white-space:nowrap;}
+.plan-top-badge.popular{background:var(--gold);color:#fff;}
 .plan-top-badge.active{background:var(--green);color:#fff;}
+.plan-card.featured{padding-top:30px;}
 
-.plan-icon{font-size:1.4rem;margin-bottom:12px;}
-.plan-name{font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;margin-bottom:3px;}
-.plan-tagline{font-size:.72rem;color:var(--ink2);margin-bottom:16px;line-height:1.4;min-height:2.02rem;}
+.plan-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;border-radius:12px;background:var(--cream);margin-bottom:14px;}
+.plan-card.featured .plan-icon{background:rgba(201,144,58,.12);}
+.plan-name{font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;margin-bottom:4px;}
+.plan-tagline{font-size:.74rem;color:var(--ink2);margin-bottom:16px;line-height:1.45;min-height:2.15rem;}
 
-.plan-price{font-family:'Bricolage Grotesque',sans-serif;font-size:1.7rem;font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1;margin-bottom:2px;}
-.plan-price span{font-size:.78rem;font-weight:500;color:var(--ink2);}
-.plan-period{font-size:.68rem;color:var(--ink2);margin-bottom:18px;}
+.plan-price{font-family:'Bricolage Grotesque',sans-serif;font-size:1.9rem;font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1;margin-bottom:12px;}
+.plan-price span{font-size:.76rem;font-weight:500;color:var(--ink2);}
 
-.plan-features{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:14px;flex:1;}
-.plan-features li{font-size:.75rem;color:var(--ink2);display:flex;align-items:flex-start;gap:7px;line-height:1.4;}
-.plan-features li .ck{color:var(--green);font-weight:700;flex-shrink:0;}
-.plan-features li .no{color:rgba(26,23,20,.25);flex-shrink:0;}
+.plan-quota{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:700;color:var(--ink);background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:16px;line-height:1.25;}
+.plan-quota .qic{font-size:1rem;flex-shrink:0;}
+.plan-card.featured .plan-quota{background:rgba(201,144,58,.10);border-color:rgba(201,144,58,.35);color:#8a5a1a;}
 
-.plan-btn{width:100%;padding:12px;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:.82rem;font-weight:800;letter-spacing:.02em;cursor:pointer;transition:transform .15s,box-shadow .2s;}
-.plan-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,23,20,.15);}
+.plan-div{border:none;border-top:1px solid var(--border);margin:0 0 14px;}
+
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:18px;flex:1;}
+.plan-features li{font-size:.78rem;color:var(--ink2);display:flex;align-items:flex-start;gap:8px;line-height:1.4;}
+.plan-features li strong{color:var(--ink);font-weight:700;}
+.plan-features li .ck{color:var(--green);font-weight:800;flex-shrink:0;}
+.plan-features li .no{color:rgba(26,23,20,.28);flex-shrink:0;}
+
+.plan-btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:.01em;cursor:pointer;transition:transform .15s,box-shadow .2s,opacity .2s;}
+.plan-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(26,23,20,.16);}
 .plan-btn:active{transform:scale(.98);}
 .plan-btn.dark{background:var(--ink);color:#fff;}
 .plan-btn.green{background:var(--green);color:#fff;}
-.plan-btn.gold{background:var(--gold);color:#fff;}
+.plan-btn.gold{background:var(--gold);color:#fff;box-shadow:0 4px 16px rgba(201,144,58,.3);}
 .plan-btn.outline{background:transparent;border:1.5px solid var(--border);color:var(--ink2);cursor:default;}
 .plan-btn.outline:hover{transform:none;box-shadow:none;}
 
@@ -226,8 +234,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
 <div style="padding:24px 1.5rem 0;max-width:1120px;margin:0 auto;text-align:center;">
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:#1a1714;letter-spacing:-.02em;">Wybierz pakiet</h1>
   <p style="font-size:.82rem;color:#6b6560;margin-top:6px;line-height:1.5;max-width:560px;margin-left:auto;margin-right:auto;">
-    Kariera i Biznes: 30 dokumentów / mies. · Pro Max: 100 dokumentów / mies.
-    <strong>Asystent Prawny i Podatkowy AI</strong> — 5 pytań gratis dla każdego, 100 / mies. w <strong>Pro Max</strong>.
+    Subskrypcja miesięczna, anulujesz w każdej chwili. <strong>Asystent Prawny i Podatkowy AI</strong> — 5 pytań gratis dla każdego, 100 pytań / mies. w pakiecie <strong>Pro Max</strong>.
   </p>
 </div>
 
@@ -249,14 +256,16 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-start">
     <div class="plan-icon">⚡</div>
     <div class="plan-name">Pakiet Start</div>
-    <div class="plan-tagline">Jednorazowe pobranie dowolnego dokumentu</div>
+    <div class="plan-tagline">Jeden dokument na już, bez subskrypcji.</div>
     <div class="plan-price" id="price-start">4,99 zł <span>/ jednorazowo</span></div>
+    <div class="plan-quota"><span class="qic">📄</span> 1 dokument — płatność jednorazowa</div>
+    <hr class="plan-div">
     <ul class="plan-features">
-      <li><span class="ck">✓</span> 1 dokument PDF — dowolny z całej oferty</li>
-      <li><span class="ck">✓</span> CV, umowy, faktura, pisma…</li>
-      <li><span class="ck">✓</span> Bez subskrypcji, płacisz raz</li>
+      <li><span class="ck">✓</span> Dowolny dokument z całej oferty (CV, umowy, faktura, pisma)</li>
+      <li><span class="ck">✓</span> Pełny plik PDF gotowy do druku</li>
+      <li><span class="ck">✓</span> Bez zobowiązań — płacisz raz</li>
       <li><span class="no">✕</span> Kolejne dokumenty</li>
-      <li><span class="no">✕</span> Asystent Prawny AI bez limitu</li>
+      <li><span class="no">✕</span> Asystent Prawny i Podatkowy AI</li>
     </ul>
     <button class="plan-btn dark" id="btn-start" onclick="kupPakiet('start')">Kup Pakiet Start →</button>
   </div>
@@ -265,17 +274,17 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-kariera">
     <div class="plan-icon">🎯</div>
     <div class="plan-name">Pakiet Kariera</div>
-    <div class="plan-tagline">Dokumenty osobiste i pracownicze bez limitu</div>
+    <div class="plan-tagline">Dokumenty osobiste, pracownicze i najmu.</div>
     <div class="plan-price" id="price-kariera">9,99 zł <span>/ miesiąc</span></div>
-
+    <div class="plan-quota"><span class="qic">📄</span> 30 dokumentów / miesiąc (łącznie)</div>
+    <hr class="plan-div">
     <ul class="plan-features">
-      <li><span class="ck">✓</span> <strong>30 dokumentów łącznie / miesiąc</strong></li>
       <li><span class="ck">✓</span> Kreator CV i list motywacyjny z AI</li>
       <li><span class="ck">✓</span> Umowy: o pracę, zlecenie, najem, sprzedaż</li>
       <li><span class="ck">✓</span> Wypowiedzenie, urlop, świadectwo pracy</li>
       <li><span class="ck">✓</span> Kalkulator wynagrodzeń</li>
-      <li><span class="no">✕</span> Faktury, regulaminy, biznesplany (pakiet Biznes)</li>
-      <li><span class="no">✕</span> Asystent Prawny AI</li>
+      <li><span class="no">✕</span> Dokumenty firmowe — faktury, regulaminy (Biznes)</li>
+      <li><span class="no">✕</span> Asystent Prawny i Podatkowy AI</li>
     </ul>
     <button class="plan-btn dark" id="btn-kariera" onclick="kupPakiet('kariera')">Kup Pakiet Kariera →</button>
   </div>
@@ -284,17 +293,17 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-biznes">
     <div class="plan-icon">💼</div>
     <div class="plan-name">Pakiet Biznes</div>
-    <div class="plan-tagline">Wszystkie dokumenty firmowe — bez Kreatora CV</div>
+    <div class="plan-tagline">Wszystkie dokumenty firmowe — bez Kreatora CV.</div>
     <div class="plan-price" id="price-biznes">11,99 zł <span>/ miesiąc</span></div>
-
+    <div class="plan-quota"><span class="qic">📄</span> 30 dokumentów / miesiąc (łącznie)</div>
+    <hr class="plan-div">
     <ul class="plan-features">
-      <li><span class="ck">✓</span> <strong>30 dokumentów łącznie / miesiąc</strong></li>
       <li><span class="ck">✓</span> Faktury: VAT, proforma, zaliczkowa</li>
       <li><span class="ck">✓</span> Umowy: o pracę, zlecenie, B2B, o dzieło, NDA</li>
       <li><span class="ck">✓</span> Regulamin sklepu, polityki, biznesplan, SWOT</li>
       <li><span class="ck">✓</span> Najem, sprzedaż, pełnomocnictwa, wezwania</li>
-      <li><span class="no">✕</span> Kreator CV i list motywacyjny (pakiet Kariera)</li>
-      <li><span class="no">✕</span> Asystent Prawny AI</li>
+      <li><span class="no">✕</span> Kreator CV i list motywacyjny (Kariera)</li>
+      <li><span class="no">✕</span> Asystent Prawny i Podatkowy AI</li>
     </ul>
     <button class="plan-btn green" id="btn-biznes" onclick="kupPakiet('biznes')">Kup Pakiet Biznes →</button>
   </div>
@@ -304,14 +313,15 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <div class="plan-top-badge popular" id="badge-promax">⭐ Najpopularniejszy</div>
     <div class="plan-icon">🚀</div>
     <div class="plan-name">Pro Max</div>
-    <div class="plan-tagline">Wszystkie dokumenty + Asystent Prawny AI</div>
+    <div class="plan-tagline">Wszystko razem + Asystent Prawny i Podatkowy AI.</div>
     <div class="plan-price" id="price-promax">31,99 zł <span>/ miesiąc</span></div>
-
+    <div class="plan-quota"><span class="qic">🚀</span> 100 dokumentów + 100 pytań AI / miesiąc</div>
+    <hr class="plan-div">
     <ul class="plan-features">
-      <li><span class="ck">✓</span> <strong>100 dokumentów łącznie / miesiąc</strong> — Kariera + Biznes</li>
-      <li><span class="ck">✓</span> <strong>Asystent Prawny i Podatkowy AI — 100 pytań / mies.</strong></li>
+      <li><span class="ck">✓</span> <strong>Wszystkie dokumenty</strong> — Kariera i Biznes razem</li>
+      <li><span class="ck">✓</span> <strong>Asystent Prawny i Podatkowy AI</strong> (100 pytań/mies.)</li>
       <li><span class="ck">✓</span> Analiza umów AI</li>
-      <li><span class="ck">✓</span> Kreator CV, list motywacyjny</li>
+      <li><span class="ck">✓</span> Kreator CV i list motywacyjny</li>
       <li><span class="ck">✓</span> Umowy, regulaminy, biznesplany, faktury</li>
       <li><span class="ck">✓</span> Priorytet i wszystkie przyszłe funkcje</li>
     </ul>
