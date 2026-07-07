@@ -692,9 +692,12 @@ function applyQuota(q) {
   navQlVal.textContent = q.freeLeft + ' / ' + max + (q.paid ? ' pytań' : ' darmowych');
   navQlVal.style.color = (q.freeLeft <= (q.paid ? 5 : 1)) ? '#e11d48' : '';
   if (q.freeLeft <= 0) {
-    hint.innerHTML = q.paid
-      ? '<span style="color:#e11d48">Limit 100 pytań w tym miesiącu wykorzystany.</span> Odnawia się 1. dnia miesiąca.'
-      : '<span style="color:#e11d48">Wykorzystano darmowe pytania.</span> <a href="subskrypcja.html">Kup Pro Max →</a>';
+    if (q.paid) {
+      var upsell = (max < 100) ? ' <a href="subskrypcja.html">Pro Max = 100/mies. →</a>' : ' Odnawia się 1. dnia miesiąca.';
+      hint.innerHTML = '<span style="color:#e11d48">Limit ' + max + ' pytań w tym miesiącu wykorzystany.</span>' + upsell;
+    } else {
+      hint.innerHTML = '<span style="color:#e11d48">Wykorzystano darmowe pytania.</span> <a href="subskrypcja.html">Wybierz pakiet →</a>';
+    }
   } else {
     hint.textContent = 'Odpowiedzi AI mogą zawierać błędy — zweryfikuj w źródłach.';
   }
@@ -778,9 +781,13 @@ async function sendMessage() {
       } else if (r.status === 403 && data0 && data0.error === 'promax_required') {
         applyQuota({ unlimited: false, freeLeft: 0, freeMax: (data0.freeMax || 5) });
         showPaywall();
-      } else if (r.status === 403 && data0 && data0.error === 'promax_limit') {
-        applyQuota({ paid: true, freeLeft: 0, freeMax: (data0.freeMax || 100) });
-        appendMsg('assistant', '⚠️ Wykorzystałeś limit 100 pytań w tym miesiącu. Pula odnawia się 1. dnia następnego miesiąca.');
+      } else if (r.status === 403 && data0 && (data0.error === 'plan_limit' || data0.error === 'promax_limit')) {
+        var mx = data0.freeMax || 100;
+        applyQuota({ paid: true, freeLeft: 0, freeMax: mx });
+        var extra = data0.canUpgrade
+          ? ' Przejdź na **Pro Max** (100 pytań/mies.): [zobacz plany](subskrypcja.html).'
+          : ' Pula odnawia się 1. dnia następnego miesiąca.';
+        appendMsg('assistant', '⚠️ Wykorzystałeś limit ' + mx + ' pytań w tym miesiącu.' + extra);
       } else {
         appendMsg('assistant', '⚠️ Coś poszło nie tak: ' + ((data0 && data0.error) || 'Spróbuj ponownie.'));
       }

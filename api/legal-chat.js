@@ -427,22 +427,23 @@ export default async function handler(req, res) {
     } catch { uid = null; }
   }
 
-  // Model dostępu:
-  //  • admin  → bez limitu
-  //  • Pro Max → 100 pytań / miesiąc kalendarzowy
-  //  • reszta (brak planu / Kariera / Biznes) → 5 pytań darmowych ŁĄCZNIE (na zawsze), potem Pro Max
+  // Model dostępu (miesięczne pule pytań asystenta AI):
+  //  • admin            → bez limitu
+  //  • Pro Max          → 100 / miesiąc
+  //  • Kariera / Biznes → 10 / miesiąc
+  //  • brak planu / Start → 5 pytań darmowych ŁĄCZNIE (na zawsze)
   const FREE_LIFETIME = 5;
-  const PROMAX_MONTHLY = 100;
-  const isPromax = subPlan === 'promax';
+  const ASSISTANT_MONTHLY = { promax: 100, kariera: 10, biznes: 10 };
+  const monthlyLimit = ASSISTANT_MONTHLY[subPlan] || 0;
   const usageDocId = uid ? uid.replace(/[\/:.]/g, '_') : null;
 
   // ── GET quota — stan puli bez zużywania pytania ─────────────────────
   if (req.method === 'GET' && action === 'quota') {
     if (!uid) return res.status(401).json({ error: 'Wymagane logowanie' });
     if (isAdmin) return res.status(200).json({ unlimited: true });
-    if (isPromax) {
+    if (monthlyLimit) {
       const used = await readMonthlyUsed(usageDocId);
-      return res.status(200).json({ paid: true, freeLeft: Math.max(0, PROMAX_MONTHLY - used), freeMax: PROMAX_MONTHLY });
+      return res.status(200).json({ paid: true, freeLeft: Math.max(0, monthlyLimit - used), freeMax: monthlyLimit });
     }
     let freeUsed = 0;
     try {
@@ -547,20 +548,21 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
-  // Dostęp: admin bez limitu; Pro Max 100/mies.; reszta 5 darmowych łącznie.
+  // Dostęp: admin bez limitu; Pro Max 100/mies.; Kariera/Biznes 10/mies.; reszta 5 darmowych łącznie.
   let quotaInfo;
   if (isAdmin) {
     quotaInfo = { unlimited: true };
-  } else if (isPromax) {
-    const c = await consumeMonthlyQuery(usageDocId, PROMAX_MONTHLY);
+  } else if (monthlyLimit) {
+    const c = await consumeMonthlyQuery(usageDocId, monthlyLimit);
     if (!c.allowed) {
       bump(db, 'chat_limit_hit', { mode: chatMode });
       return res.status(403).json({
-        error: 'promax_limit',
-        freeMax: PROMAX_MONTHLY, freeLeft: 0,
+        error: 'plan_limit',
+        freeMax: monthlyLimit, freeLeft: 0,
+        canUpgrade: subPlan !== 'promax',
       });
     }
-    quotaInfo = { paid: true, freeMax: PROMAX_MONTHLY, freeLeft: Math.max(0, PROMAX_MONTHLY - c.used) };
+    quotaInfo = { paid: true, freeMax: monthlyLimit, freeLeft: Math.max(0, monthlyLimit - c.used) };
   } else {
     const c = await consumeFreeQuery(usageDocId, FREE_LIFETIME);
     if (!c.allowed) {
