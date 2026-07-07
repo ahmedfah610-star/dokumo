@@ -1061,7 +1061,7 @@ Zespół Dokumo${onboardFooter(uid)}`,
     body: (name, uid) =>
 `Dzień dobry${name ? ' ' + name : ''},
 
-w Dokumo masz teraz Asystenta Prawnego i Podatkowego AI — zadajesz pytanie po polsku, dostajesz odpowiedź z podstawą prawną i linkami do aktów w Dzienniku Ustaw. Możesz też wgrać umowę lub fakturę (PDF/zdjęcie), a AI wskaże ryzyka.
+w Dokumo masz teraz Asystenta Prawnego i Podatkowego AI — zadajesz pytanie po polsku, a w odpowiedzi dostajesz konkretną podstawę prawną (artykuły ustaw), linki do aktów w Dzienniku Ustaw i — gdy to pomaga — orzecznictwo sądów. Możesz też wgrać umowę lub fakturę (PDF/zdjęcie), a AI wskaże ryzyka.
 
 Wypróbuj: https://dokumoflow.com/asystent-prawny.html
 
@@ -1072,15 +1072,15 @@ Zespół Dokumo${onboardFooter(uid)}`,
   },
   {
     key: 'd7', minDays: 7, maxDays: 12, skipIfSub: true,
-    subject: 'Pełny dostęp do Dokumo — bez limitów',
+    subject: 'Odblokuj pełny dostęp do Dokumo',
     body: (name, uid) =>
 `Dzień dobry${name ? ' ' + name : ''},
 
 korzystasz z Dokumo od tygodnia. Z subskrypcją dostajesz:
 
-• Nielimitowane generowanie i pobieranie dokumentów PDF
-• 100 pytań dziennie do Asystenta Prawnego i Podatkowego AI
-• Analizę umów bez limitu
+• Generowanie i pobieranie dokumentów PDF (do 100 miesięcznie w Pro Max)
+• Do 100 pytań miesięcznie do Asystenta Prawnego i Podatkowego AI — z podstawą prawną i orzecznictwem sądów
+• Analizę umów AI — wykrywanie ryzykownych klauzul
 • Wszystkie szablony CV i dokumentów
 
 Zobacz plany: https://dokumoflow.com/subskrypcja.html

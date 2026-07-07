@@ -225,17 +225,17 @@ async function sendWelcomeIfNew(uid, email) {
 <div style="background:#111;padding:28px 32px;text-align:center"><span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-.02em">Dokumo</span></div>
 <div style="padding:36px 32px">
 <h1 style="font-size:22px;font-weight:800;color:#111;margin:0 0 10px">Witaj w Dokumo! 👋</h1>
-<p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">Masz <strong style="color:#111">jedno darmowe pobranie</strong> — wybierz dowolny dokument i wygeneruj go w 30 sekund.</p>
+<p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">Dziękujemy za założenie konta. Dokumo łączy <strong style="color:#111">generatory umów i pism</strong> z <strong style="color:#111">Asystentem Prawnym i Podatkowym AI</strong>, który odpowiada z konkretną podstawą prawną — artykułami ustaw, aktami z Dziennika Ustaw i orzecznictwem sądów.</p>
 <div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
-<p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:0 0 14px">Popularne dokumenty</p>
+<p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:0 0 14px">Od czego zacząć</p>
 <table style="width:100%;border-collapse:collapse">
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-umowy-b2b.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📝 Umowa B2B</a></td></tr>
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/umowa-najmu.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🏠 Umowa najmu</a></td></tr>
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-nda.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🔒 NDA — umowa o poufności</a></td></tr>
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-regulaminu-sklepu.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🛒 Regulamin sklepu</a></td></tr>
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/faktura.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🧾 Faktura</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/asystent-prawny.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">⚖️ Asystent Prawny i Podatkowy AI — pytaj o prawo i podatki</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/analiza-umowy.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🔍 Analiza umowy AI — sprawdź ryzyka przed podpisem</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-umowy-b2b.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📝 Umowy — B2B, zlecenie, o pracę, NDA, najem</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/kreator-cv.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📄 Kreator CV i listu motywacyjnego z AI</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/faktura.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🧾 Faktury i kalkulator wynagrodzeń</a></td></tr>
 </table></div>
-<a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Wygeneruj swój dokument →</a>
+<a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Przejdź do Dokumo →</a>
 <p style="font-size:12px;color:#bbb;margin:28px 0 0;text-align:center">© 2026 Dokumo · <a href="https://dokumoflow.com" style="color:#bbb;text-decoration:none">dokumoflow.com</a></p>
 </div></div></div></body></html>`;
 
@@ -245,7 +245,7 @@ async function sendWelcomeIfNew(uid, email) {
     body: JSON.stringify({
       from: 'Dokumo <noreply@dokumoflow.com>',
       to: email,
-      subject: 'Witaj w Dokumo! Twój darmowy dokument czeka 👋',
+      subject: 'Witaj w Dokumo — od czego zacząć 👋',
       html,
     }),
   });
@@ -344,6 +344,7 @@ async function sendReengagementEmail(to, { broadcast = false } = {}) {
       <div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:0 0 14px">Co znajdziesz w Dokumo</p>
         <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">⚖️ Asystent Prawny i Podatkowy AI</span><div style="color:#888;font-size:12px;margin-top:2px">Odpowiedzi z podstawą prawną, aktami z Dziennika Ustaw i orzecznictwem sądów</div></td></tr>
           <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">📄 Generator umów i pism</span><div style="color:#888;font-size:12px;margin-top:2px">B2B, zlecenie, NDA, najem, wypowiedzenie — gotowe w 60 sekund</div></td></tr>
           <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">🤖 Kreator CV i listu z AI</span><div style="color:#888;font-size:12px;margin-top:2px">Dopasowane do oferty pracy, profesjonalna stylistyka</div></td></tr>
           <tr><td style="padding:6px 0"><span style="color:#111;font-size:14px;font-weight:600">🔍 Analiza umowy AI</span><div style="color:#888;font-size:12px;margin-top:2px">Sprawdź czy nie podpisujesz czegoś niekorzystnego</div></td></tr>

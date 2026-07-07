@@ -405,16 +405,16 @@ function cronReminderHtml() {
 <div style="background:#111;padding:28px 32px;text-align:center"><span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-.02em">Dokumo</span></div>
 <div style="padding:36px 32px">
 <h1 style="font-size:21px;font-weight:800;color:#111;margin:0 0 10px">Hej, wróć do Dokumo! 📄</h1>
-<p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">Minął tydzień od rejestracji. Masz <strong style="color:#111">jedno darmowe pobranie</strong> — użyj go na dowolny dokument.</p>
+<p style="color:#555;font-size:15px;line-height:1.65;margin:0 0 24px">Minął tydzień od rejestracji. Przypominamy, co masz w Dokumo — od gotowych umów po <strong style="color:#111">Asystenta Prawnego i Podatkowego AI</strong>, który odpowiada z podstawą prawną, aktami z Dziennika Ustaw i orzecznictwem sądów.</p>
 <div style="background:#f8f8f8;border-radius:14px;padding:20px 24px;margin-bottom:28px">
 <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:0 0 14px">Co możemy dla Ciebie zrobić?</p>
 <table style="width:100%;border-collapse:collapse">
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/asystent-prawny.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">⚖️ Asystent Prawny i Podatkowy AI</a></td></tr>
+<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/analiza-umowy.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🔍 Analiza umowy AI — wykrywa ryzykowne klauzule</a></td></tr>
 <tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-umowy-b2b.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">📝 Umowa B2B — dla freelancerów</a></td></tr>
 <tr><td style="padding:5px 0"><a href="https://dokumoflow.com/umowa-najmu.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🏠 Umowa najmu — dla wynajmujących</a></td></tr>
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-nda.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🔒 NDA — umowa o poufności</a></td></tr>
-<tr><td style="padding:5px 0"><a href="https://dokumoflow.com/generator-regulaminu-sklepu.html" style="color:#111;font-size:14px;font-weight:600;text-decoration:none">🛒 Regulamin sklepu</a></td></tr>
 </table></div>
-<a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Wygeneruj dokument za darmo →</a>
+<a href="https://dokumoflow.com" style="display:block;background:#111;color:#fff;text-align:center;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;text-decoration:none">Otwórz Dokumo →</a>
 <p style="font-size:12px;color:#bbb;margin:24px 0 0;text-align:center">© 2026 Dokumo · <a href="https://dokumoflow.com" style="color:#bbb;text-decoration:none">dokumoflow.com</a></p>
 </div></div></div></body></html>`;
 }
