@@ -465,8 +465,20 @@ onAuthStateChanged(getAuth(app),async u=>{
         <div><div class="tpl-opt-label">Klasyczny</div><div class="tpl-opt-sub">Szeryfowy, tradycyjny</div></div>
       </button>
       <button class="tpl-opt" id="tplOptElegancki" onclick="setTpl('elegancki')">
-        <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#aaa;margin-bottom:3px;border-radius:1px;width:60%;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:85%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:75%;"></div></div>
-        <div><div class="tpl-opt-label">Elegancki</div><div class="tpl-opt-sub">Szeryfowy, więcej odstępów</div></div>
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2px;background:#8a7a55;margin:1px auto 2px;border-radius:1px;width:50%;"></div><div style="height:1px;background:#111;width:100%;margin-bottom:1px;"></div><div style="height:1px;background:#111;width:100%;margin-bottom:3px;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:85%;margin:0 auto 2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:75%;margin:0 auto;"></div></div>
+        <div><div class="tpl-opt-label">Elegancki</div><div class="tpl-opt-sub">Wyśrodkowany, kapitaliki</div></div>
+      </button>
+      <button class="tpl-opt" id="tplOptAkcent" onclick="setTpl('akcent')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:4px;"><div style="height:2.5px;background:#1e3a5f;margin-bottom:2px;border-radius:1px;width:60%;"></div><div style="height:2px;background:#1e3a5f;width:22%;margin-bottom:4px;"></div><div style="height:1.5px;background:#ddd;border-radius:1px;width:90%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:80%;"></div></div>
+        <div><div class="tpl-opt-label">Akcent</div><div class="tpl-opt-sub">Granatowy kolor przewodni</div></div>
+      </button>
+      <button class="tpl-opt" id="tplOptExecutive" onclick="setTpl('belka')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:0;"><div style="height:11px;background:#1c2430;margin-bottom:2px;display:flex;align-items:center;padding:0 3px;"><div style="height:2px;background:rgba(255,255,255,0.85);width:55%;border-radius:1px;"></div></div><div style="height:3px;background:#f0f1f3;margin:0 0 3px;"></div><div style="padding:0 3px;"><div style="height:1.5px;background:#ddd;border-radius:1px;width:88%;margin-bottom:2px;"></div><div style="height:1.5px;background:#eee;border-radius:1px;width:76%;"></div></div></div>
+        <div><div class="tpl-opt-label">Executive</div><div class="tpl-opt-sub">Ciemna belka nagłówka</div></div>
+      </button>
+      <button class="tpl-opt" id="tplOptMinimal" onclick="setTpl('minimal')">
+        <div class="tpl-opt-preview" style="border-color:#bbb;padding:5px 4px;"><div style="height:1.5px;background:#333;margin-bottom:3px;border-radius:1px;width:45%;"></div><div style="height:0.5px;background:#ddd;width:100%;margin-bottom:5px;"></div><div style="height:1.5px;background:#e5e5e5;border-radius:1px;width:85%;margin-bottom:3px;"></div><div style="height:1.5px;background:#efefef;border-radius:1px;width:70%;"></div></div>
+        <div><div class="tpl-opt-label">Minimalistyczny</div><div class="tpl-opt-sub">Dużo światła, subtelny</div></div>
       </button>
     </div>
   </div>
@@ -984,6 +996,26 @@ function renderPreview() {
     ? '<div style="text-align:justify;">' + nl2br(body) + '</div>'
     : '<div style="color:#bbb;font-style:italic;">Tutaj pojawi się treść Twojego listu motywacyjnego…</div>';
 
+  // Wspólne klocki dla szablonów (style inline — muszą przeżyć eksport do PDF)
+  function rcptLines() {
+    var L = [];
+    if (rCompany) L.push('<b>' + esc(rCompany) + '</b>');
+    if (rContact) L.push(esc(rContact));
+    if (rStreet)  L.push(esc(rStreet));
+    var zc = [rZip, rCity].filter(Boolean).join(' ');
+    if (zc) L.push(esc(zc));
+    return L;
+  }
+  function subjTxt() {
+    return pos
+      ? 'Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '')
+      : '';
+  }
+  var contactBits = [
+    [street, [zip, city].filter(Boolean).join(' ')].filter(Boolean).join(', '),
+    phone, email
+  ].filter(Boolean).map(esc);
+
   var html;
   if (_currentTpl === 'zdjecie') {
     // ── Ze zdjęciem layout ──
@@ -1032,8 +1064,97 @@ function renderPreview() {
       '<div style="font-size:12px;">Z poważaniem,</div>' +
       '<div style="margin-top:28px;font-size:13px;font-weight:700;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
       '</div>';
+  } else if (_currentTpl === 'elegancki') {
+    // ── Elegancki: wyśrodkowany nagłówek, kapitaliki, podwójna linia, złamany złoty akcent ──
+    var elePhoto = _letterPhoto
+      ? '<img src="' + _letterPhoto + '" style="width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 14px;">'
+      : '';
+    var eleRcpt = rcptLines();
+    html =
+      '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:12px;line-height:1.9;color:#1a1a1a;">' +
+        elePhoto +
+        '<div style="text-align:center;">' +
+          '<div style="font-size:21px;letter-spacing:0.14em;text-transform:uppercase;color:#111;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+          (pos ? '<div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#8a7a55;margin-top:7px;">' + esc(pos) + '</div>' : '') +
+          (contactBits.length ? '<div style="font-size:10.5px;color:#555;margin-top:11px;">' + contactBits.join(' &nbsp;·&nbsp; ') + '</div>' : '') +
+        '</div>' +
+        '<div style="border-top:1px solid #111;border-bottom:1px solid #111;height:4px;margin:20px 0 24px;"></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;">' +
+          '<div style="line-height:1.75;font-size:11.5px;">' + (eleRcpt.length ? eleRcpt.join('<br>') : '') + '</div>' +
+          '<div style="font-style:italic;font-size:11.5px;color:#444;white-space:nowrap;">' + esc((city || 'Miejscowość') + ', ' + today) + '</div>' +
+        '</div>' +
+        (pos ? '<div style="margin-bottom:20px;"><span style="font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;color:#8a7a55;">Dotyczy</span><br>' + 'Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>' : '') +
+        '<div style="margin-bottom:14px;">' + salutation + '</div>' +
+        '<div style="margin-bottom:26px;">' + bodyHtml + '</div>' +
+        '<div style="text-align:right;">Z poważaniem,<br><span style="font-size:16px;font-style:italic;">' + esc(fullName || 'Imię Nazwisko') + '</span></div>' +
+      '</div>';
+  } else if (_currentTpl === 'akcent') {
+    // ── Akcent: granatowy kolor przewodni, pasek pod nazwiskiem, sans-serif ──
+    var akcPhoto = _letterPhoto
+      ? '<img src="' + _letterPhoto + '" style="width:76px;height:76px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+      : '';
+    var akcRcpt = rcptLines();
+    html =
+      '<div style="font-family:\'Figtree\',-apple-system,sans-serif;font-size:11.5px;line-height:1.8;color:#222;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+          '<div>' +
+            '<div style="font-size:25px;font-weight:800;letter-spacing:-0.02em;color:#1e3a5f;line-height:1.1;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+            (pos ? '<div style="font-size:11.5px;color:#555;margin-top:5px;">' + esc(pos) + '</div>' : '') +
+            '<div style="width:46px;height:3.5px;background:#1e3a5f;margin-top:12px;"></div>' +
+          '</div>' + akcPhoto +
+        '</div>' +
+        (contactBits.length ? '<div style="font-size:10.5px;color:#444;margin:16px 0 24px;">' + contactBits.join(' &nbsp;<span style="color:#1e3a5f;">•</span>&nbsp; ') + '</div>' : '<div style="margin-bottom:24px;"></div>') +
+        (akcRcpt.length ? '<div style="text-align:right;line-height:1.7;font-size:11px;margin-bottom:14px;">' + akcRcpt.join('<br>') + '</div>' : '') +
+        '<div style="text-align:right;font-size:10.5px;color:#777;margin-bottom:20px;">' + esc((city || 'Miejscowość') + ', ' + today) + '</div>' +
+        (pos ? '<div style="margin-bottom:16px;">Dotyczy: Aplikacja na stanowisko <b style="color:#1e3a5f;">' + esc(pos) + '</b>' + (company ? ' w firmie <b style="color:#1e3a5f;">' + esc(company) + '</b>' : '') + '</div>' : '') +
+        '<div style="margin-bottom:14px;">' + salutation + '</div>' +
+        '<div style="margin-bottom:28px;">' + bodyHtml + '</div>' +
+        '<div>Z poważaniem,</div>' +
+        '<div style="margin-top:24px;font-size:13px;font-weight:700;color:#1e3a5f;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+      '</div>';
+  } else if (_currentTpl === 'belka') {
+    // ── Executive: ciemna belka nagłówka na całą szerokość ──
+    var belkaPhoto = _letterPhoto
+      ? '<img src="' + _letterPhoto + '" style="width:68px;height:68px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.4);">'
+      : '';
+    var belkaRcpt = rcptLines();
+    html =
+      '<div style="font-family:\'Figtree\',-apple-system,sans-serif;font-size:11.5px;line-height:1.8;color:#222;">' +
+        '<div style="background:#1c2430;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">' +
+          '<div>' +
+            '<div style="font-size:21px;font-weight:700;color:#fff;letter-spacing:0.01em;line-height:1.15;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+            (pos ? '<div style="font-size:10.5px;color:rgba(255,255,255,0.72);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase;">' + esc(pos) + '</div>' : '') +
+          '</div>' + belkaPhoto +
+        '</div>' +
+        (contactBits.length ? '<div style="background:#f2f3f5;padding:9px 24px;font-size:10px;color:#444;margin-bottom:24px;">' + contactBits.join(' &nbsp;·&nbsp; ') + '</div>' : '<div style="margin-bottom:24px;"></div>') +
+        (belkaRcpt.length ? '<div style="line-height:1.7;font-size:11px;margin-bottom:14px;">' + belkaRcpt.join('<br>') + '</div>' : '') +
+        '<div style="text-align:right;font-size:10.5px;color:#777;margin-bottom:20px;">' + esc((city || 'Miejscowość') + ', ' + today) + '</div>' +
+        (pos ? '<div style="margin-bottom:16px;">' + subjTxt() + '</div>' : '') +
+        '<div style="margin-bottom:14px;">' + salutation + '</div>' +
+        '<div style="margin-bottom:28px;">' + bodyHtml + '</div>' +
+        '<div>Z poważaniem,</div>' +
+        '<div style="margin-top:24px;font-size:13px;font-weight:700;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+      '</div>';
+  } else if (_currentTpl === 'minimal') {
+    // ── Minimalistyczny: kapitaliki, cienka linia, dużo światła ──
+    var minRcpt = rcptLines();
+    html =
+      '<div style="font-family:\'Figtree\',-apple-system,sans-serif;font-size:11.5px;line-height:1.95;color:#2a2a2a;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
+          '<div style="font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#111;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+          '<div style="font-size:10px;color:#999;white-space:nowrap;">' + esc((city || 'Miejscowość') + ', ' + today) + '</div>' +
+        '</div>' +
+        ((pos || contactBits.length) ? '<div style="font-size:10px;color:#888;margin-top:6px;">' + [pos ? esc(pos) : '', contactBits.join(' · ')].filter(Boolean).join(' &nbsp;—&nbsp; ') + '</div>' : '') +
+        '<div style="border-top:1px solid #e2e2e2;margin:16px 0 28px;"></div>' +
+        (minRcpt.length ? '<div style="line-height:1.7;font-size:10.5px;color:#555;margin-bottom:22px;">' + minRcpt.join('<br>') + '</div>' : '') +
+        (pos ? '<div style="margin-bottom:18px;">' + subjTxt() + '</div>' : '') +
+        '<div style="margin-bottom:14px;">' + salutation + '</div>' +
+        '<div style="margin-bottom:32px;">' + bodyHtml + '</div>' +
+        '<div style="font-size:11px;color:#555;">Z poważaniem,</div>' +
+        '<div style="margin-top:26px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#111;">' + esc(fullName || 'Imię Nazwisko') + '</div>' +
+      '</div>';
   } else {
-    // ── Klasyczny / Elegancki layout ──
+    // ── Klasyczny: tradycyjny list szeryfowy ──
     var senderHtml = '<b>' + esc(fullName || 'Imię Nazwisko') + '</b>';
     if (street) senderHtml += '<br>' + esc(street);
     var zipCity = [zip, city].filter(Boolean).join(' ');
@@ -1041,23 +1162,14 @@ function renderPreview() {
     if (email)   senderHtml += '<br>' + esc(email);
     if (phone)   senderHtml += '<br>' + esc(phone);
     var dateHtml = esc((city || 'Miejscowość') + ', ' + today);
-    var recipientBlock = '';
-    if (rCompany || rContact) {
-      var rLines2 = [];
-      if (rCompany) rLines2.push('<b>' + esc(rCompany) + '</b>');
-      if (rContact) rLines2.push(esc(rContact));
-      if (rStreet)  rLines2.push(esc(rStreet));
-      var rZipCity2 = [rZip, rCity].filter(Boolean).join(' ');
-      if (rZipCity2) rLines2.push(esc(rZipCity2));
-      recipientBlock = '<div style="margin-bottom:18px;">' + rLines2.join('<br>') + '</div>';
-    }
-    var subjectLine2 = pos
-      ? '<div style="margin-bottom:24px;">Dotyczy: Aplikacja na stanowisko <b>' + esc(pos) + '</b>' + (company ? ' w firmie <b>' + esc(company) + '</b>' : '') + '</div>'
-      : '';
+    var clsRcpt = rcptLines();
+    var recipientBlock = clsRcpt.length ? '<div style="margin-bottom:18px;">' + clsRcpt.join('<br>') + '</div>' : '';
+    var subjectLine2 = pos ? '<div style="margin-bottom:24px;">' + subjTxt() + '</div>' : '';
     var classicPhotoHtml = _letterPhoto
       ? '<img src="' + _letterPhoto + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-left:16px;">'
       : '';
     html =
+      '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">' +
         '<div style="line-height:1.7;">' + senderHtml + '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">' +
@@ -1069,7 +1181,8 @@ function renderPreview() {
       '<div style="margin-bottom:12px;">' + salutation + '</div>' +
       '<div style="margin-bottom:22px;">' + bodyHtml + '</div>' +
       '<div>Z poważaniem,</div>' +
-      '<div style="margin-top:22px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>';
+      '<div style="margin-top:22px;"><b>' + esc(fullName || 'Imię Nazwisko') + '</b></div>' +
+      '</div>';
   }
 
   document.getElementById('lmPaper').innerHTML = html;
@@ -1213,7 +1326,7 @@ function setTpl(tpl) {
     if (tpl === 'klasyczny') modal.classList.add('tpl-klasyczny');
     if (tpl === 'elegancki') modal.classList.add('tpl-elegancki');
   }
-  [['Nowoczesny','zdjecie'],['Klasyczny','klasyczny'],['Elegancki','elegancki']].forEach(function(pair) {
+  [['Nowoczesny','zdjecie'],['Klasyczny','klasyczny'],['Elegancki','elegancki'],['Akcent','akcent'],['Executive','belka'],['Minimal','minimal']].forEach(function(pair) {
     var el = document.getElementById('tplOpt' + pair[0]);
     if (el) el.classList.toggle('active', pair[1] === tpl);
   });
