@@ -14,15 +14,17 @@ const auth = getAuth();
 const ALLOWED_CATS = new Set(['hr','kariera','biznes','najem','sprzedaz','inne']);
 
 // Wymagane plany per kategoria (serwer-side)
-// Plan „biznes" odblokowuje WYŁĄCZNIE dokumenty biznesowe (kategoria biznes).
-// Kariera = dokumenty osobiste/pracownicze; Pro Max i Start = wszystko.
+// Biznes = dokumenty firmowe: umowy (o pracę, zlecenie, B2B, NDA), faktury,
+// regulaminy, biznesplany, najem, sprzedaż, pisma — WSZYSTKO poza Kreatorem CV.
+// Kariera = CV/list + umowy i pisma (bez firmowych: faktur/regulaminów/biznesplanów).
+// Pro Max i Start = wszystko.
 const CAT_REQUIRED_PLANS = {
-  hr:       ['kariera','promax','start'],
+  hr:       ['kariera','biznes','promax','start'],
   kariera:  ['kariera','promax','start'],
   biznes:   ['biznes','promax','start'],
-  najem:    ['kariera','promax','start'],
-  sprzedaz: ['kariera','promax','start'],
-  inne:     ['kariera','promax','start'],
+  najem:    ['kariera','biznes','promax','start'],
+  sprzedaz: ['kariera','biznes','promax','start'],
+  inne:     ['kariera','biznes','promax','start'],
 };
 
 const RATE_LIMIT = 25;
