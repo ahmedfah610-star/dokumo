@@ -630,8 +630,9 @@ async function analyzeContract(){
     setStep(2,'done');setStep(3,'active');
     document.getElementById('loadingTitle').textContent='Przygotowuję raport…';
     const data=await resp.json();
+    if(resp.status===401){showPaywall('Analiza umów wymaga zalogowania i aktywnej subskrypcji. <a href="konto.html?return=/analiza-umowy.html" style="color:inherit;text-decoration:underline;">Zaloguj się</a>, a następnie wybierz pakiet <strong>Start</strong> lub <strong>Promax</strong>.');return;}
     if(resp.status===403){
-      if(data.error==='contract_free_used'){showPaywall('Wykorzystałeś jednorazową bezpłatną analizę. Wykup pakiet <strong>Start</strong> lub <strong>Promax</strong>, aby analizować nieograniczoną liczbę umów.');return;}
+      if(data.error==='contract_free_used'){showPaywall('Analiza umów wymaga aktywnej subskrypcji. Wykup pakiet <strong>Start</strong> lub <strong>Promax</strong>.');return;}
       if(data.error==='contract_sub_required'){showPaywall('Analiza umów wymaga aktywnej subskrypcji. Wykup pakiet <strong>Start</strong> lub <strong>Promax</strong>.');return;}
     }
     if(!resp.ok)throw new Error(data.error||'Błąd analizy');

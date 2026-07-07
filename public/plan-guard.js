@@ -69,9 +69,12 @@
     // Niezalogowany → panel logowania
     if (!user) { window.location.href = 'konto.html'; return false; }
 
-    // Brak aktywnej subskrypcji — pozwól spróbować (serwer sprawdzi 1 darmowy slot per IP)
+    // Brak aktywnej subskrypcji — każdy dokument jest płatny, pokaż plany
     var active = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
-    if (!active) return true;
+    if (!active) {
+      window.showSubRequiredModal(requiredPlans);
+      return false;
+    }
 
     // Pakiet Start — jednorazowe pobranie
     if (sub.plan === 'start') {
@@ -102,23 +105,25 @@
     return false;
   };
 
-  // Modal gdy darmowy slot per IP został już wykorzystany
-  window.showFreeDocModal = function () {
+  // Modal „wymagana subskrypcja" — każdy dokument jest płatny
+  window.showSubRequiredModal = function (requiredPlans) {
     var el = document.getElementById('pgOverlay');
     if (el) el.remove();
     var overlay = document.createElement('div');
     overlay.id = 'pgOverlay';
     overlay.innerHTML =
       '<div id="pgModal">' +
-        '<div class="pg-ico">🎁</div>' +
-        '<h2>Darmowy dokument już wykorzystany</h2>' +
-        '<p>Każdy użytkownik może wygenerować <strong>jeden darmowy dokument</strong>.<br>Kup pakiet, aby generować bez limitu.</p>' +
+        '<div class="pg-ico">🔒</div>' +
+        '<h2>Ten dokument wymaga pakietu</h2>' +
+        '<p>Generowanie i pobieranie dokumentów jest dostępne w ramach subskrypcji Dokumo. Wybierz pakiet i twórz dokumenty bez limitu.</p>' +
         '<a href="subskrypcja.html" class="pg-upgrade">Zobacz plany →</a>' +
         '<button class="pg-close" onclick="document.getElementById(\'pgOverlay\').remove()">Zamknij</button>' +
       '</div>';
     document.body.appendChild(overlay);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
   };
+  // Alias wstecznej zgodności (dawny darmowy slot)
+  window.showFreeDocModal = window.showSubRequiredModal;
 
   // Pokazuje w #checkSaved ostrzeżenie gdy serwer pominął zapis z powodu PII
   // (zamiast domyslnego "✓ Zapisano" ktore strona ustawia od razu po fetchu).
@@ -149,7 +154,12 @@
         return p.then(function (res) {
           if (res.status === 403) {
             res.clone().json().then(function (d) {
-              if (d.error === 'free_used' && window.showFreeDocModal) window.showFreeDocModal();
+              // Każdy dokument płatny: brak sub / darmowy slot / niepasujący plan → modal z planami
+              if ((d.error === 'free_used' || d.error === 'subscription_required') && window.showSubRequiredModal) {
+                window.showSubRequiredModal();
+              } else if (d.error === 'start_limit' && window.showStartUsedModal) {
+                window.showStartUsedModal();
+              }
             }).catch(function () {});
           }
           if (res.ok) {

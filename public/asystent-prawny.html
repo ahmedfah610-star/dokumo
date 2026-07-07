@@ -22,7 +22,7 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Czy AI może odpowiadać na pytania prawne?","acceptedAnswer":{"@type":"Answer","text":"Tak — Asystent udziela informacji ogólnych o polskim prawie i wskazuje konkretne przepisy (artykuł i nazwę ustawy), na których opiera odpowiedź. Nie jest to jednak porada prawna: w złożonych lub spornych sprawach należy skonsultować się z prawnikiem, radcą prawnym lub doradcą podatkowym."}},
-{"@type":"Question","name":"Ile kosztuje Asystent Prawny i Podatkowy?","acceptedAnswer":{"@type":"Answer","text":"Po założeniu darmowego konta możesz zadać do 20 pytań dziennie bez żadnych opłat. Subskrybenci Dokumo mają limit 100 pytań dziennie."}},
+{"@type":"Question","name":"Ile kosztuje Asystent Prawny i Podatkowy?","acceptedAnswer":{"@type":"Answer","text":"Po założeniu darmowego konta możesz zadać 5 pytań bez żadnych opłat. Nielimitowany dostęp do Asystenta jest w pakiecie Pro Max."}},
 {"@type":"Question","name":"Jakie tematy obejmuje asystent?","acceptedAnswer":{"@type":"Answer","text":"Tryb prawny: umowy (o pracę, zlecenie, o dzieło, B2B, najem), prawa pracownicze, wypowiedzenia, urlopy, prawa konsumenta, RODO. Tryb podatkowy: PIT, CIT, VAT, ZUS, składka zdrowotna, ryczałt, podatek liniowy, koszty firmowe, KSeF i faktury."}},
 {"@type":"Question","name":"Czy mogę wgrać umowę lub fakturę do analizy?","acceptedAnswer":{"@type":"Answer","text":"Tak. Wgraj plik PDF, zdjęcie (JPG/PNG) lub plik tekstowy do 3 MB, a AI przeanalizuje dokument i wskaże najważniejsze postanowienia oraz potencjalne ryzyka."}},
 {"@type":"Question","name":"Skąd asystent bierze przepisy?","acceptedAnswer":{"@type":"Answer","text":"Każda odpowiedź kończy się sekcją z podstawą prawną. Dodatkowo asystent przeszukuje Dziennik Ustaw (api.sejm.gov.pl) i podaje linki do pełnej treści aktów prawnych w systemie ISAP, z oznaczeniem, czy akt nadal obowiązuje."}},
@@ -295,7 +295,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
         </details>
         <details>
           <summary>Ile kosztuje Asystent Prawny i Podatkowy?</summary>
-          <p>Po założeniu darmowego konta możesz zadać do 20 pytań dziennie bez żadnych opłat. Subskrybenci Dokumo mają limit 100 pytań dziennie.</p>
+          <p>Po założeniu darmowego konta możesz zadać 5 pytań bez żadnych opłat. Nielimitowany dostęp do Asystenta jest w pakiecie Pro Max.</p>
         </details>
         <details>
           <summary>Jakie tematy obejmuje asystent?</summary>
@@ -374,8 +374,8 @@ onAuthStateChanged(getAuth(app), async u => {
 var _currentChatId = null;
 var _history = []; // { role, content }
 var _loading = false;
-var _queriesLeft = null;
-var _queriesMax = null;
+var _quotaUnlimited = false;
+var _freeLeft = null;
 var _mode = 'prawny';
 
 // ── Persony (tryby) ──
@@ -666,31 +666,42 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-// ── Update query counter ──
-function updateQl(left, max) {
-  _queriesLeft = left;
-  _queriesMax = max;
-  if (left === null) return;
+// ── Licznik darmowej puli (5 pytań łącznie, potem Pro Max) ──
+// Przyjmuje obiekt z backendu: { unlimited } albo { freeLeft, freeMax }.
+function applyQuota(q) {
+  if (!q) return;
   var navQl = document.getElementById('navQl');
   var navQlVal = document.getElementById('navQlVal');
   var hint = document.getElementById('qlHint');
   navQl.style.display = '';
-  navQlVal.textContent = left + ' / ' + max;
-  navQlVal.style.color = left <= 2 ? '#e11d48' : '';
-  if (left <= 0) {
-    hint.innerHTML = '<span style="color:#e11d48">Limit dzienny wyczerpany.</span> <a href="subskrypcja.html">Ulepsz plan →</a>';
+  if (q.unlimited) {
+    _quotaUnlimited = true;
+    navQlVal.textContent = 'Pro Max';
+    navQlVal.style.color = '';
+    hint.textContent = 'Odpowiedzi AI mogą zawierać błędy — zweryfikuj w źródłach.';
+    renderQuotaNudge(null);
+    return;
+  }
+  if (q.freeLeft == null) return;
+  _quotaUnlimited = false;
+  _freeLeft = q.freeLeft;
+  var max = q.freeMax || 5;
+  navQlVal.textContent = q.freeLeft + ' / ' + max + ' darmowych';
+  navQlVal.style.color = q.freeLeft <= 1 ? '#e11d48' : '';
+  if (q.freeLeft <= 0) {
+    hint.innerHTML = '<span style="color:#e11d48">Wykorzystano darmowe pytania.</span> <a href="subskrypcja.html">Kup Pro Max →</a>';
   } else {
     hint.textContent = 'Odpowiedzi AI mogą zawierać błędy — zweryfikuj w źródłach.';
   }
-  renderQuotaNudge(left, max);
+  renderQuotaNudge(q.freeLeft);
 }
 
-// Delikatny pasek nad polem wpisu, gdy zostaje mało pytań (tylko darmowe konta).
-function renderQuotaNudge(left, max) {
+// Pasek nad polem wpisu, gdy kończy się darmowa pula (tylko konta bez Pro Max).
+function renderQuotaNudge(freeLeft) {
   var wrap = document.querySelector('.ap-input-inner');
   if (!wrap) return;
   var existing = document.getElementById('quotaNudge');
-  var show = (max <= 20) && left != null && left > 0 && left <= 3;
+  var show = freeLeft != null && freeLeft > 0 && freeLeft <= 3;
   if (!show) { if (existing) existing.remove(); return; }
   if (!existing) {
     existing = document.createElement('div');
@@ -698,15 +709,16 @@ function renderQuotaNudge(left, max) {
     existing.className = 'ap-quota-nudge';
     wrap.insertBefore(existing, wrap.firstChild);
   }
-  existing.innerHTML = '⚡ Zostały ' + left + ' pytania z darmowego limitu. ' +
-    '<a href="subskrypcja.html">Odblokuj 100/dzień →</a>';
+  var word = freeLeft === 1 ? 'pytanie' : (freeLeft >= 2 && freeLeft <= 4 ? 'pytania' : 'pytań');
+  existing.innerHTML = '⚡ ' + (freeLeft === 1 ? 'Zostało' : 'Zostały') + ' ' + freeLeft + ' darmowe ' + word + '. ' +
+    '<a href="subskrypcja.html">Odblokuj bez limitu z Pro Max →</a>';
 }
 
 // ── Wymóg logowania ──
 function isLoggedIn() { return !!(window._fbToken || window._firebaseUser); }
 function requireLogin() {
   removeTyping();
-  appendMsg('assistant', '🔒 Aby otrzymać odpowiedź, [zaloguj się lub załóż darmowe konto](konto.html?return=/asystent-prawny.html). Rejestracja zajmuje chwilę i odblokowuje 20 pytań dziennie (100 z subskrypcją).');
+  appendMsg('assistant', '🔒 Aby otrzymać odpowiedź, [zaloguj się lub załóż darmowe konto](konto.html?return=/asystent-prawny.html). Rejestracja zajmuje chwilę i daje 5 darmowych pytań; pełny dostęp jest w pakiecie Pro Max.');
 }
 
 // ── Send message ──
@@ -758,9 +770,9 @@ async function sendMessage() {
       removeTyping();
       if (r.status === 401) {
         requireLogin();
-      } else if (r.status === 429) {
-        updateQl(0, (data0 && data0.queriesMax) || _queriesMax || 20);
-        showPaywall(!!(data0 && data0.hasSub));
+      } else if (r.status === 403 && data0 && data0.error === 'promax_required') {
+        applyQuota({ unlimited: false, freeLeft: 0, freeMax: (data0.freeMax || 5) });
+        showPaywall();
       } else {
         appendMsg('assistant', '⚠️ Coś poszło nie tak: ' + ((data0 && data0.error) || 'Spróbuj ponownie.'));
       }
@@ -789,7 +801,7 @@ async function sendMessage() {
           var ev;
           try { ev = JSON.parse(line); } catch(e) { continue; }
           if (ev.t === 'meta') {
-            updateQl(ev.queriesLeft, ev.queriesMax);
+            applyQuota(ev);
           } else if (ev.t === 'd') {
             if (!shell) { removeTyping(); shell = createMsgShell('assistant'); }
             acc += ev.x;
@@ -833,7 +845,7 @@ async function sendMessage() {
       suggestions: data.suggestions || [],
       followups: data.followups || [],
     });
-    updateQl(data.queriesLeft, data.queriesMax);
+    applyQuota(data);
     if (window._firebaseUser) loadHistory();
 
   } catch(e) {
@@ -854,14 +866,7 @@ async function loadQuota() {
       headers: { 'Authorization': 'Bearer ' + window._fbToken }
     });
     if (!r.ok) return;
-    var d = await r.json();
-    if (d.unlimited) {
-      var navQl = document.getElementById('navQl');
-      document.getElementById('navQlVal').textContent = '∞';
-      navQl.style.display = '';
-      return;
-    }
-    updateQl(d.queriesLeft, d.queriesMax);
+    applyQuota(await r.json());
   } catch(e) { /* ignore */ }
 }
 
@@ -954,23 +959,18 @@ if (window.location.search.includes('return')) {
 }
 </script>
 
-<!-- Modal paywalla — pokazywany po wyczerpaniu dziennego limitu pytań -->
+<!-- Modal paywalla — po wykorzystaniu 5 darmowych pytań -->
 <div class="ap-pw-overlay" id="pwOverlay">
-  <div class="ap-pw" role="dialog" aria-label="Wykorzystano limit pytań">
+  <div class="ap-pw" role="dialog" aria-label="Wykorzystano darmowe pytania">
     <div class="ap-pw-ico">🔒</div>
-    <h2>Wykorzystano dzienny limit</h2>
-    <p id="pwText">Darmowe konto pozwala zadać 20 pytań dziennie. Odblokuj <b>100 pytań dziennie</b>, analizę umów bez limitu i pełny dostęp do generatorów.</p>
-    <a class="ap-pw-cta" href="subskrypcja.html">Zobacz plany →</a>
+    <h2>Wykorzystano darmowe pytania</h2>
+    <p id="pwText">Masz za sobą 5 darmowych pytań do Asystenta. Dalej dostępny jest w pakiecie <b>Pro Max</b> — bez limitu pytań, z analizą umów i pełnym dostępem do generatorów.</p>
+    <a class="ap-pw-cta" href="subskrypcja.html">Kup Pro Max →</a>
     <button class="ap-pw-close" type="button" onclick="closePaywall()">Może później</button>
   </div>
 </div>
 <script>
-function showPaywall(hasSub) {
-  var t = document.getElementById('pwText');
-  if (hasSub) {
-    t.innerHTML = 'Wykorzystano dzienny limit 100 pytań Twojej subskrypcji. Limit odnawia się o północy (czasu UTC).';
-    document.querySelector('#pwOverlay .ap-pw-cta').style.display = 'none';
-  }
+function showPaywall() {
   document.getElementById('pwOverlay').classList.add('open');
 }
 function closePaywall() { document.getElementById('pwOverlay').classList.remove('open'); }

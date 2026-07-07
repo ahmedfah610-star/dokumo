@@ -68,22 +68,20 @@ function todayKey() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
 }
 
-// Rate limit oparty o Firestore — trwały między cold startami
-async function checkAndIncrementLimit(key, max) {
-  const ref = db.collection('legalChatUsage').doc(key.replace(/[\/:.]/g, '_'));
-  const today = todayKey();
+// Darmowa pula ŁĄCZNA (na zawsze) — atomowa konsumpcja przez transakcję.
+// Zwraca { allowed, used } gdzie used = liczba wykorzystanych po tej próbie.
+async function consumeFreeQuery(usageDocId, max) {
+  const ref = db.collection('legalChatUsage').doc(usageDocId);
   try {
-    const snap = await ref.get();
-    const data = snap.exists ? snap.data() : {};
-    if (data.date !== today) {
-      await ref.set({ date: today, count: 1 });
-      return { allowed: true, used: 1, max };
-    }
-    if (data.count >= max) return { allowed: false, used: data.count, max };
-    await ref.update({ count: data.count + 1 });
-    return { allowed: true, used: data.count + 1, max };
+    return await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const used = (snap.exists && snap.data().freeUsed) || 0;
+      if (used >= max) return { allowed: false, used };
+      tx.set(ref, { freeUsed: used + 1, updatedAt: new Date() }, { merge: true });
+      return { allowed: true, used: used + 1 };
+    });
   } catch {
-    return { allowed: true, used: 0, max }; // fail-open na błędach Firestore
+    return { allowed: true, used: 0 }; // fail-open na błędach Firestore
   }
 }
 
@@ -383,39 +381,44 @@ export default async function handler(req, res) {
 
   // ── Opcjonalna autoryzacja ──────────────────────────────────────────
   let uid = null;
-  let hasSub = false;
+  let subPlan = null;
   let isAdmin = false;
   const rawToken = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (rawToken) {
     try {
       const decoded = await auth.verifyIdToken(rawToken);
       uid = decoded.uid;
-      // Administratorzy (ta sama lista co w api/admin.js) — bez limitu dziennego
+      // Administratorzy (ta sama lista co w api/admin.js) — dostęp bez limitu
       const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
       isAdmin = !!decoded.email && ADMIN_EMAILS.includes(decoded.email.toLowerCase());
-      // Sprawdź subskrypcję
+      // Sprawdź subskrypcję (potrzebny konkretny plan — asystent to ekskluzyw Pro Max)
       const subSnap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
       if (subSnap.exists) {
         const exp = subSnap.data().expiresAt?.toDate?.();
-        hasSub = exp && exp > new Date();
+        if (exp && exp > new Date()) subPlan = subSnap.data().plan || null;
       }
     } catch { uid = null; }
   }
 
-  const dailyMax = isAdmin ? 100000 : (hasSub ? 100 : 20);
+  // Model dostępu: 5 darmowych pytań ŁĄCZNIE (na zawsze), potem wyłącznie Pro Max.
+  const FREE_LIFETIME = 5;
+  const unlimited = isAdmin || subPlan === 'promax';
+  const usageDocId = uid ? uid.replace(/[\/:.]/g, '_') : null;
 
-  // ── GET quota — stan licznika bez zużywania pytania ─────────────────
+  // ── GET quota — stan darmowej puli bez zużywania pytania ────────────
   if (req.method === 'GET' && action === 'quota') {
     if (!uid) return res.status(401).json({ error: 'Wymagane logowanie' });
-    let used = 0;
+    if (unlimited) return res.status(200).json({ unlimited: true });
+    let freeUsed = 0;
     try {
-      const snap = await db.collection('legalChatUsage').doc(uid.replace(/[\/:.]/g, '_')).get();
-      if (snap.exists && snap.data().date === todayKey()) used = snap.data().count || 0;
-    } catch { /* fail-open: pokaż pełny limit */ }
+      const snap = await db.collection('legalChatUsage').doc(usageDocId).get();
+      if (snap.exists) freeUsed = snap.data().freeUsed || 0;
+    } catch { /* fail-open */ }
     return res.status(200).json({
-      queriesLeft: Math.max(0, dailyMax - used),
-      queriesMax: dailyMax,
-      unlimited: isAdmin,
+      unlimited: false,
+      freeLeft: Math.max(0, FREE_LIFETIME - freeUsed),
+      freeMax: FREE_LIFETIME,
+      needsPromax: freeUsed >= FREE_LIFETIME,
     });
   }
 
@@ -509,14 +512,20 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
-  // Rate limit (dzienny) — zalogowany bez sub 20, z aktywną subskrypcją 100, admin bez limitu.
-  const rl = await checkAndIncrementLimit(uid, dailyMax);
-  if (!rl.allowed) {
-    bump(db, 'chat_limit_hit', { mode: chatMode });
-    return res.status(429).json({
-      error: `Wykorzystano dzienny limit ${dailyMax} pytań (licznik obejmuje wszystkie dzisiejsze pytania, także z widgetu). Limit odnawia się o północy czasu UTC${hasSub ? '' : ' — subskrypcja zwiększa go do 100/dzień'}.`,
-      queriesLeft: 0, queriesMax: dailyMax, limitReached: true, hasSub,
-    });
+  // Dostęp: Pro Max / admin bez limitu; pozostali mają 5 darmowych pytań łącznie.
+  let quotaInfo;
+  if (unlimited) {
+    quotaInfo = { unlimited: true };
+  } else {
+    const c = await consumeFreeQuery(usageDocId, FREE_LIFETIME);
+    if (!c.allowed) {
+      bump(db, 'chat_limit_hit', { mode: chatMode });
+      return res.status(403).json({
+        error: 'promax_required',
+        freeMax: FREE_LIFETIME, freeLeft: 0, needsPromax: true,
+      });
+    }
+    quotaInfo = { unlimited: false, freeMax: FREE_LIFETIME, freeLeft: Math.max(0, FREE_LIFETIME - c.used) };
   }
   bump(db, 'chat_question', { mode: chatMode });
 
@@ -577,8 +586,7 @@ export default async function handler(req, res) {
       followups: parsed.followups || [],
       chatId: savedChatId || null,
       mode: chatMode,
-      queriesLeft: rl.max - rl.used,
-      queriesMax: rl.max,
+      ...quotaInfo,
     };
   }
 
@@ -590,7 +598,7 @@ export default async function handler(req, res) {
       'X-Accel-Buffering': 'no',
     });
     const send = (o) => res.write(JSON.stringify(o) + '\n');
-    send({ t: 'meta', queriesLeft: rl.max - rl.used, queriesMax: rl.max, mode: chatMode });
+    send({ t: 'meta', mode: chatMode, ...quotaInfo });
 
     // Filtr: nie wypuszczamy do klienta separatora metadanych ani niczego po nim.
     let shown = 0;

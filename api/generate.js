@@ -139,55 +139,26 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── Analiza umowy — 1 raz za darmo, potem wymaga pakietu ──
+  // ── Analiza umowy — wymaga logowania i aktywnej subskrypcji ──
   if (freeType === 'analyze-contract') {
     const { contractText } = req.body;
     if (!contractText || typeof contractText !== 'string' || contractText.trim().length < 80)
       return res.status(400).json({ error: 'Tekst umowy jest zbyt krótki lub pusty' });
 
-    // Opcjonalne sprawdzenie tokenu (użytkownik może być zalogowany)
     const contractToken = (req.headers.authorization || '').replace('Bearer ', '').trim();
-    let contractUid = null;
-    if (contractToken) {
-      try { const decoded = await auth.verifyIdToken(contractToken); contractUid = decoded.uid; } catch {}
-    }
+    if (!contractToken) return res.status(401).json({ error: 'Wymagane logowanie' });
+    let contractUid;
+    try { contractUid = (await auth.verifyIdToken(contractToken)).uid; }
+    catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
 
-    if (contractUid) {
-      // Zalogowany — wymaga subskrypcji start lub wyższej
-      try {
-        const sub = await checkSubscription(contractUid);
-        if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan)) {
-          return res.status(403).json({ error: 'contract_sub_required' });
-        }
-      } catch(e) {
-        return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
+    try {
+      const sub = await checkSubscription(contractUid);
+      if (!sub || !['kariera','biznes','promax','start'].includes(sub.plan)) {
+        bump(db, 'paywall_hit', { source: 'contract' });
+        return res.status(403).json({ error: 'contract_sub_required' });
       }
-    } else {
-      // Gość — jeden bezpłatny użytek per /24 IP (utrudnia rotację proxy)
-      const ipKey = getIpPrefix(req);
-      const freeRef = db.collection('freeContractUsage').doc(ipKey);
-      try {
-        await freeRef.create({ usedAt: Timestamp.now() });
-      } catch(createErr) {
-        if (createErr.code === 6) {
-          return res.status(403).json({ error: 'contract_free_used' });
-        }
-        return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
-      }
-      // Globalny dzienny cap — chroni przed atakiem rozproszonym (rotacja proxy)
-      const todayKey = new Date().toISOString().slice(0, 10);
-      const globalRef = db.collection('globalLimits').doc('contract_free_' + todayKey);
-      const allowed = await db.runTransaction(async (tx) => {
-        const doc = await tx.get(globalRef);
-        const count = doc.exists ? (doc.data().count || 0) : 0;
-        if (count >= 300) return false;
-        tx.set(globalRef, { count: count + 1, updatedAt: Timestamp.now() }, { merge: true });
-        return true;
-      }).catch(() => true); // przy błędzie transakcji — przepuść (fail-open)
-      if (!allowed) {
-        freeRef.delete().catch(() => {});
-        return res.status(429).json({ error: 'Dzienny limit darmowych analiz wyczerpany. Załóż konto, aby kontynuować.' });
-      }
+    } catch(e) {
+      return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
 
     const truncated = contractText.slice(0, 30000);
@@ -299,37 +270,23 @@ ${truncated}`;
     return res.status(400).json({ error: 'Niedozwolona kategoria dokumentu' });
   }
 
-  // ── 3. Subskrypcja lub darmowy slot per IP (1 na zawsze) ──
-  let isFree = false;
+  // ── 3. Wymagana aktywna subskrypcja — każdy dokument jest płatny ──
+  const isFree = false; // brak darmowego slotu; utrzymane dla zgodności downstream
   try {
     const sub = await checkSubscription(uid);
     if (!sub) {
-      // Brak subskrypcji — atomowe zajęcie jednorazowego slotu per IP
-      // create() rzuca błąd ALREADY_EXISTS (kod 6) jeśli dokument istnieje — brak race condition
-      const ip = getIp(req);
-      const freeRef = db.collection('freeDocUsage').doc(ip);
-      try {
-        await freeRef.create({ usedAt: Timestamp.now(), uid, docName: docName || 'Dokument', docCat: cat });
-        isFree = true;
-      } catch(createErr) {
-        // gRPC ALREADY_EXISTS = kod 6
-        if (createErr.code === 6) {
-          bump(db, 'paywall_hit', { source: 'free_used' });
-          return res.status(403).json({ error: 'free_used' });
-        }
-        throw createErr;
-      }
-    } else {
-      const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
-      if (!requiredPlans.includes(sub.plan)) {
-        bump(db, 'paywall_hit', { source: 'plan_mismatch' });
-        return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
-      }
-      // Start plan — serwer-side enforcement limitu 1 pobrania
-      if (sub.plan === 'start' && (sub.downloadsLeft ?? 0) <= 0) {
-        bump(db, 'paywall_hit', { source: 'start_limit' });
-        return res.status(403).json({ error: 'start_limit' });
-      }
+      bump(db, 'paywall_hit', { source: 'no_sub' });
+      return res.status(403).json({ error: 'subscription_required' });
+    }
+    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','biznes','promax'];
+    if (!requiredPlans.includes(sub.plan)) {
+      bump(db, 'paywall_hit', { source: 'plan_mismatch' });
+      return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
+    }
+    // Start plan — serwer-side enforcement limitu 1 pobrania
+    if (sub.plan === 'start' && (sub.downloadsLeft ?? 0) <= 0) {
+      bump(db, 'paywall_hit', { source: 'start_limit' });
+      return res.status(403).json({ error: 'start_limit' });
     }
   } catch(e) {
     console.error('Subscription check error:', e.message);
