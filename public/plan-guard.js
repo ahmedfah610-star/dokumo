@@ -66,8 +66,12 @@
     var sub;  try { sub  = JSON.parse(localStorage.getItem('dokumo_sub'));  } catch (e) { sub  = null; }
     var user; try { user = JSON.parse(localStorage.getItem('dokumo_user')); } catch (e) { user = null; }
 
-    // Niezalogowany → panel logowania
-    if (!user) { window.location.href = 'konto.html'; return false; }
+    // Niezalogowany → rejestracja/logowanie z powrotem do tej strony (praca lokalnie zapisana)
+    if (!user) {
+      var ret = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = 'konto.html?return=' + ret;
+      return false;
+    }
 
     // Brak aktywnej subskrypcji — każdy dokument jest płatny, pokaż plany
     var active = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();

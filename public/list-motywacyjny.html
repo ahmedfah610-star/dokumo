@@ -229,6 +229,7 @@ main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 <script src="plan-guard.js?v=3" defer></script>
+<script src="draft.js?v=1" defer></script>
 <script type="module">
 import{initializeApp,getApps}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -555,6 +556,40 @@ function wizShow(){
   setTimeout(function(){ var inp = document.getElementById('wizPos'); if(inp) inp.focus(); }, 100);
 }
 function val(id){ return (document.getElementById(id)||{}).value || ''; }
+
+/* ── AUTOZAPIS ROBOCZEJ WERSJI (localStorage) ── */
+var LM_DRAFT_FIELDS = ['fPos','fCompany','fFirstName','fLastName','fEmail','fPhone','fStreet','fZip','fCity','rCompany','rContact','rStreet','rZip','rCity','fBody'];
+var _lmDraftTimer = null;
+function _collectLmDraft(){
+  var f={};
+  LM_DRAFT_FIELDS.forEach(function(id){ var el=document.getElementById(id); if(el) f[id]=el.value; });
+  return { fields:f, recOpen:(typeof _recOpen!=='undefined'?_recOpen:false), tpl:(typeof _currentTpl!=='undefined'?_currentTpl:'klasyczny') };
+}
+function _saveLmDraft(immediate){
+  if(!window.DokumoDraft) return;
+  function d(){ try{ window.DokumoDraft.save(_collectLmDraft()); }catch(e){} }
+  clearTimeout(_lmDraftTimer);
+  if(immediate){ d(); return; }
+  _lmDraftTimer=setTimeout(d,400);
+}
+function _restoreLmDraft(){
+  try{
+    if(!window.DokumoDraft) return false;
+    var d=window.DokumoDraft.load();
+    if(!d||!d.fields) return false;
+    var any=false;
+    LM_DRAFT_FIELDS.forEach(function(id){ var v=d.fields[id]; if(v!=null){ var el=document.getElementById(id); if(el) el.value=v; if(v) any=true; } });
+    if(!any) return false;
+    if(d.recOpen){
+      _recOpen=true;
+      var rf=document.getElementById('recFields'); if(rf) rf.classList.add('open');
+      var rb=document.getElementById('recToggle'); if(rb){ rb.classList.add('open'); rb.setAttribute('aria-expanded','true'); }
+    }
+    if(d.tpl && typeof _currentTpl!=='undefined' && d.tpl!==_currentTpl && typeof setTpl==='function') setTpl(d.tpl);
+    if(window.DokumoDraft.toast) setTimeout(function(){ window.DokumoDraft.toast(); }, 300);
+    return true;
+  }catch(e){ return false; }
+}
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
 
@@ -691,9 +726,15 @@ window.addEventListener('DOMContentLoaded', function() {
     window._onAuthReady = function() { if (!_autoGenDone) autoGenerateFromWizard(); };
     setTimeout(function() { if (!_autoGenDone) autoGenerateFromWizard(); }, 2000);
   } else {
-    // Brak params (ruch organiczny / bezpośredni) → pokaż wizard onboarding
-    document.getElementById('lmLoading').style.display = 'none';
-    wizShow();
+    // Brak params — najpierw spróbuj przywrócić roboczą wersję (po powrocie z logowania)
+    if (_restoreLmDraft()) {
+      renderPreview();
+      showEditor();
+    } else {
+      // Ruch organiczny / bezpośredni → pokaż wizard onboarding
+      document.getElementById('lmLoading').style.display = 'none';
+      wizShow();
+    }
   }
 });
 
@@ -926,6 +967,7 @@ function lmCropCancel() { lmCloseCropModal(); }
 
 // ── Live Preview ──
 function renderPreview() {
+  _saveLmDraft(false);
   var firstName = val('fFirstName'), lastName = val('fLastName');
   var fullName  = [firstName, lastName].filter(Boolean).join(' ');
   var email = val('fEmail'), phone = val('fPhone');
@@ -1038,6 +1080,8 @@ function renderPreview() {
 
 // ── Export ──
 function downloadPdf() {
+  // Bez konta — zapisz pracę zanim plan-guard przekieruje do logowania
+  if (window.DokumoDraft && !window.DokumoDraft.hasUser()) _saveLmDraft(true);
   if (!window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
   var btn = document.querySelector('.btn-dl');
   if (btn) { btn.disabled = true; btn.textContent = 'Generowanie…'; }
@@ -1073,6 +1117,7 @@ function downloadPdf() {
     .then(function() {
       document.body.removeChild(wrap);
       if (btn) { btn.disabled = false; btn.textContent = '⬇ Pobierz PDF'; }
+      if (window.DokumoDraft && window.DokumoDraft.clear) window.DokumoDraft.clear();
     });
 }
 function getFullText() {

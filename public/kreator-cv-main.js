@@ -1991,6 +1991,45 @@ function pickTemplate(id) {
   }
 })();
 
+// ── AUTOZAPIS ROBOCZEJ WERSJI CV (localStorage) ──
+// updateCVPreview() wywołuje triggerDraftSave() przy każdej zmianie.
+let _cvDraftTimer = null;
+function triggerDraftSave(immediate) {
+  if (!window.DokumoDraft) return;
+  function doSave() {
+    try {
+      window.DokumoDraft.save({
+        cvData: cvData,
+        cvTemplate: cvTemplate,
+        cvCustomColor: cvCustomColor,
+        cvCustomSections: cvCustomSections,
+        cvSidebarSections: Array.from(cvSidebarSections),
+      });
+    } catch (e) {}
+  }
+  if (immediate) { clearTimeout(_cvDraftTimer); doSave(); return; }
+  clearTimeout(_cvDraftTimer);
+  _cvDraftTimer = setTimeout(doSave, 400);
+}
+
+// Przywróć roboczą wersję CV jeśli istnieje świeży szkic (< 24h)
+// i nie przyszliśmy z edycji/importu (te ustawiają _cvEditLoaded / from=translate).
+(function restoreCvDraft() {
+  try {
+    if (window._cvEditLoaded) return;
+    if (new URLSearchParams(location.search).get('from') === 'translate') return;
+    if (!window.DokumoDraft) return;
+    var d = window.DokumoDraft.load();
+    if (!d || !d.cvData) return;
+    cvData = d.cvData;
+    if (d.cvTemplate) cvTemplate = d.cvTemplate;
+    if (d.cvCustomColor) cvCustomColor = d.cvCustomColor;
+    if (Array.isArray(d.cvCustomSections)) cvCustomSections = d.cvCustomSections;
+    if (Array.isArray(d.cvSidebarSections)) cvSidebarSections = new Set(d.cvSidebarSections);
+    if (window.DokumoDraft.toast) setTimeout(function () { window.DokumoDraft.toast(); }, 300);
+  } catch (e) {}
+})();
+
 (window.requestIdleCallback || function(cb){setTimeout(cb,0);})(function(){renderCVForm();updateCVPreview();});
 
 
@@ -2033,9 +2072,15 @@ async function _ensureHtml2Pdf() {
 }
 
 async function downloadCV() {
-  // Wymagane logowanie — bez konta nie można pobrać
+  // Wymagane logowanie — bez konta nie można pobrać.
+  // Zapisujemy pracę lokalnie i wracamy do kreatora po rejestracji/logowaniu.
   const _user = (() => { try { return JSON.parse(localStorage.getItem('dokumo_user')); } catch(e) { return null; } })();
-  if (!_user) { window.location.href = 'konto.html'; return; }
+  if (!_user) {
+    if (typeof triggerDraftSave === 'function') triggerDraftSave(true);
+    if (window.DokumoDraft && window.DokumoDraft.gateLogin) { window.DokumoDraft.gateLogin(); return; }
+    window.location.href = 'konto.html?return=' + encodeURIComponent(location.pathname + location.search);
+    return;
+  }
 
   // Sprawdź plan — jeśli ma subskrypcję, sprawdź czy pasuje
   const _sub = (() => { try { return JSON.parse(localStorage.getItem('dokumo_sub')); } catch(e) { return null; } })();
@@ -2147,6 +2192,7 @@ async function downloadCV() {
       }
     }
     if (freshEl.parentNode) document.body.removeChild(freshEl);
+    if (window.DokumoDraft && window.DokumoDraft.clear) window.DokumoDraft.clear();
     _showPDFPreview(blob, filename);
     return;
   } catch(e) {

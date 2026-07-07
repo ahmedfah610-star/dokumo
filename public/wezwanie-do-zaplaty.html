@@ -789,4 +789,22 @@ function copySignLink(){
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
+<script src="draft.js?v=1"></script>
+<script>
+(function(){
+  var D=window.DokumoDraft; if(!D) return;
+  function snap(){ try{ if(typeof wizVals!=='undefined') D.save({selDoc:(typeof selDoc!=='undefined'?selDoc:null), wizVals:wizVals}); }catch(e){} }
+  if(typeof liveUpdate==='function'){ var _lu=liveUpdate; window.liveUpdate=function(){ var r=_lu.apply(this,arguments); snap(); return r; }; }
+  if(typeof doGenerate==='function'){ var _dg=doGenerate; window.doGenerate=function(){ snap(); if(!D.hasUser()){ D.gateLogin(); return; } return _dg.apply(this,arguments); }; }
+  function restore(){
+    try{
+      var d=D.load(); if(!d||!d.wizVals) return;
+      if(typeof FORMS==='undefined'||!d.selDoc||!FORMS[d.selDoc]) return;
+      if(typeof goTo!=='function'||typeof renderForm!=='function') return;
+      selDoc=d.selDoc; wizVals=d.wizVals; goTo(1); renderForm(); D.toast();
+    }catch(e){}
+  }
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded',restore); else restore();
+})();
+</script>
 </body>
