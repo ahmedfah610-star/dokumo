@@ -306,7 +306,7 @@ ${truncated}`;
   // ── Analiza/poprawa CV (popraw-cv.html) — DARMOWA, bez subskrypcji ──
   // Narzędzie lead-generacyjne: sama analiza jest bezpłatna (płatność dopiero
   // za pobranie poprawionego CV w kreatorze). Działa też bez konta.
-  // Ochrona przed nadużyciem: limit 15/godz. per uid (gdy zalogowany) lub per IP.
+  // Ochrona przed nadużyciem: limit 3/godz. per uid (gdy zalogowany) lub per IP.
   if (freeType === 'analyze-cv') {
     if (!prompt || typeof prompt !== 'string' || prompt.length > 15000)
       return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
@@ -321,8 +321,8 @@ ${truncated}`;
 
     let rollbackAi = null;
     try {
-      rollbackAi = await tryReserveSlot(limiterKey, 'cvAnalyze', 15);
-      if (!rollbackAi) return res.status(429).json({ error: 'Przekroczono limit analiz CV (15/godz.). Spróbuj później.' });
+      rollbackAi = await tryReserveSlot(limiterKey, 'cvAnalyze', 3);
+      if (!rollbackAi) return res.status(429).json({ error: 'Przekroczono limit analiz CV (3/godz.). Spróbuj później.' });
     } catch { /* fail-open na błędach Firestore */ }
 
     const cvApiKey = process.env.ANTHROPIC_API_KEY;
