@@ -90,7 +90,21 @@ export default async function handler(req, res) {
     const data = snap.data();
     const expiresAt = data.expiresAt?.toDate?.();
     const active = expiresAt && expiresAt > new Date();
-    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null });
+
+    // Miesięczne wykorzystanie generowań (genUsage/{uid}, spójne z api/generate.js)
+    const GEN_LIMITS = { kariera: 30, biznes: 30, promax: 100 };
+    let genUsed = null, genLimit = null;
+    if (active && GEN_LIMITS[data.plan]) {
+      genLimit = GEN_LIMITS[data.plan];
+      try {
+        const gSnap = await db.collection('genUsage').doc(uid).get();
+        const g = gSnap.exists ? gSnap.data() : {};
+        const month = new Date().toISOString().slice(0, 7);
+        genUsed = g.month === month ? (g.count || 0) : 0;
+      } catch (_) { genUsed = null; }
+    }
+
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit });
   }
 
   if (req.method !== 'POST') return res.status(405).end();

@@ -58,7 +58,10 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',-apple-system,Bl
 .sb-usage{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 13px;margin-bottom:10px}
 .sb-usage-top{display:flex;justify-content:space-between;font-size:12px;color:#b9c0cd}
 .sb-usage-top b{color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
-.sb-plan{font-size:10.5px;color:#7b8393;margin-top:7px}
+.sb-bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
+.sb-bar i{display:block;height:100%;width:0;background:var(--grad);border-radius:4px;transition:width .4s}
+.sb-bar i.hot{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.sb-plan{font-size:10.5px;color:#7b8393;margin-top:7px;line-height:1.5}
 .sb-acct{display:flex;align-items:center;gap:9px;padding:8px;border-radius:10px;cursor:pointer;text-decoration:none;transition:.14s}
 .sb-acct:hover{background:rgba(255,255,255,.05)}
 .sb-av{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);display:grid;place-items:center;font-weight:700;font-size:12.5px;color:#fff;flex-shrink:0;text-transform:uppercase}
@@ -210,7 +213,8 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',-apple-system,Bl
     </div>
     <div class="sb-spacer"></div>
     <div class="sb-usage">
-      <div class="sb-usage-top"><span>W bibliotece</span><b id="sbLibCount">0</b></div>
+      <div class="sb-usage-top"><span id="sbUsageLabel">W bibliotece</span><b id="sbUsageVal"><span id="sbLibCount">0</span></b></div>
+      <div class="sb-bar" id="sbBar" style="display:none"><i id="sbBarFill"></i></div>
       <div class="sb-plan" id="sbPlan">&nbsp;</div>
     </div>
     <a class="sb-acct" href="konto.html">
@@ -301,7 +305,13 @@ onAuthStateChanged(auth, async user => {
       const res = await fetch('/api/check-sub', { headers: { 'Authorization': 'Bearer ' + token } });
       const data = await res.json();
       if (data.active && data.expiresAt) {
-        localStorage.setItem('dokumo_sub', JSON.stringify({ plan: data.plan, expiresAt: data.expiresAt }));
+        localStorage.setItem('dokumo_sub', JSON.stringify({
+          plan: data.plan, expiresAt: data.expiresAt, cancelled: !!data.cancelled,
+          downloadsLeft: (typeof data.downloadsLeft === 'number' ? data.downloadsLeft : null),
+          genUsed: (typeof data.genUsed === 'number' ? data.genUsed : null),
+          genLimit: (typeof data.genLimit === 'number' ? data.genLimit : null),
+        }));
+        if (typeof paintAccount === 'function') paintAccount();
       }
     } catch(e) {}
   } else {
@@ -397,7 +407,44 @@ function paintAccount() {
     }
     var PLAN = { start:'Pakiet Start', kariera:'Pakiet Kariera', biznes:'Pakiet Biznes', promax:'Pro Max' };
     var active = sub && sub.expiresAt && new Date(sub.expiresAt) > new Date();
-    set('sbPlan', (active && sub.plan) ? (PLAN[sub.plan] || sub.plan) : 'Bez aktywnego pakietu');
+    var planName = (active && sub.plan) ? (PLAN[sub.plan] || sub.plan) : null;
+
+    // ── Widget wykorzystania: limit miesięczny / pobrania Startu / rozmiar biblioteki ──
+    var bar = document.getElementById('sbBar');
+    var fill = document.getElementById('sbBarFill');
+    var valEl = document.getElementById('sbUsageVal');
+    function showBar(used, max) {
+      if (!bar || !fill) return;
+      bar.style.display = '';
+      var pct = Math.max(0, Math.min(100, Math.round(used / max * 100)));
+      fill.style.width = pct + '%';
+      fill.className = pct >= 85 ? 'hot' : '';
+    }
+    var expStr = active ? new Date(sub.expiresAt).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+
+    if (active && typeof sub.genLimit === 'number' && sub.genLimit > 0 && typeof sub.genUsed === 'number') {
+      // Plany miesięczne: licznik generowań w bieżącym miesiącu
+      var monthName = new Date().toLocaleDateString('pl-PL', { month: 'long' });
+      set('sbUsageLabel', 'Dokumenty (' + monthName + ')');
+      if (valEl) valEl.textContent = sub.genUsed + ' / ' + sub.genLimit;
+      showBar(sub.genUsed, sub.genLimit);
+      var d = new Date(); var next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      var nextStr = next.toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
+      set('sbPlan', planName + ' · limit odnowi się ' + nextStr + (sub.cancelled ? ' · ważny do ' + expStr : ''));
+    } else if (active && sub.plan === 'start') {
+      // Start: pula 5 pobrań
+      var left = typeof sub.downloadsLeft === 'number' ? sub.downloadsLeft : 5;
+      set('sbUsageLabel', 'Pobrania (Start)');
+      if (valEl) valEl.textContent = left + ' / 5';
+      showBar(5 - left, 5);
+      set('sbPlan', 'Pakiet Start · ważny do ' + expStr);
+    } else {
+      // Brak pakietu (lub brak danych o limicie): pokaż rozmiar biblioteki
+      set('sbUsageLabel', 'W bibliotece');
+      if (valEl && !document.getElementById('sbLibCount')) valEl.innerHTML = '<span id="sbLibCount">' + ((window._allDocs || []).length) + '</span>';
+      if (bar) bar.style.display = 'none';
+      set('sbPlan', planName ? (planName + (expStr ? ' · do ' + expStr : '')) : 'Bez aktywnego pakietu');
+    }
   } catch(e) {}
 }
 
