@@ -92,19 +92,29 @@ export default async function handler(req, res) {
     const active = expiresAt && expiresAt > new Date();
 
     // Miesięczne wykorzystanie generowań (genUsage/{uid}, spójne z api/generate.js)
+    // oraz pytań do asystenta (legalChatUsage, spójne z api/legal-chat.js)
     const GEN_LIMITS = { kariera: 30, biznes: 30, promax: 100 };
-    let genUsed = null, genLimit = null;
+    const AI_LIMITS = { kariera: 10, biznes: 10, promax: 100 };
+    const month = new Date().toISOString().slice(0, 7);
+    let genUsed = null, genLimit = null, aiUsed = null, aiLimit = null;
     if (active && GEN_LIMITS[data.plan]) {
       genLimit = GEN_LIMITS[data.plan];
       try {
         const gSnap = await db.collection('genUsage').doc(uid).get();
         const g = gSnap.exists ? gSnap.data() : {};
-        const month = new Date().toISOString().slice(0, 7);
         genUsed = g.month === month ? (g.count || 0) : 0;
       } catch (_) { genUsed = null; }
     }
+    if (active && AI_LIMITS[data.plan]) {
+      aiLimit = AI_LIMITS[data.plan];
+      try {
+        const aSnap = await db.collection('legalChatUsage').doc(uid.replace(/[\/:.]/g, '_')).get();
+        const a = aSnap.exists ? aSnap.data() : {};
+        aiUsed = a.month === month ? (a.monthCount || 0) : 0;
+      } catch (_) { aiUsed = null; }
+    }
 
-    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit });
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit });
   }
 
   if (req.method !== 'POST') return res.status(405).end();
