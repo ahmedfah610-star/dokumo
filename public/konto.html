@@ -31,8 +31,14 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg2);color:var(--t1);font-family:var(--font);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
-body.has-user #kontoDefault{display:none !important}
-body.has-user #profileWrap{display:flex !important}
+html.has-user #kontoDefault, body.has-user #kontoDefault{display:none !important}
+html.has-user #profileWrap, body.has-user #profileWrap{display:flex !important}
+
+/* Wylogowany: tylko okno logowania — bez nawigacji aplikacji */
+html:not(.has-user) .sb{display:none !important}
+html:not(.has-user) .app{grid-template-columns:minmax(0,1fr)}
+.k-back-home{display:block;text-align:center;font-size:.8rem;color:var(--t3);text-decoration:none;margin-bottom:14px;transition:color .15s}
+.k-back-home:hover{color:var(--t1)}
 
 .app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
 
@@ -213,6 +219,7 @@ body.has-user #profileWrap{display:flex !important}
 </style>
 </head>
 <body>
+<script>try{if(localStorage.getItem('dokumo_user'))document.documentElement.classList.add('has-user')}catch(e){}</script>
 
 <div class="app">
   <aside class="sb">
@@ -242,6 +249,7 @@ body.has-user #profileWrap{display:flex !important}
 
     <!-- NIEZALOGOWANY -->
     <div class="k-login-panel" id="kontoDefault">
+      <a class="k-back-home" href="index.html">← Wróć na stronę główną</a>
       <div class="k-logo-mark">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a1714" stroke-width="2" stroke-linecap="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -692,10 +700,13 @@ function v(id) { return (document.getElementById(id)?.value || '').trim(); }
 function showLogin() {
   document.getElementById('kontoDefault').style.display = 'block';
   document.getElementById('profileWrap').style.display = 'none';
+  document.documentElement.classList.remove('has-user');
   document.body.classList.remove('has-user');
   paintKonto();
 }
 function showProfile(user) {
+  document.documentElement.classList.add('has-user');
+  document.body.classList.add('has-user');
   document.getElementById('kontoDefault').style.display = 'none';
   const wrap = document.getElementById('profileWrap');
   wrap.style.display = 'flex';
