@@ -145,6 +145,17 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',-apple-system,Bl
 .m-empty-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:999px;background:var(--grad);color:#fff;border:none;font-family:'Bricolage Grotesque',sans-serif;font-size:.84rem;font-weight:700;text-decoration:none;box-shadow:0 8px 20px rgba(109,94,252,.28);transition:transform .16s}
 .m-empty-btn:hover{transform:translateY(-2px)}
 
+/* Wylogowany: tylko karta logowania — bez nawigacji aplikacji */
+html:not(.has-user) .sb{display:none !important}
+html:not(.has-user) .app{grid-template-columns:minmax(0,1fr)}
+html:not(.has-user) .top,html:not(.has-user) .body-head{display:none !important}
+html:not(.has-user) .body{padding-top:48px}
+html:not(.has-user) #myDocGrid{display:none}
+#mdLoggedOut{display:none;max-width:440px;margin:0 auto}
+html:not(.has-user) #mdLoggedOut{display:block}
+.m-back-home{display:block;text-align:center;font-size:.8rem;color:var(--t3);text-decoration:none;margin-bottom:14px;transition:color .15s}
+.m-back-home:hover{color:var(--t1)}
+
 /* bulk bar */
 .bulk-bar{display:none;position:fixed;bottom:22px;left:calc(50% + 125px);transform:translateX(-50%);background:var(--sb);color:#fff;border-radius:14px;padding:10px 10px 10px 18px;box-shadow:0 18px 44px rgba(15,17,23,.4);align-items:center;gap:10px;z-index:400;font-family:inherit;font-size:.84rem;white-space:nowrap}
 .bulk-bar.open{display:flex;animation:fadeUp .25s ease both}
@@ -198,6 +209,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',-apple-system,Bl
 </style>
 </head>
 <body>
+<script>try{if(localStorage.getItem('dokumo_user'))document.documentElement.classList.add('has-user')}catch(e){}</script>
 
 <!-- APP SHELL -->
 <div class="app">
@@ -244,7 +256,17 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans',-apple-system,Bl
         <span class="crumb" id="resultsLabel"></span>
         <button class="btn-select-all" id="btnSelectAll" onclick="toggleSelectMode()">☑ Zaznacz</button>
       </div>
-      <div id="myDocGrid"><div style="padding:60px;text-align:center;color:var(--t3);font-size:.9rem;">Ładowanie…</div></div>
+      <!-- Wylogowany: statyczna karta logowania (widoczna od razu, bez czekania na Firebase) -->
+      <div id="mdLoggedOut">
+        <a class="m-back-home" href="index.html">← Wróć na stronę główną</a>
+        <div class="m-empty">
+          <span class="m-empty-icon">🔒</span>
+          <div class="m-empty-title">Zaloguj się</div>
+          <p class="m-empty-sub">Musisz być zalogowany, aby zobaczyć swoje dokumenty.</p>
+          <a href="konto.html?return=/moje-dokumenty.html" class="m-empty-btn">Zaloguj się →</a>
+        </div>
+      </div>
+      <div id="myDocGrid"><div id="mdLoading" style="padding:60px;text-align:center;color:var(--t3);font-size:.9rem;">Ładowanie…</div></div>
     </div>
   </div>
 </div>
@@ -295,6 +317,8 @@ onAuthStateChanged(auth, async user => {
   window._fbToken = user ? () => user.getIdToken(true) : null;
   window._firebaseUser = user || null;
   if (user) {
+    document.documentElement.classList.add('has-user');
+    document.body.classList.add('has-user');
     localStorage.setItem('dokumo_user', JSON.stringify({
       name: user.displayName || '',
       email: user.email || '',
@@ -316,16 +340,12 @@ onAuthStateChanged(auth, async user => {
     } catch(e) {}
   } else {
     localStorage.removeItem('dokumo_user');
+    document.documentElement.classList.remove('has-user');
+    document.body.classList.remove('has-user');
   }
   if (!user) {
+    // Kartę logowania pokazuje statyczny #mdLoggedOut (sterowany klasą has-user)
     document.getElementById('resultsLabel').textContent = '';
-    document.getElementById('myDocGrid').innerHTML =
-      '<div class="m-empty">' +
-      '<span class="m-empty-icon">🔒</span>' +
-      '<div class="m-empty-title">Zaloguj się</div>' +
-      '<p class="m-empty-sub">Musisz być zalogowany, aby zobaczyć swoje dokumenty.</p>' +
-      '<a href="konto.html" class="m-empty-btn">Zaloguj się →</a>' +
-      '</div>';
   } else {
     loadAndRender();
   }
