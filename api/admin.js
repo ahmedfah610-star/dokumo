@@ -231,6 +231,70 @@ export default async function handler(req, res) {
     await verifyAdmin(req);
     const { action, email, plan, days = 30 } = req.body || {};
 
+    // POST action=user-lookup — pełny podgląd konta po emailu (tylko admin)
+    if (action === 'user-lookup') {
+      if (!email || typeof email !== 'string') return res.status(400).json({ error: 'Podaj email' });
+      const emailClean = email.trim().toLowerCase();
+      let authUser;
+      try { authUser = await auth.getUserByEmail(emailClean); }
+      catch { return res.status(404).json({ error: 'Brak konta o tym adresie' }); }
+      const uid = authUser.uid;
+      const out = {
+        uid,
+        email: authUser.email,
+        name: authUser.displayName || null,
+        provider: (authUser.providerData[0] || {}).providerId || null,
+        createdAt: authUser.metadata.creationTime || null,
+        lastSignIn: authUser.metadata.lastSignInTime || null,
+      };
+      const safe = (p) => p.catch(() => null);
+      const [metaS, subS, genS, aiS, profS, docsS, draftS] = await Promise.all([
+        safe(db.collection('userMeta').doc(uid).get()),
+        safe(db.collection('users').doc(uid).collection('subscription').doc('current').get()),
+        safe(db.collection('genUsage').doc(uid).get()),
+        safe(db.collection('legalChatUsage').doc(uid.replace(/[\/:.]/g, '_')).get()),
+        safe(db.collection('users').doc(uid).collection('profile').doc('main').get()),
+        safe(db.collection('users').doc(uid).collection('documents').orderBy('createdAt', 'desc').limit(20).get()),
+        safe(db.collection('users').doc(uid).collection('drafts').doc('cv').get()),
+      ]);
+      if (metaS?.exists) {
+        const m = metaS.data();
+        out.meta = {
+          registeredAt: m.registeredAt?.toDate?.()?.toISOString() || null,
+          welcomeSent: !!m.welcomeSent,
+          onboarding: m.onboarding ? Object.keys(m.onboarding).filter(k => k !== 'unsubscribed') : [],
+        };
+      }
+      if (subS?.exists) {
+        const d = subS.data();
+        out.sub = {
+          plan: d.plan,
+          expiresAt: d.expiresAt?.toDate?.()?.toISOString() || null,
+          cancelled: !!d.cancelled,
+          downloadsLeft: d.downloadsLeft ?? null,
+          grantedByAdmin: !!d.grantedByAdmin,
+        };
+      }
+      const month = new Date().toISOString().slice(0, 7);
+      if (genS?.exists) { const g = genS.data(); out.genUsedThisMonth = g.month === month ? (g.count || 0) : 0; }
+      if (aiS?.exists) { const a = aiS.data(); out.aiFreeUsed = a.freeUsed || 0; out.aiUsedThisMonth = a.month === month ? (a.monthCount || 0) : 0; }
+      out.profileFilled = !!(profS?.exists && (profS.data().imie || profS.data().firma));
+      out.cvDraft = !!(draftS?.exists);
+      out.docs = (docsS?.docs || []).map(d => {
+        const x = d.data();
+        return { name: x.name, typeId: x.typeId, cat: x.cat, createdAt: x.createdAt?.toDate?.()?.toISOString() || null };
+      });
+      let payments = [];
+      try {
+        const pSnap = await db.collection('payments').where('email', '==', emailClean).limit(10).get();
+        payments = pSnap.docs
+          .map(d => { const x = d.data(); return { plan: x.plan, amount: x.amount, currency: x.currency, ts: x.ts?.toDate?.()?.toISOString() || null }; })
+          .sort((a, b) => (b.ts || '').localeCompare(a.ts || ''));
+      } catch (_) {}
+      out.payments = payments;
+      return res.status(200).json(out);
+    }
+
     // POST action=grant — nadaj subskrypcję (dawniej /api/admin-grant)
     if (action === 'grant') {
       if (!email || typeof email !== 'string') return res.status(400).json({ error: 'Podaj email' });

@@ -142,6 +142,20 @@ tr:hover td{background:#faf8f4;}
     </div>
 
     <div class="panel-section">
+      <div class="panel-section-head"><h2>🔍 Podgląd użytkownika</h2><span>rejestracja, logowania, pakiet, dokumenty, zużycie</span></div>
+      <div class="grant-form">
+        <label>Email użytkownika
+          <input type="email" id="lookupEmail" placeholder="jan@example.com" autocomplete="off" onkeydown="if(event.key==='Enter')lookupUser()">
+        </label>
+        <button class="btn-grant" id="lookupBtn" onclick="lookupUser()">Sprawdź</button>
+      </div>
+      <div style="padding:0 20px 16px">
+        <div class="grant-result" id="lookupErr"></div>
+        <div id="lookupResult" style="display:none;font-size:.82rem;line-height:1.7;"></div>
+      </div>
+    </div>
+
+    <div class="panel-section">
       <div class="panel-section-head"><h2>Nadaj subskrypcję</h2><span>działa też dla kont które jeszcze nie istnieją</span></div>
       <div class="grant-form">
         <label>Email użytkownika
@@ -422,6 +436,70 @@ function renderDashboard(s){
       ? revByPlan.map(([p,v])=>`${planBadge(p)} <b style="font-size:.8rem">${ZL(v)}</b>`).join('&nbsp;&nbsp;')
       : '<span style="color:#bbb;font-size:.8rem">Brak płatności</span>')+'</div>';
 }
+
+async function lookupUser() {
+  const email = document.getElementById('lookupEmail').value.trim();
+  const btn = document.getElementById('lookupBtn');
+  const err = document.getElementById('lookupErr');
+  const box = document.getElementById('lookupResult');
+  err.className = 'grant-result'; err.style.display = 'none'; err.textContent = '';
+  box.style.display = 'none'; box.innerHTML = '';
+  if (!email) { err.className = 'grant-result err'; err.textContent = 'Wpisz email.'; return; }
+  btn.disabled = true; btn.textContent = 'Sprawdzam…';
+  try {
+    const token = await window._getAdminToken();
+    const r = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'user-lookup', email })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Błąd ' + r.status);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const dt = s => s ? new Date(s).toLocaleString('pl-PL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    const PLAN = { start:'Start', kariera:'Kariera', biznes:'Biznes', promax:'Pro Max' };
+    const row = (k,v) => '<tr><td style="color:#999;padding:2px 14px 2px 0;white-space:nowrap;vertical-align:top">'+k+'</td><td style="font-weight:600">'+v+'</td></tr>';
+    let h = '<table style="border-collapse:collapse">';
+    h += row('Konto', esc(d.name || '—') + ' &lt;' + esc(d.email) + '&gt; · ' + (d.provider === 'google.com' ? 'Google' : 'e-mail/hasło'));
+    h += row('Rejestracja', dt(d.createdAt));
+    h += row('Ostatnie logowanie', '<span style="color:#047857">' + dt(d.lastSignIn) + '</span>');
+    if (d.sub) {
+      const active = d.sub.expiresAt && new Date(d.sub.expiresAt) > new Date();
+      h += row('Pakiet', (PLAN[d.sub.plan] || d.sub.plan) + (active ? ' · <span style="color:#047857">aktywny</span>' : ' · <span style="color:#dc2626">wygasł</span>') + ' do ' + dt(d.sub.expiresAt) + (d.sub.grantedByAdmin ? ' · nadany ręcznie' : '') + (d.sub.cancelled ? ' · anulowany' : ''));
+      if (d.sub.plan === 'start') h += row('Pobrania (Start)', (d.sub.downloadsLeft ?? '—') + ' z 5 pozostało');
+    } else {
+      h += row('Pakiet', '<span style="color:#999">brak</span>');
+    }
+    h += row('Dokumenty w tym mies.', (d.genUsedThisMonth ?? 0) + ' wygenerowanych');
+    h += row('Asystent AI', (d.aiFreeUsed ?? 0) + '/5 darmowych · ' + (d.aiUsedThisMonth ?? 0) + ' w tym mies.');
+    h += row('Profil (dane firmy)', d.profileFilled ? '✓ uzupełniony' : '—');
+    h += row('Szkic CV w chmurze', d.cvDraft ? '✓ jest' : '—');
+    if (d.meta) h += row('Onboarding maile', (d.meta.welcomeSent ? 'powitalny ✓' : 'powitalny —') + (d.meta.onboarding && d.meta.onboarding.length ? ' · ' + d.meta.onboarding.join(', ') : ''));
+    h += '</table>';
+    if (d.docs && d.docs.length) {
+      h += '<div style="margin-top:12px;font-weight:700;font-size:.78rem;color:#555">📄 Dokumenty w bibliotece (' + d.docs.length + (d.docs.length === 20 ? '+' : '') + '):</div>';
+      h += '<table style="border-collapse:collapse;margin-top:4px">';
+      d.docs.forEach(x => { h += '<tr><td style="padding:1px 14px 1px 0;color:#999;white-space:nowrap">' + dt(x.createdAt).slice(0,10) + '</td><td>' + esc(x.name || x.typeId || '—') + ' <span style="color:#bbb">(' + esc(x.cat || '') + ')</span></td></tr>'; });
+      h += '</table>';
+    } else {
+      h += '<div style="margin-top:12px;color:#999">📄 Brak dokumentów w bibliotece.</div>';
+    }
+    if (d.payments && d.payments.length) {
+      h += '<div style="margin-top:12px;font-weight:700;font-size:.78rem;color:#555">💳 Płatności:</div><table style="border-collapse:collapse;margin-top:4px">';
+      d.payments.forEach(p => { h += '<tr><td style="padding:1px 14px 1px 0;color:#999;white-space:nowrap">' + dt(p.ts) + '</td><td>' + esc(PLAN[p.plan] || p.plan) + ' · ' + ((p.amount || 0) / 100).toFixed(2) + ' ' + esc((p.currency || 'pln').toUpperCase()) + '</td></tr>'; });
+      h += '</table>';
+    }
+    box.innerHTML = h;
+    box.style.display = 'block';
+  } catch(e) {
+    err.className = 'grant-result err';
+    err.textContent = '✗ ' + e.message;
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sprawdź';
+  }
+}
+window.lookupUser = lookupUser;
 
 async function grantSub() {
   const email = document.getElementById('grantEmail').value.trim();
