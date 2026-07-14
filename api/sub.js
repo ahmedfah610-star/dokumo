@@ -242,6 +242,8 @@ async function sendWelcomeIfNew(uid, email) {
     reminderSent: false,
   }, { merge: true });
 
+  bump(db, 'signup'); // rejestracja w lejku analityki dziennej
+
   const html = `<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f5f5f7;font-family:'Helvetica Neue',Arial,sans-serif">
 <div style="max-width:560px;margin:40px auto;padding:0 16px">
