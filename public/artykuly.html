@@ -22,13 +22,13 @@
 <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 <link rel="dns-prefetch" href="https://www.gstatic.com">
 <link rel="preload" href="logo2-64.png" as="image">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="style.css"></noscript>
 
 <style>
-* { font-family:'Inter',sans-serif; box-sizing:border-box; }
+* { font-family:'Geist',sans-serif; box-sizing:border-box; }
 body { background:#f9fafb; margin:0; padding:0; }
 
 /* Nav center links */
@@ -36,7 +36,7 @@ body { background:#f9fafb; margin:0; padding:0; }
 .nav-tool-item {
   display:flex; align-items:center; gap:12px; padding:10px 12px;
   text-decoration:none; border-radius:10px; transition:background 0.15s;
-  font-family:'Inter',sans-serif;
+  font-family:'Geist',sans-serif;
 }
 .nav-tool-item:hover { background:#f9fafb; }
 .nav-tool-icon {
@@ -44,14 +44,14 @@ body { background:#f9fafb; margin:0; padding:0; }
   align-items:center; justify-content:center; flex-shrink:0;
 }
 .nav-tool-text { display:flex; flex-direction:column; gap:1px; }
-.nav-tool-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Inter',sans-serif; }
-.nav-tool-desc { font-size:11.5px; color:#6b7280; font-family:'Inter',sans-serif; }
+.nav-tool-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Geist',sans-serif; }
+.nav-tool-desc { font-size:11.5px; color:#6b7280; font-family:'Geist',sans-serif; }
 @media (max-width: 768px) {
   .nav-center-links { display:none !important; }
 }
 
 /* Profile dropdown — override style.css */
-.nav-profile-email,.nav-profile-link,.nav-logout-btn,.nav-avatar { font-family:'Inter',sans-serif !important; }
+.nav-profile-email,.nav-profile-link,.nav-logout-btn,.nav-avatar { font-family:'Geist',sans-serif !important; }
 .nav-profile-email { font-size:12.5px !important; color:#6b7280 !important; font-weight:500 !important; letter-spacing:0 !important; }
 .nav-profile-link { font-size:13.5px !important; color:#374151 !important; font-weight:500 !important; letter-spacing:0 !important; }
 .nav-profile-link:hover { background:#f3f4f6 !important; color:#111827 !important; }
@@ -82,7 +82,7 @@ body { background:#f9fafb; margin:0; padding:0; }
 
 /* Featured card */
 .article-featured {
-  background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+  background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);
   border-radius:20px;
   padding:52px 56px;
   position:relative;
@@ -245,17 +245,17 @@ body { background:#f9fafb; margin:0; padding:0; }
 .mobile-menu-link { display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:10px; text-decoration:none; }
 .mobile-menu-link:hover { background:#f9fafb; }
 .mobile-menu-link-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.mobile-menu-link-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Inter',sans-serif; }
-.mobile-menu-link-desc { font-size:11px; color:#6b7280; font-family:'Inter',sans-serif; }
-.mobile-menu-articles-btn { display:flex; align-items:center; gap:10px; padding:12px 10px; margin-top:8px; background:#eff6ff; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; color:#2563eb; font-family:'Inter',sans-serif; }
-.mobile-menu-articles-btn:hover { background:#dbeafe; }
+.mobile-menu-link-name { font-size:13.5px; font-weight:600; color:#111827; font-family:'Geist',sans-serif; }
+.mobile-menu-link-desc { font-size:11px; color:#6b7280; font-family:'Geist',sans-serif; }
+.mobile-menu-articles-btn { display:flex; align-items:center; gap:10px; padding:12px 10px; margin-top:8px; background:#f5f3ff; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; color:#7c3aed; font-family:'Geist',sans-serif; }
+.mobile-menu-articles-btn:hover { background:#ede9fe; }
 /* Subcat nav styles */
 .nav-cat-item { cursor:pointer; }
 .nav-cat-item:hover, .nav-cat-item.active { background:#f3f4f6; }
 .nav-cat-item .cat-arrow { transition:transform 0.15s; flex-shrink:0; }
 .nav-cat-item.active .cat-arrow { transform:rotate(90deg); }
 .nav-subcat-title { font-size:10.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#9ca3af; padding:6px 10px 8px; }
-.nav-subitem { display:flex; align-items:center; padding:8px 10px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:500; color:#374151; font-family:'Inter',sans-serif; transition:background 0.12s; }
+.nav-subitem { display:flex; align-items:center; padding:8px 10px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:500; color:#374151; font-family:'Geist',sans-serif; transition:background 0.12s; }
 .nav-subitem:hover { background:#f3f4f6; }
 .mob-cat-btn { display:flex; align-items:center; justify-content:space-between; padding:9px 10px; border-radius:10px; cursor:pointer; }
 .mob-cat-btn:hover { background:#f9fafb; }
@@ -263,7 +263,7 @@ body { background:#f9fafb; margin:0; padding:0; }
 .mob-cat-btn .mob-cat-arrow { transition:transform 0.15s; flex-shrink:0; }
 .mob-cat-btn.active .mob-cat-arrow { transform:rotate(180deg); }
 .mob-subcat { padding:0 4px 4px 12px; }
-.mob-subitem { display:block; padding:7px 10px; font-size:13px; font-weight:500; color:#374151; text-decoration:none; font-family:'Inter',sans-serif; border-radius:8px; }
+.mob-subitem { display:block; padding:7px 10px; font-size:13px; font-weight:500; color:#374151; text-decoration:none; font-family:'Geist',sans-serif; border-radius:8px; }
 .mob-subitem:hover { background:#f3f4f6; }
 @media (max-width:600px){ #navLoginBtn{display:none!important} #navAuth{gap:6px!important} #navRegisterBtn{padding:7px 12px!important;font-size:12px!important} }
 </style>
@@ -296,13 +296,13 @@ body { background:#f9fafb; margin:0; padding:0; }
   <div style="display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;width:100%;max-width:1280px;margin:0 auto;">
     <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
       <img src="logo2-64.png" style="height:28px;width:auto;display:block;">
-      <span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Inter',sans-serif;">DokumoFlow</span>
+      <span style="font-size:18px;font-weight:800;color:#111827;letter-spacing:-0.02em;font-family:'Geist',sans-serif;">DokumoFlow</span>
     </a>
 
     <!-- CENTER NAV -->
     <div class="nav-center-links" style="display:flex;align-items:center;gap:4px;">
       <div class="nav-tools-wrap" style="position:relative;">
-        <button class="nav-center-btn" onclick="toggleToolsDropdown(event)" aria-expanded="false" id="toolsMenuBtn" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;">
+        <button class="nav-center-btn" onclick="toggleToolsDropdown(event)" aria-expanded="false" id="toolsMenuBtn" style="display:flex;align-items:center;gap:5px;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;border-radius:10px;font-family:'Geist',sans-serif;transition:background 0.15s;">
           Narzędzia
           <svg id="toolsChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
@@ -311,7 +311,7 @@ body { background:#f9fafb; margin:0; padding:0; }
     <div style="padding:8px;min-width:230px;border-right:1px solid #f3f4f6;">
       <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;padding:4px 10px 6px;">Kariera</div>
       <a href="wybierz-szablon.html" class="nav-tool-item">
-        <span class="nav-tool-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+        <span class="nav-tool-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
         <span class="nav-tool-text"><span class="nav-tool-name">Kreator CV</span><span class="nav-tool-desc">Stwórz profesjonalne CV z AI</span></span>
       </a>
       <a href="popraw-cv.html" class="nav-tool-item">
@@ -353,13 +353,13 @@ body { background:#f9fafb; margin:0; padding:0; }
   </div>
 </div>
       </div>
-      <a href="artykuly.html" class="nav-center-btn" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Inter',sans-serif;transition:background 0.15s;">Artykuły</a>
+      <a href="artykuly.html" class="nav-center-btn" style="display:inline-flex;align-items:center;padding:7px 12px;font-size:13.5px;font-weight:600;color:#374151;text-decoration:none;border-radius:10px;font-family:'Geist',sans-serif;transition:background 0.15s;">Artykuły</a>
     </div>
 
     <!-- RIGHT AUTH -->
     <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-      <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
-      <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(37,99,235,.3);" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
+      <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Geist',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
+      <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);border-radius:10px;text-decoration:none;transition:transform .15s;font-family:'Geist',sans-serif;box-shadow:0 4px 14px rgba(124,58,237,.32);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Załóż konto</a>
       <div class="nav-profile" id="navProfile" style="display:none">
         <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)">?</div>
         <div class="nav-profile-dropdown" id="navDropdown">
@@ -384,7 +384,7 @@ body { background:#f9fafb; margin:0; padding:0; }
   <div class="mobile-menu-panel">
     <div class="mobile-menu-section">Narzędzia</div>
     <a href="wybierz-szablon.html" class="mobile-menu-link">
-      <span class="mobile-menu-link-icon" style="background:#eff6ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+      <span class="mobile-menu-link-icon" style="background:#f5f3ff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
       <span><div class="mobile-menu-link-name">Kreator CV</div><div class="mobile-menu-link-desc">Stwórz profesjonalne CV z AI</div></span>
     </a>
     <a href="popraw-cv.html" class="mobile-menu-link">
@@ -496,7 +496,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="umowa-kupna-sprzedazy-samochodu-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1d4ed8;">🚗 Umowy</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#6d28d9;">🚗 Umowy</span>
         <h3 class="ac-title">Umowa kupna-sprzedaży samochodu 2026 — wzór i PCC</h3>
         <p class="ac-excerpt">Co musi zawierać umowa, podatek PCC 2% i deklaracja PCC-3 w 14 dni, przerejestrowanie, OC, rękojmia przy sprzedaży prywatnej i na co uważać z drugiej ręki.</p>
         <div class="ac-meta">
@@ -576,7 +576,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="ksef-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1e40af;">🧾 KSeF 2026</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#5b21b6;">🧾 KSeF 2026</span>
         <h3 class="ac-title">KSeF 2026 — co to jest, kogo obowiązuje i od kiedy</h3>
         <p class="ac-excerpt">Krajowy System e-Faktur: harmonogram (1.02.2026 duzi, 1.04.2026 reszta, 2027 zwolnieni z VAT), autoryzacja, kary do 100% kwoty VAT i checklist przygotowania mikrofirmy.</p>
         <div class="ac-meta">
@@ -586,7 +586,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="jak-wystawic-fakture-ksef.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1e40af;">🧾 KSeF 2026</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#5b21b6;">🧾 KSeF 2026</span>
         <h3 class="ac-title">Jak wystawić fakturę do KSeF — krok po kroku dla mikrofirm</h3>
         <p class="ac-excerpt">Praktyczny przewodnik: token w 2 minuty, wystawienie faktury, UPO, faktury korygujące, B2C, integracja z księgowym i najczęstsze błędy.</p>
         <div class="ac-meta">
@@ -626,7 +626,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="wypowiedzenie-umowy-o-prace-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1d4ed8;">Prawo pracy</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#6d28d9;">Prawo pracy</span>
         <h3 class="ac-title">Wypowiedzenie umowy o pracę 2026 — terminy, przyczyna, odprawa</h3>
         <p class="ac-excerpt">Okresy wypowiedzenia (2 tyg., 1 mc, 3 mc), obowiązek uzasadnienia także przy umowie na czas określony, dyscyplinarka, odprawa do 69 990 zł, sąd pracy w 21 dni i odszkodowanie — pełen przewodnik 2026.</p>
         <div class="ac-meta">
@@ -636,7 +636,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="swiadectwo-pracy-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1d4ed8;">Prawo pracy</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#6d28d9;">Prawo pracy</span>
         <h3 class="ac-title">Świadectwo pracy 2026 — wzór, termin wydania, kara za zwłokę</h3>
         <p class="ac-excerpt">Termin wydania (dzień ustania lub 7 dni pocztą), 13 obowiązkowych elementów, czego NIE wpisywać, sprostowanie w 14 dni, sąd pracy i kara grzywny 1 000-30 000 zł dla pracodawcy.</p>
         <div class="ac-meta">
@@ -646,7 +646,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="przerwy-w-pracy-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1d4ed8;">Prawo pracy</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#6d28d9;">Prawo pracy</span>
         <h3 class="ac-title">Przerwy w pracy 2026 — ile, kiedy i czy płatne</h3>
         <p class="ac-excerpt">Przerwa 15-minutowa, dodatkowe przerwy przy długim dniu pracy, przerwa lunchowa do 60 minut, przy komputerze, na karmienie i dla młodocianych — i które z nich są płatne.</p>
         <div class="ac-meta">
@@ -715,7 +715,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="umowa-najmu-na-wakacje-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1e40af;">🏖️ Najem</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#5b21b6;">🏖️ Najem</span>
         <h3 class="ac-title">Umowa najmu na wakacje 2026 — najem krótkoterminowy i okazjonalny</h3>
         <p class="ac-excerpt">Najem turystyczny kontra okazjonalny, kaucja i jej zwrot, protokół zdawczo-odbiorczy oraz czerwone flagi w ogłoszeniach najmu.</p>
         <div class="ac-meta">
@@ -735,7 +735,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="mieszkanie-dla-studenta-2026.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1e40af;">🏠 Najem</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#5b21b6;">🏠 Najem</span>
         <h3 class="ac-title">Mieszkanie dla studenta 2026 — Warszawa, Kraków, Wrocław: ceny i porady</h3>
         <p class="ac-excerpt">Aktualne ceny pokoi, kawalerek i akademików. Co MUSI być w umowie najmu, 7 czerwonych flag w ogłoszeniach i jak nie dać się oszukać.</p>
         <div class="ac-meta">
@@ -745,7 +745,7 @@ body { background:#f9fafb; margin:0; padding:0; }
         </div>
       </a>
       <a href="umowa-zlecenie-vs-umowa-o-prace.html" class="article-card-link">
-        <span class="ap-badge" style="background:#eff6ff;color:#1d4ed8;">Prawo pracy</span>
+        <span class="ap-badge" style="background:#f5f3ff;color:#6d28d9;">Prawo pracy</span>
         <h3 class="ac-title">Umowa zlecenie a umowa o pracę — różnice, ZUS i koszty 2026</h3>
         <p class="ac-excerpt">Co się bardziej opłaca pracownikowi i pracodawcy? Tabela różnic, konkretne wyliczenia netto i kiedy ZUS może zakwestionować zlecenie.</p>
         <div class="ac-meta">
@@ -774,13 +774,13 @@ body { background:#f9fafb; margin:0; padding:0; }
   <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;">
     <div style="display:flex;align-items:center;gap:8px;">
       <img src="logo2-64.png" style="height:26px;width:auto;display:block;">
-      <span style="font-size:14px;font-weight:800;color:#111827;font-family:'Inter',sans-serif;">Dokumo</span>
+      <span style="font-size:14px;font-weight:800;color:#111827;font-family:'Geist',sans-serif;">Dokumo</span>
     </div>
-    <p style="font-size:13px;color:#9ca3af;margin:0;font-family:'Inter',sans-serif;">© 2026 Dokumo. Wszelkie prawa zastrzeżone.</p>
+    <p style="font-size:13px;color:#9ca3af;margin:0;font-family:'Geist',sans-serif;">© 2026 Dokumo. Wszelkie prawa zastrzeżone.</p>
     <div style="display:flex;gap:24px;">
-      <a href="regulamin.html" style="font-size:13px;color:#9ca3af;text-decoration:none;font-family:'Inter',sans-serif;">Regulamin</a>
-      <a href="prywatnosc.html" style="font-size:13px;color:#9ca3af;text-decoration:none;font-family:'Inter',sans-serif;">Prywatność i Cookies</a>
-      <a href="mailto:dokumoflow@gmail.com" style="font-size:13px;color:#9ca3af;text-decoration:none;font-family:'Inter',sans-serif;">Kontakt</a>
+      <a href="regulamin.html" style="font-size:13px;color:#9ca3af;text-decoration:none;font-family:'Geist',sans-serif;">Regulamin</a>
+      <a href="prywatnosc.html" style="font-size:13px;color:#9ca3af;text-decoration:none;font-family:'Geist',sans-serif;">Prywatność i Cookies</a>
+      <a href="mailto:dokumoflow@gmail.com" style="font-size:13px;color:#9ca3af;text-decoration:none;font-family:'Geist',sans-serif;">Kontakt</a>
     </div>
   </div>
 </footer>
