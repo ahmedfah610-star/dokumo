@@ -57,7 +57,10 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
   --ink3: #999999;
   --border: #e5e5e5;
   --surface: #f5f5f7;
-  --accent: #111111;
+  --accent: #7c3aed;
+  --acc: #7c3aed;
+  --acc-grad: linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);
+  --acc-soft: rgba(124,58,237,.1);
   --pill: 50px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -75,20 +78,20 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .nav-steps { flex: 1; display: flex; justify-content: center; align-items: center; }
 .step-item { display: flex; align-items: center; }
 .step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; transition: all .3s; background: var(--surface); color: var(--ink3); border: 1.5px solid var(--border); flex-shrink: 0; }
-.step-dot.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.step-dot.active { background: var(--acc); color: #fff; border-color: var(--acc); }
 .step-dot.done { background: var(--surface); color: var(--ink); border-color: #ccc; }
 .step-lbl { font-size: .72rem; font-weight: 500; color: var(--ink3); margin-left: 6px; transition: color .3s; white-space: nowrap; }
 .step-lbl.active { color: var(--ink); font-weight: 700; }
 .step-line { width: 36px; height: 1.5px; background: var(--border); margin: 0 8px; transition: background .3s; flex-shrink: 0; }
-.step-line.done { background: var(--ink); }
+.step-line.done { background: var(--acc); }
 .nav-right { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
 .nav-login { font-size: .75rem; font-weight: 600; color: var(--ink2); text-decoration: none; padding: 7px 14px; border-radius: var(--pill); border: 1.5px solid var(--border); transition: all .2s; }
 .nav-login:hover { border-color: #999; color: var(--ink); }
 .nav-badge { font-size: .6rem; font-weight: 800; letter-spacing: .08em; padding: 4px 9px; border-radius: 999px; text-transform: uppercase; }
-.nav-badge.pro { background: #2563eb; color: #fff; }
+.nav-badge.pro { background: #7c3aed; color: #fff; }
 .nav-badge.free { background: #f3f4f6; color: #6b7280; }
 .nav-profile{position:relative;display:flex;align-items:center;}
-.nav-avatar{width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;overflow:hidden;flex-shrink:0;}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;overflow:hidden;flex-shrink:0;}
 .nav-profile-dropdown{display:none;position:absolute;top:calc(100% + 12px);right:0;background:#fff;border:1px solid #e5e7eb;min-width:220px;z-index:999;padding:8px 0;box-shadow:0 12px 40px rgba(0,0,0,0.13);border-radius:14px;}
 .nav-profile-dropdown.open{display:block !important;}
 .nav-profile-email{display:block;padding:10px 16px;font-family:'Inter',sans-serif;font-size:12.5px;color:#6b7280;font-weight:500;letter-spacing:0;}
@@ -110,27 +113,27 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .form-wrap { max-width: 1060px; margin: 0 auto; padding: 44px 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: start; }
 .sub-bar { display: flex; gap: 6px; margin-bottom: 24px; }
 .sub-seg { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .3s; }
-.sub-seg.on { background: var(--ink); }
+.sub-seg.on { background: var(--acc); }
 .form-step-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px; }
 .form-step-sub { font-size: .88rem; color: var(--ink2); margin-bottom: 28px; line-height: 1.5; }
 .field { margin-bottom: 20px; }
 .field-lbl { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px; }
 .field-lbl span { font-weight: 400; opacity: .7; text-transform: none; letter-spacing: 0; font-size: .7rem; }
 .field-in { width: 100%; padding: 12px 16px; font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 500; color: var(--ink); background: var(--surface); border: 1.5px solid transparent; border-radius: 12px; outline: none; transition: all .2s; -webkit-appearance: none; appearance: none; }
-.field-in:focus { background: #fff; border-color: var(--ink); }
+.field-in:focus { background: #fff; border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
 .field-in::placeholder { color: var(--ink3); font-weight: 400; }
 .field-in[type="date"] { color-scheme: light; }
 .pills-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill { padding: 9px 16px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #fff; color: var(--ink2); }
 .pill:hover { border-color: #999; color: var(--ink); }
-.pill.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.pill.on { background: var(--acc); color: #fff; border-color: var(--acc); }
 .nip-hint { font-size: .7rem; color: var(--ink3); margin: 4px 0 0; }
 
 /* Chips (multi-select) */
 .chips-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
 .chip { padding: 7px 14px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #fff; color: var(--ink2); }
 .chip:hover { border-color: #999; color: var(--ink); }
-.chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.chip.on { background:var(--acc); color: #fff; border-color:var(--acc); }
 
 /* Live preview card */
 .prev-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 28px 24px; position: sticky; top: 80px; }
@@ -154,8 +157,8 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .check-ico { width: 22px; height: 22px; border-radius: 50%; background: rgba(52,199,89,.1); border: 1.5px solid rgba(52,199,89,.3); color: #1a8a3e; display: flex; align-items: center; justify-content: center; font-size: .62rem; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
 .act-btns { display: flex; flex-direction: column; gap: 10px; }
 .act-btn { width: 100%; padding: 14px 20px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; transition: all .2s; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.act-btn.primary { background: var(--ink); color: #fff; }
-.act-btn.primary:hover { background: #333; }
+.act-btn.primary { background: var(--acc-grad); color: #fff; }
+.act-btn.primary:hover { filter: brightness(1.08); }
 .act-btn.secondary { background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); }
 .act-btn.secondary:hover { border-color: #999; }
 
@@ -166,8 +169,8 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .success-sub { font-size: 1rem; color: var(--ink2); max-width: 420px; line-height: 1.6; margin-bottom: 36px; }
 .success-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 52px; }
 .suc-btn { padding: 14px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: all .2s; }
-.suc-btn.primary { background: var(--ink); color: #fff; border: none; }
-.suc-btn.primary:hover { background: #333; }
+.suc-btn.primary { background: var(--acc-grad); color: #fff; border: none; }
+.suc-btn.primary:hover { filter: brightness(1.08); }
 .suc-btn.outline { background: #fff; color: var(--ink); border: 1.5px solid var(--border); }
 .suc-btn.outline:hover { border-color: #999; }
 .metrics { display: flex; border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; }
@@ -182,8 +185,8 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .btn-back:hover { border-color: #999; color: var(--ink); }
 .btn-back.hide { visibility: hidden; pointer-events: none; }
 .bar-info { flex: 1; text-align: center; font-size: .78rem; color: var(--ink3); font-weight: 500; }
-.btn-next { padding: 12px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; background: var(--ink); color: #fff; border: none; transition: all .2s; margin-left: auto; }
-.btn-next:hover { background: #333; }
+.btn-next { padding: 12px 28px; border-radius: var(--pill); font-family: 'Figtree', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; background: var(--acc-grad); color: #fff; border: none; transition: all .2s; margin-left: auto; }
+.btn-next:hover { filter: brightness(1.08); }
 .btn-next.hide { visibility: hidden; pointer-events: none; }
 
 /* ── MOBILE ── */
@@ -245,7 +248,7 @@ onAuthStateChanged(getAuth(app),async u=>{
   <div class="nav-right">
     <div id="navAuth" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
       <a href="konto.html" id="navLoginBtn" style="padding:7px 16px;font-size:13px;font-weight:600;color:#374151;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">Zaloguj się</a>
-      <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#2563eb;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(37,99,235,.3);" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Załóż konto</a>
+      <a href="konto.html?rejestracja=1" id="navRegisterBtn" style="padding:7px 16px;font-size:13px;font-weight:700;color:#fff;background:#7c3aed;border-radius:10px;text-decoration:none;transition:background 0.15s;font-family:'Inter',sans-serif;box-shadow:0 1px 3px rgba(124,58,237,.3);" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">Załóż konto</a>
       <div class="nav-profile" id="navProfile" style="display:none">
         <div class="nav-avatar" id="navAvatar" onclick="toggleNavDropdown(event)" aria-label="Menu użytkownika" aria-expanded="false" role="button" tabindex="0">?</div>
         <div class="nav-profile-dropdown" id="navDropdown">
@@ -780,24 +783,24 @@ function toggleFaq(btn) { btn.closest('.faq-item').classList.toggle('open'); }
 <section style="background:#f9fafb;padding:48px 24px;border-top:1px solid #e5e7eb;font-family:'Inter','Figtree',-apple-system,sans-serif;">
   <div style="max-width:1120px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:0.72rem;font-weight:700;color:#2563eb;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">📚 Warto przeczytać</div>
+      <div style="font-size:0.72rem;font-weight:700;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">📚 Warto przeczytać</div>
       <h2 style="font-size:1.5rem;font-weight:800;color:#111827;letter-spacing:-0.02em;margin:0;">Powiązane artykuły</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
     <a href="polityka-zwrotow-2026.html" style="display:block;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
       <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">↩️ Polityka zwrotów 2026 — wzór</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Pełen wzór do wklejenia.</div>
-      <div style="font-size:0.75rem;color:#2563eb;font-weight:600;margin-top:10px;">Czytaj artykuł →</div>
+      <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:10px;">Czytaj artykuł →</div>
     </a>
     <a href="dyrektywa-omnibus-2026.html" style="display:block;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
       <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">⚖️ Dyrektywa Omnibus 2026</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Co sklep musi mieć.</div>
-      <div style="font-size:0.75rem;color:#2563eb;font-weight:600;margin-top:10px;">Czytaj artykuł →</div>
+      <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:10px;">Czytaj artykuł →</div>
     </a>
     <a href="sklep-internetowy-2026.html" style="display:block;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
       <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">🛒 Sklep internetowy 2026 — checklist</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Wszystkie wymogi prawne.</div>
-      <div style="font-size:0.75rem;color:#2563eb;font-weight:600;margin-top:10px;">Czytaj artykuł →</div>
+      <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:10px;">Czytaj artykuł →</div>
     </a>
     </div>
   </div>
