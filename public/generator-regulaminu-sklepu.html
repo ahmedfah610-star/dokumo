@@ -572,7 +572,7 @@ async function doGenerate(){
     var rawText=await res.text();
     var data; try{data=JSON.parse(rawText);}catch(e){throw new Error('Błąd serwera (HTTP '+res.status+'). Sprawdź klucz ANTHROPIC_API_KEY.');}
     if(data.error) throw new Error(data.error);
-    genText=data.text||data.result||'Błąd generowania';
+    genText=data.text||data.result||'Błąd generowania';try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     document.getElementById('docPaper').textContent=genText;
     document.getElementById('resSub').textContent='Twój dokument "'+FORM.title+'" jest gotowy do pobrania lub opublikowania.';
     if(token) document.getElementById('checkSaved').style.display='flex';

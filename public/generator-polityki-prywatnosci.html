@@ -620,7 +620,7 @@ async function doGenerate(){
       body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:FORM.docId,docName:FORM.title,docCat:FORM.docCat,docCatLabel:FORM.docCatLabel,docIcon:FORM.icon})
     });
     var data=await res.json();
-    genText=data.text||data.result||'Błąd generowania';
+    genText=data.text||data.result||'Błąd generowania';try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.className='doc-paper';
     paper.textContent=genText;
     if(token) document.getElementById('checkSaved').style.display='flex';
