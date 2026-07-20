@@ -487,7 +487,7 @@ async function doGenerate(){
     var res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,docId:'pelnomocnictwo',docName:'Pełnomocnictwo',docCat:'inne',docCatLabel:'Inne',docIcon:'📜'})
+      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:'pelnomocnictwo',docName:'Pełnomocnictwo',docCat:'inne',docCatLabel:'Inne',docIcon:'📜'})
     });
     var data=await res.json();
     if(data.error==='free_used'){

@@ -116,7 +116,7 @@ async function reserveMonthlyGen(uid, limit) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType } = req.body;
+  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType, systemPrompt } = req.body;
 
   // ── CV i list motywacyjny — zawsze wymaga subskrypcji + rate limit 20/hr per uid ──
   if (freeType === 'cv' || freeType === 'letter') {
@@ -472,11 +472,19 @@ ${truncated}`;
 
   const safeSystemPrompt = 'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.';
 
+  // System prompt generatora (zasady prawne + jakościowe) budowany po stronie klienta.
+  // Łączymy: najpierw szczegółowe zasady dokumentu, na końcu twarde guardraile serwera
+  // (język/format), których klient nie może nadpisać. Limit długości chroni przed nadużyciem.
+  const clientSystem = (typeof systemPrompt === 'string' && systemPrompt.trim())
+    ? systemPrompt.trim().slice(0, 8000)
+    : '';
+  const combinedSystem = clientSystem ? (clientSystem + '\n\n' + safeSystemPrompt) : safeSystemPrompt;
+
   try {
     const r = await fetch(
       'https://api.anthropic.com/v1/messages',
       { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:8000, system: safeSystemPrompt, messages:[{role:'user',content:prompt}] }),
+        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:prompt}] }),
         signal: AbortSignal.timeout(57000) }
     );
     const data = await r.json();
