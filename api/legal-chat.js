@@ -288,8 +288,14 @@ function parseClaudeResponse(raw) {
   }
 
   if (!reply) reply = 'Przepraszam, nie udało się przygotować odpowiedzi. Spróbuj przeformułować pytanie.';
-  return { reply: reply.slice(0, 6000), suggestions, eliKeywords, followups, docParams, saosQuery };
+  reply = reply.slice(0, 6000);
+  // Fallback serwerowy: disclaimer musi dotrzeć do użytkownika nawet gdy model
+  // pominie ostatnią linijkę lub odpowiedź zostanie ucięta limitem tokenów.
+  if (!reply.includes('⚠️')) reply += '\n\n' + DISCLAIMER_FALLBACK;
+  return { reply, suggestions, eliKeywords, followups, docParams, saosQuery };
 }
+
+const DISCLAIMER_FALLBACK = '⚠️ To informacja ogólna, nie porada prawna ani podatkowa. W indywidualnych sprawach skonsultuj się ze specjalistą.';
 
 // ── Prefill: buduje URL generatora z danymi wyciągniętymi z rozmowy ─────
 function buildSuggestionUrl(typeId, baseUrl, dp) {
@@ -669,6 +675,9 @@ export default async function handler(req, res) {
     const sepIdx = raw.indexOf(META_SEP);
     const visTotal = sepIdx >= 0 ? sepIdx : raw.length;
     if (visTotal > shown) send({ t: 'd', x: raw.slice(shown, visTotal) });
+    // Fallback: disclaimer także w ścieżce streamującej (deltami idzie surowy tekst,
+    // więc doklejka z parseClaudeResponse sama by tu nie dotarła).
+    if (!raw.slice(0, visTotal).includes('⚠️')) send({ t: 'd', x: '\n\n' + DISCLAIMER_FALLBACK });
     try {
       const extras = await buildExtras(parsed);
       send({ t: 'extras', ...extras });

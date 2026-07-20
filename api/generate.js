@@ -167,7 +167,7 @@ export default async function handler(req, res) {
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000,
+        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 4000,
           system: 'Piszesz wyłącznie po polsku. Zero markdown, zero gwiazdek, zero emoji.',
           messages: [{ role: 'user', content: prompt }] }),
         signal: AbortSignal.timeout(30000)
@@ -236,20 +236,24 @@ Zwróć TYLKO JSON, żadnego tekstu przed ani po. Format:
   ]
 }
 
-Sprawdź następujące aspekty:
-1. Kompletność danych stron (imię, adres, NIP/PESEL)
-2. Wynagrodzenie (dla UoP: min. 4806 zł brutto 2026; min. stawka godz. 31,40 zł)
-3. Elementy obowiązkowe (data zawarcia, zakres, czas trwania)
-4. Klauzule niedozwolone lub rażąco jednostronne
-5. Warunki i okres wypowiedzenia
-6. Klauzule konkurencji lub poufności
+NAJPIERW ustal typ umowy i dobierz kryteria WYŁĄCZNIE właściwe dla tego typu:
+- umowa o pracę: elementy art. 29 §1 KP, min. wynagrodzenie 4806 zł brutto (2026), okres wypowiedzenia wg art. 36 KP;
+- umowa zlecenie/o świadczenie usług: min. stawka godzinowa 31,40 zł (2026), ewidencja godzin, wypowiedzenie art. 746 KC;
+- umowa B2B: znamiona stosunku pracy (art. 22 §1 KP — podporządkowanie, sztywne godziny), NIP stron, termin płatności;
+- umowa o dzieło: rezultat (art. 627 KC), odbiór, prawa autorskie i pola eksploatacji;
+- sprzedaż/najem/NDA/inne: kryteria właściwe danej instytucji KC.
+NIE stosuj wymogów Kodeksu pracy do umów cywilnoprawnych i odwrotnie.
+
+Sprawdź zawsze: kompletność danych stron, elementy obowiązkowe (data, przedmiot, wynagrodzenie/cena), klauzule rażąco jednostronne lub niedozwolone, zasady zakończenia umowy, poufność/konkurencję jeśli występują.
 
 Zasady oceny:
 - severity="critical": poważny błąd prawny lub brakujący obowiązkowy element
 - severity="warning": klauzula niekorzystna lub wymagająca doprecyzowania
 - severity="ok": element poprawny (maksymalnie 3-4 takie)
 
-Zwróć od 6 do 10 issues. Pisz po polsku. Bądź konkretny i praktyczny.
+RUBRYKA score (stosuj dokładnie): zacznij od 100; odejmij 20 za każdy issue "critical" i 7 za każdy "warning"; wynik ogranicz do przedziału 5-98. Dzięki temu ta sama umowa zawsze dostaje tę samą ocenę.
+
+W polu "legal" podawaj wyłącznie artykuły, których jesteś pewien — jeśli nie masz pewności, wpisz null. Zwróć od 6 do 10 issues. Pisz po polsku. Bądź konkretny i praktyczny.
 
 UMOWA DO ANALIZY:
 ${truncated}`;
@@ -259,8 +263,9 @@ ${truncated}`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
         body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 4000,
+          // Analiza prawna umowy — płatna funkcja o wysokiej stawce błędu; mocniejszy model
+          model: 'claude-sonnet-5',
+          max_tokens: 6000,
           system: 'Odpowiadasz wyłącznie poprawnym JSON bez żadnych dodatkowych komentarzy.',
           messages: [
             { role: 'user', content: userPrompt },
@@ -470,11 +475,17 @@ ${truncated}`;
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) { if (rollbackUsage) rollbackUsage(); return res.status(500).json({ error: 'Brak klucza ANTHROPIC_API_KEY' }); }
 
-  const safeSystemPrompt = 'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.';
+  const safeSystemPrompt = [
+    'Piszesz wyłącznie po polsku. Przestrzegaj polskiej interpunkcji i ortografii. Zero markdown, zero gwiazdek, zero emoji, chyba że instrukcja wyraźnie nakazuje inaczej.',
+    'DANE, KTÓRYCH NIE PODANO: nigdy ich nie wymyślaj. Jeśli w danych wejściowych występuje token „[brak]" lub pole jest puste, a dokument wymaga tej informacji do ważności — zwróć JSON missing_fields zgodnie z instrukcją. Dla danych drugorzędnych (miejscowość, numer rachunku, adres sądu) pozostaw w dokumencie pole do ręcznego uzupełnienia w postaci wykropkowania: „…………………………". Nigdy nie przepisuj tokenu „[brak]" do treści dokumentu.',
+    'NAGŁÓWEK: jeśli nie podano miejscowości lub daty zawarcia, użyj formy „…………………, dnia ………………… r." — to standard wzorów do ręcznego uzupełnienia, nie placeholder.',
+    'KWOTY: każdą kwotę pieniężną zapisuj cyfrowo i słownie, np. 5 000,00 zł (słownie: pięć tysięcy złotych 00/100).',
+    'Cytuj wyłącznie przepisy, których jesteś pewien; nie wymyślaj numerów artykułów.',
+  ].join('\n');
 
   // System prompt generatora (zasady prawne + jakościowe) budowany po stronie klienta.
   // Łączymy: najpierw szczegółowe zasady dokumentu, na końcu twarde guardraile serwera
-  // (język/format), których klient nie może nadpisać. Limit długości chroni przed nadużyciem.
+  // (język/format/dane), których klient nie może nadpisać. Limit długości chroni przed nadużyciem.
   const clientSystem = (typeof systemPrompt === 'string' && systemPrompt.trim())
     ? systemPrompt.trim().slice(0, 8000)
     : '';
@@ -484,7 +495,10 @@ ${truncated}`;
     const r = await fetch(
       'https://api.anthropic.com/v1/messages',
       { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:prompt}] }),
+        // Dokumenty prawne to rdzeń płatnego produktu — generuje je najmocniejszy
+        // model (Sonnet), nie Haiku. Wolumen jest niski (limity 30-100/mies./user),
+        // a koszt błędu w umowie wysoki.
+        body: JSON.stringify({ model:'claude-sonnet-5', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:prompt}] }),
         signal: AbortSignal.timeout(57000) }
     );
     const data = await r.json();
