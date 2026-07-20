@@ -167,7 +167,7 @@ export default async function handler(req, res) {
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 4000,
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000,
           system: 'Piszesz wyłącznie po polsku. Zero markdown, zero gwiazdek, zero emoji.',
           messages: [{ role: 'user', content: prompt }] }),
         signal: AbortSignal.timeout(30000)
@@ -264,7 +264,7 @@ ${truncated}`;
         headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
         body: JSON.stringify({
           // Analiza prawna umowy — płatna funkcja o wysokiej stawce błędu; mocniejszy model
-          model: 'claude-sonnet-5',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 6000,
           system: 'Odpowiadasz wyłącznie poprawnym JSON bez żadnych dodatkowych komentarzy.',
           messages: [
@@ -498,7 +498,7 @@ ${truncated}`;
         // Dokumenty prawne to rdzeń płatnego produktu — generuje je najmocniejszy
         // model (Sonnet), nie Haiku. Wolumen jest niski (limity 30-100/mies./user),
         // a koszt błędu w umowie wysoki.
-        body: JSON.stringify({ model:'claude-sonnet-5', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:prompt}] }),
+        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:prompt}] }),
         signal: AbortSignal.timeout(57000) }
     );
     const data = await r.json();
