@@ -231,6 +231,30 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
 .faq-item.open .faq-chevron { transform: rotate(180deg); }
 .faq-item.open .faq-a { display: block; }
+
+/* ── PODGLĄD PRZED PAYWALLEM (0 tokenów) ── */
+.dpk-ov{position:fixed;inset:0;background:rgba(20,20,28,.66);z-index:99998;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 16px;animation:dpkF .2s ease}
+@keyframes dpkF{from{opacity:0}to{opacity:1}}
+.dpk-wrap{width:100%;max-width:660px;margin:auto 0}
+.dpk-paper{background:#fff;border-radius:14px 14px 0 0;padding:52px 56px 0;font-family:'Times New Roman',Georgia,serif;color:#1a1a1a;box-shadow:0 30px 80px rgba(0,0,0,.4);position:relative;overflow:hidden}
+@media(max-width:560px){.dpk-paper{padding:34px 22px 0}}
+.dpk-title{text-align:center;font-size:1.35rem;font-weight:700;letter-spacing:.03em;margin-bottom:6px}
+.dpk-sub{text-align:center;font-size:.9rem;color:#444;margin-bottom:30px}
+.dpk-sec{margin-bottom:20px}
+.dpk-sec-h{font-weight:700;font-size:.95rem;margin-bottom:8px}
+.dpk-line{font-size:.92rem;line-height:1.7;margin-bottom:3px;color:#555}
+.dpk-key{color:#111;font-weight:600}
+.dpk-blur{height:.72rem;margin:7px 0;border-radius:3px;background:linear-gradient(90deg,#e6e6ec,#f1f1f5);user-select:none;pointer-events:none}
+.dpk-fade{position:relative;z-index:2;margin:-155px -56px 0;padding:0 24px 34px;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.92) 44%,#fff 64%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center}
+@media(max-width:560px){.dpk-fade{margin:-155px -22px 0}}
+.dpk-badge{font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;background:rgba(4,120,87,.1);color:#047857;font-size:.72rem;font-weight:700;padding:4px 11px;border-radius:20px;margin-bottom:14px}
+.dpk-lock{font-size:1.7rem;margin-bottom:6px}
+.dpk-h3{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:800;color:#1a1a2e;margin-bottom:6px;letter-spacing:-.01em}
+.dpk-p{font-family:'DM Sans',sans-serif;font-size:.86rem;color:#555;line-height:1.55;max-width:410px;margin:0 auto 18px}
+.dpk-cta{font-family:'DM Sans',sans-serif;display:inline-block;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);color:#fff;font-weight:700;font-size:.95rem;padding:13px 32px;border-radius:12px;text-decoration:none;box-shadow:0 8px 24px rgba(124,58,237,.34);border:none;cursor:pointer}
+.dpk-cta:hover{filter:brightness(1.06)}
+.dpk-back{display:block;margin:14px auto 0;background:none;border:none;color:#999;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer}
+.dpk-back:hover{color:#555}
 </style>
 
 <script type="module">
@@ -800,8 +824,67 @@ function renderPreview(){
     +'<div class="prev-card-title">'+form.title+'</div></div>'+filled+'</div>';
 }
 
+/* ── PODGLĄD PRZED PAYWALLEM (0 tokenów AI) ── */
+function _pkEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function _pkVal(v,ph){return v?'<span class="dpk-key">'+_pkEsc(v)+'</span>':'<span style="color:#bbb">'+ph+'</span>';}
+function _pkBlur(n){var w=[94,88,80,96,72,90];var o='';for(var i=0;i<n;i++)o+='<div class="dpk-blur" style="width:'+w[i%w.length]+'%"></div>';return o;}
+function buildUopPeek(v){
+  var prac = _pkVal(v.pracodawca,'Nazwa pracodawcy')
+    + (v.nip?', NIP <span class="dpk-key">'+_pkEsc(v.nip)+'</span>':'')
+    + (v.adres_p?', <span class="dpk-key">'+_pkEsc(v.adres_p)+'</span>':'');
+  var work = _pkVal(v.pracownik,'Imię i nazwisko pracownika')
+    + (v.adres_pr?', zam. <span class="dpk-key">'+_pkEsc(v.adres_pr)+'</span>':'');
+  var wymiar = v.wymiar_inne||v.wymiar;
+  var wyn = v.wynagrodzenie?(v.wynagrodzenie+' zł brutto miesięcznie'):'';
+  return ''
+   +'<div class="dpk-title">UMOWA O PRACĘ</div>'
+   +'<div class="dpk-sub">zawarta dnia '+_pkVal(v.data_start,'…………………')+' w '+_pkVal(v.miejsce,'…………………')+'</div>'
+   +'<div class="dpk-sec"><div class="dpk-sec-h">§1. Strony umowy</div>'
+     +'<div class="dpk-line">Pracodawca: '+prac+'</div>'
+     +'<div class="dpk-line">Pracownik: '+work+'</div></div>'
+   +'<div class="dpk-sec"><div class="dpk-sec-h">§2. Rodzaj umowy i data zawarcia</div>'
+     +'<div class="dpk-line">Umowa zawarta na: '+_pkVal(v.rodzaj,'czas nieokreślony')+'</div>'
+     +_pkBlur(1)+'</div>'
+   +'<div class="dpk-sec"><div class="dpk-sec-h">§3. Warunki pracy i płacy</div>'
+     +'<div class="dpk-line">Stanowisko: '+_pkVal(v.stanowisko,'…………………')+'</div>'
+     +'<div class="dpk-line">Wynagrodzenie zasadnicze: '+_pkVal(wyn,'…………………')+'</div>'
+     +'<div class="dpk-line">Wymiar czasu pracy: '+_pkVal(wymiar,'pełny etat')+'</div>'
+     +_pkBlur(2)+'</div>'
+   +'<div class="dpk-sec"><div class="dpk-sec-h">§4. Czas pracy i przerwy</div>'+_pkBlur(2)+'</div>'
+   +'<div class="dpk-sec"><div class="dpk-sec-h">§5. Urlop wypoczynkowy</div>'
+     +'<div class="dpk-line">Wymiar urlopu: '+_pkVal(v.urlop,'…………………')+'</div>'+_pkBlur(1)+'</div>'
+   +'<div class="dpk-sec"><div class="dpk-sec-h">§6. Okres wypowiedzenia</div>'+_pkBlur(3)+'</div>';
+}
+function closeDocPeek(){var el=document.getElementById('dpkOv');if(el)el.remove();}
+function showDocPeek(){
+  closeDocPeek();
+  var ov=document.createElement('div');
+  ov.id='dpkOv'; ov.className='dpk-ov';
+  ov.innerHTML='<div class="dpk-wrap"><div class="dpk-paper">'
+    + buildUopPeek(wizVals)
+    + '<div class="dpk-fade">'
+      + '<div class="dpk-badge">✓ Twoje dane są już wpisane</div>'
+      + '<div class="dpk-lock">🔒</div>'
+      + '<div class="dpk-h3">Twoja umowa o pracę jest gotowa</div>'
+      + '<div class="dpk-p">Pełna treść — 8 paragrafów z klauzulami i podpisami, zgodna z art. 29 §1 Kodeksu pracy — jest w pakiecie. Wybierz plan i pobierz gotowy dokument (PDF/DOCX) w 60 sekund.</div>'
+      + '<a href="subskrypcja.html" class="dpk-cta">Odblokuj i pobierz umowę →</a>'
+      + '<button class="dpk-back" onclick="closeDocPeek()">← Wróć do edycji</button>'
+    + '</div></div></div>';
+  ov.addEventListener('click',function(e){if(e.target===ov)closeDocPeek();});
+  document.body.appendChild(ov);
+  if(window.bump)try{window.bump('paywall_peek');}catch(e){}
+}
+
 /* ── GENERATE ── */
 async function doGenerate(){
+  // Podgląd przed paywallem (0 tokenów): zalogowany bez aktywnej subskrypcji
+  // widzi swoją umowę z własnymi danymi na ostro i zablokowanymi klauzulami.
+  // AI (i koszt tokenów) uruchamia się dopiero po wykupieniu planu.
+  var _u=null,_s=null;
+  try{_u=JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){}
+  try{_s=JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){}
+  var _active=_s&&_s.expiresAt&&new Date(_s.expiresAt)>new Date();
+  if(_u && !_active && selDoc==='uop'){ showDocPeek(); return; }
   if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
   goTo(2);
   var paper=document.getElementById('docPaper');
