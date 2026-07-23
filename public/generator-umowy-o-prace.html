@@ -255,6 +255,7 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .dpk-cta:hover{filter:brightness(1.06)}
 .dpk-back{display:block;margin:14px auto 0;background:none;border:none;color:#999;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer}
 .dpk-back:hover{color:#555}
+.dpk-spin{width:30px;height:30px;border:3px solid #eee;border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
 </style>
 
 <script type="module">
@@ -855,24 +856,56 @@ function buildUopPeek(v){
      +'<div class="dpk-line">Wymiar urlopu: '+_pkVal(v.urlop,'…………………')+'</div>'+_pkBlur(1)+'</div>'
    +'<div class="dpk-sec"><div class="dpk-sec-h">§6. Okres wypowiedzenia</div>'+_pkBlur(3)+'</div>';
 }
+function _pkFade(){
+  return '<div class="dpk-fade">'
+    + '<div class="dpk-badge">🔒 To dopiero początek Twojej umowy</div>'
+    + '<div class="dpk-lock">🔒</div>'
+    + '<div class="dpk-h3">Odblokuj pełną umowę o pracę</div>'
+    + '<div class="dpk-p">Widzisz nagłówek i pierwsze paragrafy wygenerowane z Twoich danych. Pełna treść — 8 paragrafów z wynagrodzeniem, urlopem, wypowiedzeniem i klauzulami wg art. 29 §1 KP — oraz pobranie PDF/DOCX są w pakiecie.</div>'
+    + '<a href="subskrypcja.html" class="dpk-cta">Odblokuj i pobierz umowę →</a>'
+    + '<button class="dpk-back" onclick="closeDocPeek()">← Wróć do edycji</button>'
+  + '</div>';
+}
+function _pkRenderExcerpt(text){
+  var lines=String(text||'').split('\n'); var html=''; var first=true;
+  lines.forEach(function(l){
+    var t=l.trim();
+    if(!t){ html+='<div style="height:.55rem"></div>'; return; }
+    if(first && !/^§/.test(t)){ html+='<div class="dpk-title">'+_pkEsc(t)+'</div>'; first=false; return; }
+    first=false;
+    if(/^(§|PARAGRAF|Paragraf|Art\.)/.test(t)){ html+='<div class="dpk-sec-h" style="margin-top:16px">'+_pkEsc(t)+'</div>'; }
+    else { html+='<div class="dpk-line" style="color:#1a1a1a">'+_pkEsc(t)+'</div>'; }
+  });
+  return html;
+}
 function closeDocPeek(){var el=document.getElementById('dpkOv');if(el)el.remove();}
-function showDocPeek(){
+async function showDocPeek(){
   closeDocPeek();
   var ov=document.createElement('div');
   ov.id='dpkOv'; ov.className='dpk-ov';
-  ov.innerHTML='<div class="dpk-wrap"><div class="dpk-paper">'
-    + buildUopPeek(wizVals)
-    + '<div class="dpk-fade">'
-      + '<div class="dpk-badge">✓ Twoje dane są już wpisane</div>'
-      + '<div class="dpk-lock">🔒</div>'
-      + '<div class="dpk-h3">Twoja umowa o pracę jest gotowa</div>'
-      + '<div class="dpk-p">Pełna treść — 8 paragrafów z klauzulami i podpisami, zgodna z art. 29 §1 Kodeksu pracy — jest w pakiecie. Wybierz plan i pobierz gotowy dokument (PDF/DOCX) w 60 sekund.</div>'
-      + '<a href="subskrypcja.html" class="dpk-cta">Odblokuj i pobierz umowę →</a>'
-      + '<button class="dpk-back" onclick="closeDocPeek()">← Wróć do edycji</button>'
-    + '</div></div></div>';
+  ov.innerHTML='<div class="dpk-wrap"><div class="dpk-paper" id="dpkPaper">'
+    +'<div style="text-align:center;padding:36px 0"><div class="dpk-spin"></div>'
+    +'<p style="font-family:\'DM Sans\',sans-serif;color:#999;font-size:.85rem;margin-top:14px">Przygotowuję podgląd Twojej umowy…</p></div>'
+    +'</div></div>';
   ov.addEventListener('click',function(e){if(e.target===ov)closeDocPeek();});
   document.body.appendChild(ov);
   if(window.bump)try{window.bump('paywall_peek');}catch(e){}
+  var inner;
+  try{
+    var form=FORMS[selDoc];
+    var prompt=form.prompt(wizVals);
+    if(wizVals._extra_info) prompt+='\nDodatkowe informacje: '+wizVals._extra_info;
+    var token=window._fbToken||'';
+    var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({preview:true,prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr'})});
+    var data=await res.json();
+    // Sukces → realny wstęp z serwera; błąd/limit → podgląd strukturalny (0 tokenów)
+    if(res.ok && data.text){ inner=_pkRenderExcerpt(data.text)+_pkBlur(3); }
+    else { inner=buildUopPeek(wizVals); }
+  }catch(e){ inner=buildUopPeek(wizVals); }
+  var paper=document.getElementById('dpkPaper');
+  if(!paper) return; // zamknięto w międzyczasie
+  paper.innerHTML=inner+_pkFade();
 }
 
 /* ── GENERATE ── */

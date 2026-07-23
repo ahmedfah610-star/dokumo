@@ -353,6 +353,53 @@ ${truncated}`;
     }
   }
 
+  // ── PODGLĄD (preview) — tani, krótki, REALNY fragment dokumentu ──
+  // Zalogowany user bez subskrypcji dostaje wstęp (nagłówek + §1-§2) wygenerowany
+  // przez AI na niskim max_tokens. Dalsze paragrafy NIE są generowane, a serwer
+  // dodatkowo twardo obcina wszystko od §3 w górę — pełny dokument (deliverable)
+  // fizycznie nie opuszcza serwera, więc nie ma czego skopiować. Bez zapisu,
+  // bez limitu generowań, z rate-limitem chroniącym przed spamem.
+  if (req.body.preview === true) {
+    const pToken = (req.headers.authorization || '').replace('Bearer ', '').trim();
+    if (!pToken) return res.status(401).json({ error: 'Wymagane logowanie' });
+    let pUid;
+    try { pUid = (await auth.verifyIdToken(pToken)).uid; }
+    catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
+    if (!prompt || typeof prompt !== 'string' || prompt.length > 20000)
+      return res.status(400).json({ error: 'Brak lub zbyt długie zapytanie' });
+    let pRollback = null;
+    try {
+      pRollback = await tryReserveSlot(pUid, 'preview', 8); // 8 podglądów / godz. / uid
+      if (!pRollback) return res.status(429).json({ error: 'Za dużo podglądów — spróbuj za chwilę.' });
+    } catch { /* fail-open na błędach Firestore */ }
+    const pApiKey = process.env.ANTHROPIC_API_KEY;
+    if (!pApiKey) { if (pRollback) pRollback(); return res.status(500).json({ error: 'Brak klucza API' }); }
+    const pSafe = 'Piszesz wyłącznie po polsku. Zero markdown, zero gwiazdek, zero emoji.';
+    const pClient = (typeof systemPrompt === 'string' && systemPrompt.trim()) ? systemPrompt.trim().slice(0, 8000) : '';
+    const pSystem = pClient ? (pClient + '\n\n' + pSafe) : pSafe;
+    const pInstruction = '\n\nTRYB PODGLĄDU: Wygeneruj WYŁĄCZNIE nagłówek dokumentu oraz paragrafy §1 i §2 w pełnej, gotowej formie, po czym ZAKOŃCZ. Nie generuj §3 ani dalszych paragrafów, nie dodawaj podpisów, komentarzy ani informacji, że to podgląd.';
+    try {
+      const pr = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': pApiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 700, system: pSystem, messages: [{ role: 'user', content: prompt + pInstruction }] }),
+        signal: AbortSignal.timeout(25000)
+      });
+      const pData = await pr.json();
+      if (pData.error) { if (pRollback) pRollback(); return res.status(500).json({ error: pData.error.message }); }
+      let pText = pData.content?.[0]?.text || '';
+      if (!pText) { if (pRollback) pRollback(); return res.status(500).json({ error: 'Pusta odpowiedź AI' }); }
+      // Twardy backstop serwerowy: gdyby model zignorował instrukcję i poszedł dalej,
+      // obetnij wszystko od §3 (deliverable nie może wyjść do niepłacącego klienta).
+      const cut = pText.search(/§\s*3\b|§3|Paragraf\s*3|Artyku[łl]\s*3/i);
+      if (cut > 60) pText = pText.slice(0, cut).trim();
+      return res.status(200).json({ preview: true, text: pText });
+    } catch (e) {
+      if (pRollback) pRollback();
+      return res.status(500).json({ error: e.name === 'TimeoutError' ? 'Podgląd trwał zbyt długo.' : e.message });
+    }
+  }
+
   // ── 1. Wymagane uwierzytelnienie ──
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
