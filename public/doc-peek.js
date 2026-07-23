@@ -248,7 +248,6 @@
     if(missingRequired(f).length) return; // niekompletny → nie zaskakuj modalem
     window.showDocPeek();
   }
-  window.__mAP=maybeAutoPeek;
   function onReady(){ setTimeout(function(){ showResumeBanner(); maybeAutoPeek(); }, 650); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady);
   else onReady();
