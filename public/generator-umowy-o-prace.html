@@ -899,8 +899,10 @@ async function showDocPeek(){
     var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
       body:JSON.stringify({preview:true,prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr'})});
     var data=await res.json();
-    // Sukces → realny wstęp z serwera; błąd/limit → podgląd strukturalny (0 tokenów)
-    if(res.ok && data.text){ inner=_pkRenderExcerpt(data.text)+_pkBlur(3); }
+    // Sukces → realny wstęp z serwera. Zabezpieczenie: gdyby przyszedł JSON
+    // missing_fields (brak danych) lub pusto/błąd — pokaż podgląd strukturalny.
+    var okText = res.ok && data.text && !/["']?error["']?\s*:\s*["']?missing_fields/i.test(data.text) && data.text.trim().charAt(0)!=='{';
+    if(okText){ inner=_pkRenderExcerpt(data.text)+_pkBlur(3); }
     else { inner=buildUopPeek(wizVals); }
   }catch(e){ inner=buildUopPeek(wizVals); }
   var paper=document.getElementById('dpkPaper');

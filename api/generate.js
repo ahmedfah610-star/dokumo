@@ -377,7 +377,7 @@ ${truncated}`;
     const pSafe = 'Piszesz wyłącznie po polsku. Zero markdown, zero gwiazdek, zero emoji.';
     const pClient = (typeof systemPrompt === 'string' && systemPrompt.trim()) ? systemPrompt.trim().slice(0, 8000) : '';
     const pSystem = pClient ? (pClient + '\n\n' + pSafe) : pSafe;
-    const pInstruction = '\n\nTRYB PODGLĄDU: Wygeneruj WYŁĄCZNIE nagłówek dokumentu oraz paragrafy §1 i §2 w pełnej, gotowej formie, po czym ZAKOŃCZ. Nie generuj §3 ani dalszych paragrafów, nie dodawaj podpisów, komentarzy ani informacji, że to podgląd.';
+    const pInstruction = '\n\nTRYB PODGLĄDU (instrukcja nadrzędna): To krótki podgląd, NIE finalny dokument. ZIGNORUJ regułę o missing_fields — NIGDY nie zwracaj JSON ani informacji o brakujących danych. Wygeneruj WYŁĄCZNIE nagłówek dokumentu oraz paragrafy §1 i §2 w gotowej formie; każdą brakującą daną zastąp wykropkowaniem "…………………". Po §2 ZAKOŃCZ — nie generuj §3 ani dalszych paragrafów, nie dodawaj podpisów ani komentarzy.';
     try {
       const pr = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -389,6 +389,12 @@ ${truncated}`;
       if (pData.error) { if (pRollback) pRollback(); return res.status(500).json({ error: pData.error.message }); }
       let pText = pData.content?.[0]?.text || '';
       if (!pText) { if (pRollback) pRollback(); return res.status(500).json({ error: 'Pusta odpowiedź AI' }); }
+      // Gdyby model mimo instrukcji zwrócił JSON missing_fields — nie wysyłaj śmieci;
+      // zwolnij slot i zwróć puste, by klient pokazał podgląd strukturalny.
+      if (/["']?error["']?\s*:\s*["']?missing_fields/i.test(pText)) {
+        if (pRollback) pRollback();
+        return res.status(200).json({ preview: true, text: '' });
+      }
       // Twardy backstop serwerowy: gdyby model zignorował instrukcję i poszedł dalej,
       // obetnij wszystko od §3 (deliverable nie może wyjść do niepłacącego klienta).
       const cut = pText.search(/§\s*3\b|§3|Paragraf\s*3|Artyku[łl]\s*3/i);
