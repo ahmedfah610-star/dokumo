@@ -35,7 +35,8 @@
     '.dpkr-t b{display:block;font-size:.92rem;color:#1a1a2e;font-weight:800;letter-spacing:-.01em}',
     '.dpkr-t span{font-size:.8rem;color:#666}',
     '.dpkr-go{flex-shrink:0;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit}',
-    '.dpkr-x{flex-shrink:0;background:none;border:none;color:#bbb;font-size:1.1rem;cursor:pointer;padding:4px}'
+    '.dpkr-x{flex-shrink:0;background:none;border:none;color:#bbb;font-size:1.1rem;cursor:pointer;padding:4px}',
+    '@media(max-width:560px){.dpkr{bottom:86px}}'
   ].join('');
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -45,6 +46,29 @@
   function blur(n){var w=[94,88,80,96,72,90],o='';for(var i=0;i<n;i++)o+='<div class="dpk-blur" style="width:'+w[i%w.length]+'%"></div>';return o;}
   function loggedIn(){try{return !!JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){return false;}}
   function activeSub(){try{var s=JSON.parse(localStorage.getItem('dokumo_sub'));return !!(s&&s.expiresAt&&new Date(s.expiresAt)>new Date());}catch(e){return false;}}
+  function hash(s){var h=0,i;s=String(s||'');for(i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;}return String(h);}
+
+  // Kluczowe pola: bez opt/showIf/replaces i tylko zwykły TEKST (bez type).
+  // Daty, pills i checkboxy pomijamy — bywają warunkowe albo mają domyślne
+  // w prompt-cie (backend wstawia wykropkowanie), więc nie blokują (0 false-positive).
+  function missingRequired(f){
+    var vals=window.wizVals||{},miss=[];
+    (f.steps||[]).forEach(function(step){
+      (step.fields||[]).forEach(function(fld){
+        if(fld.opt||fld.showIf||fld.replaces||fld.type) return;
+        var v=vals[fld.id];
+        if(v==null||String(v).trim()==='') miss.push(fld.label||fld.id);
+      });
+    });
+    return miss;
+  }
+  function showToast(msg){
+    var ex=document.getElementById('dpkToast'); if(ex) ex.remove();
+    var t=document.createElement('div'); t.id='dpkToast';
+    t.style.cssText="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:99999;background:#1a1a2e;color:#fff;font-family:'DM Sans',system-ui,sans-serif;font-size:.86rem;font-weight:600;padding:12px 18px;border-radius:12px;box-shadow:0 10px 34px rgba(0,0,0,.3);max-width:calc(100vw - 32px);text-align:center;animation:dpkF .2s ease";
+    t.textContent=msg; document.body.appendChild(t);
+    setTimeout(function(){ if(t.parentNode){ t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(function(){t.remove();},400);} },4200);
+  }
 
   function peekForm(){
     if(window.FORMS && window.selDoc && window.FORMS[window.selDoc]) return window.FORMS[window.selDoc];
@@ -100,11 +124,11 @@
       + '</div>';
   }
 
-  function saveResume(docId, title, excerpt, vals){
+  function saveResume(docId, title, excerpt, vals, promptHash){
     try {
       localStorage.setItem(RESUME_KEY, JSON.stringify({
         docId: docId, title: title, url: location.pathname,
-        excerpt: excerpt || '', vals: vals || {}, ts: Date.now()
+        excerpt: excerpt || '', vals: vals || {}, promptHash: promptHash || '', ts: Date.now()
       }));
     } catch(e) {}
   }
@@ -126,21 +150,30 @@
     document.body.appendChild(ov);
 
     var title = peekTitle(f), docId = peekDocId(), excerpt = '', inner;
-    try {
-      var pr = buildPrompt(f);
-      var token = window._fbToken || '';
-      var res = await fetch('/api/generate', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ preview: true, prompt: pr, systemPrompt: (window.SYSTEM_PROMPT || ''), docId: docId, docName: title })
-      });
-      var data = await res.json();
-      var ok = res.ok && data.text && !/["']?error["']?\s*:\s*["']?missing_fields/i.test(data.text) && data.text.trim().charAt(0) !== '{';
-      if(ok){ excerpt = data.text; inner = renderExcerpt(data.text) + blur(3); }
-      else { inner = buildStructural(f); }
-    } catch(e){ inner = buildStructural(f); }
+    var pr = buildPrompt(f), pHash = hash(pr);
+    // Cache: powtórne kliknięcie z tymi samymi danymi nie generuje ponownie (0 tokenów).
+    var cacheKey = 'dokumo_pvw:' + docId + ':' + pHash, cached = null;
+    try { cached = sessionStorage.getItem(cacheKey); } catch(e){}
+    if (cached !== null) {
+      excerpt = cached;
+      inner = cached ? (renderExcerpt(cached) + blur(3)) : buildStructural(f);
+    } else {
+      try {
+        var token = window._fbToken || '';
+        var res = await fetch('/api/generate', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ preview: true, prompt: pr, systemPrompt: (window.SYSTEM_PROMPT || ''), docId: docId, docName: title })
+        });
+        var data = await res.json();
+        var ok = res.ok && data.text && !/["']?error["']?\s*:\s*["']?missing_fields/i.test(data.text) && data.text.trim().charAt(0) !== '{';
+        if(ok){ excerpt = data.text; inner = renderExcerpt(data.text) + blur(3); }
+        else { inner = buildStructural(f); }
+        try { sessionStorage.setItem(cacheKey, excerpt); } catch(e){}
+      } catch(e){ inner = buildStructural(f); }
+    }
 
-    // Zapisz stan do wznowienia po płatności (dane + realny wstęp jeśli jest).
-    saveResume(docId, title, excerpt, window.wizVals || {});
+    // Zapisz stan do wznowienia po płatności (dane + realny wstęp + hash danych).
+    saveResume(docId, title, excerpt, window.wizVals || {}, pHash);
     var paper = document.getElementById('dpkPaper');
     if(!paper) return; // zamknięto w międzyczasie
     paper.innerHTML = inner + fade(title);
@@ -148,7 +181,18 @@
 
   // Intercept dla doGenerate: zalogowany bez aktywnej subskrypcji → podgląd.
   window.tryDocPeek = function(){
-    if(loggedIn() && !activeSub()){ window.showDocPeek(); return true; }
+    if(loggedIn() && !activeSub()){
+      var f = peekForm();
+      // Walidacja: nie pokazuj podglądu z wykropkowaniami — najpierw uzupełnij braki.
+      if(f){
+        var miss = missingRequired(f);
+        if(miss.length){
+          showToast('Uzupełnij wymagane pola: ' + miss.slice(0,4).join(', ') + (miss.length>4 ? ' i inne' : ''));
+          return true; // przerwij doGenerate, bez podglądu
+        }
+      }
+      window.showDocPeek(); return true;
+    }
     return false;
   };
 
@@ -173,12 +217,39 @@
         // DokumoDraft zwykle już przywrócił formularz. Jeśli nie — użyj kopii z resume.
         var empty = !window.wizVals || Object.keys(window.wizVals).length < 2;
         if(empty){ window.wizVals = r.vals || {}; if(window.FORMS && r.docId) window.selDoc = r.docId; }
-        window.__resumeExcerpt = r.excerpt || null; // dokończenie od §3
-      } catch(e){}
+        // Spójność: kontynuuj tylko jeśli dane się nie zmieniły od podglądu.
+        // Inaczej (user edytował formularz) — generuj cały dokument od nowa.
+        var f = peekForm();
+        var curHash = f ? hash(buildPrompt(f)) : '';
+        var sameData = r.promptHash && curHash && r.promptHash === curHash;
+        window.__resumeExcerpt = sameData ? (r.excerpt || null) : null;
+      } catch(e){ window.__resumeExcerpt = r.excerpt || null; }
       window.clearDocResume(); el.remove();
       if(typeof window.doGenerate === 'function') window.doGenerate();
     };
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(showResumeBanner, 600); });
-  else setTimeout(showResumeBanner, 600);
+
+  // Auto-podgląd po powrocie z rejestracji: niezalogowany kliknął „Generuj",
+  // draft.js ustawił intencję i odesłał do logowania; po powrocie (zalogowany,
+  // bez subskrypcji, formularz przywrócony) pokazujemy podgląd bez drugiego klika.
+  function maybeAutoPeek(){
+    var intent = false;
+    try { intent = sessionStorage.getItem('dokumo_gen_intent') === '1'; } catch(e){}
+    if(!intent) return;
+    try { sessionStorage.removeItem('dokumo_gen_intent'); } catch(e){}
+    if(!loggedIn() || activeSub()) return;
+    // Niezależnie od czasu przywracania przez DokumoDraft — wczytaj dane wprost z draftu.
+    if((!window.wizVals || Object.keys(window.wizVals).length < 2) && window.DokumoDraft){
+      var d = window.DokumoDraft.load();
+      if(d && d.wizVals){ window.wizVals = d.wizVals; if(window.FORMS && d.selDoc) window.selDoc = d.selDoc; }
+    }
+    var f = peekForm();
+    if(!f || !window.wizVals || Object.keys(window.wizVals).length < 2) return;
+    if(missingRequired(f).length) return; // niekompletny → nie zaskakuj modalem
+    window.showDocPeek();
+  }
+  window.__mAP=maybeAutoPeek;
+  function onReady(){ setTimeout(function(){ showResumeBanner(); maybeAutoPeek(); }, 650); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady);
+  else onReady();
 })();

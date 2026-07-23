@@ -29,6 +29,9 @@
     // Zapisuje stan (jeśli podano) i przekierowuje do logowania z powrotem tutaj.
     gateLogin: function () {
       var ret = location.pathname + location.search;
+      // Sygnał dla doc-peek.js: po powrocie z logowania pokaż od razu podgląd
+      // (user chciał wygenerować, nie zmuszaj go do drugiego kliknięcia).
+      try { sessionStorage.setItem('dokumo_gen_intent', '1'); } catch (e) {}
       window.location.href = 'konto.html?return=' + encodeURIComponent(ret);
     },
     // Krótki, nieblokujący toast po przywróceniu pracy.
