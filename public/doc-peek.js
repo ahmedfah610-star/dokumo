@@ -153,9 +153,11 @@
   };
 
   // Baner wznowienia — po opłaceniu i powrocie na stronę generatora.
+  var RESUME_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 dni — starszych podglądów nie wznawiamy
   function showResumeBanner(){
     var r; try{ r = JSON.parse(localStorage.getItem(RESUME_KEY)); }catch(e){ return; }
     if(!r || r.url !== location.pathname || !activeSub()) return;
+    if(Date.now() - (r.ts || 0) > RESUME_MAX_AGE){ window.clearDocResume(); return; }
     if(document.getElementById('dpkResume')) return;
     var el = document.createElement('div'); el.id = 'dpkResume'; el.className = 'dpkr';
     el.innerHTML = '<div class="dpkr-ico">📄</div>'
@@ -164,7 +166,8 @@
       + '<button class="dpkr-go" id="dpkrGo">Dokończ dokument →</button>'
       + '<button class="dpkr-x" id="dpkrX" aria-label="Zamknij">✕</button>';
     document.body.appendChild(el);
-    document.getElementById('dpkrX').onclick = function(){ el.remove(); };
+    // ✕ = odrzuć na stałe (wyczyść zapis), żeby baner nie wracał przy każdej wizycie.
+    document.getElementById('dpkrX').onclick = function(){ window.clearDocResume(); el.remove(); };
     document.getElementById('dpkrGo').onclick = function(){
       try {
         // DokumoDraft zwykle już przywrócił formularz. Jeśli nie — użyj kopii z resume.
