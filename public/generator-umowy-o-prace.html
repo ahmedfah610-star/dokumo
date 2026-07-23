@@ -825,101 +825,11 @@ function renderPreview(){
     +'<div class="prev-card-title">'+form.title+'</div></div>'+filled+'</div>';
 }
 
-/* ── PODGLĄD PRZED PAYWALLEM (0 tokenów AI) ── */
-function _pkEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function _pkVal(v,ph){return v?'<span class="dpk-key">'+_pkEsc(v)+'</span>':'<span style="color:#bbb">'+ph+'</span>';}
-function _pkBlur(n){var w=[94,88,80,96,72,90];var o='';for(var i=0;i<n;i++)o+='<div class="dpk-blur" style="width:'+w[i%w.length]+'%"></div>';return o;}
-function buildUopPeek(v){
-  var prac = _pkVal(v.pracodawca,'Nazwa pracodawcy')
-    + (v.nip?', NIP <span class="dpk-key">'+_pkEsc(v.nip)+'</span>':'')
-    + (v.adres_p?', <span class="dpk-key">'+_pkEsc(v.adres_p)+'</span>':'');
-  var work = _pkVal(v.pracownik,'Imię i nazwisko pracownika')
-    + (v.adres_pr?', zam. <span class="dpk-key">'+_pkEsc(v.adres_pr)+'</span>':'');
-  var wymiar = v.wymiar_inne||v.wymiar;
-  var wyn = v.wynagrodzenie?(v.wynagrodzenie+' zł brutto miesięcznie'):'';
-  return ''
-   +'<div class="dpk-title">UMOWA O PRACĘ</div>'
-   +'<div class="dpk-sub">zawarta dnia '+_pkVal(v.data_start,'…………………')+' w '+_pkVal(v.miejsce,'…………………')+'</div>'
-   +'<div class="dpk-sec"><div class="dpk-sec-h">§1. Strony umowy</div>'
-     +'<div class="dpk-line">Pracodawca: '+prac+'</div>'
-     +'<div class="dpk-line">Pracownik: '+work+'</div></div>'
-   +'<div class="dpk-sec"><div class="dpk-sec-h">§2. Rodzaj umowy i data zawarcia</div>'
-     +'<div class="dpk-line">Umowa zawarta na: '+_pkVal(v.rodzaj,'czas nieokreślony')+'</div>'
-     +_pkBlur(1)+'</div>'
-   +'<div class="dpk-sec"><div class="dpk-sec-h">§3. Warunki pracy i płacy</div>'
-     +'<div class="dpk-line">Stanowisko: '+_pkVal(v.stanowisko,'…………………')+'</div>'
-     +'<div class="dpk-line">Wynagrodzenie zasadnicze: '+_pkVal(wyn,'…………………')+'</div>'
-     +'<div class="dpk-line">Wymiar czasu pracy: '+_pkVal(wymiar,'pełny etat')+'</div>'
-     +_pkBlur(2)+'</div>'
-   +'<div class="dpk-sec"><div class="dpk-sec-h">§4. Czas pracy i przerwy</div>'+_pkBlur(2)+'</div>'
-   +'<div class="dpk-sec"><div class="dpk-sec-h">§5. Urlop wypoczynkowy</div>'
-     +'<div class="dpk-line">Wymiar urlopu: '+_pkVal(v.urlop,'…………………')+'</div>'+_pkBlur(1)+'</div>'
-   +'<div class="dpk-sec"><div class="dpk-sec-h">§6. Okres wypowiedzenia</div>'+_pkBlur(3)+'</div>';
-}
-function _pkFade(){
-  return '<div class="dpk-fade">'
-    + '<div class="dpk-badge">🔒 To dopiero początek Twojej umowy</div>'
-    + '<div class="dpk-lock">🔒</div>'
-    + '<div class="dpk-h3">Odblokuj pełną umowę o pracę</div>'
-    + '<div class="dpk-p">Widzisz nagłówek i pierwsze paragrafy wygenerowane z Twoich danych. Pełna treść — 8 paragrafów z wynagrodzeniem, urlopem, wypowiedzeniem i klauzulami wg art. 29 §1 KP — oraz pobranie PDF/DOCX są w pakiecie.</div>'
-    + '<a href="subskrypcja.html" class="dpk-cta">Odblokuj i pobierz umowę →</a>'
-    + '<button class="dpk-back" onclick="closeDocPeek()">← Wróć do edycji</button>'
-  + '</div>';
-}
-function _pkRenderExcerpt(text){
-  var lines=String(text||'').split('\n'); var html=''; var first=true;
-  lines.forEach(function(l){
-    var t=l.trim();
-    if(!t){ html+='<div style="height:.55rem"></div>'; return; }
-    if(first && !/^§/.test(t)){ html+='<div class="dpk-title">'+_pkEsc(t)+'</div>'; first=false; return; }
-    first=false;
-    if(/^(§|PARAGRAF|Paragraf|Art\.)/.test(t)){ html+='<div class="dpk-sec-h" style="margin-top:16px">'+_pkEsc(t)+'</div>'; }
-    else { html+='<div class="dpk-line" style="color:#1a1a1a">'+_pkEsc(t)+'</div>'; }
-  });
-  return html;
-}
-function closeDocPeek(){var el=document.getElementById('dpkOv');if(el)el.remove();}
-async function showDocPeek(){
-  closeDocPeek();
-  var ov=document.createElement('div');
-  ov.id='dpkOv'; ov.className='dpk-ov';
-  ov.innerHTML='<div class="dpk-wrap"><div class="dpk-paper" id="dpkPaper">'
-    +'<div style="text-align:center;padding:36px 0"><div class="dpk-spin"></div>'
-    +'<p style="font-family:\'DM Sans\',sans-serif;color:#999;font-size:.85rem;margin-top:14px">Przygotowuję podgląd Twojej umowy…</p></div>'
-    +'</div></div>';
-  ov.addEventListener('click',function(e){if(e.target===ov)closeDocPeek();});
-  document.body.appendChild(ov);
-  if(window.bump)try{window.bump('paywall_peek');}catch(e){}
-  var inner;
-  try{
-    var form=FORMS[selDoc];
-    var prompt=form.prompt(wizVals);
-    if(wizVals._extra_info) prompt+='\nDodatkowe informacje: '+wizVals._extra_info;
-    var token=window._fbToken||'';
-    var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({preview:true,prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr'})});
-    var data=await res.json();
-    // Sukces → realny wstęp z serwera. Zabezpieczenie: gdyby przyszedł JSON
-    // missing_fields (brak danych) lub pusto/błąd — pokaż podgląd strukturalny.
-    var okText = res.ok && data.text && !/["']?error["']?\s*:\s*["']?missing_fields/i.test(data.text) && data.text.trim().charAt(0)!=='{';
-    if(okText){ inner=_pkRenderExcerpt(data.text)+_pkBlur(3); }
-    else { inner=buildUopPeek(wizVals); }
-  }catch(e){ inner=buildUopPeek(wizVals); }
-  var paper=document.getElementById('dpkPaper');
-  if(!paper) return; // zamknięto w międzyczasie
-  paper.innerHTML=inner+_pkFade();
-}
-
 /* ── GENERATE ── */
 async function doGenerate(){
-  // Podgląd przed paywallem (0 tokenów): zalogowany bez aktywnej subskrypcji
-  // widzi swoją umowę z własnymi danymi na ostro i zablokowanymi klauzulami.
-  // AI (i koszt tokenów) uruchamia się dopiero po wykupieniu planu.
-  var _u=null,_s=null;
-  try{_u=JSON.parse(localStorage.getItem('dokumo_user'));}catch(e){}
-  try{_s=JSON.parse(localStorage.getItem('dokumo_sub'));}catch(e){}
-  var _active=_s&&_s.expiresAt&&new Date(_s.expiresAt)>new Date();
-  if(_u && !_active && selDoc==='uop'){ showDocPeek(); return; }
+  // Podgląd przed paywallem (doc-peek.js): zalogowany bez aktywnej subskrypcji
+  // widzi wstęp dokumentu; AI/koszt pełnej generacji dopiero po wykupieniu planu.
+  if(window.tryDocPeek && window.tryDocPeek()) return;
   if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
   goTo(2);
   var paper=document.getElementById('docPaper');
@@ -934,12 +844,13 @@ async function doGenerate(){
     var res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr',docCatLabel:'HR',docIcon:form.icon})
+      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr',docCatLabel:'HR',docIcon:form.icon,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null)})
     });
     var data=await res.json();
     genText=data.text||data.result||'Błąd generowania';try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.className='doc-paper';
     paper.textContent=genText;
+    if(window.clearDocResume) window.clearDocResume();
     if(token) document.getElementById('checkSaved').style.display='flex';
     var pages=Math.max(1,Math.round(genText.split('\n').length/38));
     document.getElementById('metricPages').querySelector('.metric-val').textContent=pages<=2?'1–3':pages+'';
@@ -1125,6 +1036,7 @@ function toggleFaqHr(btn) { toggleFaq(btn); }
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
+<script src="doc-peek.js?v=1"></script>
 <script src="draft.js?v=1"></script>
 <script>
 (function(){

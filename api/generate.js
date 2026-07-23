@@ -116,7 +116,7 @@ async function reserveMonthlyGen(uid, limit) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType, systemPrompt } = req.body;
+  const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType, systemPrompt, continueFrom } = req.body;
 
   // ── CV i list motywacyjny — zawsze wymaga subskrypcji + rate limit 20/hr per uid ──
   if (freeType === 'cv' || freeType === 'letter') {
@@ -544,6 +544,15 @@ ${truncated}`;
     : '';
   const combinedSystem = clientSystem ? (clientSystem + '\n\n' + safeSystemPrompt) : safeSystemPrompt;
 
+  // Tryb kontynuacji: user widział podgląd (§1-§2), zapłacił i wraca do dokumentu.
+  // Zamiast generować od zera, doklejamy zapisany początek i każemy AI dokończyć
+  // od §3 — zachowana spójność z tym, co user już widział, i mniej tokenów.
+  const cont = (typeof continueFrom === 'string' && continueFrom.trim().length > 30)
+    ? continueFrom.trim().slice(0, 6000) : '';
+  const effPrompt = cont
+    ? (prompt + '\n\nMASZ JUŻ GOTOWY POCZĄTEK TEGO DOKUMENTU (nagłówek oraz §1 i §2):\n"""\n' + cont + '\n"""\nKontynuuj DOKŁADNIE TEN SAM dokument od §3 aż do końca (z podpisami), zachowując spójność, styl, numerację paragrafów i dane. NIE powtarzaj nagłówka ani §1-§2 — zacznij od §3.')
+    : prompt;
+
   try {
     const r = await fetch(
       'https://api.anthropic.com/v1/messages',
@@ -551,7 +560,7 @@ ${truncated}`;
         // Dokumenty prawne to rdzeń płatnego produktu — generuje je najmocniejszy
         // model (Sonnet), nie Haiku. Wolumen jest niski (limity 30-100/mies./user),
         // a koszt błędu w umowie wysoki.
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:prompt}] }),
+        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:8000, system: combinedSystem, messages:[{role:'user',content:effPrompt}] }),
         signal: AbortSignal.timeout(57000) }
     );
     const data = await r.json();
@@ -559,11 +568,13 @@ ${truncated}`;
       if (rollbackUsage) rollbackUsage();
       return res.status(500).json({ error: data.error.message });
     }
-    const text = data.content?.[0]?.text || '';
+    let text = data.content?.[0]?.text || '';
     if (!text) {
       if (rollbackUsage) rollbackUsage();
       return res.status(500).json({ error: 'Pusta odpowiedź AI' });
     }
+    // Sklej zapisany początek z dogenerowaną resztą w jeden kompletny dokument.
+    if (cont) text = cont.replace(/\s+$/, '') + '\n\n' + text.replace(/^\s+/, '');
 
     // PII check — nie zapisujemy dokumentow z PESEL do Firestore (RODO).
     // User i tak otrzymuje wygenerowany text w response, tylko pomijamy persist.

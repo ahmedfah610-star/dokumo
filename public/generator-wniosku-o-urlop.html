@@ -751,6 +751,7 @@ function renderPreview(){
 
 /* ── GENERATE ── */
 async function doGenerate(){
+  if(window.tryDocPeek && window.tryDocPeek()) return;
   if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
   goTo(2);
   var paper=document.getElementById('docPaper');
@@ -765,10 +766,10 @@ async function doGenerate(){
     var res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'kariera',docCatLabel:'Kariera',docIcon:form.icon})
+      body:JSON.stringify({prompt:prompt,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null),systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'kariera',docCatLabel:'Kariera',docIcon:form.icon})
     });
     var data=await res.json();
-    genText=data.text||data.result||'Błąd generowania';try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
+    genText=data.text||data.result||'Błąd generowania';if(window.clearDocResume)window.clearDocResume();try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.className='doc-paper';
     paper.textContent=genText;
     if(token) document.getElementById('checkSaved').style.display='flex';
@@ -933,6 +934,7 @@ function toggleFaq(btn) {
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
+<script src="doc-peek.js?v=1"></script>
 <script src="draft.js?v=1"></script>
 <script>
 (function(){

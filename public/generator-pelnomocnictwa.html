@@ -475,6 +475,7 @@ function renderPreview(){
 }
 
 async function doGenerate(){
+  if(window.tryDocPeek && window.tryDocPeek()) return;
   if(window.checkPlanAccess&&!window.checkPlanAccess(['kariera','biznes','promax','start']))return;
   goTo(2);
   var paper=document.getElementById('docPaper');
@@ -487,7 +488,7 @@ async function doGenerate(){
     var res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:'pelnomocnictwo',docName:'Pełnomocnictwo',docCat:'inne',docCatLabel:'Inne',docIcon:'📜'})
+      body:JSON.stringify({prompt:prompt,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null),systemPrompt:SYSTEM_PROMPT,docId:'pelnomocnictwo',docName:'Pełnomocnictwo',docCat:'inne',docCatLabel:'Inne',docIcon:'📜'})
     });
     var data=await res.json();
     if(data.error==='free_used'){
@@ -495,7 +496,7 @@ async function doGenerate(){
       paper.innerHTML='<div style="text-align:center;padding:40px 20px;"><p style="font-size:1.1rem;font-weight:700;margin-bottom:12px;">Wykorzystano darmowe pobranie</p><p style="color:var(--ink2);margin-bottom:24px;">Wykup dostęp, aby generować kolejne dokumenty.</p><a href="subskrypcja.html" style="display:inline-block;background:#111;color:#fff;padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:700;">Zobacz plany →</a></div>';
       return;
     }
-    genText=data.text||'Błąd generowania';
+    genText=data.text||'Błąd generowania';if(window.clearDocResume)window.clearDocResume();
     try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.className='doc-paper';
     paper.textContent=genText;
@@ -768,6 +769,7 @@ function copySignLink(){
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
+<script src="doc-peek.js?v=1"></script>
 <script src="draft.js?v=1"></script>
 <script>
 (function(){
