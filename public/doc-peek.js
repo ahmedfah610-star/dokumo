@@ -95,7 +95,7 @@
       + '<div class="dpk-lock">🔒</div>'
       + '<div class="dpk-h3">Odblokuj pełny dokument</div>'
       + '<div class="dpk-p">Widzisz nagłówek i pierwsze paragrafy wygenerowane z Twoich danych. Pełna treść '+esc(title ? '„'+title+'"' : 'dokumentu')+' z wszystkimi klauzulami oraz pobranie PDF/DOCX są w pakiecie.</div>'
-      + '<a href="subskrypcja.html" class="dpk-cta">Odblokuj i pobierz →</a>'
+      + '<a href="subskrypcja.html?return='+encodeURIComponent(location.pathname)+'" class="dpk-cta">Odblokuj i pobierz →</a>'
       + '<button class="dpk-back" onclick="window.closeDocPeek()">← Wróć do edycji</button>'
       + '</div>';
   }

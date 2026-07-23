@@ -592,7 +592,15 @@ async function pollForPayment(plan){
     const ok=await checkSubFromAPI();
     if(ok||getSub()?.plan){
       if(msg) msg.innerHTML='<span style="font-size:1.5rem">✅</span><br>Płatność potwierdzona!<br>Przekierowuję…';
-      setTimeout(()=>{ window.location.href='dziekujemy.html?plan='+encodeURIComponent(plan); },1200);
+      // Jeśli user przyszedł z generatora (podgląd dokumentu) — wróć tam, żeby
+      // dokończyć rozpoczęty dokument. Inaczej domyślnie strona podziękowania.
+      var back=null; try{ back=localStorage.getItem('dokumo_after_pay'); }catch(e){}
+      if(back && /^\/[a-z0-9\-]+\.html$/i.test(back)){
+        try{ localStorage.removeItem('dokumo_after_pay'); }catch(e){}
+        setTimeout(()=>{ window.location.href=back; },1200);
+      } else {
+        setTimeout(()=>{ window.location.href='dziekujemy.html?plan='+encodeURIComponent(plan); },1200);
+      }
       return;
     }
     if(msg) msg.innerHTML='⏳ Oczekiwanie na potwierdzenie płatności…<br><small style="opacity:.6">'+attempts+'/'+maxAttempts+' prób</small>';
@@ -655,6 +663,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   renderPage();
   // Sprawdź czy wróciłeś ze Stripe (Stripe dodaje ?session_id= do URL success)
   const params=new URLSearchParams(window.location.search);
+  // Powrót do generatora po płatności: zapamiętaj bezpieczną ścieżkę (walidacja
+  // chroni przed open-redirect). Przeżywa przekierowanie przez Stripe w localStorage.
+  const _ret=params.get('return');
+  if(_ret && /^\/[a-z0-9\-]+\.html$/i.test(_ret)){ try{ localStorage.setItem('dokumo_after_pay', _ret); }catch(e){} }
   // Plan może być w URL (?plan=kariera) LUB w sessionStorage (fallback)
   const planFromUrl=params.get('plan');
   const planFromSession=sessionStorage.getItem('dokumo_pending_plan');
