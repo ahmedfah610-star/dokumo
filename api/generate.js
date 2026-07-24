@@ -547,8 +547,12 @@ ${truncated}`;
   // Tryb kontynuacji: user widział podgląd (§1-§2), zapłacił i wraca do dokumentu.
   // Zamiast generować od zera, doklejamy zapisany początek i każemy AI dokończyć
   // od §3 — zachowana spójność z tym, co user już widział, i mniej tokenów.
-  const cont = (typeof continueFrom === 'string' && continueFrom.trim().length > 30)
-    ? continueFrom.trim().slice(0, 6000) : '';
+  const contRaw = (typeof continueFrom === 'string' && continueFrom.trim().length > 30)
+    ? continueFrom.trim() : '';
+  // Do promptu podajemy OGON (ostatnie 6000 znaków) — model kontynuuje od realnego
+  // końca, nawet przy długim dokumencie. Pełny początek (contRaw) doklejamy sami
+  // przy zapisie, więc historia zawiera kompletny dokument, nie tylko dogenerowany ogon.
+  const cont = contRaw ? contRaw.slice(-6000) : '';
   const effPrompt = cont
     ? (prompt + '\n\nMASZ JUŻ GOTOWY POCZĄTEK TEGO DOKUMENTU:\n"""\n' + cont + '\n"""\nKontynuuj DOKŁADNIE TEN SAM dokument OD MIEJSCA, W KTÓRYM URWAŁ SIĘ POWYŻSZY TEKST, aż do końca (z podpisami). Zachowaj spójność, styl, numerację paragrafów i dane. NIE powtarzaj już napisanych fragmentów — kontynuuj od następnego zdania lub paragrafu.')
     : prompt;
@@ -603,10 +607,14 @@ ${truncated}`;
       return res.end();
     }
     const incomplete = stopReason === 'max_tokens';
-    // Zapis tylko dla kompletnego pełnego dokumentu (przy kontynuacji serwer ma
-    // jedynie dogenerowany ogon, więc historię zapisuje klient/inny mechanizm).
+    // Zapisujemy każdy KOMPLETNY dokument. Przy kontynuacji (preview→pay→resume
+    // albo „Dokończ" po timeoucie) serwer ma tylko dogenerowany ogon, więc sklejamy
+    // pełny początek (contRaw) z ogonem — inaczej dokument nie trafiłby do historii.
     let pii = false;
-    if (!incomplete && !cont) { try { pii = await persistDoc(full); } catch(e){} }
+    if (!incomplete) {
+      const fullDoc = contRaw ? (contRaw.replace(/\s+$/, '') + '\n\n' + full.replace(/^\s+/, '')) : full;
+      try { pii = await persistDoc(fullDoc); } catch(e){}
+    }
     bump(db, 'generate', { type: docId || 'doc', tier: isFree ? 'free' : 'sub' });
     send({ t: 'done', incomplete, pii });
     return res.end();
@@ -632,8 +640,8 @@ ${truncated}`;
       if (rollbackUsage) rollbackUsage();
       return res.status(500).json({ error: 'Pusta odpowiedź AI' });
     }
-    // Sklej zapisany początek z dogenerowaną resztą w jeden kompletny dokument.
-    if (cont) text = cont.replace(/\s+$/, '') + '\n\n' + text.replace(/^\s+/, '');
+    // Sklej pełny zapisany początek z dogenerowaną resztą w jeden kompletny dokument.
+    if (contRaw) text = contRaw.replace(/\s+$/, '') + '\n\n' + text.replace(/^\s+/, '');
 
     // PII check — nie zapisujemy dokumentow z PESEL do Firestore (RODO).
     // User i tak otrzymuje wygenerowany text w response, tylko pomijamy persist.

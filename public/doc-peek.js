@@ -55,6 +55,22 @@
   function activeSub(){try{var s=JSON.parse(localStorage.getItem('dokumo_sub'));return !!(s&&s.expiresAt&&new Date(s.expiresAt)>new Date());}catch(e){return false;}}
   function hash(s){var h=0,i;s=String(s||'');for(i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;}return String(h);}
 
+  // Kody błędów z backendu → czytelny komunikat dla usera. free_used zostawiamy
+  // surowe — pełnomocnictwo obsługuje je osobnym paywall-UI.
+  function friendlyErr(e){
+    if(!e) return e;
+    var m={
+      gen_limit:'Wykorzystano miesięczny limit generowań w Twoim planie — odnowi się w nowym okresie rozliczeniowym.',
+      start_limit:'Wykorzystano dokument w planie Start. Zmień plan, aby generować kolejne.',
+      subscription_required:'Ta funkcja wymaga aktywnej subskrypcji.'
+    };
+    if(m[e]) return m[e];
+    if(e==='free_used') return e;
+    if(/^HTTP\s/.test(e)) return 'Błąd połączenia z serwerem. Spróbuj ponownie za chwilę.';
+    if(/^[a-z][a-z0-9_]*$/.test(e)) return 'Nie udało się wygenerować dokumentu. Spróbuj ponownie.';
+    return e; // już czytelne zdanie po polsku (backend zwrócił pełny komunikat)
+  }
+
   // Kluczowe pola: bez opt/showIf/replaces i tylko zwykły TEKST (bez type).
   // Daty, pills i checkboxy pomijamy — bywają warunkowe albo mają domyślne
   // w prompt-cie (backend wstawia wykropkowanie), więc nie blokują (0 false-positive).
@@ -159,7 +175,7 @@
       // Serwer mógł odpowiedzieć zwykłym JSON (paywall/limit/błąd) zamiast strumienia.
       if(!res.ok || ct.indexOf('ndjson') < 0 || !res.body){
         var j = null; try { j = await res.json(); } catch(e){}
-        return { text: '', incomplete: false, error: (j && j.error) || ('HTTP ' + status), status: status };
+        return { text: '', incomplete: false, error: friendlyErr((j && j.error) || ('HTTP ' + status)), status: status };
       }
       var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
       while(true){
@@ -177,7 +193,7 @@
       }
     } catch(e){ err = e.message; }
     if(!sawDone) incomplete = true; // strumień urwany bez sygnału końca = niekompletny
-    return { text: acc, incomplete: incomplete, error: err, status: status };
+    return { text: acc, incomplete: incomplete, error: friendlyErr(err), status: status };
   };
 
   // Baner „dokument niedokończony" + przycisk Dokończ (kontynuuje od bieżącej treści).
