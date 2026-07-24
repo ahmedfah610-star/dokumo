@@ -603,6 +603,9 @@ ${truncated}`;
       }
     } catch(e) {
       // timeout/abort — klient ma już 'full' (deltas), pokaże je + „Dokończ".
+      // Nie liczymy tego jako pełne generowanie: user dokończy osobnym wywołaniem,
+      // które policzy się raz. Zwracamy slot rate-limitu i miesięczny licznik.
+      if (rollbackUsage) rollbackUsage();
       send({ t: 'done', incomplete: true, reason: e.name === 'TimeoutError' ? 'timeout' : 'error' });
       return res.end();
     }
@@ -614,6 +617,10 @@ ${truncated}`;
     if (!incomplete) {
       const fullDoc = contRaw ? (contRaw.replace(/\s+$/, '') + '\n\n' + full.replace(/^\s+/, '')) : full;
       try { pii = await persistDoc(fullDoc); } catch(e){}
+    } else if (rollbackUsage) {
+      // Limit tokenów — dokument niedokończony. Zwracamy generowanie; policzy się
+      // dopiero to, które faktycznie dokończy dokument (przycisk „Dokończ").
+      rollbackUsage();
     }
     bump(db, 'generate', { type: docId || 'doc', tier: isFree ? 'free' : 'sub' });
     send({ t: 'done', incomplete, pii });
