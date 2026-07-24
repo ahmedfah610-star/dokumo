@@ -640,15 +640,15 @@ async function doGenerate(){
     var prompt=form.prompt(wizVals);
     if(wizVals._extra_info) prompt+='\nDodatkowe informacje: '+wizVals._extra_info;
     var token=window._fbToken||'';
-    var res=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null),systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'sprzedaz',docCatLabel:'Sprzedaż',docIcon:form.icon})
-    });
-    var data=await res.json();
-    genText=data.text||data.result||'Błąd generowania';if(window.clearDocResume)window.clearDocResume();try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
+    var _body={prompt:prompt,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null),systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'sprzedaz',docCatLabel:'Sprzedaż',docIcon:form.icon};
+    var _prior=(_body.continueFrom&&_body.continueFrom.length>30)?_body.continueFrom.replace(/\s+$/,''):'';
     paper.className='doc-paper';
+    var _r=await window.streamGenerate(_body,function(s){paper.textContent=(_prior?_prior+'\n\n':'')+s;});
+    if((!_r.text||!_r.text.trim())&&_r.error){paper.textContent=_r.error;return;}
+    genText=(_prior?_prior+'\n\n':'')+_r.text;
+    try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.textContent=genText;
+    if(_r.incomplete){if(window.showIncompleteBanner)window.showIncompleteBanner(genText);}else{if(window.clearDocResume)window.clearDocResume();}
     if(token) document.getElementById('checkSaved').style.display='flex';
     var pages=Math.max(1,Math.round(genText.split('\n').length/38));
     document.getElementById('metricPages').querySelector('.metric-val').textContent=pages<=2?'1–3':pages+'';
