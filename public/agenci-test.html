@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Agenci Dokumo — panel testowy</title>
+<style>
+:root{--acc:#7c3aed;--ink:#111827;--ink2:#6b7280;--bd:#e5e7eb;--bg:#f9fafb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding:22px 16px 60px}
+.wrap{max-width:940px;margin:0 auto}
+h1{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.sub{color:var(--ink2);font-size:.9rem;margin-bottom:6px}
+.warn{background:#fffbeb;border:1px solid #f59e0b;color:#92400e;border-radius:10px;padding:10px 13px;font-size:.83rem;margin:14px 0 22px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.card h2{font-size:1.05rem;font-weight:800;margin-bottom:3px}
+.card .desc{font-size:.85rem;color:var(--ink2);margin-bottom:14px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+label{display:block;font-size:.73rem;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+input,select,textarea{font:inherit;font-size:.88rem;padding:9px 11px;border:1px solid var(--bd);border-radius:9px;background:#fff;width:100%}
+textarea{font-family:ui-monospace,Menlo,monospace;font-size:.78rem;min-height:96px;resize:vertical}
+.f{flex:1;min-width:150px}
+button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:10px 18px;font:inherit;font-weight:700;font-size:.87rem;cursor:pointer;white-space:nowrap}
+button:disabled{opacity:.5;cursor:default}
+button.sec{background:#f3f4f6;color:var(--ink)}
+.out{margin-top:13px;font-size:.83rem}
+.empty{color:#9ca3af;font-size:.82rem;font-style:italic}
+pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:9px;overflow-x:auto;font-size:.73rem;line-height:1.5;max-height:340px}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:700}
+.b-krytyczny,.b-wysokie,.b-po_terminie{background:#fee2e2;color:#991b1b}
+.b-uwaga,.b-srednie,.b-pilne,.b-wymaga{background:#fef3c7;color:#92400e}
+.b-ok,.b-niskie,.b-dobra{background:#d1fae5;color:#065f46}
+.b-info,.b-zbliza_sie,.b-niesprawdzone{background:#e0e7ff;color:#3730a3}
+.item{border-left:3px solid var(--bd);padding:8px 0 8px 11px;margin-bottom:9px}
+.item.krytyczny,.item.po_terminie{border-color:#dc2626}
+.item.uwaga,.item.pilne{border-color:#f59e0b}
+.item.ok{border-color:#10b981}
+.item.info,.item.zbliza_sie{border-color:#6366f1}
+.item b{display:block;font-size:.87rem;margin-bottom:2px}
+.item span{font-size:.79rem;color:var(--ink2);display:block}
+.item span.badge{display:inline-block;width:auto;font-size:.72rem}
+.item .law{font-size:.73rem;color:#9ca3af;margin-top:3px;font-style:italic}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:9px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd)}
+th{font-size:.71rem;text-transform:uppercase;color:var(--ink2);letter-spacing:.04em}
+.tot{background:#f9fafb;font-weight:700}
+.err{background:#fee2e2;color:#991b1b;padding:10px 13px;border-radius:9px;font-size:.84rem}
+details{margin-top:11px}
+summary{cursor:pointer;font-size:.78rem;color:var(--ink2);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Agenci Dokumo — panel testowy</h1>
+  <p class="sub">Cztery agenty podpięte do istniejących funkcji (limit 12/12 nieprzekroczony). Logika w <code>lib/</code>.</p>
+  <div class="warn">
+    <b>Wymagane logowanie + feature flag.</b> Agenci 2–4 działają przez <code>/api/dunning</code> i wymagają
+    <code>users/{uid}.featureFlags.dunning === true</code>. Agent 1 (weryfikacja kontrahenta) działa bez logowania.
+    Ta strona ma <code>noindex</code> i nie jest w sitemapie.
+  </div>
+
+  <!-- ─── AGENT 1 ─── -->
+  <div class="card">
+    <h2>1. Agent Weryfikacji Kontrahenta</h2>
+    <p class="desc">Sprawdza firmę w wykazie MF (Biała Lista VAT): status VAT, rachunki, KRS/REGON, daty wykreślenia.
+      Ocenia ryzyko i zwraca <b>requestId</b> — urzędowy dowód sprawdzenia na wypadek kontroli.
+      Jeśli podasz rachunek i kwotę, sprawdzi też, czy płatność jest bezpieczna podatkowo (próg 15 000 zł).</p>
+    <div class="row">
+      <div class="f"><label>NIP kontrahenta</label><input id="k-nip" value="5252248481" placeholder="10 cyfr"></div>
+      <div class="f"><label>Rachunek (opcjonalnie)</label><input id="k-acc" placeholder="26 cyfr"></div>
+      <div class="f" style="max-width:130px"><label>Kwota zł</label><input id="k-amt" type="number" placeholder="50000"></div>
+      <button id="k-go">Sprawdź</button>
+    </div>
+    <div class="out" id="k-out"><p class="empty">Wynik pojawi się tutaj.</p></div>
+  </div>
+
+  <!-- ─── AGENT 2 ─── -->
+  <div class="card">
+    <h2>2. Agent Windykacyjny — eskalacja</h2>
+    <p class="desc">Liczy odsetki za opóźnienie <b>z podziałem na okresy obowiązywania stawek</b> (stawka zmienia się 1 stycznia i 1 lipca),
+      dolicza rekompensatę 40/70/100 EUR (art. 10) i składa pakiet danych do pozwu w e-sądzie z wyliczoną opłatą sądową.</p>
+    <div class="row">
+      <div class="f" style="max-width:140px"><label>Kwota zł</label><input id="w-kwota" type="number" value="10000"></div>
+      <div class="f"><label>Termin płatności</label><input id="w-termin" type="date" value="2026-01-15"></div>
+      <div class="f"><label>Rodzaj</label><select id="w-rodzaj">
+        <option value="handlowe">Transakcje handlowe (+10 p.p.)</option>
+        <option value="handloweLecznicze">Publiczny podmiot leczniczy (+8 p.p.)</option>
+        <option value="cywilne">Odsetki ustawowe art. 481 KC</option>
+      </select></div>
+      <button id="w-go">Policz</button>
+    </div>
+    <div class="out" id="w-out"><p class="empty">Wynik pojawi się tutaj.</p></div>
+    <details>
+      <summary>Pakiet do e-sądu (EPU) — dane wierzyciela, dłużnika i faktur</summary>
+      <div style="margin-top:10px">
+        <label>JSON</label>
+        <textarea id="w-epu">{
+  "wierzyciel": {"nazwa":"Moja Firma sp. z o.o.","nip":"5252248481","adres":"ul. Testowa 1, 00-001 Warszawa"},
+  "dluznik":    {"nazwa":"Dłużnik SA","nip":"1132316445","adres":"ul. Dłużna 5, 00-002 Warszawa"},
+  "faktury": [
+    {"numer":"FV/2026/01/12","kwota":12000,"terminPlatnosci":"2026-02-10"},
+    {"numer":"FV/2026/03/04","kwota":4500,"terminPlatnosci":"2026-04-01"}
+  ]
+}</textarea>
+        <div class="row" style="margin-top:9px"><button id="w-epu-go" class="sec">Zbuduj pakiet EPU</button></div>
+        <div class="out" id="w-epu-out"></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ─── AGENT 3 ─── -->
+  <div class="card">
+    <h2>3. Agent Compliance E-commerce</h2>
+    <p class="desc">Wchodzi na sklep po adresie URL, znajduje regulamin i politykę prywatności, po czym sprawdza 13 obowiązków:
+      prawo odstąpienia 14 dni, formularz odstąpienia, niezgodność towaru z umową, dane sprzedawcy,
+      <b>najniższa cena z 30 dni (Omnibus)</b>, weryfikacja opinii, ODR oraz komplet wymagań RODO.</p>
+    <div class="row">
+      <div class="f"><label>Adres sklepu</label><input id="e-url" placeholder="np. mojsklep.pl"></div>
+      <button id="e-go">Audytuj</button>
+    </div>
+    <div class="out" id="e-out"><p class="empty">Wynik pojawi się tutaj. Audyt trwa kilka sekund (pobiera podstrony).</p></div>
+  </div>
+
+  <!-- ─── AGENT 4 ─── -->
+  <div class="card">
+    <h2>4. Agent Terminów Kadrowych</h2>
+    <p class="desc">Pilnuje dat, których przegapienie kosztuje: koniec ważności badań lekarskich, badania kontrolne
+      po chorobie dłuższej niż 30 dni, szkolenia BHP okresowe (częstotliwość zależy od stanowiska),
+      koniec umowy terminowej oraz <b>limit 33 miesięcy / 3 umów</b> po którym umowa z mocy prawa staje się bezterminowa.</p>
+    <div class="row">
+      <div class="f" style="max-width:150px"><label>Horyzont (dni)</label><input id="h-hor" type="number" value="90"></div>
+      <button id="h-go">Pokaż terminy</button>
+    </div>
+    <label>Pracownicy (JSON)</label>
+    <textarea id="h-prac">[
+  {"imieNazwisko":"Anna Kowalska","dataZatrudnienia":"2021-03-01","badaniaDo":"2026-07-10",
+   "bhpOstatnie":"2020-09-01","stanowiskoTyp":"administracyjno_biurowe"},
+  {"imieNazwisko":"Piotr Nowak","dataZatrudnienia":"2026-02-01","umowaDo":"2026-08-15",
+   "badaniaDo":"2027-02-01","stanowiskoTyp":"robotnicze"},
+  {"imieNazwisko":"Ewa Wiśniewska","dataZatrudnienia":"2023-01-10","badaniaDo":"2028-01-01",
+   "bhpOstatnie":"2025-01-10","niezdolnoscOd":"2026-05-20","niezdolnoscDo":"2026-07-25",
+   "stanowiskoTyp":"kierujacy",
+   "umowy":[{"rodzaj":"terminowa","od":"2023-01-10","do":"2024-06-30"},
+            {"rodzaj":"terminowa","od":"2024-07-01","do":"2026-09-30"}]}
+]</textarea>
+    <div class="out" id="h-out"><p class="empty">Wynik pojawi się tutaj.</p></div>
+  </div>
+</div>
+
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var esc = function(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+var busy = function(btn, on, txt){ btn.disabled = on; btn.textContent = on ? 'Pracuję…' : txt; };
+var errBox = function(el, msg){ el.innerHTML = '<div class="err">'+esc(msg)+'</div>'; };
+function tokenOrNull(){ return window._fbToken || null; }
+
+// Wspólne wywołanie agentów 2-4 (przez /api/dunning, wymaga tokenu)
+async function callAgent(action, body){
+  var t = tokenOrNull();
+  if(!t) throw new Error('Musisz być zalogowany (brak tokenu Firebase). Zaloguj się w innej karcie na dokumoflow.com i odśwież.');
+  var r = await fetch('/api/dunning?action='+action, {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},
+    body: JSON.stringify(body||{})
+  });
+  var j = null; try { j = await r.json(); } catch(e){}
+  if(!r.ok){
+    var m = (j&&(j.error||j.message)) || ('HTTP '+r.status);
+    if(m==='feature_disabled') m='Brak dostępu: ustaw users/{uid}.featureFlags.dunning = true w Firebase.';
+    throw new Error(m);
+  }
+  return j;
+}
+function flagi(list){
+  return (list||[]).map(function(f){
+    return '<div class="item '+f.poziom+'"><b>'+esc(f.tytul)+'</b><span>'+esc(f.opis)+'</span></div>';
+  }).join('');
+}
+
+/* ── 1. Kontrahent ── */
+$('k-go').onclick = async function(){
+  var el=$('k-out'), b=this; busy(b,true);
+  try{
+    var q = '/api/nip-lookup?verify='+encodeURIComponent($('k-nip').value.trim());
+    if($('k-acc').value.trim()) q += '&account='+encodeURIComponent($('k-acc').value.trim());
+    if($('k-amt').value) q += '&amount='+encodeURIComponent($('k-amt').value);
+    var r = await fetch(q); var d = await r.json();
+    if(!d.ok){ errBox(el, d.error || 'Nie znaleziono'); return; }
+    el.innerHTML =
+      '<div style="margin-bottom:9px"><span class="badge b-'+d.ocena+'">Ryzyko: '+esc(d.ocena)+'</span> '+esc(d.werdykt)+'</div>'+
+      '<table><tr><th>Nazwa</th><td>'+esc(d.nazwa)+'</td></tr>'+
+      '<tr><th>Status VAT</th><td>'+esc(d.statusVat)+'</td></tr>'+
+      '<tr><th>REGON / KRS</th><td>'+esc(d.regon||'—')+' / '+esc(d.krs||'—')+'</td></tr>'+
+      '<tr><th>Rachunków w wykazie</th><td>'+d.rachunki.length+'</td></tr>'+
+      '<tr><th>Adres</th><td>'+esc(d.adres||'—')+'</td></tr></table>'+
+      '<div style="margin-top:11px">'+flagi(d.flagi)+'</div>'+
+      '<details><summary>Dowód należytej staranności (zachowaj na wypadek kontroli)</summary>'+
+      '<table><tr><th>Źródło</th><td>'+esc(d.dowod.zrodlo)+'</td></tr>'+
+      '<tr><th>Identyfikator zapytania</th><td><b>'+esc(d.dowod.requestId||'—')+'</b></td></tr>'+
+      '<tr><th>Stan na dzień</th><td>'+esc(d.dowod.naDzien)+'</td></tr></table></details>';
+  }catch(e){ errBox(el, e.message); }
+  finally{ busy(b,false,'Sprawdź'); }
+};
+
+/* ── 2a. Odsetki ── */
+$('w-go').onclick = async function(){
+  var el=$('w-out'), b=this; busy(b,true);
+  try{
+    var termin = $('w-termin').value;
+    var od = new Date(Date.parse(termin)+86400000).toISOString().slice(0,10); // dzień po terminie
+    var d = await callAgent('odsetki', { kwota:Number($('w-kwota').value), odData:od,
+      rodzaj:$('w-rodzaj').value, terminPlatnosci:termin });
+    var rows = d.pozycje.map(function(p){
+      return '<tr><td>'+p.od+' → '+p.do+'</td><td>'+p.proc+'%</td><td>'+p.dni+'</td><td>'+p.kwota.toFixed(2)+' zł</td></tr>'; }).join('');
+    var rek = d.rekompensata;
+    el.innerHTML =
+      '<table><tr><th>Okres</th><th>Stawka</th><th>Dni</th><th>Odsetki</th></tr>'+rows+
+      '<tr class="tot"><td colspan="3">Odsetki razem ('+d.dniOpoznienia+' dni opóźnienia)</td><td>'+d.odsetki.toFixed(2)+' zł</td></tr>'+
+      (rek ? '<tr><td colspan="3">Rekompensata art. 10 ('+rek.eur+' EUR'+(rek.kurs?' × kurs '+rek.kurs+' z '+rek.kursData:'')+')</td><td>'+
+             (rek.pln!=null? rek.pln.toFixed(2)+' zł' : '<span class="badge b-info">kurs NBP niedostępny</span>')+'</td></tr>' : '')+
+      '<tr class="tot"><td colspan="3">Do zapłaty łącznie</td><td>'+
+        (d.razem + (rek&&rek.pln?rek.pln:0)).toFixed(2)+' zł</td></tr></table>'+
+      '<div class="item info"><span>'+esc(d.podstawa)+'</span><div class="law">Stawki aktualne na '+esc(d.stawkiAktualneNa)+
+      '. Wzór: '+esc(d.wzor)+'</div></div>'+
+      (rek ? '<div class="item ok"><span>'+esc(rek.uwaga)+'</span><div class="law">'+esc(rek.podstawa)+'</div></div>' : '');
+  }catch(e){ errBox(el, e.message); }
+  finally{ busy(b,false,'Policz'); }
+};
+
+/* ── 2b. EPU ── */
+$('w-epu-go').onclick = async function(){
+  var el=$('w-epu-out'), b=this; busy(b,true);
+  try{
+    var body; try{ body = JSON.parse($('w-epu').value); }catch(e){ throw new Error('Nieprawidłowy JSON: '+e.message); }
+    var d = await callAgent('epu', body);
+    var rows = d.pozycje.map(function(p){
+      return '<tr><td>'+esc(p.numer)+'</td><td>'+p.kwota.toFixed(2)+'</td><td>'+p.dniOpoznienia+'</td><td>'+
+             p.odsetki.toFixed(2)+'</td><td>'+p.rekompensataEur+' EUR</td></tr>'; }).join('');
+    var s = d.podsumowanie;
+    el.innerHTML =
+      '<div style="margin-bottom:8px"><span class="badge b-'+(d.ok?'ok':'krytyczny')+'">'+(d.ok?'Komplet danych':'Braki: '+d.braki.length)+'</span></div>'+
+      '<table><tr><th>Faktura</th><th>Kwota</th><th>Dni</th><th>Odsetki</th><th>Rekomp.</th></tr>'+rows+
+      '<tr class="tot"><td colspan="4">Wartość przedmiotu sporu</td><td>'+s.wartoscPrzedmiotuSporu.toFixed(2)+' zł</td></tr>'+
+      '<tr class="tot"><td colspan="4">Opłata sądowa (1,25% WPS, min. 30 zł)</td><td>'+s.oplataSadowa+' zł</td></tr></table>'+
+      (d.braki.length? '<div style="margin-top:10px">'+d.braki.map(function(x){
+        return '<div class="item krytyczny"><span>'+esc(x)+'</span></div>'; }).join('')+'</div>' : '')+
+      '<details><summary>Jak działa EPU</summary>'+d.instrukcja.map(function(i){
+        return '<div class="item info"><span>'+esc(i)+'</span></div>'; }).join('')+'</details>';
+  }catch(e){ errBox(el, e.message); }
+  finally{ busy(b,false,'Zbuduj pakiet EPU'); }
+};
+
+/* ── 3. Audyt sklepu ── */
+$('e-go').onclick = async function(){
+  var el=$('e-out'), b=this; busy(b,true);
+  try{
+    var d = await callAgent('audyt-sklepu', { url: $('e-url').value.trim() });
+    if(!d.ok){ errBox(el, d.error); return; }
+    var grupy = { brak:[], niesprawdzone:[], ok:[] };
+    d.ustalenia.forEach(function(u){ (grupy[u.status]||grupy.ok).push(u); });
+    var render = function(list){ return list.map(function(u){
+      return '<div class="item '+(u.status==='ok'?'ok':u.waga)+'"><b>'+
+        (u.status==='ok'?'✅ ':'')+esc(u.tytul)+'</b>'+
+        (u.status!=='ok'? '<span>'+esc(u.dlaczego)+'</span>':'')+
+        '<div class="law">'+esc(u.podstawa)+'</div></div>'; }).join(''); };
+    el.innerHTML =
+      '<div style="margin-bottom:10px"><span class="badge b-'+(d.wynik>=85?'ok':d.wynik>=60?'uwaga':'krytyczny')+'">'+
+        d.wynik+'/100 — '+esc(d.ocena)+'</span> '+
+        '<span style="font-size:.8rem;color:#6b7280">braki krytyczne: '+d.podsumowanie.krytyczne+
+        ', uwagi: '+d.podsumowanie.uwagi+', spełnione: '+d.podsumowanie.ok+'</span></div>'+
+      (d.brakujaceDokumenty.length? '<div class="item krytyczny"><b>Nie znaleziono dokumentów</b><span>'+
+        d.brakujaceDokumenty.map(function(x){ return esc(x.typ); }).join(', ')+
+        ' — możesz je wygenerować w Dokumo.</span></div>' : '')+
+      (grupy.brak.length? '<h3 style="font-size:.85rem;margin:12px 0 6px">Braki do uzupełnienia</h3>'+render(grupy.brak):'')+
+      (grupy.niesprawdzone.length? '<details><summary>Niesprawdzone ('+grupy.niesprawdzone.length+') — nie znaleziono odpowiedniej podstrony</summary>'+render(grupy.niesprawdzone)+'</details>':'')+
+      (grupy.ok.length? '<details><summary>Spełnione ('+grupy.ok.length+')</summary>'+render(grupy.ok)+'</details>':'')+
+      '<div class="law" style="margin-top:10px">'+esc(d.zastrzezenie)+'</div>';
+  }catch(e){ errBox(el, e.message); }
+  finally{ busy(b,false,'Audytuj'); }
+};
+
+/* ── 4. Terminy kadrowe ── */
+$('h-go').onclick = async function(){
+  var el=$('h-out'), b=this; busy(b,true);
+  try{
+    var prac; try{ prac = JSON.parse($('h-prac').value); }catch(e){ throw new Error('Nieprawidłowy JSON: '+e.message); }
+    var d = await callAgent('terminy-hr', { pracownicy: prac, horyzont: Number($('h-hor').value)||90 });
+    var lbl = { po_terminie:'PO TERMINIE', pilne:'PILNE', zbliza_sie:'zbliża się' };
+    el.innerHTML =
+      '<div style="margin-bottom:10px">'+
+        '<span class="badge b-po_terminie">po terminie: '+d.podsumowanie.poTerminie+'</span> '+
+        '<span class="badge b-pilne">pilne: '+d.podsumowanie.pilne+'</span> '+
+        '<span class="badge b-zbliza_sie">zbliża się: '+d.podsumowanie.zblizaSie+'</span>'+
+      '</div>'+
+      (d.terminy.length ? d.terminy.map(function(t){
+        return '<div class="item '+t.status+'"><b>'+esc(t.pracownik)+' — '+esc(t.tytul)+'</b>'+
+          '<span><span class="badge b-'+t.status+'">'+lbl[t.status]+'</span> '+t.data+
+          ' ('+(t.dniDoTerminu<0? Math.abs(t.dniDoTerminu)+' dni po terminie' : 'za '+t.dniDoTerminu+' dni')+')</span>'+
+          '<span style="margin-top:4px">'+esc(t.skutek)+'</span>'+
+          '<span style="margin-top:3px"><b style="display:inline">Działanie:</b> '+esc(t.dzialanie)+'</span>'+
+          '<div class="law">'+esc(t.podstawa)+'</div></div>'; }).join('')
+        : '<p class="empty">Brak terminów w wybranym horyzoncie.</p>')+
+      '<div class="law" style="margin-top:8px">'+esc(d.zastrzezenie)+'</div>';
+  }catch(e){ errBox(el, e.message); }
+  finally{ busy(b,false,'Pokaż terminy'); }
+};
+</script>
+<script type="module">
+// Token Firebase — ta sama ścieżka co w reszcie serwisu.
+try {
+  const cfg = await (await fetch('/api/nip-lookup?fbconfig')).json();
+  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+  const auth = getAuth(initializeApp(cfg));
+  onAuthStateChanged(auth, async u => {
+    window._fbToken = u ? await u.getIdToken() : null;
+    const w = document.querySelector('.warn');
+    if (u) w.innerHTML = '<b>Zalogowany:</b> ' + (u.email || u.uid) +
+      '. Agenci 2–4 wymagają jeszcze <code>featureFlags.dunning = true</code> w Firebase.';
+  });
+} catch(e) {}
+</script>
+</body>
+</html>

@@ -1156,6 +1156,63 @@ export default async function handler(req, res) {
   const action = (req.query?.action || req.body?.action || '').toString();
 
   try {
+    // ─────────────────────────────────────────────────────────────────────
+    // AGENCI (za tym samym feature flagiem `dunning`):
+    //   odsetki      — kalkulator odsetek za opóźnienie + rekompensata art. 10
+    //   epu          — pakiet danych do pozwu w e-sądzie (EPU)
+    //   audyt-sklepu — audyt zgodności sklepu internetowego po URL
+    //   terminy-hr   — terminy kadrowe (badania, BHP, koniec umowy, limit 33 mies.)
+    // ─────────────────────────────────────────────────────────────────────
+    if (action === 'odsetki' || action === 'epu' || action === 'audyt-sklepu' || action === 'terminy-hr') {
+      const me = await verifyFlagged(req);
+      const body = req.method === 'POST' ? (req.body || {}) : (req.query || {});
+
+      if (action === 'odsetki') {
+        const { obliczOdsetki, rekompensata, STAWKI_AKTUALNE_NA } = await import('../lib/windykacja.js');
+        const kwota = Number(body.kwota);
+        const dzis = new Date().toISOString().slice(0, 10);
+        const wynik = obliczOdsetki(kwota, body.odData, body.doData || dzis, body.rodzaj || 'handlowe');
+        if (!wynik.ok) return res.status(400).json(wynik);
+        let rek = null;
+        if (body.rekompensata !== false && body.terminPlatnosci) {
+          rek = await rekompensata(kwota, body.terminPlatnosci);
+        }
+        return res.status(200).json({ ok: true, ...wynik, rekompensata: rek, stawkiAktualneNa: STAWKI_AKTUALNE_NA });
+      }
+
+      if (action === 'epu') {
+        const { pakietEpu } = await import('../lib/windykacja.js');
+        if (!Array.isArray(body.faktury)) return res.status(400).json({ ok: false, error: 'Pole `faktury` musi być tablicą' });
+        if (body.faktury.length > 50) return res.status(400).json({ ok: false, error: 'Maksymalnie 50 faktur w jednym pakiecie' });
+        const out = await pakietEpu({
+          wierzyciel: body.wierzyciel || {}, dluznik: body.dluznik || {},
+          faktury: body.faktury, rodzaj: body.rodzaj || 'handlowe',
+        });
+        return res.status(200).json(out);
+      }
+
+      if (action === 'audyt-sklepu') {
+        // Audyt pobiera cudzą stronę — ostrzejszy limit: 5 audytów / 10 min per user.
+        if (!rateLimit('audyt:' + me.uid, 5, 10 * 60 * 1000)) {
+          return res.status(429).json({ ok: false, error: 'Limit audytów: 5 na 10 minut. Spróbuj później.' });
+        }
+        const { audytSklepu } = await import('../lib/ecom-audit.js');
+        const out = await audytSklepu(body.url);
+        return res.status(out.ok ? 200 : 400).json(out);
+      }
+
+      if (action === 'terminy-hr') {
+        const { terminyZespolu } = await import('../lib/hr-terminy.js');
+        const prac = Array.isArray(body.pracownicy) ? body.pracownicy : [];
+        if (prac.length > 300) return res.status(400).json({ ok: false, error: 'Maksymalnie 300 pracowników' });
+        const h = Number(body.horyzont);
+        return res.status(200).json(terminyZespolu(prac, {
+          horyzont: Number.isFinite(h) ? Math.min(730, Math.max(1, h)) : 90,
+          naDzien: body.naDzien || null,
+        }));
+      }
+    }
+
     // ── Cron (opcjonalny): monitor wszystkich flagged userów ──
     if (action === 'monitor' && req.headers['x-cron-secret']) {
       if (req.headers['x-cron-secret'] !== process.env.CRON_SECRET) {

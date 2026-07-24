@@ -1,3 +1,5 @@
+import { zweryfikuj, validNip } from '../lib/kontrahent.js';
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
@@ -47,6 +49,36 @@ export default async function handler(req, res) {
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
     });
+  }
+
+  // ── Agent Weryfikacji Kontrahenta ──
+  // GET ?verify=NIP[&account=RACHUNEK][&amount=KWOTA][&date=RRRR-MM-DD][&vies=1]
+  // Zwraca status VAT, rachunki, ocenę ryzyka i dowód sprawdzenia (requestId MF).
+  if ('verify' in req.query) {
+    const nipQ = String(req.query.verify || '');
+    if (!validNip(nipQ)) return res.status(400).json({ ok: false, error: 'Nieprawidłowy NIP' });
+    // Weryfikacja odpytuje zewnętrzne rejestry — ostrzejszy limit: 10/min per IP.
+    if (ip) {
+      if (!handler._vrl) handler._vrl = new Map();
+      const nowV = Date.now();
+      const v = handler._vrl.get(ip) || { c: 0, r: nowV + 60000 };
+      if (nowV > v.r) { v.c = 0; v.r = nowV + 60000; }
+      if (v.c >= 10) return res.status(429).json({ ok: false, error: 'Zbyt wiele weryfikacji — odczekaj minutę' });
+      v.c++; handler._vrl.set(ip, v);
+    }
+    const d = String(req.query.date || '');
+    try {
+      const out = await zweryfikuj(nipQ, {
+        rachunek: req.query.account || null,
+        kwota: req.query.amount != null ? Number(req.query.amount) : null,
+        date: /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null,
+        vies: req.query.vies === '1',
+      });
+      return res.status(out.ok ? 200 : 404).json(out);
+    } catch (e) {
+      return res.status(e.upstream ? 503 : 500)
+        .json({ ok: false, error: e.upstream ? 'Rejestr MF chwilowo niedostępny — spróbuj za chwilę' : 'Błąd weryfikacji' });
+    }
   }
 
   const { nip } = req.query;
