@@ -36,7 +36,14 @@
     '.dpkr-t span{font-size:.8rem;color:#666}',
     '.dpkr-go{flex-shrink:0;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit}',
     '.dpkr-x{flex-shrink:0;background:none;border:none;color:#bbb;font-size:1.1rem;cursor:pointer;padding:4px}',
-    '@media(max-width:560px){.dpkr{bottom:86px}}'
+    '@media(max-width:560px){.dpkr{bottom:86px}}',
+    ".dpki{position:fixed;left:16px;right:16px;top:16px;z-index:9997;max-width:660px;margin:0 auto;background:#fffbeb;border:1px solid #f59e0b;border-radius:14px;box-shadow:0 14px 44px rgba(120,90,20,.18);padding:13px 16px;display:flex;align-items:center;gap:13px;font-family:'DM Sans',system-ui,sans-serif;animation:dpkF .25s ease}",
+    '.dpki-ico{font-size:1.4rem;flex-shrink:0}',
+    '.dpki-t{flex:1;min-width:0}',
+    '.dpki-t b{display:block;font-size:.92rem;color:#92400e;font-weight:800}',
+    '.dpki-t span{font-size:.8rem;color:#a16207}',
+    ".dpki-go{flex-shrink:0;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.83rem;cursor:pointer;font-family:inherit}",
+    '.dpki-x{flex-shrink:0;background:none;border:none;color:#c99;font-size:1.05rem;cursor:pointer;padding:4px}'
   ].join('');
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -135,6 +142,61 @@
   window.clearDocResume = function(){ try{ localStorage.removeItem(RESUME_KEY); }catch(e){} };
   // Jednorazowy odczyt zapisanego wstępu — używany w body fetcha każdego generatora.
   window.takeResumeExcerpt = function(){ var e = window.__resumeExcerpt || null; window.__resumeExcerpt = null; return e; };
+
+  // Streaming generacji: renderuje na żywo przez onDelta(sofar); zwraca
+  // {text, incomplete, error, status}. incomplete=true, gdy strumień urwał się
+  // (limit tokenów lub timeout) — wtedy pokazujemy „Dokończ dokument".
+  window.streamGenerate = async function(bodyObj, onDelta){
+    var token = window._fbToken || '';
+    var acc = '', incomplete = false, sawDone = false, err = null, status = 0;
+    try {
+      var res = await fetch('/api/generate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(Object.assign({ stream: true }, bodyObj))
+      });
+      status = res.status;
+      var ct = res.headers.get('content-type') || '';
+      // Serwer mógł odpowiedzieć zwykłym JSON (paywall/limit/błąd) zamiast strumienia.
+      if(!res.ok || ct.indexOf('ndjson') < 0 || !res.body){
+        var j = null; try { j = await res.json(); } catch(e){}
+        return { text: '', incomplete: false, error: (j && j.error) || ('HTTP ' + status), status: status };
+      }
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
+      while(true){
+        var chunk = await reader.read();
+        if(chunk.done) break;
+        buf += dec.decode(chunk.value, { stream: true });
+        var nl;
+        while((nl = buf.indexOf('\n')) >= 0){
+          var line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+          if(!line) continue;
+          var o; try { o = JSON.parse(line); } catch(e){ continue; }
+          if(o.t === 'd'){ acc += o.x; if(onDelta) onDelta(acc); }
+          else if(o.t === 'done'){ sawDone = true; incomplete = !!o.incomplete; if(o.error) err = o.error; }
+        }
+      }
+    } catch(e){ err = e.message; }
+    if(!sawDone) incomplete = true; // strumień urwany bez sygnału końca = niekompletny
+    return { text: acc, incomplete: incomplete, error: err, status: status };
+  };
+
+  // Baner „dokument niedokończony" + przycisk Dokończ (kontynuuje od bieżącej treści).
+  window.showIncompleteBanner = function(currentText){
+    var ex = document.getElementById('dpkInc'); if(ex) ex.remove();
+    var el = document.createElement('div'); el.id = 'dpkInc'; el.className = 'dpki';
+    el.innerHTML = '<span class="dpki-ico">⚠️</span>'
+      + '<div class="dpki-t"><b>Dokument jest niedokończony</b>'
+      + '<span>Osiągnięto limit — dogenerujemy resztę od miejsca, w którym się urwał.</span></div>'
+      + '<button class="dpki-go" id="dpkiGo">Dokończ dokument →</button>'
+      + '<button class="dpki-x" id="dpkiX" aria-label="Zamknij">✕</button>';
+    document.body.appendChild(el);
+    document.getElementById('dpkiX').onclick = function(){ el.remove(); };
+    document.getElementById('dpkiGo').onclick = function(){
+      window.__resumeExcerpt = currentText || null; // kontynuacja od tego, co mamy
+      el.remove();
+      if(typeof window.doGenerate === 'function') window.doGenerate();
+    };
+  };
 
   window.closeDocPeek = function(){ var el = document.getElementById('dpkOv'); if(el) el.remove(); };
 

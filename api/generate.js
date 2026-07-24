@@ -550,8 +550,67 @@ ${truncated}`;
   const cont = (typeof continueFrom === 'string' && continueFrom.trim().length > 30)
     ? continueFrom.trim().slice(0, 6000) : '';
   const effPrompt = cont
-    ? (prompt + '\n\nMASZ JUŻ GOTOWY POCZĄTEK TEGO DOKUMENTU (nagłówek oraz §1 i §2):\n"""\n' + cont + '\n"""\nKontynuuj DOKŁADNIE TEN SAM dokument od §3 aż do końca (z podpisami), zachowując spójność, styl, numerację paragrafów i dane. NIE powtarzaj nagłówka ani §1-§2 — zacznij od §3.')
+    ? (prompt + '\n\nMASZ JUŻ GOTOWY POCZĄTEK TEGO DOKUMENTU:\n"""\n' + cont + '\n"""\nKontynuuj DOKŁADNIE TEN SAM dokument OD MIEJSCA, W KTÓRYM URWAŁ SIĘ POWYŻSZY TEKST, aż do końca (z podpisami). Zachowaj spójność, styl, numerację paragrafów i dane. NIE powtarzaj już napisanych fragmentów — kontynuuj od następnego zdania lub paragrafu.')
     : prompt;
+
+  // Zapis wygenerowanego dokumentu do historii (PII → pomijamy). Zwraca piiDetected.
+  async function persistDoc(fullText){
+    const piiDetected = hasSensitivePII(fullText);
+    try {
+      if (!piiDetected) {
+        const ref = db.collection('users').doc(uid).collection('documents').doc();
+        await ref.set({ id: ref.id, typeId: docId || 'unknown', name: docName || 'Dokument',
+          text: fullText, cat, icon: docIcon || '📄', catLabel: docCatLabel || 'Inne',
+          status: 'generated', isFree: isFree || false, createdAt: new Date(), updatedAt: new Date() });
+      } else { console.log('PII detected — skipping Firestore save for uid', uid.slice(0,8)); }
+    } catch(e){ console.error('Firestore save error:', e.message); }
+    sendFirstDocEmail(uid, docName || 'Dokument', cat).catch(e => console.error('First-doc email:', e.message));
+    return piiDetected;
+  }
+
+  // ── Streaming: dokument leci na żywo. Gdy strumień urwie się (limit tokenów
+  // lub timeout Vercela), klient ma już to, co przyszło + sygnał incomplete
+  // i może kliknąć „Dokończ dokument" (kontynuacja przez continueFrom). ──
+  if (req.body.stream === true) {
+    res.writeHead(200, { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-cache, no-transform', 'X-Accel-Buffering': 'no' });
+    const send = (o) => { try { res.write(JSON.stringify(o) + '\n'); } catch(e){} };
+    let full = '', stopReason = null;
+    try {
+      const sr = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 8000, system: combinedSystem, messages: [{ role: 'user', content: effPrompt }], stream: true }),
+        signal: AbortSignal.timeout(55000)
+      });
+      if (!sr.ok) { if (rollbackUsage) rollbackUsage(); send({ t: 'done', incomplete: true, error: 'HTTP ' + sr.status }); return res.end(); }
+      let buf = ''; const dec = new TextDecoder();
+      for await (const chunk of sr.body) {
+        buf += dec.decode(chunk, { stream: true });
+        let nl;
+        while ((nl = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          let ev; try { ev = JSON.parse(payload); } catch(e){ continue; }
+          if (ev.type === 'content_block_delta' && ev.delta && typeof ev.delta.text === 'string') { full += ev.delta.text; send({ t: 'd', x: ev.delta.text }); }
+          else if (ev.type === 'message_delta' && ev.delta && ev.delta.stop_reason) { stopReason = ev.delta.stop_reason; }
+          else if (ev.type === 'error') { if (rollbackUsage) rollbackUsage(); send({ t: 'done', incomplete: true, error: (ev.error && ev.error.message) || 'stream error' }); return res.end(); }
+        }
+      }
+    } catch(e) {
+      // timeout/abort — klient ma już 'full' (deltas), pokaże je + „Dokończ".
+      send({ t: 'done', incomplete: true, reason: e.name === 'TimeoutError' ? 'timeout' : 'error' });
+      return res.end();
+    }
+    const incomplete = stopReason === 'max_tokens';
+    // Zapis tylko dla kompletnego pełnego dokumentu (przy kontynuacji serwer ma
+    // jedynie dogenerowany ogon, więc historię zapisuje klient/inny mechanizm).
+    let pii = false;
+    if (!incomplete && !cont) { try { pii = await persistDoc(full); } catch(e){} }
+    bump(db, 'generate', { type: docId || 'doc', tier: isFree ? 'free' : 'sub' });
+    send({ t: 'done', incomplete, pii });
+    return res.end();
+  }
 
   try {
     const r = await fetch(

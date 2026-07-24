@@ -840,18 +840,22 @@ async function doGenerate(){
     var form=FORMS[selDoc];
     var prompt=form.prompt(wizVals);
     if(wizVals._extra_info) prompt+='\nDodatkowe informacje: '+wizVals._extra_info;
-    var token=window._fbToken||'';
-    var res=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr',docCatLabel:'HR',docIcon:form.icon,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null)})
-    });
-    var data=await res.json();
-    genText=data.text||data.result||'Błąd generowania';try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
+    var contFrom=(window.takeResumeExcerpt?window.takeResumeExcerpt():null);
+    var prior=(contFrom&&contFrom.length>30)?contFrom.replace(/\s+$/,''):''; // to, co user już ma
     paper.className='doc-paper';
+    // Streaming: tekst pojawia się na żywo. Przy urwaniu (limit/timeout) klient
+    // ma to, co przyszło, i pokazuje „Dokończ dokument".
+    var result=await window.streamGenerate(
+      {prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr',docCatLabel:'HR',docIcon:form.icon,continueFrom:contFrom},
+      function(sofar){ paper.textContent=(prior?prior+'\n\n':'')+sofar; }
+    );
+    if((!result.text||!result.text.trim()) && result.error){ paper.textContent=result.error; return; }
+    genText=(prior?prior+'\n\n':'')+result.text;
+    try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.textContent=genText;
-    if(window.clearDocResume) window.clearDocResume();
-    if(token) document.getElementById('checkSaved').style.display='flex';
+    if(result.incomplete){ if(window.showIncompleteBanner) window.showIncompleteBanner(genText); }
+    else { if(window.clearDocResume) window.clearDocResume(); }
+    if(window._fbToken) document.getElementById('checkSaved').style.display='flex';
     var pages=Math.max(1,Math.round(genText.split('\n').length/38));
     document.getElementById('metricPages').querySelector('.metric-val').textContent=pages<=2?'1–3':pages+'';
     document.getElementById('successSub').textContent='Twój dokument "'+form.title+'" jest gotowy do pobrania lub wysłania.';
