@@ -295,6 +295,48 @@ export default async function handler(req, res) {
       return res.status(200).json(out);
     }
 
+    // POST action=recent-docs — ostatnie wygenerowane dokumenty WRAZ Z TREŚCIĄ.
+    // Świadomie osobna akcja, a nie część GET: treść dokumentu to dane osobowe
+    // klienta (imiona, adresy, wynagrodzenia), więc pobieramy ją dopiero wtedy,
+    // gdy admin wprost o nią poprosi — nie przy każdym otwarciu dashboardu.
+    if (action === 'recent-docs') {
+      const lim = Math.min(20, Math.max(1, Number(req.body?.limit) || 5));
+      let snap;
+      try {
+        snap = await db.collectionGroup('documents').orderBy('createdAt', 'desc').limit(lim).get();
+      } catch (e) {
+        // Zapytanie collectionGroup wymaga własnego indeksu. Firestore zwraca
+        // gotowy link do jego utworzenia — podajemy go dalej zamiast gołego 500.
+        const link = (String(e.message).match(/https:\/\/\S+/) || [])[0] || null;
+        return res.status(503).json({
+          error: 'Firestore wymaga indeksu dla zapytania collectionGroup „documents" po createdAt.',
+          indexUrl: link,
+        });
+      }
+      const rows = snap.docs.map(d => {
+        const x = d.data() || {};
+        return {
+          id: d.id,
+          uid: d.ref.parent.parent?.id || null,
+          name: x.name || 'Dokument',
+          typeId: x.typeId || null,
+          cat: x.catLabel || x.cat || null,
+          icon: x.icon || '📄',
+          isFree: !!x.isFree,
+          createdAt: x.createdAt?.toDate?.()?.toISOString() || null,
+          text: typeof x.text === 'string' ? x.text : '',
+        };
+      });
+      // Uzupełnij adresy e-mail — jedno zapytanie na unikalny uid.
+      const uids = [...new Set(rows.map(r => r.uid).filter(Boolean))];
+      const emails = {};
+      await Promise.all(uids.map(async (u) => {
+        try { emails[u] = (await auth.getUser(u)).email || null; } catch { emails[u] = null; }
+      }));
+      rows.forEach(r => { r.email = r.uid ? (emails[r.uid] || null) : null; });
+      return res.status(200).json({ docs: rows });
+    }
+
     // POST action=grant — nadaj subskrypcję (dawniej /api/admin-grant)
     if (action === 'grant') {
       if (!email || typeof email !== 'string') return res.status(400).json({ error: 'Podaj email' });

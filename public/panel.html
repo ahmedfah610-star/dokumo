@@ -122,6 +122,20 @@ tr:hover td{background:#faf8f4;}
     </div>
 
     <div class="panel-section">
+      <div class="panel-section-head"><h2>Ostatnie dokumenty — z treścią</h2><span>kto, co i kiedy wygenerował · rozwiń, by zobaczyć treść</span></div>
+      <div class="grant-form">
+        <label>Ile pokazać
+          <input type="number" id="recentDocsLimit" value="5" min="1" max="20" style="max-width:90px">
+        </label>
+        <button class="btn-grant" id="recentDocsBtn" onclick="loadRecentDocs()">Pokaż</button>
+      </div>
+      <div style="padding:0 20px 16px">
+        <div class="grant-result" id="recentDocsErr"></div>
+        <div id="recentDocsBody" style="font-size:.82rem;line-height:1.6"></div>
+      </div>
+    </div>
+
+    <div class="panel-section">
       <div class="panel-section-head"><h2>Ostatnie darmowe pobrania</h2><span>sygnał popytu — użytkownicy bez subskrypcji</span></div>
       <div id="freeRecentBody"></div>
     </div>
@@ -438,6 +452,51 @@ function renderDashboard(s){
       : '<span style="color:#bbb;font-size:.8rem">Brak płatności</span>')+'</div>';
 }
 
+async function loadRecentDocs() {
+  const btn = document.getElementById('recentDocsBtn');
+  const err = document.getElementById('recentDocsErr');
+  const box = document.getElementById('recentDocsBody');
+  const limit = Math.min(20, Math.max(1, parseInt(document.getElementById('recentDocsLimit').value, 10) || 5));
+  err.className = 'grant-result'; err.style.display = 'none'; err.textContent = '';
+  box.innerHTML = '';
+  btn.disabled = true; btn.textContent = 'Ładuję…';
+  try {
+    const token = await window._getAdminToken();
+    const r = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'recent-docs', limit })
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      let m = d.error || ('Błąd ' + r.status);
+      if (d.indexUrl) m += '\n\nUtwórz indeks: ' + d.indexUrl;
+      throw new Error(m);
+    }
+    if (!d.docs || !d.docs.length) { box.innerHTML = '<p style="color:#999">Brak zapisanych dokumentów.</p>'; return; }
+    box.innerHTML = d.docs.map(function (x) {
+      const when = x.createdAt
+        ? new Date(x.createdAt).toLocaleString('pl-PL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '—';
+      const chars = (x.text || '').length;
+      return '<details style="border:1px solid #eee;border-radius:10px;padding:10px 12px;margin-bottom:8px">' +
+        '<summary style="cursor:pointer;font-weight:600">' + esc(x.icon) + ' ' + esc(x.name) +
+          ' <span style="font-weight:400;color:#999">— ' + esc(x.email || x.uid || '—') + ' · ' + when +
+          (x.cat ? ' · ' + esc(x.cat) : '') + (x.isFree ? ' · <em>free</em>' : '') + '</span></summary>' +
+        '<div style="margin-top:8px;color:#999;font-size:.76rem">typ: ' + esc(x.typeId || '—') + ' · znaków: ' + chars + '</div>' +
+        '<pre style="white-space:pre-wrap;word-break:break-word;background:#fafafa;border:1px solid #eee;' +
+          'border-radius:8px;padding:10px;margin-top:8px;max-height:340px;overflow:auto;' +
+          'font-family:ui-monospace,Menlo,monospace;font-size:.75rem">' +
+          (chars ? esc(x.text) : '<em style="color:#999">Brak zapisanej treści</em>') + '</pre>' +
+      '</details>';
+    }).join('');
+  } catch (e) {
+    err.className = 'grant-result err'; err.style.display = 'block'; err.style.whiteSpace = 'pre-wrap'; err.textContent = e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Pokaż';
+  }
+}
+
 async function lookupUser() {
   const email = document.getElementById('lookupEmail').value.trim();
   const btn = document.getElementById('lookupBtn');
@@ -501,6 +560,7 @@ async function lookupUser() {
   }
 }
 window.lookupUser = lookupUser;
+window.loadRecentDocs = loadRecentDocs;
 
 async function grantSub() {
   const email = document.getElementById('grantEmail').value.trim();
