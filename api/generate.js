@@ -553,9 +553,54 @@ ${truncated}`;
   // końca, nawet przy długim dokumencie. Pełny początek (contRaw) doklejamy sami
   // przy zapisie, więc historia zawiera kompletny dokument, nie tylko dogenerowany ogon.
   const cont = contRaw ? contRaw.slice(-6000) : '';
-  const effPrompt = cont
+  let effPrompt = cont
     ? (prompt + '\n\nMASZ JUŻ GOTOWY POCZĄTEK TEGO DOKUMENTU:\n"""\n' + cont + '\n"""\nKontynuuj DOKŁADNIE TEN SAM dokument OD MIEJSCA, W KTÓRYM URWAŁ SIĘ POWYŻSZY TEKST, aż do końca (z podpisami). Zachowaj spójność, styl, numerację paragrafów i dane. NIE powtarzaj już napisanych fragmentów — kontynuuj od następnego zdania lub paragrafu.')
     : prompt;
+
+  // ── Wyliczenia pieniężne robimy PO STRONIE SERWERA ──
+  // Model nie ma dostępu do kursów NBP ani do tabeli stawek odsetek, więc
+  // proszony o przeliczenie potrafi podać kwotę zmyśloną — w piśmie
+  // windykacyjnym to poważny błąd. Liczymy dokładnie i podajemy gotowy wynik,
+  // z zakazem samodzielnego przeliczania.
+  if (req.body?.wyliczenia && typeof req.body.wyliczenia === 'object') {
+    try {
+      const w = req.body.wyliczenia;
+      const kwota = Number(w.kwota);
+      const termin = String(w.terminPlatnosci || '').slice(0, 10);
+      if (kwota > 0 && /^\d{4}-\d{2}-\d{2}$/.test(termin)) {
+        const { obliczOdsetki, rekompensata } = await import('../lib/windykacja.js');
+        const dzis = new Date().toISOString().slice(0, 10);
+        const odDnia = new Date(Date.parse(termin + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10);
+        const rodzaj = w.rodzaj === 'cywilne' ? 'cywilne' : 'handlowe';
+        const ods = obliczOdsetki(kwota, odDnia, dzis, rodzaj);
+        // Kwoty podajemy w zapisie polskim, żeby model przepisał je 1:1 do pisma
+        // zamiast przeformatowywać (a przy okazji gubić grosze).
+        const zl = n => n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d),)/g, ' ') + ' zł';
+        // pozycje mają zakres [od, do) — do pisma podajemy dzień poprzedzający,
+        // inaczej okresy zachodziłyby na siebie o jeden dzień.
+        const dzienWczesniej = d => new Date(Date.parse(d + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
+        const linie = ['\n\nWYLICZENIA — użyj DOKŁADNIE tych kwot i dat, NIE przeliczaj ich samodzielnie:'];
+        if (ods.ok) {
+          linie.push(`Należność główna: ${zl(ods.kwotaGlowna)}.`);
+          linie.push(`Odsetki za opóźnienie naliczone od ${odDnia} do ${dzienWczesniej(dzis)} włącznie (${ods.dniOpoznienia} dni): ${zl(ods.odsetki)}.`);
+          linie.push('Rozbicie na okresy obowiązywania stawek:');
+          ods.pozycje.forEach(p => linie.push(`  ${p.od} – ${dzienWczesniej(p.do)}: stawka ${String(p.proc).replace('.', ',')}%, ${p.dni} dni, ${zl(p.kwota)}.`));
+          linie.push(`Podstawa odsetek: ${ods.podstawa}.`);
+        }
+        if (rodzaj === 'handlowe') {
+          const rek = await rekompensata(kwota, termin);
+          if (rek.pln != null) {
+            linie.push(`Rekompensata za koszty odzyskiwania należności (art. 10 ust. 1 ustawy o przeciwdziałaniu nadmiernym opóźnieniom): ${rek.eur} EUR, co po średnim kursie NBP z dnia ${rek.kursData} (${String(rek.kurs).replace('.', ',')} zł/EUR) daje ${zl(rek.pln)}.`);
+            if (ods.ok) linie.push(`ŁĄCZNIE do zapłaty: ${zl(ods.razem + rek.pln)}.`);
+          } else {
+            // Kurs niedostępny — lepiej podać samo EUR niż pozwolić modelowi zgadywać.
+            linie.push(`Rekompensata: ${rek.eur} EUR. Kursu NBP nie udało się pobrać — podaj kwotę wyłącznie w euro i dodaj, że przeliczenia dokonuje się po średnim kursie NBP z ostatniego dnia roboczego miesiąca poprzedzającego miesiąc wymagalności. NIE podawaj kwoty w złotych.`);
+          }
+        }
+        if (linie.length > 1) effPrompt += linie.join('\n');
+      }
+    } catch (e) { console.error('Wyliczenia windykacyjne:', e.message); }
+  }
 
   // Zapis wygenerowanego dokumentu do historii (PII → pomijamy). Zwraca piiDetected.
   async function persistDoc(fullText){

@@ -510,7 +510,15 @@ async function doGenerate(){
     var form=FORMS[selDoc];
     var prompt=form.prompt(wizVals);
     var token=window._fbToken||'';
-    var _body={prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:'wezwanie-do-zaplaty',docName:'Wezwanie do zapłaty',docCat:'inne',docCatLabel:'Inne',docIcon:'💰',continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null)};
+    // Kwoty liczy serwer (kurs NBP, tabela stawek odsetek) — model dostaje gotowy
+    // wynik, żeby nie zmyślił liczby w piśmie windykacyjnym. Kwota bywa wpisana
+    // jako "18 400,00 zł", więc wyciągamy z niej samą wartość.
+    var _kwota=parseFloat(String(wizVals.kwota||'').replace(/[^\d,.-]/g,'').replace(/\.(?=\d{3}\b)/g,'').replace(',','.'));
+    var _wyl=(_kwota>0&&wizVals.data_wymagalnosci)?{
+      kwota:_kwota, terminPlatnosci:wizVals.data_wymagalnosci,
+      rodzaj:(wizVals.charakter&&wizVals.charakter.indexOf('B2B')!==-1)?'handlowe':'cywilne'
+    }:null;
+    var _body={prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:'wezwanie-do-zaplaty',docName:'Wezwanie do zapłaty',docCat:'inne',docCatLabel:'Inne',docIcon:'💰',wyliczenia:_wyl,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null)};
     var _prior=(_body.continueFrom&&_body.continueFrom.length>30)?_body.continueFrom.replace(/\s+$/,''):'';
     paper.className='doc-paper';
     var _r=await window.streamGenerate(_body,function(s){paper.textContent=(_prior?_prior+'\n\n':'')+s;});
