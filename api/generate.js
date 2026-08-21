@@ -466,11 +466,12 @@ ${truncated}`;
   // ── Tryb pobierania URL ──
   if (url) {
     if (rollbackUsage) { rollbackUsage(); rollbackUsage = null; }
-    try { new URL(url); } catch { return res.status(400).json({ error: 'Nieprawidłowy URL' }); }
-    const parsedUrl = new URL(url);
-    if (!/^https?:$/.test(parsedUrl.protocol)) return res.status(400).json({ error: 'Niedozwolony protokół URL' });
-    const BLOCKED_HOST = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|::1|0\.0\.0\.0|metadata\.)/;
-    if (BLOCKED_HOST.test(parsedUrl.hostname.toLowerCase())) return res.status(400).json({ error: 'Niedozwolony adres URL' });
+    // Filtr po nazwie hosta nie chronił przed nazwą DNS wskazującą na adres
+    // wewnętrzny — teraz rozwiązujemy nazwę i sprawdzamy adresy (lib/ssrf.js).
+    const { urlDoPobrania } = await import('../lib/ssrf.js');
+    const spr = await urlDoPobrania(url);
+    if (!spr.ok) return res.status(400).json({ error: spr.powod });
+    const parsedUrl = spr.url;
     try {
       const r = await fetch(url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
@@ -482,6 +483,8 @@ ${truncated}`;
         if (destUrl.hostname.toLowerCase() !== parsedUrl.hostname.toLowerCase()) {
           return res.status(422).json({ error: 'Redirect do innej domeny — niedozwolone' });
         }
+        const sprRedirect = await urlDoPobrania(destUrl.href);
+        if (!sprRedirect.ok) return res.status(400).json({ error: sprRedirect.powod });
         const r2 = await fetch(destUrl.href, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Dokumo/1.0)', 'Accept': 'text/html', 'Accept-Language': 'pl,en;q=0.9' },
           redirect: 'manual', signal: AbortSignal.timeout(8000)

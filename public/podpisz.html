@@ -73,13 +73,13 @@ function render() {
   var alreadySigned = d.status === 'completed';
 
   var html = '<div class="card">'
-    + '<div class="card-title">Podpisz dokument: ' + (d.docName || 'Dokument') + '</div>'
+    + '<div class="card-title">Podpisz dokument: ' + escHtml(d.docName || 'Dokument') + '</div>'
     + '<div class="card-sub">'
-    + (d.party1Name ? '<strong>' + d.party1Name + '</strong> (' + (d.party1Date || '') + ') już podpisał(a).' : '')
+    + (d.party1Name ? '<strong>' + escHtml(d.party1Name) + '</strong> (' + escHtml(d.party1Date || '') + ') już podpisał(a).' : '')
     + (alreadySigned ? ' Dokument jest obustronnie podpisany.' : ' Twój podpis jest wymagany.')
     + '</div>'
     + '<div class="doc-preview">' + escHtml(d.docText || '') + '</div>'
-    + (d.party1Sig ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e5e5"><div style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:8px">Podpis strony 1</div><img src="' + d.party1Sig + '" style="height:50px;display:block;margin-bottom:4px"><div style="font-size:.8rem;font-weight:600">' + escHtml(d.party1Name || '') + '</div><div style="font-size:.75rem;color:#999">' + escHtml(d.party1Date || '') + ' · Prosty podpis elektroniczny (eIDAS)</div></div>' : '')
+    + (safeSig(d.party1Sig) ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e5e5"><div style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:8px">Podpis strony 1</div><img src="' + safeSig(d.party1Sig) + '" style="height:50px;display:block;margin-bottom:4px"><div style="font-size:.8rem;font-weight:600">' + escHtml(d.party1Name || '') + '</div><div style="font-size:.75rem;color:#999">' + escHtml(d.party1Date || '') + ' · Prosty podpis elektroniczny (eIDAS)</div></div>' : '')
     + '</div>';
 
   if (alreadySigned) {
@@ -120,7 +120,12 @@ function render() {
 
 function clearCanvas(){ if(_sctx) _sctx.clearRect(0,0,_sc.width,_sc.height); }
 function canvasEmpty(){ if(!_sc)return true; var d=_sctx.getImageData(0,0,_sc.width,_sc.height).data; for(var i=3;i<d.length;i+=4)if(d[i]>10)return false; return true; }
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// Escapujemy też cudzysłowy — ta sama funkcja bywa używana w atrybutach.
+function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+// Podpis to data URL z <canvas>. Wszystko inne odrzucamy, żeby nie wstawić
+// do src="…" wartości sterowanej przez osobę tworzącą sesję.
+function safeSig(s){ return /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(String(s||'')) ? s : ''; }
 
 async function submitSign() {
   if (canvasEmpty()) { alert('Narysuj swój podpis.'); return; }
@@ -204,13 +209,13 @@ function writePdfWindow(win, data) {
     + '<table style="width:100%;border-collapse:collapse"><tr>'
     + '<td style="vertical-align:top;width:50%;padding-right:24px">'
     + '<div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
-    + '<img src="' + sig1.sig + '" style="height:54px;display:block;margin-bottom:6px">'
+    + '<img src="' + safeSig(sig1.sig) + '" style="height:54px;display:block;margin-bottom:6px">'
     + '<div style="font-size:10pt;font-weight:700">' + escHtml(sig1.name || '') + '</div>'
     + '<div style="font-size:9pt;color:#666">' + escHtml(sig1.date || '') + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div>'
     + '</td>'
     + '<td style="vertical-align:top;width:50%;padding-left:24px">'
     + '<div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'
-    + '<img src="' + sig2.sig + '" style="height:54px;display:block;margin-bottom:6px">'
+    + '<img src="' + safeSig(sig2.sig) + '" style="height:54px;display:block;margin-bottom:6px">'
     + '<div style="font-size:10pt;font-weight:700">' + escHtml(sig2.name || '') + '</div>'
     + '<div style="font-size:9pt;color:#666">' + escHtml(sig2.date || '') + ' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div>'
     + '</td></tr></table></div>';

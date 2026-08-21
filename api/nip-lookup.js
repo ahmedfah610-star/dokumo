@@ -14,15 +14,20 @@ export default async function handler(req, res) {
     e.c++;
     handler._rl.set(ip, e);
   }
-  // Walidacja kodu rabatowego — osobny rate limit: 5 prób/min per IP
+  // Walidacja kodu rabatowego. To jedyna wyrocznia „ten kod istnieje" w całym
+  // serwisie, więc limit MUSI być trwały — licznik w pamięci procesu resetuje
+  // się z każdą nową instancją funkcji i realnie nie ogranicza zgadywania.
+  // 20 prób na godzinę per IP: człowiek wpisujący kod z newslettera tego nie
+  // dotknie, słownikowy atak owszem.
   if ('discount_code' in req.query) {
-    if (!handler._dcrl) handler._dcrl = new Map();
-    if (ip) {
-      const now2 = Date.now();
-      const dc = handler._dcrl.get(ip) || { c: 0, r: now2 + 60000 };
-      if (now2 > dc.r) { dc.c = 0; dc.r = now2 + 60000; }
-      if (dc.c >= 5) return res.status(429).json({ valid: false, error: 'Zbyt wiele prób' });
-      dc.c++; handler._dcrl.set(ip, dc);
+    const { limitTrwaly } = await import('../lib/limit.js');
+    const lim = await limitTrwaly('kod-rabatowy', ip || 'brak-ip', 20, 60 * 60 * 1000);
+    if (!lim.ok) {
+      // Świadomie fail-closed: przy awarii Firestore wolimy chwilowo nie
+      // sprawdzać kodów niż wystawić wyrocznię bez żadnego limitu.
+      return lim.blad
+        ? res.status(503).json({ valid: false, error: 'Weryfikacja kodu chwilowo niedostępna' })
+        : res.status(429).json({ valid: false, error: 'Zbyt wiele prób — spróbuj później' });
     }
     const CODES = (() => {
       const out = {};

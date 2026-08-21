@@ -46,6 +46,22 @@ function hashDoc(text) {
   return createHash('sha256').update(text).digest('hex');
 }
 
+// Podpis przychodzi jako data URL obrazka z <canvas>. Sprawdzamy prefiks, bo
+// wartość ląduje potem w atrybucie src="…" na stronie podpisywania i w PDF.
+function validSigDataUrl(s) {
+  return typeof s === 'string'
+    && s.length <= 300000
+    && /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s);
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function validEmail(s) { return typeof s === 'string' && s.length <= 254 && EMAIL_RE.test(s); }
+
+// Nazwy trafiają do e-maili i na stronę podpisu — krótkie i bez znaczników.
+function cleanName(s, max = 120) {
+  return String(s == null ? '' : s).replace(/[\r\n<>]/g, ' ').trim().slice(0, max);
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://dokumoflow.com');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
@@ -55,16 +71,34 @@ export default async function handler(req, res) {
 
   // POST — create signing session (party 1 signs)
   if (req.method === 'POST') {
+    // Uwierzytelnienie OBOWIĄZKOWE. Wcześniej token był opcjonalny, a błąd
+    // weryfikacji przechodził po cichu — czyli dowolna osoba z internetu mogła
+    // utworzyć sesję i kazać nam wysłać e-mail z naszej domeny pod dowolny
+    // adres, z treścią, którą sama ustawiła. Wszystkie generatory i tak
+    // wysyłają tu token, więc dla legalnego ruchu nic się nie zmienia.
     const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
-    let uid = null;
-    if (token) { try { ({ uid } = await auth.verifyIdToken(token)); } catch {} }
+    if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
+    let uid;
+    try { ({ uid } = await auth.verifyIdToken(token)); }
+    catch { return res.status(401).json({ error: 'Nieprawidłowy token' }); }
 
-    const { docText, docName, party1Name, party1Sig, party1Date, party1Email, party2Email } = req.body || {};
+    const b = req.body || {};
+    const docText = b.docText;
+    const docName = cleanName(b.docName, 160) || 'Dokument';
+    const party1Name = cleanName(b.party1Name);
+    const party1Date = cleanName(b.party1Date, 40);
+    const party1Sig = b.party1Sig;
+    const party1Email = validEmail(b.party1Email) ? b.party1Email : null;
+    const party2Email = validEmail(b.party2Email) ? b.party2Email : null;
+
     if (!docText || !party1Name || !party1Sig) {
       return res.status(400).json({ error: 'Brak wymaganych danych' });
     }
     if (typeof docText !== 'string' || docText.length > 200000) {
       return res.status(400).json({ error: 'Dokument zbyt duży' });
+    }
+    if (!validSigDataUrl(party1Sig)) {
+      return res.status(400).json({ error: 'Nieprawidłowy format podpisu' });
     }
 
     const ip = getIP(req);
@@ -75,21 +109,21 @@ export default async function handler(req, res) {
     await ref.set({
       id: ref.id,
       docText,
-      docName: docName || 'Dokument',
+      docName,
       docHash,
-      createdBy: uid || null,
+      createdBy: uid,
       createdAt: Timestamp.now(),
       expiresAt,
       status: 'waiting_party2',
       party1: {
         name: party1Name,
         sig: party1Sig,
-        date: party1Date || '',
+        date: party1Date,
         signedAt: Timestamp.now(),
         ip,
       },
-      party1Email: party1Email || null,
-      party2Email: party2Email || null,
+      party1Email,
+      party2Email,
       party2: null,
       auditLog: [
         { event: 'session_created', name: party1Name, ip, ts: new Date().toISOString(), docHash }
@@ -162,9 +196,13 @@ export default async function handler(req, res) {
 
   // PATCH — party 2 signs, returns full data for PDF generation
   if (req.method === 'PATCH') {
-    const { id, party2Name, party2Sig } = req.body || {};
-    if (!id || !party2Name || !party2Sig) {
+    const { id, party2Sig } = req.body || {};
+    const party2Name = cleanName((req.body || {}).party2Name);
+    if (!id || typeof id !== 'string' || id.length > 64 || !party2Name || !party2Sig) {
       return res.status(400).json({ error: 'Brak wymaganych danych' });
+    }
+    if (!validSigDataUrl(party2Sig)) {
+      return res.status(400).json({ error: 'Nieprawidłowy format podpisu' });
     }
 
     const ref = db.collection('signingSessions').doc(id);
@@ -196,14 +234,19 @@ export default async function handler(req, res) {
     const updated = (await ref.get()).data();
 
     // Wyślij potwierdzenie do obu stron
-    const confirmHtml = (recipientName, otherName) => `
+    // Wszystkie nazwy w tym szablonie pochodzą od użytkowników, więc każda idzie
+    // przez escHtml — inaczej strona 2 mogłaby wstrzyknąć HTML w e-mail strony 1.
+    const confirmHtml = (recipientNameRaw, otherNameRaw) => {
+    const recipientName = escHtml(recipientNameRaw);
+    const otherName = escHtml(otherNameRaw);
+    return `
       <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#111">
         <div style="margin-bottom:24px"><img src="${BASE_URL}/logo2.png" alt="Dokumo" style="height:28px"></div>
         <div style="padding:16px 20px;background:#f0fdf4;border-radius:12px;margin-bottom:24px;display:flex;align-items:center;gap:12px">
           <span style="font-size:24px">✓</span>
           <div>
             <div style="font-weight:700;font-size:15px">Dokument podpisany przez obie strony</div>
-            <div style="font-size:13px;color:#555;margin-top:2px">${updated.docName || 'Dokument'}</div>
+            <div style="font-size:13px;color:#555;margin-top:2px">${escHtml(updated.docName || 'Dokument')}</div>
           </div>
         </div>
         <p style="color:#555;font-size:15px;line-height:1.6;margin-bottom:8px">
@@ -211,12 +254,13 @@ export default async function handler(req, res) {
           dokument został podpisany przez Ciebie i <strong>${otherName}</strong>.
         </p>
         <p style="font-size:13px;color:#888;line-height:1.6">
-          Sygnatariusze: ${updated.party1.name} (${updated.party1.date}) · ${party2Name} (${dateStr})<br>
+          Sygnatariusze: ${escHtml(updated.party1.name)} (${escHtml(updated.party1.date)}) · ${escHtml(party2Name)} (${dateStr})<br>
           Hash dokumentu (SHA-256): <code style="font-size:11px">${updated.docHash}</code>
         </p>
         <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
         <p style="font-size:11px;color:#bbb">Dokumo · dokumoflow.com · Podpisy zgodne z eIDAS art. 3 pkt 10</p>
       </div>`;
+    };
 
     if (updated.party2Email) {
       await sendEmail({
