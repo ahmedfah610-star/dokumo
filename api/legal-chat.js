@@ -2,6 +2,11 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { bump } from '../lib/analytics.js';
+import { kontekstNowelizacji } from '../lib/eli.js';
+import {
+  AKTUALNE_NA, PLACA_MIN, STAWKA_GODZINOWA, PROG_BIALA_LISTA, TERMIN_ZAPLATY_B2B,
+  LIMIT_UMOW_MIESIACE, LIMIT_UMOW_SZTUK, ODSETKI, REKOMPENSATA, ZRODLA,
+} from '../lib/stawki.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -173,8 +178,41 @@ STRUKTURA odpowiedzi (Markdown):
 ` + OUTPUT_FORMAT_BLOCK;
 
 const SYSTEM_PROMPTS = { prawny: SYSTEM_PROMPT_PRAWNY, podatkowy: SYSTEM_PROMPT_PODATKOWY };
-function systemPromptFor(mode) {
-  return SYSTEM_PROMPTS[mode] || SYSTEM_PROMPT_PRAWNY;
+
+// ── Kotwica czasowa + twarde liczby ────────────────────────────────────
+// Sam prompt „nie zgaduj stawek" nie wystarcza: model nie wie, którego mamy
+// dziś roku, więc „aktualna" znaczy dla niego rok jego danych treningowych.
+// Podajemy datę i te wartości, które trzymamy w lib/stawki.js — dzięki temu
+// asystent i generatory mówią jedną liczbą, a strażnik rozjazdu (scripts/
+// sprawdz-stawki.mjs) pilnuje ich w jednym miejscu.
+// Zapis polski: przecinek dziesiętny i spacja co trzy cyfry („4 806", „15 000").
+const pl = v => {
+  const [calk, ulam] = String(v).replace('.', ',').split(',');
+  return calk.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (ulam ? ',' + ulam : '');
+};
+
+function blokAktualnosci(dzis) {
+  const h = ODSETKI.handlowe?.[0];
+  const c = ODSETKI.cywilne?.[0];
+  const wiersze = [
+    `- Minimalne wynagrodzenie: ${pl(PLACA_MIN)} zł brutto miesięcznie, minimalna stawka godzinowa ${pl(STAWKA_GODZINOWA.toFixed(2))} zł (${ZRODLA.placaMin}).`,
+    c && `- Odsetki ustawowe za opóźnienie: ${pl(c.proc)}% w skali roku, od ${c.od} (${ZRODLA.odsetkiCywilne}).`,
+    h && `- Odsetki za opóźnienie w transakcjach handlowych: ${pl(h.proc)}% w skali roku, od ${h.od} (${ZRODLA.odsetkiHandlowe}).`,
+    `- Rekompensata za koszty odzyskiwania należności: ${REKOMPENSATA.do5k} EUR poniżej 5 000 zł, ${REKOMPENSATA.do50k} EUR od 5 000 do 50 000 zł, ${REKOMPENSATA.powyzej} EUR powyżej 50 000 zł (${ZRODLA.rekompensata}).`,
+    `- Próg płatności na rachunek z białej listy: ${pl(PROG_BIALA_LISTA)} zł (${ZRODLA.progBialaLista}).`,
+    `- Maksymalny termin zapłaty między przedsiębiorcami: ${TERMIN_ZAPLATY_B2B} dni.`,
+    `- Limit umów o pracę na czas określony: ${LIMIT_UMOW_SZTUK} umowy lub ${LIMIT_UMOW_MIESIACE} miesiące (art. 25(1) Kodeksu pracy).`,
+  ].filter(Boolean);
+  return `
+DZISIAJ JEST ${dzis}. Odpowiadasz na ten dzień, nie na datę swoich danych treningowych — a te są starsze. Przy każdej kwocie, stawce, progu i terminie, którego NIE ma na liście poniżej, zakładaj, że mógł się od tego czasu zmienić, i napisz to wprost zamiast podawać liczbę z pamięci.
+
+ZWERYFIKOWANE WARTOŚCI (stan na ${AKTUALNE_NA}) — używaj DOKŁADNIE tych liczb:
+${wiersze.join('\n')}`;
+}
+
+function systemPromptFor(mode, dzis, kontekstAktow) {
+  const baza = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPT_PRAWNY;
+  return baza + '\n' + blokAktualnosci(dzis) + (kontekstAktow || '');
 }
 
 async function callClaude(messages, systemPrompt) {
@@ -324,7 +362,7 @@ async function searchEliActs(keywords) {
   const results = [];
   for (const kw of keywords.slice(0, 2)) {
     try {
-      const url = `https://api.sejm.gov.pl/eli/acts/search?title=${encodeURIComponent(kw)}&limit=4&sort=promulgationDate`;
+      const url = `https://api.sejm.gov.pl/eli/acts/search?title=${encodeURIComponent(kw)}&limit=4&inForce=1&sort=promulgationDate`;
       const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
       if (!r.ok) continue;
       const data = await r.json();
@@ -610,6 +648,18 @@ export default async function handler(req, res) {
   // Do zapisu/tytułu używamy tekstu + adnotacji o pliku (base64 nie zapisujemy).
   const savedUserMsg = (userText + fileNote).slice(0, 4000);
 
+  // Zanim odpalimy model, sprawdzamy w Dzienniku Ustaw, czy ustawy z pytania
+  // były ostatnio zmieniane, i dokładamy ten wykaz do system promptu. To jedyny
+  // moment, w którym da się to zrobić — po wygenerowaniu odpowiedzi nieaktualna
+  // wiedza jest już wpisana w tekst.
+  //
+  // Zapytanie startuje TERAZ, ale czekamy na nie dopiero przy wywołaniu modelu,
+  // żeby nagłówki i ramka `meta` poleciały do klienta od razu. Przy błędzie ELI
+  // dostajemy pusty string i asystent działa jak dotąd (fail-open).
+  const dzis = todayKey();
+  const kontekstP = kontekstNowelizacji(userText, dzis).catch(() => '');
+  const sysPromptP = kontekstP.then(k => systemPromptFor(chatMode, dzis, k));
+
   // Wspólny finisher: ELI + zapis Firestore + zbudowanie extras.
   async function buildExtras(parsed) {
     let savedChatId = reqChatId;
@@ -657,7 +707,7 @@ export default async function handler(req, res) {
     let shown = 0;
     let raw = '';
     try {
-      raw = await callClaudeStream(claudeHistory, systemPromptFor(chatMode), (_delta, soFar) => {
+      raw = await callClaudeStream(claudeHistory, await sysPromptP, (_delta, soFar) => {
         const idx = soFar.indexOf(META_SEP);
         const visEnd = idx >= 0 ? idx : Math.max(shown, soFar.length - META_SEP.length);
         if (visEnd > shown) {
@@ -691,7 +741,7 @@ export default async function handler(req, res) {
   // ── Ścieżka klasyczna (JSON) ──
   let parsed;
   try {
-    const raw = await callClaude(claudeHistory, systemPromptFor(chatMode));
+    const raw = await callClaude(claudeHistory, await sysPromptP);
     parsed = parseClaudeResponse(raw);
   } catch (e) {
     console.error('legal-chat claude error:', e.message);
