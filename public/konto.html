@@ -74,6 +74,12 @@ html:not(.has-user) .app{grid-template-columns:minmax(0,1fr)}
 .k-logout-btn{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:10px 20px;font-family:var(--font);font-size:.82rem;font-weight:600;color:var(--t2);cursor:pointer;transition:.14s}
 .k-logout-btn:hover{color:var(--red);border-color:rgba(220,38,38,.4)}
 .kbody{padding:26px 28px 60px;max-width:1000px;width:100%}
+/* Zalogowany: .kbody stoi tuż za sidebarem i ma być przy lewej krawędzi.
+   Niezalogowany: sidebara nie ma, .main zajmuje całą szerokość i kontener
+   bez marginesów lądowałby przyklejony do lewej. margin:auto na elemencie
+   flex wyśrodkowuje w obu osiach i — inaczej niż justify-content:center —
+   nie ucina góry, gdy treść nie mieści się w ekranie. */
+html:not(.has-user) .kbody{margin:auto;padding-bottom:26px}
 
 /* ── LOGOWANIE ── */
 .k-login-panel{max-width:440px;margin:14px auto 0;background:var(--bg);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:30px 28px;display:block}
