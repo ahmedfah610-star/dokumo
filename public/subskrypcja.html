@@ -649,14 +649,26 @@ async function kupPakiet(plan){
 }
 
 async function anulujSub(){
-  if(!confirm('Anulować subskrypcję? Zachowasz dostęp do końca okresu.'))return;
-  if(window._fbToken){
-    try{await fetch('/api/sub',{method:'POST',headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},body:JSON.stringify({action:'cancel'})});}catch(e){}
+  if(!confirm('Anulować subskrypcję? Zachowasz dostęp do końca opłaconego okresu.'))return;
+  // Status oznaczamy WYŁĄCZNIE po potwierdzeniu z serwera. Wcześniej wynik był
+  // ignorowany: gdy anulowanie w Stripe się nie udało, użytkownik i tak widział
+  // „Anulowana", przycisk znikał, a Stripe pobierał dalej.
+  if(!window._fbToken){ alert('Zaloguj się ponownie, żeby anulować subskrypcję.'); return; }
+  const btn=document.querySelector('.cancel-link');
+  if(btn){btn.disabled=true;btn.textContent='Anulowanie…';}
+  try{
+    const r=await fetch('/api/sub',{method:'POST',headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},body:JSON.stringify({action:'cancel'})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){ alert(d.error||'Nie udało się anulować subskrypcji. Spróbuj ponownie lub napisz na dokumoflow@gmail.com.'); return; }
+    const sub=getSub();
+    if(sub){sub.cancelled=true;localStorage.setItem('dokumo_sub',JSON.stringify(sub));}
+    renderPage();
+    if(window._renderUNav) window._renderUNav();
+  }catch(e){
+    alert('Błąd połączenia. Subskrypcja NIE została anulowana — spróbuj ponownie.');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Anuluj aktywną subskrypcję';}
   }
-  const sub=getSub();
-  if(sub){sub.cancelled=true;localStorage.setItem('dokumo_sub',JSON.stringify(sub));}
-  renderPage();
-  if(window._renderUNav) window._renderUNav();
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{

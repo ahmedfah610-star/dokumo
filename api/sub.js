@@ -131,33 +131,63 @@ export default async function handler(req, res) {
 
   if (action === 'cancel') {
     const snap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
-    const stripeSubId = snap.exists ? snap.data().stripeSubscriptionId : null;
+    if (!snap.exists) return res.status(404).json({ error: 'Brak aktywnej subskrypcji' });
+    const dane = snap.data();
+    const stripeSubId = dane.stripeSubscriptionId || null;
+    const jednorazowa = dane.plan === 'start';          // płatność jednorazowa, nie ma czego anulować
+    const odAdmina = !!dane.grantedByAdmin;             // nadana ręcznie, Stripe o niej nie wie
 
-    // Anuluj subskrypcję w Stripe (na koniec okresu, żeby nie pobrał następnej płatności)
-    if (stripeSubId && process.env.STRIPE_SECRET_KEY) {
+    // Subskrypcja cykliczna opłacona przez Stripe, ale bez zapisanego ID — nie
+    // mamy czym anulować pobrania. NIE wolno tego oznaczyć jako anulowanej:
+    // użytkownik schowałby przycisk i płacił dalej, przekonany, że zrezygnował.
+    if (!stripeSubId && !jednorazowa && !odAdmina) {
+      console.error('Cancel bez stripeSubscriptionId, uid:', uid);
+      return res.status(409).json({
+        error: 'Nie możemy automatycznie anulować tej subskrypcji. Napisz na dokumoflow@gmail.com — anulujemy ręcznie i potwierdzimy.',
+      });
+    }
+
+    // Anuluj w Stripe na koniec okresu: dostęp zostaje do końca opłaconego
+    // okresu, kolejna płatność nie zostanie pobrana.
+    if (stripeSubId) {
+      if (!process.env.STRIPE_SECRET_KEY) {
+        console.error('Cancel: brak STRIPE_SECRET_KEY');
+        return res.status(503).json({ error: 'Anulowanie chwilowo niedostępne. Spróbuj za chwilę.' });
+      }
+      // Wynik MUSI być sprawdzony. Wcześniej błąd był tylko logowany, a niżej
+      // i tak zapisywaliśmy cancelled:true — użytkownik widział „Anulowana",
+      // Stripe pobierał dalej, a przycisk anulowania już się nie pokazywał.
+      let odp;
       try {
-        await fetch(`https://api.stripe.com/v1/subscriptions/${stripeSubId}`, {
+        odp = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(stripeSubId)}`, {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY,
             'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: new URLSearchParams({ cancel_at_period_end: 'true' }).toString(),
+          signal: AbortSignal.timeout(10000),
         });
       } catch (e) {
-        console.error('Stripe cancel failed:', e.message);
+        console.error('Stripe cancel — brak odpowiedzi:', e.message);
+        return res.status(503).json({ error: 'Nie udało się połączyć ze Stripe. Subskrypcja NIE została anulowana — spróbuj ponownie.' });
+      }
+      if (!odp.ok) {
+        const tresc = await odp.text().catch(() => '');
+        console.error('Stripe cancel HTTP', odp.status, tresc.slice(0, 300));
+        return res.status(502).json({ error: 'Stripe odrzucił anulowanie. Subskrypcja NIE została anulowana — napisz na dokumoflow@gmail.com.' });
       }
     }
 
     try {
-      await db.collection('users').doc(uid).collection('subscription').doc('current').update({
-        cancelled: true,
-        cancelledAt: new Date(),
-      });
-    } catch(e) {
-      // dokument może nie istnieć — ignoruj
+      await snap.ref.update({ cancelled: true, cancelledAt: new Date() });
+    } catch (e) {
+      // Stripe już nie pobierze kolejnej płatności, więc nie cofamy operacji —
+      // ale mówimy wprost, że nasz zapis się nie udał.
+      console.error('Cancel: zapis do Firestore nieudany:', e.message);
+      return res.status(500).json({ error: 'Anulowaliśmy płatność, ale nie zapisaliśmy statusu. Odśwież stronę za chwilę.' });
     }
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, doKonca: dane.expiresAt?.toDate?.()?.toISOString() || null });
   }
 
   if (action === 'use-download') {
