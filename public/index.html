@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="logo2-64.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dokumo — Generator Umów, CV i Faktur z AI za darmo</title>
-<meta name="description" content="Generator dokumentów AI po polsku. CV, faktury VAT, umowy, NDA, wypowiedzenia, regulaminy sklepu, RODO — gotowe do podpisu w 60 sekund. Za darmo.">
+<title>Dokumo — Generator Umów, CV i Faktur z AI</title>
+<meta name="description" content="Generator dokumentów AI po polsku. CV, faktury VAT, umowy, NDA, wypowiedzenia, regulaminy sklepu, RODO — gotowe do podpisu w 60 sekund.">
 <link rel="canonical" href="https://dokumoflow.com/">
-<meta property="og:title" content="Dokumo — Generator Umów, CV i Faktur z AI za darmo">
+<meta property="og:title" content="Dokumo — Generator Umów, CV i Faktur z AI">
 <meta property="og:description" content="Generator profesjonalnych dokumentów: CV, faktury, umowy, regulaminy. Gotowe do podpisu w 60 sekund.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/">
@@ -45,7 +45,7 @@ onAuthStateChanged(getAuth(app), async u => {
 <link rel="stylesheet" href="index-v4.css?v=20260602b">
 <style>
 /* Nawigacja: stała wysokość niezależnie od stanu logowania.
-   „Spróbuj za darmo" nie może się zawijać ani rozciągać na 100% szerokości. */
+   „Załóż konto" nie może się zawijać ani rozciągać na 100% szerokości. */
 .nav{min-height:52px}
 .nav #navAuth{flex-shrink:0}
 .nav #navLoginBtn,.nav #navRegisterBtn.btn-glow{white-space:nowrap;width:auto;flex-shrink:0;line-height:1.2}
@@ -80,7 +80,7 @@ onAuthStateChanged(getAuth(app), async u => {
   </div>
   <div id="navAuth" style="display:flex;align-items:center;gap:8px;">
     <a href="konto.html" id="navLoginBtn" style="font-size:13px;font-weight:500;color:var(--t2);padding:7px 14px;border-radius:100px;text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t2)'">Zaloguj się</a>
-    <a href="konto.html?rejestracja=1" class="btn-glow" id="navRegisterBtn">Spróbuj za darmo</a>
+    <a href="konto.html?rejestracja=1" class="btn-glow" id="navRegisterBtn">Załóż konto</a>
     <div class="nav-profile" id="navProfile" style="display:none;position:relative;">
       <button id="navAvatar" onclick="toggleNavDropdown(event)" aria-label="Konto" style="width:34px;height:34px;border-radius:50%;background:var(--acc-grad);color:#fff;font-weight:600;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(124,58,237,0.25);">?</button>
       <div id="navDropdown" style="position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.12);padding:6px;min-width:200px;display:none;z-index:200;">
@@ -105,7 +105,7 @@ onAuthStateChanged(getAuth(app), async u => {
     <a href="asystent-prawny.html" class="mob-drawer-link" style="color:#6c63ff;font-weight:600;">⚖️ Asystent Prawny AI <span style="font-size:14px;">→</span></a>
     <div class="mob-drawer-section" id="mobDrawerAuthLabel">Konto</div>
     <a href="konto.html" class="mob-drawer-link" id="mobDrawerLogin">Zaloguj się <span style="color:var(--t3);font-size:14px;">→</span></a>
-    <a href="konto.html?rejestracja=1" class="mob-drawer-link cta" id="mobDrawerRegister">Spróbuj za darmo</a>
+    <a href="konto.html?rejestracja=1" class="mob-drawer-link cta" id="mobDrawerRegister">Załóż konto</a>
     <a href="konto.html" class="mob-drawer-link" id="mobDrawerAccount" style="display:none;">Moje konto <span style="color:var(--t3);font-size:14px;">→</span></a>
     <a href="moje-dokumenty.html" class="mob-drawer-link" id="mobDrawerDocs" style="display:none;">Moje dokumenty <span style="color:var(--t3);font-size:14px;">→</span></a>
     <a href="subskrypcja.html" class="mob-drawer-link" id="mobDrawerSub" style="display:none;">Subskrypcja <span style="color:var(--t3);font-size:14px;">→</span></a>
@@ -951,7 +951,7 @@ if (document.readyState === 'loading') {
     { group: 'Biznes', icon: '🏠', t: 'Administracyjne', d: 'Najem, SWOT', url: 'https://dokumoflow.com/administracja.html', color: 'linear-gradient(135deg,#f97316,#ea580c)' },
     { group: 'Prawne', icon: '🔍', t: 'Sprawdź umowę', d: 'Analiza klauzul', url: 'https://dokumoflow.com/analiza-umowy.html', color: 'linear-gradient(135deg,#f59e0b,#ef4444)' },
     { group: 'Nawigacja', icon: '💰', t: 'Cennik', d: 'Pakiety', url: '#cennik', color: 'rgba(255,255,255,0.08)' },
-    { group: 'Konto', icon: '🚀', t: 'Zarejestruj się', d: 'Darmowe konto', url: 'konto.html?rejestracja=1', color: 'linear-gradient(135deg,#a855f7,#ec4899)' },
+    { group: 'Konto', icon: '🚀', t: 'Zarejestruj się', d: 'konto', url: 'konto.html?rejestracja=1', color: 'linear-gradient(135deg,#a855f7,#ec4899)' },
   ];
   const overlay = document.getElementById('cmdkOverlay');
   const input = document.getElementById('cmdkInput');

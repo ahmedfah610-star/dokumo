@@ -356,7 +356,7 @@ function renderDashboard(s){
   const kpi=[
     {l:'Użytkownicy',v:N(s.users?.total),n:'+'+N(s.users?.d7)+' w 7 dni'},
     {l:'Dokumenty wygenerowane',v:N(s.docs?.total),n:'+'+N(s.docs?.d7)+' w 7 dni'},
-    {l:'Darmowe pobrania (zasięg)',v:N(s.free?.docTotal),n:'+'+N(s.free?.doc7d)+' w 7 dni'},
+    {l:'pobrania (zasięg)',v:N(s.free?.docTotal),n:'+'+N(s.free?.doc7d)+' w 7 dni'},
     {l:'Analizy umów — goście',v:N(s.free?.contractTotal),n:'+'+N(s.free?.contract7d)+' w 7 dni'},
     {l:'Aktywne subskrypcje',v:N(s.subs?.active),n:N(s.subs?.pending)+' oczekujących'},
     {l:'Przychód 30 dni',v:ZL(s.revenue?.d30),n:'łącznie '+ZL(s.revenue?.total)},
