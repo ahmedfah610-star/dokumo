@@ -40,6 +40,7 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<noscript></noscript>
 <style>
 :root {
   --ink:#111827; --ink2:#374151; --ink3:#6b7280;
@@ -897,7 +898,7 @@ function downloadFakturaPDF(){
     '.inv-notes{font-size:9px;color:#9ca3af;line-height:1.6;flex:1;margin-right:20px;}';
 
   var fullDoc = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-    '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">' +
+    '' +
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>' +
     '<style>' + invCss + '</style>' +
     '</head><body>' +
