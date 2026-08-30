@@ -192,7 +192,15 @@
   };
 
 
-  window.takeResumeExcerpt = function(){ var e = window.__resumeExcerpt || null; window.__resumeExcerpt = null; return e; };
+  // Licznik części dokumentu. Zerujemy go dokładnie tam, gdzie zaczyna się
+  // generowanie OD ZERA (brak fragmentu do kontynuacji) — dzięki temu baner
+  // przy trzecim urwaniu mówi „trzecia część", a nie wciąż „pierwsza".
+  window.takeResumeExcerpt = function(){
+    var e = window.__resumeExcerpt || null;
+    window.__resumeExcerpt = null;
+    if(!e) window.__docPart = 0;
+    return e;
+  };
 
   // Streaming generacji: renderuje na żywo przez onDelta(sofar); zwraca
   // {text, incomplete, error, status}. incomplete=true, gdy strumień urwał się
@@ -235,10 +243,19 @@
   window.showIncompleteBanner = function(currentText){
     var ex = document.getElementById('dpkInc'); if(ex) ex.remove();
     var el = document.createElement('div'); el.id = 'dpkInc'; el.className = 'dpki';
+    var nr = (window.__docPart = (window.__docPart || 0) + 1);
+    var LICZ = ['','Pierwsza','Druga','Trzecia','Czwarta','Piąta','Szósta','Siódma','Ósma','Dziewiąta','Dziesiąta'];
+    var ile = nr < LICZ.length ? LICZ[nr] + ' część jest gotowa' : 'Część ' + nr + ' jest gotowa';
+    var tytul = nr === 1
+      ? 'Ten dokument jest długi — powstaje w częściach'
+      : 'Kolejna część gotowa — dokument wciąż rośnie';
+    var stopka = nr === 1
+      ? 'Nic nie tracisz — całość zapisze się jako jeden dokument.'
+      : 'Nic nie tracisz — wszystkie ' + nr + ' części zapiszą się jako jeden dokument.';
     el.innerHTML = '<span class="dpki-ico">⚠️</span>'
-      + '<div class="dpki-t"><b>Ten dokument jest długi — powstaje w częściach</b>'
-      + '<span>Pierwsza część jest gotowa. Kliknij, a dopiszemy dalszy ciąg dokładnie od miejsca, w którym tekst się urwał.</span>'
-      + '<small>Nic nie tracisz — całość zapisze się jako jeden dokument.</small></div>'
+      + '<div class="dpki-t"><b>' + tytul + '</b>'
+      + '<span>' + ile + '. Kliknij, a dopiszemy dalszy ciąg dokładnie od miejsca, w którym tekst się urwał.</span>'
+      + '<small>' + stopka + '</small></div>'
       + '<button class="dpki-go" id="dpkiGo">Dopisz dalszy ciąg →</button>'
       + '<button class="dpki-x" id="dpkiX" aria-label="Zamknij">✕</button>';
     document.body.appendChild(el);
