@@ -767,9 +767,9 @@ async function doGenerate(){
     var _body={prompt:prompt,continueFrom:(window.takeResumeExcerpt?window.takeResumeExcerpt():null),systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'kariera',docCatLabel:'Kariera',docIcon:form.icon};
     var _prior=(_body.continueFrom&&_body.continueFrom.length>30)?_body.continueFrom.replace(/\s+$/,''):'';
     paper.className='doc-paper';
-    var _r=await window.streamGenerate(_body,function(s){paper.textContent=(_prior?_prior+'\n\n':'')+s;});
+    var _r=await window.streamGenerate(_body,function(s){paper.textContent=window.joinDocParts(_prior,s);});
     if((!_r.text||!_r.text.trim())&&_r.error){paper.textContent=_r.error;return;}
-    genText=(_prior?_prior+'\n\n':'')+_r.text;
+    genText=window.joinDocParts(_prior,_r.text);
     try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.textContent=genText;
     if(_r.incomplete){if(window.showIncompleteBanner)window.showIncompleteBanner(genText);}else{if(window.clearDocResume)window.clearDocResume();}
@@ -945,7 +945,7 @@ function toggleFaq(btn) {
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
-<script src="doc-peek.js?v=1"></script>
+<script src="doc-peek.js?v=2"></script>
 <script src="draft.js?v=1"></script>
 <script>
 (function(){

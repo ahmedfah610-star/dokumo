@@ -43,7 +43,17 @@
     '.dpki-t b{display:block;font-size:.92rem;color:#92400e;font-weight:800}',
     '.dpki-t span{font-size:.8rem;color:#a16207}',
     ".dpki-go{flex-shrink:0;background:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.83rem;cursor:pointer;font-family:inherit}",
-    '.dpki-x{flex-shrink:0;background:none;border:none;color:#c99;font-size:1.05rem;cursor:pointer;padding:4px}'
+    '.dpki-x{flex-shrink:0;background:none;border:none;color:#b45309;font-size:1.15rem;cursor:pointer;padding:6px;line-height:1;align-self:flex-start}',
+    '.dpki-t small{display:block;font-size:.74rem;color:#b45309;margin-top:3px}',
+    // Na wąskim ekranie wiersz się nie mieści: ikona, tekst i dwa przyciski
+    // wypychały się poza baner. Poniżej 560px układamy to w pion.
+    '@media(max-width:560px){'
+      + '.dpki{flex-wrap:wrap;padding:14px;gap:10px;top:10px;left:10px;right:10px}'
+      + '.dpki-t{flex:1 1 100%;order:2;min-width:0}'
+      + '.dpki-ico{order:1}'
+      + '.dpki-x{order:1;margin-left:auto}'
+      + '.dpki-go{order:3;flex:1 1 100%;padding:12px 16px;font-size:.88rem}'
+    + '}'
   ].join('');
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -157,6 +167,31 @@
   }
   window.clearDocResume = function(){ try{ localStorage.removeItem(RESUME_KEY); }catch(e){} };
   // Jednorazowy odczyt zapisanego wstępu — używany w body fetcha każdego generatora.
+  // Sklejanie dokumentu z części. Model bywa ucięty w środku zdania, a nawet
+  // w środku wyrazu — wtedy twarde '\n\n' rozbijało zdanie na dwa akapity.
+  // Łączymy według tego, na czym urwał się poprzedni fragment.
+  window.joinDocParts = function(przed, dalej){
+    if(!przed) return dalej || '';
+    if(!dalej) return przed;
+    var a = przed.replace(/\s+$/, '');
+    var b = dalej.replace(/^\s+/, '');
+    if(!a) return b;
+    if(!b) return a;
+    var LIT = /[0-9A-Za-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]/;
+    // Czy w miejscu cięcia była spacja? Sprawdzamy ORYGINAŁY — po przycięciu
+    // nie da się już odróżnić urwanego wyrazu od urwanego zdania.
+    var stykZeSpacja = /\s$/.test(przed) || /^\s/.test(dalej);
+    // Poprzednia część domyka zdanie → nowy akapit.
+    if(/[.!?]["”)]?$/.test(a) || /\n\s*\n\s*$/.test(przed)) return a + '\n\n' + b;
+    // Kontynuacja zaczyna się od nowej linii (np. lista po dwukropku) — uszanuj to.
+    if(/^\n/.test(dalej) || /[:;]$/.test(a)) return a + '\n' + b;
+    // Cięcie w środku wyrazu: brak spacji po obu stronach styku.
+    if(!stykZeSpacja && LIT.test(a.slice(-1)) && LIT.test(b.charAt(0))) return a + b;
+    // Cięcie w środku zdania.
+    return a + ' ' + b;
+  };
+
+
   window.takeResumeExcerpt = function(){ var e = window.__resumeExcerpt || null; window.__resumeExcerpt = null; return e; };
 
   // Streaming generacji: renderuje na żywo przez onDelta(sofar); zwraca
@@ -201,9 +236,10 @@
     var ex = document.getElementById('dpkInc'); if(ex) ex.remove();
     var el = document.createElement('div'); el.id = 'dpkInc'; el.className = 'dpki';
     el.innerHTML = '<span class="dpki-ico">⚠️</span>'
-      + '<div class="dpki-t"><b>Dokument jest niedokończony</b>'
-      + '<span>Osiągnięto limit — dogenerujemy resztę od miejsca, w którym się urwał.</span></div>'
-      + '<button class="dpki-go" id="dpkiGo">Dokończ dokument →</button>'
+      + '<div class="dpki-t"><b>Ten dokument jest długi — powstaje w częściach</b>'
+      + '<span>Pierwsza część jest gotowa. Kliknij, a dopiszemy dalszy ciąg dokładnie od miejsca, w którym tekst się urwał.</span>'
+      + '<small>Nic nie tracisz — całość zapisze się jako jeden dokument.</small></div>'
+      + '<button class="dpki-go" id="dpkiGo">Dopisz dalszy ciąg →</button>'
       + '<button class="dpki-x" id="dpkiX" aria-label="Zamknij">✕</button>';
     document.body.appendChild(el);
     document.getElementById('dpkiX').onclick = function(){ el.remove(); };

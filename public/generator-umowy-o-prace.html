@@ -849,10 +849,10 @@ async function doGenerate(){
     // ma to, co przyszło, i pokazuje „Dokończ dokument".
     var result=await window.streamGenerate(
       {prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'hr',docCatLabel:'HR',docIcon:form.icon,continueFrom:contFrom},
-      function(sofar){ paper.textContent=(prior?prior+'\n\n':'')+sofar; }
+      function(sofar){ paper.textContent=window.joinDocParts(prior,sofar); }
     );
     if((!result.text||!result.text.trim()) && result.error){ paper.textContent=result.error; return; }
-    genText=(prior?prior+'\n\n':'')+result.text;
+    genText=window.joinDocParts(prior,result.text);
     try{if(genText.trim().charAt(0)==='{'){var _mf=JSON.parse(genText.trim());if(_mf&&_mf.error==='missing_fields'){genText='Uzupełnij brakujące dane: '+((_mf.fields||[]).join(', ')||'wymagane pola')+', a następnie wygeneruj ponownie.';}}}catch(_e){}
     paper.textContent=genText;
     if(result.incomplete){ if(window.showIncompleteBanner) window.showIncompleteBanner(genText); }
@@ -1057,7 +1057,7 @@ function toggleFaqHr(btn) { toggleFaq(btn); }
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
-<script src="doc-peek.js?v=1"></script>
+<script src="doc-peek.js?v=2"></script>
 <script src="draft.js?v=1"></script>
 <script>
 (function(){
