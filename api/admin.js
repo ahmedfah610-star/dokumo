@@ -137,41 +137,12 @@ async function buildStats() {
     docs.sampleSize = sSnap.size;
   } catch (e) { docs.error = e.message; }
 
-  // ── Darmowe użycie (zasięg / leady) ──
-  const free = {
-    docTotal: await cnt(db.collection('freeDocUsage')),
-    doc7d: await cnt(db.collection('freeDocUsage').where('usedAt', '>=', tsSince(7))),
-    doc30d: await cnt(db.collection('freeDocUsage').where('usedAt', '>=', tsSince(30))),
-    contractTotal: await cnt(db.collection('freeContractUsage')),
-    contract7d: await cnt(db.collection('freeContractUsage').where('usedAt', '>=', tsSince(7))),
-    recent: [],
-  };
-  try {
-    const fSnap = await db.collection('freeDocUsage').orderBy('usedAt', 'desc').limit(15).get();
-    free.recent = fSnap.docs.map(d => {
-      const x = d.data();
-      return { docName: x.docName || 'Dokument', docCat: x.docCat || '—',
-               usedAt: x.usedAt?.toDate?.()?.toISOString() ?? null };
-    });
-  } catch (e) { free.recentError = e.message; }
-
-  // ── Dzienny ruch gości: analizy umów (globalLimits) ──
-  let contractDaily = [];
-  try {
-    const glSnap = await db.collection('globalLimits').get();
-    glSnap.forEach(d => {
-      const m = d.id.match(/^contract_free_(\d{4}-\d{2}-\d{2})$/);
-      if (m) contractDaily.push({ date: m[1], count: d.data().count || 0 });
-    });
-    contractDaily.sort((a, b) => a.date < b.date ? -1 : 1);
-    contractDaily = contractDaily.slice(-14);
-  } catch (_) {}
 
   return {
     generatedAt: new Date().toISOString(),
     revenue, users, reminders, conversionPct,
     payers: payerEmails.size,
-    subs, docs, free, contractDaily,
+    subs, docs,
     payments: allPay.slice(0, 200),
   };
 }
@@ -335,6 +306,61 @@ export default async function handler(req, res) {
       }));
       rows.forEach(r => { r.email = r.uid ? (emails[r.uid] || null) : null; });
       return res.status(200).json({ docs: rows });
+    }
+
+    // POST action=recent-chats — ostatnie pytania do Asystenta Prawnego z treścią.
+    // Pokazujemy pytanie RAZEM z odpowiedzią, bo dopiero para pozwala ocenić,
+    // czy asystent odpowiedział sensownie — samo pytanie tego nie mówi.
+    if (action === 'recent-chats') {
+      const lim = Math.min(20, Math.max(1, Number(req.body?.limit) || 5));
+      let snap;
+      try {
+        // Pobieramy z zapasem, bo w strumieniu są też wiadomości asystenta.
+        snap = await db.collectionGroup('messages')
+          .orderBy('createdAt', 'desc').limit(lim * 4).get();
+      } catch (e) {
+        const link = (String(e.message).match(/https:\/\/\S+/) || [])[0] || null;
+        return res.status(503).json({
+          error: 'Firestore wymaga indeksu dla zapytania collectionGroup „messages" po createdAt.',
+          indexUrl: link,
+        });
+      }
+      const pytania = snap.docs.filter(d => (d.data() || {}).role === 'user').slice(0, lim);
+
+      const rows = await Promise.all(pytania.map(async (d) => {
+        const x = d.data() || {};
+        const chatRef = d.ref.parent.parent;              // users/{uid}/legalChats/{chatId}
+        const uid = chatRef?.parent?.parent?.id || null;
+        let odpowiedz = '', tryb = null, tytul = null;
+        try {
+          // Następna wiadomość w tym czacie to odpowiedź asystenta.
+          const nast = await chatRef.collection('messages')
+            .orderBy('createdAt').startAfter(x.createdAt).limit(2).get();
+          const a = nast.docs.map(n => n.data()).find(n => n.role === 'assistant');
+          if (a) odpowiedz = String(a.content || '');
+        } catch { /* brak odpowiedzi — pytanie bez odzewu też jest sygnałem */ }
+        try {
+          const c = await chatRef.get();
+          if (c.exists) { tryb = c.data().mode || null; tytul = c.data().title || null; }
+        } catch { /* pomiń */ }
+        return {
+          uid,
+          chatId: chatRef?.id || null,
+          tryb: tryb === 'podatkowy' ? 'podatkowy' : 'prawny',
+          tytul,
+          pytanie: String(x.content || ''),
+          odpowiedz,
+          createdAt: x.createdAt?.toDate?.()?.toISOString() || null,
+        };
+      }));
+
+      const uids = [...new Set(rows.map(r => r.uid).filter(Boolean))];
+      const emails = {};
+      await Promise.all(uids.map(async (u) => {
+        try { emails[u] = (await auth.getUser(u)).email || null; } catch { emails[u] = null; }
+      }));
+      rows.forEach(r => { r.email = r.uid ? (emails[r.uid] || null) : null; });
+      return res.status(200).json({ chats: rows });
     }
 
     // POST action=grant — nadaj subskrypcję (dawniej /api/admin-grant)

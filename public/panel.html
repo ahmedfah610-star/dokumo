@@ -136,8 +136,17 @@ tr:hover td{background:#faf8f4;}
     </div>
 
     <div class="panel-section">
-      <div class="panel-section-head"><h2>Ostatnie darmowe pobrania</h2><span>sygnał popytu — użytkownicy bez subskrypcji</span></div>
-      <div id="freeRecentBody"></div>
+      <div class="panel-section-head"><h2>Ostatnie pytania do Asystenta</h2><span>o co pytają użytkownicy i co odpowiedzieliśmy · rozwiń, by zobaczyć treść</span></div>
+      <div class="grant-form">
+        <label>Ile pokazać
+          <input type="number" id="recentChatsLimit" value="5" min="1" max="20" style="max-width:90px">
+        </label>
+        <button class="btn-grant" id="recentChatsBtn" onclick="loadRecentChats()">Pokaż</button>
+      </div>
+      <div style="padding:0 20px 16px">
+        <div class="grant-result" id="recentChatsErr"></div>
+        <div id="recentChatsBody" style="font-size:.82rem;line-height:1.6"></div>
+      </div>
     </div>
 
     <div class="panel-section">
@@ -356,8 +365,6 @@ function renderDashboard(s){
   const kpi=[
     {l:'Użytkownicy',v:N(s.users?.total),n:'+'+N(s.users?.d7)+' w 7 dni'},
     {l:'Dokumenty wygenerowane',v:N(s.docs?.total),n:'+'+N(s.docs?.d7)+' w 7 dni'},
-    {l:'pobrania (zasięg)',v:N(s.free?.docTotal),n:'+'+N(s.free?.doc7d)+' w 7 dni'},
-    {l:'Analizy umów — goście',v:N(s.free?.contractTotal),n:'+'+N(s.free?.contract7d)+' w 7 dni'},
     {l:'Aktywne subskrypcje',v:N(s.subs?.active),n:N(s.subs?.pending)+' oczekujących'},
     {l:'Przychód 30 dni',v:ZL(s.revenue?.d30),n:'łącznie '+ZL(s.revenue?.total)},
   ];
@@ -368,10 +375,9 @@ function renderDashboard(s){
 
   // ── Aktywność (wykresy 14 dni) ──
   const docDaily=(s.docs?.daily||[]).map(d=>({label:d.date.slice(8,10)+'.'+d.date.slice(5,7),count:d.count}));
-  const cDaily=(s.contractDaily||[]).map(d=>({label:d.date.slice(8,10)+'.'+d.date.slice(5,7),count:d.count}));
   document.getElementById('activityBody').innerHTML =
     `<div><div class="chart-title">Dokumenty zapisane / dzień</div>${barChart(docDaily,false)}</div>`
-    +`<div><div class="chart-title">Analizy umów (goście) / dzień</div>${barChart(cDaily,true)}</div>`;
+;
 
   // ── Wzrost i konwersja ──
   const g=[
@@ -397,14 +403,6 @@ function renderDashboard(s){
   document.getElementById('docsBody').innerHTML =
     `<div><div class="chart-title">Najczęstsze typy dokumentów</div>${rankList(types)}</div>`
     +`<div><div class="chart-title">Wg kategorii</div>${rankList(cats)}</div>`;
-
-  // ── Ostatnie darmowe pobrania ──
-  const fr=s.free?.recent||[];
-  document.getElementById('freeRecentBody').innerHTML = fr.length
-    ? `<table><thead><tr><th>Data</th><th>Dokument</th><th>Kategoria</th></tr></thead><tbody>`
-      +fr.map(r=>`<tr><td>${fmt(r.usedAt)}</td><td>${esc(r.docName)}</td><td style="color:#888">${esc(r.docCat)}</td></tr>`).join('')
-      +`</tbody></table>`
-    : '<div class="empty-msg">Brak darmowych pobrań.</div>';
 
   // ── Subskrypcje ──
   const sb=s.subs||{};
@@ -560,6 +558,60 @@ async function lookupUser() {
   }
 }
 window.lookupUser = lookupUser;
+async function loadRecentChats() {
+  const btn = document.getElementById('recentChatsBtn');
+  const err = document.getElementById('recentChatsErr');
+  const box = document.getElementById('recentChatsBody');
+  const limit = Math.min(20, Math.max(1, parseInt(document.getElementById('recentChatsLimit').value, 10) || 5));
+  err.className = 'grant-result'; err.style.display = 'none'; err.textContent = '';
+  box.innerHTML = '';
+  btn.disabled = true; btn.textContent = 'Ładuję…';
+  try {
+    const token = await window._getAdminToken();
+    const r = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'recent-chats', limit })
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      let m = d.error || ('Błąd ' + r.status);
+      if (d.indexUrl) m += '\n\nUtwórz indeks: ' + d.indexUrl;
+      throw new Error(m);
+    }
+    if (!d.chats || !d.chats.length) { box.innerHTML = '<p style="color:#999">Brak zapisanych rozmów.</p>'; return; }
+    box.innerHTML = d.chats.map(function (x) {
+      const when = x.createdAt
+        ? new Date(x.createdAt).toLocaleString('pl-PL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '\u2014';
+      const ikona = x.tryb === 'podatkowy' ? '\uD83E\uDDFE' : '\u2696\uFE0F';
+      const pyt = (x.pytanie || '').replace(/\s+/g, ' ');
+      const skrot = pyt.slice(0, 90);
+      const bezOdp = !x.odpowiedz;
+      return '<details style="border:1px solid #eee;border-radius:10px;padding:10px 12px;margin-bottom:8px">' +
+        '<summary style="cursor:pointer;font-weight:600">' + ikona + ' ' + esc(skrot) + (pyt.length > 90 ? '\u2026' : '') +
+          '<span style="display:block;font-weight:400;color:#999;font-size:.76rem;margin-top:2px">' +
+          esc(x.email || x.uid || '\u2014') + ' \u00b7 ' + when + ' \u00b7 tryb ' + esc(x.tryb) +
+          (bezOdp ? ' \u00b7 <em style="color:#c0392b">bez odpowiedzi</em>' : '') + '</span></summary>' +
+        '<div style="margin-top:10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#888">Pytanie</div>' +
+        '<pre style="white-space:pre-wrap;word-break:break-word;background:#f6f8fb;border:1px solid #e5e9ef;' +
+          'border-radius:8px;padding:10px;margin-top:4px;max-height:220px;overflow:auto;' +
+          'font-family:ui-monospace,Menlo,monospace;font-size:.75rem">' + esc(x.pytanie || '') + '</pre>' +
+        '<div style="margin-top:10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#888">Odpowied\u017a asystenta</div>' +
+        '<pre style="white-space:pre-wrap;word-break:break-word;background:#fafafa;border:1px solid #eee;' +
+          'border-radius:8px;padding:10px;margin-top:4px;max-height:340px;overflow:auto;' +
+          'font-family:ui-monospace,Menlo,monospace;font-size:.75rem">' +
+          (x.odpowiedz ? esc(x.odpowiedz) : '<em style="color:#999">Brak zapisanej odpowiedzi</em>') + '</pre>' +
+      '</details>';
+    }).join('');
+  } catch (e) {
+    err.className = 'grant-result err'; err.style.display = 'block'; err.style.whiteSpace = 'pre-wrap'; err.textContent = e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Poka\u017c';
+  }
+}
+// Skrypt panelu jest modu\u0142em \u2014 bez przypisania do window onclick nic nie zrobi.
+window.loadRecentChats = loadRecentChats;
 window.loadRecentDocs = loadRecentDocs;
 
 async function grantSub() {
