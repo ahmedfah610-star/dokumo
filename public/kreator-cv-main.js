@@ -303,8 +303,13 @@ let cvSectionOrder = ['podsumowanie','doswiadczenie','wyksztalcenie','umiejetnos
   } else if (mode === 'import' || mode === 'improve' || from === 'translate') {
     // Special cases: imported CV / AI improve — don't redirect, use default template
   } else {
-    // No template — send user to template picker
-    window.location.replace('wybierz-szablon.html');
+    // Wejście bez parametru ?template= to zwykle ruch z wyszukiwarki albo
+    // bezpośredni link. Wcześniej robiliśmy tu location.replace() na stronę
+    // wyboru szablonu — Google widział stronę, która natychmiast odsyła gdzie
+    // indziej, i nie indeksował kreatora wcale (zero wyświetleń w Search
+    // Console). Zamiast odsyłać, startujemy na domyślnym szablonie; wybór
+    // pozostaje o jedno kliknięcie dalej, pod przyciskiem „Szablon".
+    cvTemplate = known[0];
   }
 })();
 

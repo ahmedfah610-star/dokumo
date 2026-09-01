@@ -20,11 +20,11 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
 <script>gtag('js',new Date());gtag('config','G-61ETEPHJB7');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5.0, viewport-fit=cover">
 <title>Kreator CV Online 2026 — Pobierz PDF w 60 sekund</title>
-<meta name="description" content="Kreator CV online — stwórz profesjonalne CV w kilka minut i pobierz Gotowy PDF. Wybierz szablon, wypełnij formularz, gotowe. Wspierany przez AI.">
+<meta name="description" content="Kreator CV online — 24 szablony, 7 języków, podgląd na żywo. PDF z warstwą tekstową, czytelny dla systemów ATS. Zacznij bez zakładania konta.">
 <meta name="keywords" content="kreator CV online, jak napisać CV, wzór CV, szablon CV, CV po polsku, CV dla studenta, CV bez doświadczenia">
 <link rel="canonical" href="https://dokumoflow.com/kreator-cv.html">
 <meta property="og:title" content="Kreator CV Online — Pobierz PDF w 60 sekund | Dokumo">
-<meta property="og:description" content="Stwórz profesjonalne CV online i pobierz Gotowy PDF. Wybierz szablon, wypełnij dane, gotowe w kilka minut. Kreator CV wspierany przez AI.">
+<meta property="og:description" content="Kreator CV online — 24 szablony, 7 języków, podgląd na żywo. PDF z warstwą tekstową, czytelny dla systemów ATS. Zacznij bez zakładania konta.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dokumoflow.com/kreator-cv.html">
 <meta property="og:image" content="https://dokumoflow.com/logo2.png">
@@ -32,7 +32,7 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
 <meta property="og:image:height" content="256">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kreator CV Online — PDF w 60 sekund | Dokumo">
-<meta name="twitter:description" content="Stwórz CV online i pobierz Gotowy PDF. Kreator CV z AI — gotowe w kilka minut. Bez rejestracji.">
+<meta name="twitter:description" content="Kreator CV online — 24 szablony, 7 języków, podgląd na żywo. PDF z warstwą tekstową, czytelny dla systemów ATS. Zacznij bez zakładania konta.">
 <meta name="twitter:image" content="https://dokumoflow.com/logo2.png">
 <meta name="robots" content="index, follow">
 <script type="application/ld+json">
@@ -67,9 +67,29 @@ body { font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sa
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script defer src="kreator-cv-templates.js?v=20260901a"></script>
-<link rel="preload" href="kreator-cv-main.js?v=20260901a" as="script">
+<link rel="preload" href="kreator-cv-main.js?v=20260901b" as="script">
 <style>
-body { overflow:hidden; }
+/* Aplikacja zajmuje pierwszy ekran, treść merytoryczna leży pod nią. Blokada
+   przewijania musi więc dotyczyć powłoki, nie całej strony — inaczej sekcja
+   poniżej jest fizycznie nieosiągalna, a Google widzi stronę bez treści. */
+.cv-app { overflow:hidden; }
+/* Sekcja treści pod aplikacją — czytelna kolumna, spójna z resztą serwisu. */
+.cv-tresc{background:#fff;border-top:1px solid #e5e7eb;padding:56px 24px 72px;font-family:'Figtree',system-ui,sans-serif;color:#1f2937}
+.cv-tresc-wrap{max-width:720px;margin:0 auto}
+.cv-tresc h2{font-size:1.35rem;font-weight:800;letter-spacing:-.02em;color:#111827;margin:34px 0 10px;line-height:1.25}
+.cv-tresc h2:first-child{margin-top:0}
+.cv-tresc p{font-size:.95rem;line-height:1.7;margin:0 0 12px}
+.cv-tresc ul{margin:0 0 12px;padding-left:1.15rem;display:flex;flex-direction:column;gap:8px}
+.cv-tresc li{font-size:.95rem;line-height:1.65}
+.cv-faq details{border:1px solid #e5e7eb;border-radius:12px;padding:12px 16px;margin-bottom:8px;background:#fafafa}
+.cv-faq summary{cursor:pointer;font-weight:600;font-size:.95rem;color:#111827}
+.cv-faq details[open] summary{margin-bottom:8px}
+.cv-faq p{margin:0;font-size:.9rem;color:#4b5563}
+.cv-tresc-cta{margin-top:28px}
+.cv-tresc-cta a{color:#2563eb;font-weight:700;text-decoration:none;font-size:.95rem}
+.cv-tresc-cta a:hover{text-decoration:underline}
+@media(max-width:640px){.cv-tresc{padding:40px 18px 56px}.cv-tresc h2{font-size:1.2rem}}
+@media print{.cv-tresc{display:none !important}}
 /* CV bez klauzuli RODO: pusty kontener znika razem z obramowaniem. */
 [data-rodo]:empty{display:none !important}
 
@@ -625,6 +645,7 @@ onAuthStateChanged(_cvAuth, async u=>{
   if(typeof updateChip==='function') updateChip();
 });
 </script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Czy kreator CV jest darmowy?", "acceptedAnswer": {"@type": "Answer", "text": "Tworzenie i podgląd CV nie kosztują nic i nie wymagają konta. Opłata pojawia się dopiero przy pobraniu pliku. Płacisz jednorazowo — nie zapisujemy karty i nie odnawiamy niczego automatycznie."}}, {"@type": "Question", "name": "Czy moje CV przejdzie przez system ATS?", "acceptedAnswer": {"@type": "Answer", "text": "Tak. Pobrany PDF zawiera warstwę tekstową, więc systemy rekrutacyjne odczytują z niego dane. Można też pobrać wersję Word, którą przyjmuje każdy system."}}, {"@type": "Question", "name": "Czy do CV trzeba dodawać zdjęcie?", "acceptedAnswer": {"@type": "Answer", "text": "W Polsce zdjęcie jest zwyczajowe, ale nieobowiązkowe, a w części krajów wręcz odradzane. Kreator pozwala je dodać lub pominąć."}}, {"@type": "Question", "name": "Czy mogę zrobić CV po angielsku lub ukraińsku?", "acceptedAnswer": {"@type": "Answer", "text": "Tak, kreator obsługuje siedem języków. Nazwy sekcji i klauzula zgody tłumaczą się automatycznie po zmianie języka."}}, {"@type": "Question", "name": "Czy dane zapisują się, gdy zamknę stronę?", "acceptedAnswer": {"@type": "Answer", "text": "Robocza wersja zapisuje się w przeglądarce. Po zalogowaniu CV trafia na konto i można do niego wrócić z dowolnego urządzenia."}}, {"@type": "Question", "name": "Ile stron powinno mieć CV?", "acceptedAnswer": {"@type": "Answer", "text": "Przy stażu do dziesięciu lat wystarczy jedna strona. Dwie mają sens przy dłuższym doświadczeniu albo w zawodach, gdzie liczy się lista publikacji lub projektów."}}]}</script>
 </head>
 <body>
 <a href="#cv-main-content" class="skip-link" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#111;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;text-decoration:none;font-weight:600;">Przejdź do treści</a>
@@ -769,6 +790,45 @@ window.addEventListener('_fbAuthReady', async ()=>{
 
 </div>
 
+<!-- ── TREŚĆ POD APLIKACJĄ ────────────────────────────────────────────
+     Kreator jest aplikacją, więc w HTML miał 57 słów — dla wyszukiwarki
+     to strona bez treści. Sekcja poniżej leży pod pierwszym ekranem i nie
+     przeszkadza w korzystaniu z narzędzia, a daje Google co indeksować. -->
+<section class="cv-tresc">
+  <div class="cv-tresc-wrap">
+    <h2>Kreator CV online — jak to działa</h2>
+    <p>Wypełniasz formularz po lewej, a po prawej od razu widzisz gotowy dokument w formacie A4. Nie musisz zakładać konta, żeby zacząć — dane zapisują się w przeglądarce, a konto potrzebne jest dopiero przy pobraniu pliku. Do wyboru masz 24 szablony i 7 wersji językowych: polską, angielską, niemiecką, ukraińską, hiszpańską, czeską i niderlandzką.</p>
+
+    <h2>CV, które przeczyta system rekrutacyjny</h2>
+    <p>Większość średnich i dużych firm w Polsce zbiera zgłoszenia przez systemy ATS, które automatycznie wyciągają z pliku tekst i układają go w profil kandydata. Jeśli CV zostało zapisane jako obraz — a tak działa część kreatorów i każdy skan — system nie odczyta z niego ani jednego znaku.</p>
+    <p>Nasz PDF ma prawdziwą warstwę tekstową. Możesz to sprawdzić w dwie sekundy: otwórz pobrany plik i spróbuj zaznaczyć w nim tekst albo znaleźć swoje nazwisko skrótem Ctrl+F. Dodatkowo udostępniamy eksport do Worda, który przyjmuje każdy system rekrutacyjny.</p>
+
+    <h2>Co powinno znaleźć się w CV w 2026 roku</h2>
+    <ul>
+      <li><strong>Dane kontaktowe</strong> — imię i nazwisko, telefon, e-mail, miasto. Adres zamieszkania nie jest potrzebny.</li>
+      <li><strong>Podsumowanie zawodowe</strong> — dwa, trzy zdania o tym, co potrafisz i czego szukasz. To pierwsza rzecz, którą czyta rekruter.</li>
+      <li><strong>Doświadczenie</strong> — od najnowszego, z miesiącem i rokiem. Zamiast listy obowiązków podaj efekty: „skróciłam czas ładowania o 45%" mówi więcej niż „optymalizacja wydajności".</li>
+      <li><strong>Wykształcenie</strong> — uczelnia, kierunek, lata nauki.</li>
+      <li><strong>Umiejętności</strong> — konkretne narzędzia i technologie, najlepiej te z ogłoszenia, na które odpowiadasz.</li>
+    </ul>
+
+    <h2>Klauzula RODO w CV</h2>
+    <p>Kreator pozwala wybrać jeden z trzech wariantów. Jeśli odpowiadasz na konkretne ogłoszenie, klauzula formalnie nie jest potrzebna — pracodawca przetwarza Twoje dane na podstawie art. 22<sup>1</sup> Kodeksu pracy. Zgoda przydaje się, gdy chcesz zostać w bazie pracodawcy na kolejne rekrutacje; wtedy potrzebne jest odrębne oświadczenie. Wszystkie warianty powołują rozporządzenie (UE) 2016/679.</p>
+
+    <div class="cv-faq">
+      <h2>Najczęstsze pytania</h2>
+      <details><summary>Czy kreator jest darmowy?</summary><p>Tworzenie i podgląd CV nie kosztują nic i nie wymagają konta. Opłata pojawia się dopiero przy pobraniu pliku. Płacisz jednorazowo — nie zapisujemy karty i nie odnawiamy niczego automatycznie.</p></details>
+      <details><summary>Czy moje CV przejdzie przez system ATS?</summary><p>Tak. Pobrany PDF zawiera warstwę tekstową, więc systemy rekrutacyjne odczytują z niego dane. Możesz też pobrać wersję Word, którą przyjmuje każdy system.</p></details>
+      <details><summary>Czy do CV trzeba dodawać zdjęcie?</summary><p>W Polsce zdjęcie jest zwyczajowe, ale nieobowiązkowe, a w części krajów wręcz odradzane. Kreator pozwala je dodać lub pominąć — decyzja należy do Ciebie.</p></details>
+      <details><summary>Czy mogę zrobić CV po angielsku lub ukraińsku?</summary><p>Tak, kreator obsługuje siedem języków. Nazwy sekcji i klauzula zgody tłumaczą się automatycznie po zmianie języka.</p></details>
+      <details><summary>Czy dane zapisują się, gdy zamknę stronę?</summary><p>Robocza wersja zapisuje się w przeglądarce. Po zalogowaniu CV trafia na konto i wracasz do niego z dowolnego urządzenia.</p></details>
+      <details><summary>Ile stron powinno mieć CV?</summary><p>Przy stażu do dziesięciu lat wystarczy jedna strona. Dwie mają sens dopiero przy dłuższym doświadczeniu albo w zawodach, gdzie liczy się lista publikacji lub projektów.</p></details>
+    </div>
+
+    <p class="cv-tresc-cta"><a href="wybierz-szablon.html">Zobacz wszystkie 24 szablony CV →</a></p>
+  </div>
+</section>
+
 <!-- MOBILE TABS -->
 <div class="cv-mobile-tabs" id="cvMobileTabs">
   <button class="cv-tab-btn active" id="tabForm" onclick="switchCVTab('form')">
@@ -813,7 +873,7 @@ window.addEventListener('_fbAuthReady', async ()=>{
 
 
 <script defer src="draft.js?v=1"></script>
-<script defer src="kreator-cv-main.js?v=20260901a"></script>
+<script defer src="kreator-cv-main.js?v=20260901b"></script>
 
 <script>
 // ── RESIZABLE DIVIDER ──
