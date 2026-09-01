@@ -563,7 +563,8 @@ const CV_LABELS = {
     skills: 'Umiejętności', languages: 'Języki', summary: 'Podsumowanie',
     profile: 'Profil osobisty', interests: 'Hobby i zainteresowania',
     contact: 'Dane kontaktowe', present: 'Obecnie',
-    consent: 'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb rekrutacji.',
+    consent: 'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb niezbędnych do realizacji procesu rekrutacji zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO).',
+    consentFuture: 'Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb niezbędnych do realizacji procesu tej oraz przyszłych rekrutacji zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO) oraz ustawą z dnia 10 maja 2018 r. o ochronie danych osobowych.',
     // UI labels
     personalData: 'Dane osobowe', professionalSummary: 'Profil osobisty',
     workExperience: 'Doświadczenie zawodowe', educationSection: 'Wykształcenie',
@@ -595,7 +596,8 @@ const CV_LABELS = {
     skills: 'Skills', languages: 'Languages', summary: 'Summary',
     profile: 'Professional Profile', interests: 'Interests & Hobbies',
     contact: 'Contact', present: 'Present',
-    consent: 'I consent to the processing of my personal data for recruitment purposes.',
+    consent: 'I consent to the processing of my personal data for the purposes necessary to carry out the recruitment process in accordance with Regulation (EU) 2016/679 (GDPR).',
+    consentFuture: 'I consent to the processing of my personal data for the purposes necessary to carry out this and future recruitment processes in accordance with Regulation (EU) 2016/679 (GDPR).',
     personalData: 'Personal Details', professionalSummary: 'Personal Profile',
     workExperience: 'Work Experience', educationSection: 'Education',
     skillsSection: 'Skills', languagesSection: 'Languages', interestsSection: 'Interests & Hobbies',
@@ -626,7 +628,8 @@ const CV_LABELS = {
     skills: 'Kenntnisse', languages: 'Sprachen', summary: 'Zusammenfassung',
     profile: 'Profil', interests: 'Interessen & Hobbys',
     contact: 'Kontakt', present: 'Heute',
-    consent: 'Ich stimme der Verarbeitung meiner personenbezogenen Daten für Rekrutierungszwecke zu.',
+    consent: 'Ich stimme der Verarbeitung meiner personenbezogenen Daten zum Zweck des Bewerbungsverfahrens gemäß der Verordnung (EU) 2016/679 (DSGVO) zu.',
+    consentFuture: 'Ich stimme der Verarbeitung meiner personenbezogenen Daten zum Zweck dieses und künftiger Bewerbungsverfahren gemäß der Verordnung (EU) 2016/679 (DSGVO) zu.',
     personalData: 'Persönliche Daten', professionalSummary: 'Persönliches Profil',
     workExperience: 'Berufserfahrung', educationSection: 'Ausbildung',
     skillsSection: 'Kenntnisse', languagesSection: 'Sprachen', interestsSection: 'Interessen & Hobbys',
@@ -657,7 +660,8 @@ const CV_LABELS = {
     skills: 'Навички', languages: 'Мови', summary: 'Резюме',
     profile: 'Профіль', interests: 'Інтереси та хобі',
     contact: 'Контакти', present: 'Зараз',
-    consent: 'Я даю згоду на обробку моїх персональних даних для цілей рекрутингу.',
+    consent: 'Я даю згоду на обробку моїх персональних даних для цілей цього набору відповідно до Регламенту (ЄС) 2016/679 (GDPR).',
+    consentFuture: 'Я даю згоду на обробку моїх персональних даних для цілей цього та майбутніх наборів відповідно до Регламенту (ЄС) 2016/679 (GDPR).',
     personalData: 'Особисті дані', professionalSummary: 'Особистий профіль',
     workExperience: 'Досвід роботи', educationSection: 'Освіта',
     skillsSection: 'Навички', languagesSection: 'Мови', interestsSection: 'Інтереси та хобі',
@@ -688,7 +692,8 @@ const CV_LABELS = {
     skills: 'Habilidades', languages: 'Idiomas', summary: 'Perfil',
     profile: 'Perfil profesional', interests: 'Intereses y aficiones',
     contact: 'Contacto', present: 'Presente',
-    consent: 'Doy mi consentimiento para el tratamiento de mis datos personales con fines de contratación.',
+    consent: 'Doy mi consentimiento para el tratamiento de mis datos personales con fines del proceso de selección conforme al Reglamento (UE) 2016/679 (RGPD).',
+    consentFuture: 'Doy mi consentimiento para el tratamiento de mis datos personales con fines de este y futuros procesos de selección conforme al Reglamento (UE) 2016/679 (RGPD).',
     personalData: 'Datos personales', professionalSummary: 'Perfil personal',
     workExperience: 'Experiencia laboral', educationSection: 'Educación',
     skillsSection: 'Habilidades', languagesSection: 'Idiomas', interestsSection: 'Intereses y aficiones',
@@ -719,7 +724,8 @@ const CV_LABELS = {
     skills: 'Dovednosti', languages: 'Jazyky', summary: 'Souhrn',
     profile: 'Profesní profil', interests: 'Zájmy a koníčky',
     contact: 'Kontakt', present: 'Současnost',
-    consent: 'Souhlasím se zpracováním svých osobních údajů pro účely náboru.',
+    consent: 'Souhlasím se zpracováním svých osobních údajů pro účely tohoto výběrového řízení v souladu s nařízením (EU) 2016/679 (GDPR).',
+    consentFuture: 'Souhlasím se zpracováním svých osobních údajů pro účely tohoto i budoucích výběrových řízení v souladu s nařízením (EU) 2016/679 (GDPR).',
     personalData: 'Osobní údaje', professionalSummary: 'Osobní profil',
     workExperience: 'Pracovní zkušenosti', educationSection: 'Vzdělání',
     skillsSection: 'Dovednosti', languagesSection: 'Jazyky', interestsSection: 'Zájmy a koníčky',
@@ -750,7 +756,8 @@ const CV_LABELS = {
     skills: 'Vaardigheden', languages: 'Talen', summary: 'Samenvatting',
     profile: 'Professioneel profiel', interests: "Interesses & hobby's",
     contact: 'Contact', present: 'Heden',
-    consent: 'Ik geef toestemming voor de verwerking van mijn persoonsgegevens voor wervingsdoeleinden.',
+    consent: 'Ik geef toestemming voor de verwerking van mijn persoonsgegevens ten behoeve van deze sollicitatieprocedure conform Verordening (EU) 2016/679 (AVG).',
+    consentFuture: 'Ik geef toestemming voor de verwerking van mijn persoonsgegevens ten behoeve van deze en toekomstige sollicitatieprocedures conform Verordening (EU) 2016/679 (AVG).',
     personalData: 'Persoonlijke gegevens', professionalSummary: 'Persoonlijk profiel',
     workExperience: 'Werkervaring', educationSection: 'Opleiding',
     skillsSection: 'Vaardigheden', languagesSection: 'Talen', interestsSection: "Interesses & hobby's",
@@ -779,7 +786,52 @@ const CV_LABELS = {
 };
 
 // Helper used inside buildCVHTML templates
+// ── Klauzula RODO: wybór wariantu ─────────────────────────────────────
+// Od 2018 r. przy aplikacji na konkretne ogłoszenie zgoda nie jest wymagana —
+// pracodawca przetwarza dane na podstawie art. 22(1) Kodeksu pracy. Zgoda jest
+// potrzebna dopiero dla danych ponad ten zakres i dla przyszłych rekrutacji,
+// a ta druga wymaga odrębnego oświadczenia. Dlatego trzy opcje, nie jedna.
+const RODO_OPCJE = [
+  { id: 'biezaca', tytul: 'Ta rekrutacja', opis: 'Standardowa klauzula z powołaniem RODO. Bezpieczny domyślny wybór.' },
+  { id: 'przyszle', tytul: 'Ta i przyszłe rekrutacje', opis: 'Pozwala zachować CV w bazie pracodawcy na kolejne nabory.' },
+  { id: 'brak', tytul: 'Bez klauzuli', opis: 'Przy odpowiedzi na konkretne ogłoszenie zgoda nie jest wymagana.' },
+];
+
+function buildRodoChoiceHTML() {
+  const wybrany = (cvData && cvData.rodoTryb) || 'biezaca';
+  return `
+    <div style="padding:4px 16px 16px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px">Klauzula RODO</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${RODO_OPCJE.map(o => `
+          <label style="display:flex;gap:9px;align-items:flex-start;padding:9px 11px;border:1px solid ${o.id === wybrany ? '#2563eb' : '#e5e7eb'};background:${o.id === wybrany ? '#eff6ff' : '#fff'};border-radius:10px;cursor:pointer">
+            <input type="radio" name="cvRodo" value="${o.id}" ${o.id === wybrany ? 'checked' : ''}
+                   onchange="setRodoTryb(this.value)" style="margin-top:2px;flex-shrink:0">
+            <span><span style="display:block;font-size:13px;font-weight:600;color:#111827">${o.tytul}</span>
+            <span style="display:block;font-size:11.5px;color:#6b7280;line-height:1.45;margin-top:1px">${o.opis}</span></span>
+          </label>`).join('')}
+      </div>
+    </div>`;
+}
+
+function setRodoTryb(tryb) {
+  cvData.rodoTryb = RODO_OPCJE.some(o => o.id === tryb) ? tryb : 'biezaca';
+  triggerDraftSave();
+  updateCVPreview();
+  renderCVForm();
+}
+
 function L(key) {
+  // Klauzula RODO zależy od wyboru użytkownika, nie tylko od języka.
+  // Przy aplikacji na konkretne ogłoszenie zgoda formalnie nie jest potrzebna
+  // (podstawą jest art. 22(1) KP), więc „brak" to pełnoprawna opcja.
+  // Pusty string zostawia <div data-rodo> pusty, a reguła [data-rodo]:empty
+  // chowa go razem z obramowaniem — bez zmian w 23 szablonach.
+  if (key === 'consent') {
+    const tryb = (typeof cvData === 'object' && cvData && cvData.rodoTryb) || 'biezaca';
+    if (tryb === 'brak') return '';
+    if (tryb === 'przyszle') return L('consentFuture');
+  }
   return (CV_LABELS[cvCurrentLang] || CV_LABELS.pl)[key] || CV_LABELS.pl[key];
 }
 
@@ -890,7 +942,8 @@ function renderCVForm() {
       </div>
       <div style="padding:12px 16px 8px">
         <button class="cvf-add-custom-btn" onclick="addCustomSection()">${L("addSection")}</button>
-      </div>`;
+      </div>
+      ${buildRodoChoiceHTML()}`;
   }
 
   // Nav buttons
@@ -2469,6 +2522,13 @@ function _buildCVRtf() {
     r += '\\pard\\sa80{\\fs22 ' + e(d.zainteresowania) + '}\\par\n';
   }
 
+  // Klauzula RODO — w PDF jest, więc w Wordzie też musi być. Wcześniej ten
+  // sam życiorys w dwóch formatach miał różną treść.
+  const klauzula = L('consent');
+  if (klauzula) {
+    r += '\\pard\\sb320\\qc{\\fs16\\cf3 ' + e(klauzula) + '}\\par\n';
+  }
+
   r += '}';
   return r;
 }
@@ -2500,7 +2560,7 @@ function showDownloadMenu(btn) {
   menu.innerHTML =
     '<button onclick="_cvDlChoice(\'pdf\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;border-radius:9px;font-size:13.5px;font-weight:600;color:#111827;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>' +
-      '<div><div>Pobierz PDF</div><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-top:1px;">Plik PDF gotowy do wysłania</div></div>' +
+      '<div><div>Pobierz PDF</div><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-top:1px;">Tekstowy \u2014 czytelny dla systemów ATS. Plik PDF gotowy do wysłania</div></div>' +
     '</button>' +
     '<button onclick="_cvDlChoice(\'word\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;border-radius:9px;font-size:13.5px;font-weight:600;color:#111827;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
@@ -2532,9 +2592,28 @@ function showDownloadMenu(btn) {
   }, 10);
 }
 
+// ── PDF z warstwą tekstową (druk przeglądarki) ────────────────────────
+// html2canvas robi z CV obrazek — ATS nie odczyta z niego nic. Druk daje
+// natywny PDF z zaznaczalnym tekstem, a arkusz A4 jest już wyrenderowany
+// w podglądzie, więc wystarczy odizolować go od reszty interfejsu.
+function downloadCVPrint() {
+  const zrodlo = document.getElementById('cvPreviewInner');
+  if (!zrodlo) { downloadCV(); return; }   // awaryjnie stara ścieżka
+  document.getElementById('cvPrintRoot')?.remove();
+  const root = document.createElement('div');
+  root.id = 'cvPrintRoot';
+  root.style.cssText = 'position:absolute;left:-10000px;top:0';
+  root.innerHTML = zrodlo.innerHTML;
+  document.body.appendChild(root);
+  const sprzataj = () => { root.remove(); window.removeEventListener('afterprint', sprzataj); };
+  window.addEventListener('afterprint', sprzataj);
+  setTimeout(() => { window.print(); setTimeout(sprzataj, 3000); }, 120);
+}
+
 function _cvDlChoice(type) {
   var m = document.getElementById('cvDlMenu'); if (m) m.remove();
-  if (type === 'pdf') downloadCV();
+  if (type === 'pdf') downloadCVPrint();
+  else if (type === 'pdf-obraz') downloadCV();
   else downloadCVDocx();
 }
 

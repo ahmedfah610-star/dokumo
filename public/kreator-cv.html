@@ -66,10 +66,27 @@ body { font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sa
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script defer src="kreator-cv-templates.js?v=20260420"></script>
-<link rel="preload" href="kreator-cv-main.js?v=20260530d" as="script">
+<script defer src="kreator-cv-templates.js?v=20260901a"></script>
+<link rel="preload" href="kreator-cv-main.js?v=20260901a" as="script">
 <style>
 body { overflow:hidden; }
+/* CV bez klauzuli RODO: pusty kontener znika razem z obramowaniem. */
+[data-rodo]:empty{display:none !important}
+
+/* ── Wydruk: PDF z warstwą tekstową ─────────────────────────────────
+   Eksport przez html2canvas rasteryzuje CV do JPEG — systemy ATS nie
+   odczytują z takiego pliku ani jednego znaku. Druk przeglądarki tworzy
+   PDF z prawdziwym tekstem, a arkusz A4 jest już wyrenderowany w HTML,
+   więc wystarczy ukryć całą resztę interfejsu. */
+@page { size: A4; margin: 0; }
+@media print {
+  html, body { overflow: visible !important; height: auto !important; background: #fff !important; }
+  body > *:not(#cvPrintRoot) { display: none !important; }
+  #cvPrintRoot { display: block !important; position: static !important; }
+  #cvPrintRoot .cv-preview-doc,
+  #cvPrintRoot > * { transform: none !important; zoom: 1 !important; box-shadow: none !important; margin: 0 !important; }
+  .cv-zoom-bar, .cv-preview-label, .cv-mobile-tabs, .cv-nav, #cvGuestBanner, .doc-ocena { display: none !important; }
+}
 .cvf-section-block { position:relative; }
 
 /* ── MOBILE NAV ── */
@@ -796,7 +813,7 @@ window.addEventListener('_fbAuthReady', async ()=>{
 
 
 <script defer src="draft.js?v=1"></script>
-<script defer src="kreator-cv-main.js?v=20260530d"></script>
+<script defer src="kreator-cv-main.js?v=20260901a"></script>
 
 <script>
 // ── RESIZABLE DIVIDER ──

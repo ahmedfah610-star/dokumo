@@ -244,7 +244,7 @@ function buildCVHTML(tpl) {
           </div>`).join('')}
         </div>
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:10px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
   }
 
@@ -324,7 +324,7 @@ function buildCVHTML(tpl) {
         ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:18px">${mnHdr(label)}${items.map(c=>`<div style="font-size:12px;color:#555;margin-bottom:3px">· ${c}</div>`).join('')}</div>`).join('')}
         ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:18px">${mnHdr(L("interests"))}<div style="font-size:12px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
         ${escCustomSections().filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:18px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
-        <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
+        <div data-rodo style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
   }
@@ -388,7 +388,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
 
   // ── BOLD (czerwony) ───────────────────────────────────────
@@ -453,7 +453,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1,c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:6px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:6px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;};
 
   // ── TEAL ──────────────────────────────────────────────────
@@ -508,7 +508,7 @@ function buildCVHTML(tpl) {
         <div style="background:#fff;padding:12px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.06);border-radius:4px;font-size:12px;color:#666;line-height:1.6">${d.zainteresowania}</div>`:''}
         ${renderCustomSections(c1,c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px">${L("consent")}</div>
     </div>`;
 
   // ── MIDNIGHT ──────────────────────────────────────────────
@@ -568,7 +568,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1,c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
 
   // ── CORAL ─────────────────────────────────────────────────
@@ -609,7 +609,7 @@ function buildCVHTML(tpl) {
                 <div style="display:flex;justify-content:space-between"><div style="font-size:12px;color:#555">${e.szkola}</div><div style="font-size:10.5px;color:#aaa">${[e.od,e.do].filter(Boolean).join(' – ')}</div></div>
               </div>`).join('')}
           </div>`:''}${renderCustomSections(c1, c2)}
-          <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
+          <div data-rodo style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
         </div>
       </div>
     </div>`;
@@ -659,7 +659,7 @@ function buildCVHTML(tpl) {
           ${d.zainteresowania?`<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:10.5px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
 
 
@@ -707,7 +707,7 @@ function buildCVHTML(tpl) {
           ${d.zainteresowania?`<div style="background:#fff;padding:12px;border-radius:6px;box-shadow:0 1px 6px rgba(30,64,175,0.06)"><div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${c1};margin-bottom:8px">${L("interests")}</div><div style="font-size:12px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;margin-top:auto">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;margin-top:auto">${L("consent")}</div>
     </div>`;
 
 
@@ -756,7 +756,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${certGroups.map(({label,items}) => `<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">${label}</div>${items.map(c=>`<div style="font-size:12px;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:#1a2744;flex-shrink:0;display:inline-block"></span>${c}</div>`).join('')}</div>`).join('')}
         ${d.zainteresowania?`<div style="margin-top:14px"><div style="font-size:13px;font-weight:700;color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:4px;margin-bottom:8px">${L("interests")}</div><div style="font-size:12px;color:#555;line-height:1.6">${d.zainteresowania}</div></div>`:''}${renderCustomSections(c1, c2)}
-        <div style="margin-top:16px;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
+        <div data-rodo style="margin-top:16px;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
 
@@ -830,7 +830,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
 
   // ── NORDIC (Novorésumé Oslo: daty na lewo, elegancki) ─────
@@ -901,7 +901,7 @@ function buildCVHTML(tpl) {
           <div style="font-size:12px;color:#555;line-height:1.65">${d.zainteresowania}</div>
         </div>`:''}
       </div>${renderCustomSections(c1, c2)}
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:12px 0 0;border-top:1px solid #eee;margin-top:6px">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:12px 0 0;border-top:1px solid #eee;margin-top:6px">${L("consent")}</div>
     </div>`;
 
   // ── CASCADE (dark sidebar, styl Resume.io) ──────────────────
@@ -962,7 +962,7 @@ function buildCVHTML(tpl) {
         ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label:lbl,items})=>`<div style="margin-bottom:16px">${mnHdr(lbl)}<div style="display:flex;flex-wrap:wrap;gap:6px 24px">${items.map(c=>`<span style="font-size:10.5px;color:#444">${c}</span>`).join('')}</div></div>`).join('')}
         ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:16px">${mnHdr(L("interests"))}<div style="font-size:12px;color:#64748b;line-height:1.6">${d.zainteresowania}</div></div>`:''}
         ${escCustomSections().filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:16px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
-        <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
+        <div data-rodo style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
   }
@@ -1041,7 +1041,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
 
   // ── EXECUTIVE ─────────────────────────────────────────────
@@ -1118,7 +1118,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #eee;font-family:Georgia,serif">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #eee;font-family:Georgia,serif">${L("consent")}</div>
     </div>`;
 
   // ── ATHENS ────────────────────────────────────────────────
@@ -1191,7 +1191,7 @@ function buildCVHTML(tpl) {
           ${escCustomSections().filter(s=>!sb.has('custom-'+s.id)&&(s.title||s.content)).map(s=>`<div style="margin-bottom:14px">${mnHdr(s.title||'')}<div style="font-size:12px;color:#555;line-height:1.65">${s.content}</div></div>`).join('')}
         </div>
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:8px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
   }
 
@@ -1261,7 +1261,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
-      <div style="text-align:center;font-size:8px;color:#21262d;padding:10px;border-top:1px solid #21262d">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:8px;color:#21262d;padding:10px;border-top:1px solid #21262d">${L("consent")}</div>
     </div>`;
   }
 
@@ -1331,7 +1331,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:10px;border-top:1px solid #eee">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:10px;border-top:1px solid #eee">${L("consent")}</div>
     </div>`;
   }
 
@@ -1401,7 +1401,7 @@ function buildCVHTML(tpl) {
         </div>`:''}
         ${renderCustomSections(c1, c2)}
       </div>
-      <div style="text-align:center;font-size:9px;color:#c8c4c0;padding:10px;border-top:1px solid #e7e5e4">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#c8c4c0;padding:10px;border-top:1px solid #e7e5e4">${L("consent")}</div>
     </div>`;
   }
 
@@ -1576,7 +1576,7 @@ function buildCVHTML(tpl) {
         ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:16px">${bHdr(label, SVG_BOOK)}${certItemsMn(items)}</div>`).join('')}
         ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:16px">${bHdr(L("interests"), SVG_STAR)}<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px;font-size:10.5px;color:#555;line-height:1.65">${d.zainteresowania}</div></div></div>`:''}
         ${customSects.filter(s=>!sb.has('custom-'+s.id)).map(s=>`<div style="margin-bottom:16px">${bHdr(s.title||'', SVG_BOOK)}<div style="display:grid;grid-template-columns:62px 1fr;gap:0 11px"><div></div><div style="border-left:2px solid ${c2};padding-left:10px;font-size:10.5px;color:#555;line-height:1.65">${s.content||''}</div></div></div>`).join('')}
-        <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
+        <div data-rodo style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center">${L("consent")}</div>
       </div>
     </div>`;
   }
@@ -1619,7 +1619,7 @@ function buildCVHTML(tpl) {
         ${certGroups.filter(cg=>!sb.has(cg.key)).map(({label,items})=>`<div style="margin-bottom:13px">${mHdr(label)}${items.map(certEntry).join('')}</div>`).join('')}
         ${!intInSb&&d.zainteresowania?`<div style="margin-bottom:13px">${mHdr(L("interests"))}<div style="font-size:10px;color:#555;line-height:1.65">${d.zainteresowania}</div></div>`:''}
         ${customSects.filter(s=>!sb.has('custom-'+s.id)).map(s=>`<div style="margin-bottom:13px">${mHdr(s.title||'')}<div style="font-size:10px;color:#555;line-height:1.65">${s.content||''}</div></div>`).join('')}
-        <div style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center;flex-shrink:0">${L("consent")}</div>
+        <div data-rodo style="margin-top:auto;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;text-align:center;flex-shrink:0">${L("consent")}</div>
       </div>
       <!-- RIGHT SIDEBAR 37% -->
       <div style="width:37%;flex-shrink:0;background:#f8f8f8;border-left:1px solid #e5e7eb;padding:22px 15px 18px;overflow:hidden;display:flex;flex-direction:column">
@@ -1730,7 +1730,7 @@ function buildCVHTML(tpl) {
           </div>`:''}
         </div>
       </div>
-      <div style="text-align:center;font-size:9px;color:#ccc;padding:7px;border-top:1px solid #ede9e2;background:#fff;flex-shrink:0">${L("consent")}</div>
+      <div data-rodo style="text-align:center;font-size:9px;color:#ccc;padding:7px;border-top:1px solid #ede9e2;background:#fff;flex-shrink:0">${L("consent")}</div>
     </div>`;
   }
 
@@ -1785,7 +1785,7 @@ function buildCVHTML(tpl) {
           ${customSects.filter(s=>!sb.has('custom-'+s.id)).map(s=>`<div style="margin-bottom:13px">${secHdr(icoWork,s.title||'')}<div style="font-size:9px;color:#444;line-height:1.55">${s.content||''}</div></div>`).join('')}
         </div>
       </div>
-      <div style="flex-shrink:0;text-align:center;font-size:8px;color:#ccc;padding:4px 28px;border-top:1px solid #f0f0f0">${L("consent")}</div>
+      <div data-rodo style="flex-shrink:0;text-align:center;font-size:8px;color:#ccc;padding:4px 28px;border-top:1px solid #f0f0f0">${L("consent")}</div>
     </div>`;
   }
 
