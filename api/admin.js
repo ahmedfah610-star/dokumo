@@ -308,6 +308,51 @@ export default async function handler(req, res) {
       return res.status(200).json({ docs: rows });
     }
 
+    // POST action=doc-feedback — oceny dokumentów wystawione przez użytkowników.
+    // Filtr `only` zawęża do ocen 1–3, bo to one wymagają reakcji; średnia
+    // liczona jest zawsze z całości, żeby filtr jej nie zafałszował.
+    if (action === 'doc-feedback') {
+      const lim = Math.min(50, Math.max(1, Number(req.body?.limit) || 10));
+      const only = req.body?.only === 'low' ? 'low' : null;
+      let snap;
+      try {
+        snap = await db.collection('docFeedback').orderBy('createdAt', 'desc').limit(200).get();
+      } catch (e) {
+        const link = (String(e.message).match(/https:\/\/\S+/) || [])[0] || null;
+        return res.status(503).json({ error: 'Firestore wymaga indeksu dla docFeedback po createdAt.', indexUrl: link });
+      }
+      const wszystkie = snap.docs.map(d => {
+        const x = d.data() || {};
+        return {
+          id: d.id,
+          email: x.email || null,
+          uid: x.uid || null,
+          typeId: x.typeId || null,
+          docName: x.docName || null,
+          rating: Number(x.rating) || 0,
+          tags: Array.isArray(x.tags) ? x.tags : [],
+          comment: typeof x.comment === 'string' ? x.comment : '',
+          createdAt: x.createdAt?.toDate?.()?.toISOString() || null,
+        };
+      });
+      const rozklad = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      wszystkie.forEach(r => { if (rozklad[r.rating] != null) rozklad[r.rating]++; });
+      const srednia = wszystkie.length
+        ? Math.round((wszystkie.reduce((a, r) => a + r.rating, 0) / wszystkie.length) * 100) / 100
+        : null;
+      // Które zastrzeżenia powtarzają się najczęściej — to lista zadań na wzory.
+      const tagi = {};
+      wszystkie.filter(r => r.rating <= 3).forEach(r => r.tags.forEach(t => { tagi[t] = (tagi[t] || 0) + 1; }));
+      const topTagi = Object.entries(tagi).sort((a, b) => b[1] - a[1]).slice(0, 8)
+        .map(([tag, count]) => ({ tag, count }));
+      const lista = (only === 'low' ? wszystkie.filter(r => r.rating <= 3) : wszystkie).slice(0, lim);
+      return res.status(200).json({
+        feedback: lista, srednia, rozklad, topTagi,
+        wszystkich: wszystkie.length,
+        niskich: wszystkie.filter(r => r.rating <= 3).length,
+      });
+    }
+
     // POST action=recent-chats — ostatnie pytania do Asystenta Prawnego z treścią.
     // Pokazujemy pytanie RAZEM z odpowiedzią, bo dopiero para pozwala ocenić,
     // czy asystent odpowiedział sensownie — samo pytanie tego nie mówi.

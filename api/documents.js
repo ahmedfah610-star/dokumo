@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { hasSensitivePII, hasSensitivePIIInJson } from '../lib/pii.js';
+import { bump } from '../lib/analytics.js';
 
 // Połączony endpoint dokumentów — scala dawne get-docs.js (GET) i update-doc.js (POST/DELETE).
 // Routing po metodzie HTTP; stare ścieżki /api/get-docs i /api/update-doc działają
@@ -62,6 +63,35 @@ export default async function handler(req, res) {
     const { docId } = req.body;
     if (!docId) return res.status(400).json({ error: 'Brak docId' });
     await db.collection('users').doc(uid).collection('documents').doc(docId).delete();
+    return res.status(200).json({ ok: true });
+  }
+
+  // ── POST action=feedback — ocena wygenerowanego dokumentu ──
+  // Trafia do osobnej kolekcji na poziomie głównym, bo czytamy to zbiorczo
+  // w panelu; pod users/{uid} wymagałoby collectionGroup i własnego indeksu.
+  if (req.body.action === 'feedback') {
+    if (!checkRlPost(uid)) return res.status(429).json({ error: 'Zbyt wiele żądań.' });
+    const b = req.body;
+    const rating = Number(b.rating);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Ocena musi być liczbą od 1 do 5' });
+    }
+    const tags = Array.isArray(b.tags)
+      ? b.tags.filter(t => typeof t === 'string').slice(0, 6).map(t => t.slice(0, 40))
+      : [];
+    let email = null;
+    try { email = (await auth.getUser(uid)).email || null; } catch { /* pomiń */ }
+    await db.collection('docFeedback').add({
+      uid,
+      email,
+      typeId: String(b.typeId || '').slice(0, 60) || null,
+      docName: String(b.docName || '').slice(0, 120) || null,
+      rating,
+      tags,
+      comment: String(b.comment || '').slice(0, 1000),
+      createdAt: new Date(),
+    });
+    bump(db, 'doc_feedback', { rating: String(rating) });
     return res.status(200).json({ ok: true });
   }
 
