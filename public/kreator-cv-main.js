@@ -2565,7 +2565,7 @@ function showDownloadMenu(btn) {
   menu.innerHTML =
     '<button onclick="_cvDlChoice(\'pdf\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;border-radius:9px;font-size:13.5px;font-weight:600;color:#111827;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>' +
-      '<div><div>Pobierz PDF</div><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-top:1px;">Tekstowy \u2014 czytelny dla systemów ATS. Plik PDF gotowy do wysłania</div></div>' +
+      '<div><div>Pobierz PDF</div><div style="font-size:11px;color:#9ca3af;font-weight:500;margin-top:1px;">Z warstw\u0105 tekstow\u0105 \u2014 czytelny dla systemów ATS. Plik PDF gotowy do wysłania</div></div>' +
     '</button>' +
     '<button onclick="_cvDlChoice(\'word\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;background:none;border:none;border-radius:9px;font-size:13.5px;font-weight:600;color:#111827;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s;" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'none\'">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
@@ -2597,28 +2597,9 @@ function showDownloadMenu(btn) {
   }, 10);
 }
 
-// ── PDF z warstwą tekstową (druk przeglądarki) ────────────────────────
-// html2canvas robi z CV obrazek — ATS nie odczyta z niego nic. Druk daje
-// natywny PDF z zaznaczalnym tekstem, a arkusz A4 jest już wyrenderowany
-// w podglądzie, więc wystarczy odizolować go od reszty interfejsu.
-function downloadCVPrint() {
-  const zrodlo = document.getElementById('cvPreviewInner');
-  if (!zrodlo) { downloadCV(); return; }   // awaryjnie stara ścieżka
-  document.getElementById('cvPrintRoot')?.remove();
-  const root = document.createElement('div');
-  root.id = 'cvPrintRoot';
-  root.style.cssText = 'position:absolute;left:-10000px;top:0';
-  root.innerHTML = zrodlo.innerHTML;
-  document.body.appendChild(root);
-  const sprzataj = () => { root.remove(); window.removeEventListener('afterprint', sprzataj); };
-  window.addEventListener('afterprint', sprzataj);
-  setTimeout(() => { window.print(); setTimeout(sprzataj, 3000); }, 120);
-}
-
 function _cvDlChoice(type) {
   var m = document.getElementById('cvDlMenu'); if (m) m.remove();
-  if (type === 'pdf') downloadCVPrint();
-  else if (type === 'pdf-obraz') downloadCV();
+  if (type === 'pdf') downloadCV();
   else downloadCVDocx();
 }
 
