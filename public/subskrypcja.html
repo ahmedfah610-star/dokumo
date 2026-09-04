@@ -312,7 +312,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
     <div class="plan-icon">💼</div>
     <div class="plan-name">Pakiet Biznes</div>
     <div class="plan-tagline">Wszystkie dokumenty firmowe — bez Kreatora CV.</div>
-    <div class="plan-price" id="price-biznes">11,99 zł <span>/ miesiąc</span></div>
+    <div class="plan-price" id="price-biznes">19,99 zł <span>/ miesiąc</span></div>
     <div class="plan-quota"><span class="qic">📄</span> 30 dokumentów + 10 pytań AI / mies.</div>
     <hr class="plan-div">
     <ul class="plan-features">
@@ -370,18 +370,14 @@ updateNavAuth();window._renderUNav=updateNavAuth;
 
 <script>
 // ── Stripe linki (fallback gdy brak konfiguracji STRIPE_PRICE_* w Vercel) ──
-const STRIPE_LINKS = {
-  start:   'UZUPELNIJ_START',
-  kariera: 'https://buy.stripe.com/7sYaEWdFWcXkaLU9TDgIo07',
-  biznes:  'https://buy.stripe.com/6oUeVcbxOaPccU24zjgIo09',
-  promax:  'https://buy.stripe.com/dRm5kCbxO6yWaLUd5PgIo06',
-};
+// STRIPE_LINKS usunięte — cena i plan pochodzą wyłącznie ze zmiennych
+// STRIPE_PRICE_* po stronie serwera (api/sub.js).
 
 // ── Bazowe ceny (do wyświetlania rabatu) ──
 const BASE_PRICES = {
   start:   { amount: 4.99,  period: '/ jednorazowo', note: null },
   kariera: { amount: 9.99,  period: '/ miesiąc', note: '1. miesiąc' },
-  biznes:  { amount: 11.99, period: '/ miesiąc', note: '1. miesiąc' },
+  biznes:  { amount: 19.99, period: '/ miesiąc', note: '1. miesiąc' },
   promax:  { amount: 31.99, period: '/ miesiąc', note: '1. miesiąc' },
 };
 
@@ -620,33 +616,25 @@ async function kupPakiet(plan){
 
   sessionStorage.setItem('dokumo_pending_plan', plan);
 
-  // Start zawsze przez Checkout Session API (jednorazowa płatność)
-  // Pozostałe — przez API jeśli jest kod rabatowy, inaczej statyczny link
-  const needsApi = plan === 'start' || (_discountCode && window._fbToken);
-  if(needsApi && window._fbToken){
-    const btn=document.getElementById('btn-'+plan);
-    if(btn){ btn.disabled=true; btn.textContent='Przekierowuję…'; }
-    try{
-      const res=await fetch('/api/sub',{
-        method:'POST',
-        headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},
-        body:JSON.stringify({action:'create-checkout',plan,code:_discountCode||''}),
-      });
-      const data=await res.json();
-      if(data.url){ window.location.href=data.url; return; }
-      if(data.error){ alert('Błąd: '+data.error); }
-    }catch(e){ alert('Błąd połączenia z serwerem.'); }
-    if(btn){ btn.disabled=false; renderPage(); }
-    return;
-  }
-
-  // Statyczny link Stripe (subskrypcje bez kodu rabatowego)
-  const link=STRIPE_LINKS[plan];
-  if(!link||link.includes('UZUPELNIJ')){
-    alert('Link płatności dla pakietu "'+plan+'" nie jest jeszcze skonfigurowany.');
-    return;
-  }
-  window.location.href=link;
+  // Każdy zakup idzie przez Checkout Session API. Wcześniej subskrypcje bez
+  // kodu rabatowego szły zaszytym na stałe linkiem Stripe, co miało trzy skutki:
+  // cena brała się z linku, a nie ze zmiennej STRIPE_PRICE_*, więc jej zmiana
+  // nic nie dawała; sesja nie niosła metadata.plan, więc webhook zapisywał
+  // każdy zakup jako „biznes"; a konto odnajdywano po adresie wpisanym ręcznie
+  // w kasie Stripe, więc przy innym adresie subskrypcja nie włączała się wcale.
+  const btn=document.getElementById('btn-'+plan);
+  if(btn){ btn.disabled=true; btn.textContent='Przekierowuję…'; }
+  try{
+    const res=await fetch('/api/sub',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},
+      body:JSON.stringify({action:'create-checkout',plan,code:_discountCode||''}),
+    });
+    const data=await res.json();
+    if(data.url){ window.location.href=data.url; return; }
+    alert('Błąd: '+(data.error||'nie udało się rozpocząć płatności.'));
+  }catch(e){ alert('Błąd połączenia z serwerem. Spróbuj ponownie.'); }
+  if(btn){ btn.disabled=false; renderPage(); }
 }
 
 async function anulujSub(){

@@ -54,15 +54,32 @@ export default async function handler(req, res) {
     const session = event.data.object;
     const email = session.customer_email || session.customer_details?.email;
     const planFromMeta = session.metadata?.plan;
+    const uidFromMeta = session.metadata?.uid;
+    // Uwaga: Stripe nie dołącza line_items do webhooka bez rozwinięcia, więc
+    // priceId jest tu prawie zawsze undefined. Wcześniej łańcuch kończył się
+    // domyślnym 'biznes', przez co zakup dowolnego pakietu bez metadanych
+    // zapisywał się jako Biznes — także droższy Pro Max. Lepiej odmówić
+    // aktywacji i zostawić ślad w logu niż po cichu nadać zły plan.
     const priceId = session.line_items?.data?.[0]?.price?.id;
-    const plan = planFromMeta || PRICE_TO_PLAN[priceId] || 'biznes';
+    const plan = planFromMeta || PRICE_TO_PLAN[priceId] || null;
 
-    console.log(`Checkout completed: email=${email}, plan=${plan}, session=${session.id}`);
+    console.log(`Checkout completed: email=${email}, uid=${uidFromMeta || '—'}, plan=${plan || 'NIEROZPOZNANY'}, session=${session.id}`);
 
-    if (email) {
+    if (!plan) {
+      console.error('Nie rozpoznano planu — brak metadata.plan i brak dopasowania priceId. Sesja:', session.id);
+      return res.status(200).json({ received: true, warning: 'plan_unresolved' });
+    }
+
+    if (uidFromMeta || email) {
       try {
         const auth = getAuth();
-        const user = await auth.getUserByEmail(email);
+        // Pierwszeństwo ma uid z metadanych — ustawia je serwer z zalogowanej
+        // sesji, więc jest pewny. Adres e-mail bywa wpisywany ręcznie w kasie
+        // Stripe i może nie odpowiadać żadnemu kontu, przez co subskrypcja
+        // nigdy się nie włączała, mimo pobranej opłaty.
+        const user = uidFromMeta
+          ? await auth.getUser(uidFromMeta)
+          : await auth.getUserByEmail(email);
         const days = plan === 'start' ? 365 : 30;
         const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
         const subDoc = {
@@ -71,12 +88,12 @@ export default async function handler(req, res) {
           activatedAt: Timestamp.now(),
           stripeSessionId: session.id,
           stripeSubscriptionId: session.subscription || null,
-          email,
+          email: user.email || email || null,
         };
         if (plan === 'start') subDoc.downloadsLeft = 5;
         await db.collection('users').doc(user.uid).collection('subscription').doc('current').set(subDoc);
         await db.collection('payments').add({
-          uid: user.uid, email, plan,
+          uid: user.uid, email: user.email || email || null, plan,
           stripeSessionId: session.id,
           amount: session.amount_total || 0,
           currency: session.currency || 'pln',
