@@ -633,53 +633,6 @@ async function pollForPayment(plan){
   setTimeout(()=>{ if(overlay) overlay.style.display='none'; },4000);
 }
 
-// Art. 38 ust. 1 pkt 13 ustawy o prawach konsumenta wyłącza prawo odstąpienia
-// przy treściach cyfrowych tylko wtedy, gdy łącznie: świadczenie rozpoczęto za
-// wyraźną i uprzednią zgodą konsumenta, konsument został o utracie tego prawa
-// poinformowany PRZED rozpoczęciem świadczenia i przyjął to do wiadomości.
-// Regulamin powoływał się na to wyłączenie, ale nigdzie tej zgody nie zbierano,
-// więc w praktyce każdemu kupującemu przysługiwało pełne 14 dni na odstąpienie.
-function zgodaNaNatychmiastoweSpelnienie(){
-  return new Promise(function(resolve){
-    var stary=document.getElementById('zgodaOverlay'); if(stary) stary.remove();
-    var o=document.createElement('div');
-    o.id='zgodaOverlay';
-    o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;'+
-      'display:flex;align-items:center;justify-content:center;padding:16px';
-    o.innerHTML=
-      '<div style="background:#fff;border-radius:18px;padding:26px 24px;max-width:470px;width:100%;'+
-        'box-shadow:0 24px 64px rgba(0,0,0,.25);font-family:inherit">'+
-        '<h2 style="font-size:1.05rem;font-weight:800;color:#1d1d1f;margin:0 0 10px">Zanim przejdziesz do płatności</h2>'+
-        '<p style="font-size:.86rem;color:#555;line-height:1.6;margin:0 0 14px">Dostęp do pakietu włączamy '+
-          '<strong>od razu po zaksięgowaniu płatności</strong>, żebyś nie musiał czekać.</p>'+
-        '<label style="display:flex;gap:10px;align-items:flex-start;font-size:.82rem;color:#444;'+
-          'line-height:1.55;cursor:pointer;background:#f7f7f9;border-radius:12px;padding:13px 14px">'+
-          '<input type="checkbox" id="zgodaChk" style="margin-top:3px;width:17px;height:17px;flex-shrink:0;cursor:pointer">'+
-          '<span>Żądam rozpoczęcia świadczenia przed upływem terminu na odstąpienie od umowy '+
-          'i przyjmuję do wiadomości, że po spełnieniu świadczenia w całości '+
-          '<strong>utracę prawo odstąpienia od umowy</strong> (art. 38 ust. 1 pkt 13 ustawy o prawach konsumenta).</span>'+
-        '</label>'+
-        '<p style="font-size:.75rem;color:#888;line-height:1.5;margin:12px 0 16px">Bez tej zgody nadal możesz kupić '+
-          'pakiet — wtedy uruchomimy go po 14 dniach albo wcześniej, jeśli sam o to poprosisz. '+
-          'Napisz do nas: dokumoflow@gmail.com.</p>'+
-        '<button id="zgodaDalej" disabled style="width:100%;padding:13px;border:none;border-radius:12px;'+
-          'font-weight:800;font-size:.88rem;color:#fff;background:#c7c7cc;cursor:not-allowed">Przejdź do płatności →</button>'+
-        '<button id="zgodaAnuluj" style="width:100%;margin-top:8px;background:none;border:none;color:#999;'+
-          'font-size:.82rem;cursor:pointer;padding:8px">Anuluj</button>'+
-      '</div>';
-    document.body.appendChild(o);
-    var chk=o.querySelector('#zgodaChk'), dalej=o.querySelector('#zgodaDalej');
-    chk.onchange=function(){
-      dalej.disabled=!chk.checked;
-      dalej.style.background=chk.checked?'linear-gradient(135deg,#7c3aed,#db2777)':'#c7c7cc';
-      dalej.style.cursor=chk.checked?'pointer':'not-allowed';
-    };
-    dalej.onclick=function(){ if(chk.checked){ o.remove(); resolve(true); } };
-    o.querySelector('#zgodaAnuluj').onclick=function(){ o.remove(); resolve(false); };
-    o.addEventListener('click',function(e){ if(e.target===o){ o.remove(); resolve(false); } });
-  });
-}
-
 async function kupPakiet(plan){
   const user=getUser();
   if(!user){
@@ -687,9 +640,6 @@ async function kupPakiet(plan){
     window.location.href='konto.html';
     return;
   }
-
-  const zgoda = await zgodaNaNatychmiastoweSpelnienie();
-  if(!zgoda) return;
 
   sessionStorage.setItem('dokumo_pending_plan', plan);
 
@@ -705,7 +655,7 @@ async function kupPakiet(plan){
     const res=await fetch('/api/sub',{
       method:'POST',
       headers:{'Authorization':'Bearer '+window._fbToken,'Content-Type':'application/json'},
-      body:JSON.stringify({action:'create-checkout',plan,code:_discountCode||'',zgodaOdstapienie:true}),
+      body:JSON.stringify({action:'create-checkout',plan,code:_discountCode||''}),
     });
     const data=await res.json();
     if(data.url){ window.location.href=data.url; return; }

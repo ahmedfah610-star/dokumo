@@ -231,12 +231,20 @@ export default async function handler(req, res) {
       customer_email: email || '',
       'metadata[plan]': plan,
       'metadata[uid]': uid,
-      // Ślad zgody z art. 38 ust. 1 pkt 13 ustawy o prawach konsumenta —
-      // bez niej wyłączenie prawa odstąpienia nie działa, a art. 15 ust. 3
-      // każe potwierdzić ją na trwałym nośniku. Zapisujemy przy płatności,
-      // więc zostaje w Stripe razem z całą historią transakcji.
-      'metadata[zgoda_odstapienie]': req.body.zgodaOdstapienie === true ? 'tak' : 'nie',
-      'metadata[zgoda_ts]': new Date().toISOString(),
+      // Jeden checkbox akceptacji regulaminu, pokazywany przez samą kasę Stripe
+      // tuż przed płatnością. Art. 38 ust. 1 pkt 13 u.p.k. wyłącza prawo
+      // odstąpienia tylko wtedy, gdy konsument przed rozpoczęciem świadczenia
+      // został o tej utracie poinformowany i przyjął ją do wiadomości — dlatego
+      // komunikat przy checkboxie mówi o tym wprost, a nie tylko „akceptuję
+      // regulamin". Stripe zapisuje wynik w session.consent.terms_of_service,
+      // co jest trwałym śladem wymaganym art. 15 ust. 3 u.p.k.
+      // Wymaga ustawienia adresu regulaminu w Stripe: Settings → Public details
+      // → Terms of service URL (https://dokumoflow.com/regulamin.html).
+      'consent_collection[terms_of_service]': 'required',
+      'custom_text[terms_of_service_acceptance][message]':
+        'Akceptuję regulamin. Żądam rozpoczęcia świadczenia od razu po opłaceniu '
+        + 'i przyjmuję do wiadomości, że po jego spełnieniu tracę prawo odstąpienia '
+        + 'od umowy (art. 38 ust. 1 pkt 13 ustawy o prawach konsumenta).',
       success_url: `${origin}/subskrypcja.html?payment_success=1&plan=${plan}`,
       cancel_url: `${origin}/subskrypcja.html`,
     };
