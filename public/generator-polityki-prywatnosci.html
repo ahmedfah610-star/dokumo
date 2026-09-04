@@ -217,6 +217,22 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .faq-a { display: none; padding: 0 0 20px; font-size: .9rem; color: var(--ink2); line-height: 1.7; }
 .faq-item.open .faq-chevron { transform: rotate(180deg); }
 .faq-item.open .faq-a { display: block; }
+
+/* Nagłówek na wąskich ekranach. Logo, „Zaloguj się" i „Załóż konto" mają
+   flex-shrink:0, więc przy 320–375 px ich łączna szerokość przekraczała ekran,
+   a body{overflow-x:hidden} zamiast pokazać nadmiar — ucinało go. Efekt: CTA
+   „Załóż konto" wystawało poza krawędź i nie dało się w nie trafić.
+   !important, bo przyciski mają style inline. */
+@media (max-width: 430px) {
+  .wiz-nav { padding: 0 .85rem !important; gap: .55rem !important; }
+  #navAuth { gap: 6px !important; }
+  #navLoginBtn { padding: 7px 10px !important; font-size: 12.5px !important; }
+  #navRegisterBtn { padding: 7px 12px !important; font-size: 12.5px !important; }
+}
+@media (max-width: 380px) {
+  /* Zostaje sam znak graficzny — nadal linkuje na stronę główną. */
+  .wiz-nav > a:first-child span { display: none !important; }
+}
 </style>
 
 <script type="module">

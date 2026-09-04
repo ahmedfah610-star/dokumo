@@ -257,6 +257,22 @@ body { background: var(--bg); font-family: 'Figtree', -apple-system, sans-serif;
 .dpk-back{display:block;margin:14px auto 0;background:none;border:none;color:#999;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer}
 .dpk-back:hover{color:#555}
 .dpk-spin{width:30px;height:30px;border:3px solid #eee;border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+
+/* Nagłówek na wąskich ekranach. Logo, „Zaloguj się" i „Załóż konto" mają
+   flex-shrink:0, więc przy 320–375 px ich łączna szerokość przekraczała ekran,
+   a body{overflow-x:hidden} zamiast pokazać nadmiar — ucinało go. Efekt: CTA
+   „Załóż konto" wystawało poza krawędź i nie dało się w nie trafić.
+   !important, bo przyciski mają style inline. */
+@media (max-width: 430px) {
+  .wiz-nav { padding: 0 .85rem !important; gap: .55rem !important; }
+  #navAuth { gap: 6px !important; }
+  #navLoginBtn { padding: 7px 10px !important; font-size: 12.5px !important; }
+  #navRegisterBtn { padding: 7px 12px !important; font-size: 12.5px !important; }
+}
+@media (max-width: 380px) {
+  /* Zostaje sam znak graficzny — nadal linkuje na stronę główną. */
+  .wiz-nav > a:first-child span { display: none !important; }
+}
 </style>
 
 <script type="module">

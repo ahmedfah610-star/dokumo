@@ -131,7 +131,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .discount-toggle{background:none;border:none;font-size:.8rem;color:var(--ink2);cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;}
 .discount-toggle:hover{color:var(--ink);}
 .discount-input-row{display:flex;gap:8px;margin-top:8px;}
-.discount-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:11px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg3);color:var(--ink);transition:.15s;}
+.discount-input{flex:1;min-width:0;padding:10px 14px;border:1px solid var(--border);border-radius:11px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg3);color:var(--ink);transition:.15s;}
 .discount-input:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft);background:#fff;}
 .discount-apply-btn{padding:10px 18px;background:var(--acc-grad);color:#fff;border:none;border-radius:11px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;box-shadow:0 3px 10px rgba(124,58,237,.22);}
 .discount-apply-btn:hover{opacity:.9;}
@@ -202,6 +202,21 @@ onAuthStateChanged(auth, async u=>{
 .nav-profile-link { font-size:13.5px !important; color:#374151 !important; font-weight:500 !important; letter-spacing:0 !important; }
 .nav-profile-link:hover { background:#f3f4f6 !important; color:#111827 !important; }
 .nav-profile-dropdown { border-radius:14px !important; background:#fff !important; }
+
+/* Nagłówek na wąskich ekranach — patrz komentarz przy .wiz-nav w innych
+   plikach: logo i przyciski nie chciały się kurczyć, a body{overflow-x:hidden}
+   ucinało nadmiar, przez co CTA „Załóż konto" wystawało poza ekran.
+   !important, bo przyciski mają style inline. */
+@media (max-width: 430px) {
+  .u-nav { padding-left: .85rem !important; padding-right: .85rem !important; gap: .55rem !important; }
+  #navAuth { gap: 6px !important; }
+  #navLoginBtn { padding: 7px 10px !important; font-size: 12.5px !important; }
+  #navRegisterBtn { padding: 7px 12px !important; font-size: 12.5px !important; }
+}
+@media (max-width: 380px) {
+  /* Zostaje sam znak graficzny — nadal linkuje na stronę główną. */
+  .u-nav > a:first-child span { display: none !important; }
+}
 </style>
 
 <nav class="u-nav" id="uNav">
