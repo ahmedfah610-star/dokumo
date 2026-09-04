@@ -809,7 +809,10 @@ function _hasPdfAccess(){
   if(sub.expiresAt && Date.now()>new Date(sub.expiresAt).getTime()) return false;
   var p=sub.plan.toLowerCase();
   if(p==='biznes'||p==='promax') return true;
-  if(p==='start'){
+  // Faktura to kategoria Biznes. Start dostaje ją wyłącznie z prawami nabytymi
+  // (zakup sprzed 4.09.2026) — bez tego warunku serwer i tak odmówiłby
+  // generowania, ale dopiero po wypełnieniu całego formularza.
+  if(p==='start'&&sub.prawaNabyte){
     var left=typeof sub.downloadsLeft==='number'?sub.downloadsLeft:5;
     return left>0;
   }

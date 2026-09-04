@@ -4,6 +4,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { hasSensitivePII } from '../lib/pii.js';
 import { bump } from '../lib/analytics.js';
 import { maPrawaNabyte } from '../lib/plany.js';
+import { kategoriaDokumentu } from '../lib/katalog.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -120,7 +121,10 @@ export default async function handler(req, res) {
   const { prompt, url, docId, docName, docCat, docIcon, docCatLabel, type: freeType, systemPrompt, continueFrom } = req.body;
 
   // ── CV i list motywacyjny — zawsze wymaga subskrypcji + rate limit 20/hr per uid ──
-  if (freeType === 'cv' || freeType === 'letter') {
+  // 'match-cv' = dopasowanie CV do ogłoszenia (Kreator CV). Wcześniej szło tu
+  // jako gołe {prompt} bez docId i lądowało w kategorii „inne", więc Biznes
+  // miał dostęp do funkcji CV, a Start nie miał — odwrotnie niż w cenniku.
+  if (freeType === 'cv' || freeType === 'letter' || freeType === 'match-cv') {
     const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
     if (!token) return res.status(401).json({ error: 'Wymagane logowanie' });
     let uid;
@@ -152,7 +156,8 @@ export default async function handler(req, res) {
     }
     // Miesięczny limit generowań wg planu (Start pomija — ma model 1 pobrania)
     let rollbackGen = null;
-    if (GEN_LIMITS[cvPlan]) {
+    // Dopasowanie CV to analiza, nie dokument — nie zjada miesięcznej puli.
+    if (freeType !== 'match-cv' && GEN_LIMITS[cvPlan]) {
       const g = await reserveMonthlyGen(uid, GEN_LIMITS[cvPlan]);
       if (!g.ok) {
         if (rollbackAi) rollbackAi();
@@ -419,10 +424,14 @@ ${truncated}`;
     return res.status(401).json({ error: 'Nieprawidłowy token' });
   }
 
-  // ── 2. Walidacja kategorii ──
-  const cat = docCat || 'inne';
-  if (!ALLOWED_CATS.has(cat)) {
-    return res.status(400).json({ error: 'Niedozwolona kategoria dokumentu' });
+  // ── 2. Kategoria — wyprowadzona z rodzaju dokumentu, nie z ciała żądania ──
+  // `docCat` przychodzi od klienta, więc nie może decydować o dostępie:
+  // wystarczyłoby wysłać prompt na regulamin sklepu z `docCat:'kariera'`.
+  // Tryb URL (pobranie ogłoszenia do dopasowania CV) nie ma docId i należy
+  // do funkcji Kreatora CV.
+  const cat = url ? 'kariera' : kategoriaDokumentu(docId);
+  if (!cat || !ALLOWED_CATS.has(cat)) {
+    return res.status(400).json({ error: 'Nieznany rodzaj dokumentu' });
   }
 
   // ── 3. Wymagana aktywna subskrypcja — każdy dokument jest płatny ──

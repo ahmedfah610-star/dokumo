@@ -399,7 +399,7 @@ window.wmRunMatch = async function() {
 
   try {
     var _tokWm = typeof window._fbToken === 'function' ? await window._fbToken() : (window._fbToken || '');
-    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tokWm}, body: JSON.stringify({ prompt: prompt }) });
+    var res = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tokWm}, body: JSON.stringify({ prompt: prompt, type: 'match-cv' }) });
     if (!res.ok) throw new Error('Błąd API: ' + res.status);
     var data = await res.json();
     var raw = (data.text || data.result || '').replace(/```json|```/g,'').trim();
