@@ -70,7 +70,15 @@ export default async function handler(req, res) {
     const timestamp = parts['t'][0];
     const expected = crypto.createHmac('sha256', secret)
       .update(`${timestamp}.${rawBody}`).digest('hex');
-    if (!parts['v1'].includes(expected)) throw new Error('Bad signature');
+    // Porównanie o stałym czasie — zwykłe === kończy się na pierwszym różnym
+    // bajcie, co teoretycznie pozwala odgadywać podpis bajt po bajcie.
+    const bufOczek = Buffer.from(expected, 'hex');
+    const zgodny = (parts['v1'] || []).some(kandydat => {
+      let buf;
+      try { buf = Buffer.from(kandydat, 'hex'); } catch { return false; }
+      return buf.length === bufOczek.length && crypto.timingSafeEqual(buf, bufOczek);
+    });
+    if (!zgodny) throw new Error('Bad signature');
     if (Math.abs(Date.now()/1000 - parseInt(timestamp)) > 300) throw new Error('Too old');
     event = JSON.parse(rawBody);
   } catch(e) {
@@ -78,8 +86,40 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: e.message });
   }
 
-  if (event.type === 'checkout.session.completed') {
+  // ── Jednokrotna obsługa zdarzenia ──
+  // Stripe ponawia dostarczenie po każdej odpowiedzi innej niż 2xx i po
+  // przekroczeniu czasu odpowiedzi. Bez tej blokady powtórka wykonywała
+  // subRef.set(...) jeszcze raz: pula Startu wracała do 5 pobrań, a expiresAt
+  // przesuwało się o kolejne 30 dni liczone od chwili powtórki.
+  // create() zawodzi, gdy dokument już istnieje — to operacja atomowa, więc
+  // dwa równoległe dostarczenia nie prześlizgną się obok siebie.
+  let zwolnijZdarzenie = null;
+  if (event.id) {
+    const ref = db.collection('stripeEvents').doc(event.id);
+    try {
+      await ref.create({ type: event.type, ts: Timestamp.now() });
+      zwolnijZdarzenie = () => ref.delete().catch(() => {});
+    } catch {
+      console.log('Zdarzenie już obsłużone, pomijam:', event.id, event.type);
+      return res.status(200).json({ received: true, duplicate: true });
+    }
+  }
+
+  // async_payment_succeeded przychodzi dla metod z opóźnionym potwierdzeniem
+  // (przelew, część metod lokalnych) — to wtedy pieniądze faktycznie wpływają.
+  if (event.type === 'checkout.session.completed'
+      || event.type === 'checkout.session.async_payment_succeeded') {
     const session = event.data.object;
+
+    // Zakończenie kasy nie znaczy jeszcze, że zapłacono. Przy opóźnionym
+    // potwierdzeniu payment_status bywa 'unpaid' i dostęp należy się dopiero
+    // po async_payment_succeeded. Bez tego warunku wystarczyło rozpocząć
+    // płatność przelewem i nigdy jej nie dokończyć, żeby dostać pakiet.
+    const statusPlatnosci = session.payment_status;
+    if (statusPlatnosci && statusPlatnosci !== 'paid' && statusPlatnosci !== 'no_payment_required') {
+      console.log('Sesja zakończona, ale nieopłacona:', session.id, statusPlatnosci);
+      return res.status(200).json({ received: true, warning: 'unpaid' });
+    }
     const email = session.customer_email || session.customer_details?.email;
     const planFromMeta = session.metadata?.plan;
     const uidFromMeta = session.metadata?.uid;
@@ -140,6 +180,9 @@ export default async function handler(req, res) {
         console.log(`Plan "${plan}" saved for uid: ${user.uid}`);
       } catch(e) {
         console.error('Firestore save failed:', e.message);
+        // Oddajemy blokadę, żeby ponowienie ze Stripe mogło dokończyć pracę —
+        // inaczej klient zapłaciłby, a subskrypcja nigdy by się nie włączyła.
+        if (zwolnijZdarzenie) await zwolnijZdarzenie();
         return res.status(500).json({ error: 'DB error' });
       }
     }
