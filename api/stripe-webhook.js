@@ -14,12 +14,40 @@ export const config = { api: { bodyParser: false } };
 
 // Mapowanie Stripe Price ID → plan
 // Uzupełnij po stworzeniu produktów w Stripe Dashboard
-const PRICE_TO_PLAN = {
-  [process.env.STRIPE_PRICE_START]:   'start',
-  [process.env.STRIPE_PRICE_KARIERA]: 'kariera',
-  [process.env.STRIPE_PRICE_BIZNES]:  'biznes',
-  [process.env.STRIPE_PRICE_PROMAX]:  'promax',
-};
+// Budujemy mapę pomijając nieustawione zmienne. Zapis obiektowy z kluczem
+// [process.env.X] zamienia brakującą wartość w literalny klucz "undefined";
+// przy dwóch brakach klucze się zlewają i wygrywa ostatni. Wyszukanie
+// PRICE_TO_PLAN[undefined] — a priceId jest undefined w każdym webhooku, bo
+// Stripe nie dołącza line_items bez rozwinięcia — zwracało wtedy przypadkowy
+// plan i mogło nadać komuś Pro Maxa za cenę Kariery.
+const PRICE_TO_PLAN = Object.fromEntries(
+  [
+    [process.env.STRIPE_PRICE_START,   'start'],
+    [process.env.STRIPE_PRICE_KARIERA, 'kariera'],
+    [process.env.STRIPE_PRICE_BIZNES,  'biznes'],
+    [process.env.STRIPE_PRICE_PROMAX,  'promax'],
+  ].filter(([id]) => typeof id === 'string' && id.startsWith('price_'))
+);
+
+// Przy przejściu na wyższy plan powstaje NOWA subskrypcja w Stripe, a stara
+// biegnie dalej — klient płaciłby za obie naraz. Interfejs blokuje obniżenie
+// planu, ale podwyższenie jest dozwolone, więc ten przypadek jest realny.
+async function anulujStaraSubskrypcje(staraId, nowaId) {
+  if (!staraId || staraId === nowaId) return;
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) { console.error('Zmiana planu: brak STRIPE_SECRET_KEY, stara subskrypcja', staraId, 'biegnie dalej'); return; }
+  try {
+    const r = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(staraId)}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + key },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!r.ok) console.error('Nie udało się anulować starej subskrypcji', staraId, 'HTTP', r.status);
+    else console.log('Anulowano starą subskrypcję po zmianie planu:', staraId);
+  } catch (e) {
+    console.error('Anulowanie starej subskrypcji nie powiodło się:', e.message);
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -91,14 +119,23 @@ export default async function handler(req, res) {
           email: user.email || email || null,
         };
         if (plan === 'start') subDoc.downloadsLeft = 5;
-        await db.collection('users').doc(user.uid).collection('subscription').doc('current').set(subDoc);
-        await db.collection('payments').add({
+        const subRef = db.collection('users').doc(user.uid).collection('subscription').doc('current');
+        const poprzednia = (await subRef.get()).data()?.stripeSubscriptionId || null;
+        await subRef.set(subDoc);
+        await anulujStaraSubskrypcje(poprzednia, session.subscription || null);
+        // Identyfikator sesji jako id dokumentu — Stripe ponawia webhooki po
+        // każdym błędzie i po przekroczeniu czasu odpowiedzi, a add() tworzyło
+        // przy każdej próbie osobny wpis, zawyżając przychód w panelu.
+        await db.collection('payments').doc(session.id).set({
           uid: user.uid, email: user.email || email || null, plan,
           stripeSessionId: session.id,
+          // Spór (chargeback) przychodzi z payment_intent, nie z id sesji —
+          // bez tego pola nie da się go powiązać z płatnością ani z kontem.
+          paymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
           amount: session.amount_total || 0,
           currency: session.currency || 'pln',
           ts: Timestamp.now(),
-        });
+        }, { merge: true });
         bump(db, 'subscription_active', { plan });
         console.log(`Plan "${plan}" saved for uid: ${user.uid}`);
       } catch(e) {
@@ -116,15 +153,26 @@ export default async function handler(req, res) {
     }
     const subId = invoice.subscription;
     const customerEmail = invoice.customer_email;
-    if (subId && customerEmail) {
+    if (subId) {
       try {
-        const auth = getAuth();
-        const user = await auth.getUserByEmail(customerEmail);
-        const snap = await db.collection('users').doc(user.uid).collection('subscription').doc('current').get();
-        if (snap.exists && snap.data().stripeSubscriptionId === subId) {
+        // Szukamy po identyfikatorze subskrypcji, a nie po adresie e-mail.
+        // Adres w Stripe pochodzi z chwili zakupu i po zmianie adresu w koncie
+        // przestaje pasować — odnowienie cicho przestawało przedłużać dostęp.
+        let snap = null;
+        const byId = await db.collectionGroup('subscription')
+          .where('stripeSubscriptionId', '==', subId).limit(1).get();
+        if (!byId.empty) snap = byId.docs[0];
+        else if (customerEmail) {
+          const auth = getAuth();
+          const user = await auth.getUserByEmail(customerEmail);
+          const s2 = await db.collection('users').doc(user.uid).collection('subscription').doc('current').get();
+          if (s2.exists && s2.data().stripeSubscriptionId === subId) snap = s2;
+        }
+        if (snap) {
           const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
           await snap.ref.update({ expiresAt: Timestamp.fromDate(expiresAt), cancelled: false });
-          console.log(`Subscription renewed for uid: ${user.uid}`);
+          // uid odczytujemy ze ścieżki dokumentu: users/{uid}/subscription/current
+          console.log('Subscription renewed for uid:', snap.ref.parent.parent?.id || '—');
         }
       } catch(e) {
         console.error('Renewal update failed:', e.message);
@@ -155,8 +203,11 @@ export default async function handler(req, res) {
     const dispute = event.data.object;
     const chargeId = dispute.charge;
     try {
+      // Wcześniej porównywano payment_intent (pi_...) z id sesji checkout
+      // (cs_...) — wartości z dwóch różnych przestrzeni, więc zapytanie nigdy
+      // nic nie zwracało i dostęp po chargebacku pozostawał aktywny.
       const snap = await db.collection('payments')
-        .where('stripeSessionId', '==', dispute.payment_intent).limit(1).get();
+        .where('paymentIntentId', '==', dispute.payment_intent).limit(1).get();
       if (!snap.empty) {
         const uid = snap.docs[0].data().uid;
         if (uid) {
