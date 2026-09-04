@@ -630,7 +630,7 @@ onAuthStateChanged(_cvAuth, async u=>{
       const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
       const data=await res.json();
       if(data.active&&data.expiresAt){
-        localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+        localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,prawaNabyte:!!data.prawaNabyte,platnoscNieudana:!!data.platnoscNieudana,aiBezLimitu:!!data.aiBezLimitu}));
       }
     }catch(e){}
   } else {
@@ -670,7 +670,7 @@ window.addEventListener('_fbAuthReady', async ()=>{
     const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+token}});
     const data=await res.json();
     if(data.active&&data.expiresAt){
-      localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt}));
+      localStorage.setItem('dokumo_sub',JSON.stringify({plan:data.plan,expiresAt:data.expiresAt,prawaNabyte:!!data.prawaNabyte,platnoscNieudana:!!data.platnoscNieudana,aiBezLimitu:!!data.aiBezLimitu}));
       updateChip();
     }
   }catch(e){}
@@ -918,7 +918,7 @@ window.addEventListener('_fbAuthReady', async ()=>{
   });
 })();
 </script>
-<script defer src="plan-guard.js?v=6"></script>
+<script defer src="plan-guard.js?v=7"></script>
 
 <!-- PHOTO CROP MODAL -->
 <div id="cvCropOverlay">

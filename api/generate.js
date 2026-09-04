@@ -3,6 +3,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { hasSensitivePII } from '../lib/pii.js';
 import { bump } from '../lib/analytics.js';
+import { maPrawaNabyte } from '../lib/plany.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -434,7 +435,9 @@ ${truncated}`;
       return res.status(403).json({ error: 'subscription_required' });
     }
     const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera', 'biznes', 'promax'];
-    if (!requiredPlans.includes(sub.plan)) {
+    // Start kupiony przed 4.09.2026 obejmował cały katalog — zakres opłacony
+    // wcześniej zostaje do końca ważności pakietu (lib/plany.js).
+    if (!requiredPlans.includes(sub.plan) && !maPrawaNabyte(sub)) {
       bump(db, 'paywall_hit', { source: 'plan_mismatch' });
       return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });
     }

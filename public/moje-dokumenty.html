@@ -335,6 +335,9 @@ onAuthStateChanged(auth, async user => {
           downloadsLeft: (typeof data.downloadsLeft === 'number' ? data.downloadsLeft : null),
           genUsed: (typeof data.genUsed === 'number' ? data.genUsed : null),
           genLimit: (typeof data.genLimit === 'number' ? data.genLimit : null),
+          prawaNabyte: !!data.prawaNabyte,
+          platnoscNieudana: !!data.platnoscNieudana,
+          aiBezLimitu: !!data.aiBezLimitu,
         }));
         if (typeof paintAccount === 'function') paintAccount();
       }

@@ -567,7 +567,7 @@ async function checkSubFromAPI(){
     const res=await fetch('/api/check-sub',{headers:{'Authorization':'Bearer '+window._fbToken}});
     const data=await res.json();
     if(data.expiresAt){
-      const subObj={plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false};
+      const subObj={plan:data.plan,expiresAt:data.expiresAt,cancelled:data.cancelled||false,prawaNabyte:!!data.prawaNabyte,platnoscNieudana:!!data.platnoscNieudana,aiBezLimitu:!!data.aiBezLimitu};
       if(data.downloadsLeft!==null&&data.downloadsLeft!==undefined) subObj.downloadsLeft=data.downloadsLeft;
       localStorage.setItem('dokumo_sub',JSON.stringify(subObj));
       return data.active;

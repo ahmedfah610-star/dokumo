@@ -80,6 +80,17 @@
       return false;
     }
 
+    // Najpierw kategoria, potem pula pobrań. Wcześniej gałąź Startu kończyła
+    // się „return true" przed sprawdzeniem planu, więc Start przechodził
+    // bramkę dla każdego dokumentu — nieszkodliwe, dopóki obejmował cały
+    // katalog. Po zawężeniu Startu user wypełniłby cały formularz i dopiero
+    // serwer odmówiłby generowania.
+    var pasuje = sub.prawaNabyte || requiredPlans.indexOf(sub.plan) >= 0;
+    if (!pasuje) {
+      window.showPlanUpgradeModal(sub.plan, suggestUpgrade(sub.plan, requiredPlans));
+      return false;
+    }
+
     // Pakiet Start — pula 5 pobrań
     if (sub.plan === 'start') {
       var left = typeof sub.downloadsLeft === 'number' ? sub.downloadsLeft : 5;
@@ -98,15 +109,9 @@
           body: JSON.stringify({ action: 'use-download' }),
         }).catch(function () {});
       }
-      return true;
     }
 
-    // Plan pasuje → dostęp
-    if (requiredPlans.indexOf(sub.plan) >= 0) return true;
-
-    // Plan nie pasuje → modal z propozycją upgrade
-    window.showPlanUpgradeModal(sub.plan, suggestUpgrade(sub.plan, requiredPlans));
-    return false;
+    return true;
   };
 
   // Modal „wymagana subskrypcja" — każdy dokument jest płatny

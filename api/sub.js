@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { bump } from '../lib/analytics.js';
+import { maPrawaNabyte } from '../lib/plany.js';
 
 // Kody rabatowe — ustaw w Vercel env: DISCOUNT_CODES=KOD1:50,KOD2:30
 const DISCOUNT_CODES = (() => {
@@ -98,6 +99,7 @@ export default async function handler(req, res) {
     // dostaje aiBezLimitu, żeby odróżnić brak limitu od braku danych.
     const AI_LIMITS = { kariera: 10 };
     const aiBezLimitu = data.plan === 'biznes' || data.plan === 'promax';
+    const prawaNabyte = maPrawaNabyte(data);
     const month = new Date().toISOString().slice(0, 7);
     let genUsed = null, genLimit = null, aiUsed = null, aiLimit = null;
     if (active && GEN_LIMITS[data.plan]) {
@@ -117,7 +119,7 @@ export default async function handler(req, res) {
       } catch (_) { aiUsed = null; }
     }
 
-    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit , aiBezLimitu, platnoscNieudana: !!data.platnoscNieudana, platnoscKolejnaProba: data.platnoscKolejnaProba?.toDate?.()?.toISOString() || null });
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit , aiBezLimitu, prawaNabyte, platnoscNieudana: !!data.platnoscNieudana, platnoscKolejnaProba: data.platnoscKolejnaProba?.toDate?.()?.toISOString() || null });
   }
 
   if (req.method !== 'POST') return res.status(405).end();
