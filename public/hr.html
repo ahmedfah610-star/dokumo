@@ -811,7 +811,7 @@ function renderPreview(){
 
 /* ── GENERATE ── */
 async function doGenerate(){
-  if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','biznes','promax','start'])) return;
+  if(window.checkPlanAccess && !window.checkPlanAccess(['kariera','biznes','promax'])) return;
   goTo(2);
   var paper=document.getElementById('docPaper');
   paper.className='doc-paper loading';
@@ -1029,7 +1029,7 @@ function copySignLink(){
 }
 </script>
 
-<script defer src="plan-guard.js?v=5"></script>
+<script defer src="plan-guard.js?v=6"></script>
 
 <!-- HOW IT WORKS + INTERNAL LINKS -->
 <style>

@@ -94,7 +94,10 @@ export default async function handler(req, res) {
     // Miesięczne wykorzystanie generowań (genUsage/{uid}, spójne z api/generate.js)
     // oraz pytań do asystenta (legalChatUsage, spójne z api/legal-chat.js)
     const GEN_LIMITS = { kariera: 30, biznes: 30, promax: 100 };
-    const AI_LIMITS = { kariera: 10, biznes: 10, promax: 100 };
+    // Biznes i Pro Max: Asystent bez limitu — aiLimit zostaje null, a klient
+    // dostaje aiBezLimitu, żeby odróżnić brak limitu od braku danych.
+    const AI_LIMITS = { kariera: 10 };
+    const aiBezLimitu = data.plan === 'biznes' || data.plan === 'promax';
     const month = new Date().toISOString().slice(0, 7);
     let genUsed = null, genLimit = null, aiUsed = null, aiLimit = null;
     if (active && GEN_LIMITS[data.plan]) {
@@ -114,7 +117,7 @@ export default async function handler(req, res) {
       } catch (_) { aiUsed = null; }
     }
 
-    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit , platnoscNieudana: !!data.platnoscNieudana, platnoscKolejnaProba: data.platnoscKolejnaProba?.toDate?.()?.toISOString() || null });
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit , aiBezLimitu, platnoscNieudana: !!data.platnoscNieudana, platnoscKolejnaProba: data.platnoscKolejnaProba?.toDate?.()?.toISOString() || null });
   }
 
   if (req.method !== 'POST') return res.status(405).end();

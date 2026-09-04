@@ -807,7 +807,15 @@ function renderPreview(){
 
 /* ── GENERATE ── */
 async function doGenerate(){
-  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax','start'])) return;
+  // Hub łączy dokumenty z dwóch kategorii: najem należy do Kariery, a
+  // biznesplan, SWOT i umowa wspólników do Biznesu. Wcześniej wszystko szło
+  // jako 'biznes', więc użytkownik Kariery dostawał odmowę na umowie najmu w
+  // hubie, choć na stronie dedykowanej ta sama umowa mu się generowała.
+  var KATEGORIE={najmu:'najem',protokol:'najem',wypowiedzenie_najmu:'najem',
+                 biznesplan:'biznes',swot:'biznes',spolnikow:'biznes'};
+  var _kat=KATEGORIE[selDoc]||'biznes';
+  var _plany=_kat==='najem'?['kariera','biznes','promax']:['biznes','promax'];
+  if(window.checkPlanAccess && !window.checkPlanAccess(_plany)) return;
   goTo(2);
   var paper=document.getElementById('docPaper');
   paper.className='doc-paper loading';
@@ -821,7 +829,7 @@ async function doGenerate(){
     var res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:'biznes',docCatLabel:'Biznes',docIcon:form.icon})
+      body:JSON.stringify({prompt:prompt,systemPrompt:SYSTEM_PROMPT,docId:selDoc,docName:form.title,docCat:_kat,docCatLabel:(_kat==='najem'?'Najem':'Biznes'),docIcon:form.icon})
     });
     var data=await res.json();
     genText=data.text||data.result||'Błąd generowania';
@@ -903,7 +911,7 @@ renderBar();
 })();
 </script>
 
-<script defer src="plan-guard.js?v=5"></script>
+<script defer src="plan-guard.js?v=6"></script>
 
 <!-- HOW IT WORKS + INTERNAL LINKS -->
 <style>

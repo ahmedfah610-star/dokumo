@@ -13,18 +13,18 @@ const auth = getAuth();
 // Dozwolone kategorie dokumentów
 const ALLOWED_CATS = new Set(['hr','kariera','biznes','najem','sprzedaz','inne']);
 
-// Wymagane plany per kategoria (serwer-side)
-// Biznes = dokumenty firmowe: umowy (o pracę, zlecenie, B2B, NDA), faktury,
-// regulaminy, biznesplany, najem, sprzedaż, pisma — WSZYSTKO poza Kreatorem CV.
-// Kariera = CV/list + umowy i pisma (bez firmowych: faktur/regulaminów/biznesplanów).
-// Pro Max i Start = wszystko.
+// Wymagane plany per kategoria (egzekwowane po stronie serwera).
+// Start nie jest już najtańszą furtką do całego katalogu — daje wyłącznie
+// dokumenty osobiste i pracownicze. Kariera i Biznes są równoległe, nie
+// zagnieżdżone: Kariera nie ma dokumentów sklepowych, Biznes nie ma CV ani
+// listu motywacyjnego. Pro Max jako jedyny łączy oba światy.
 const CAT_REQUIRED_PLANS = {
-  hr:       ['kariera','biznes','promax','start'],
-  kariera:  ['kariera','promax','start'],
-  biznes:   ['biznes','promax','start'],
-  najem:    ['kariera','biznes','promax','start'],
-  sprzedaz: ['kariera','biznes','promax','start'],
-  inne:     ['kariera','biznes','promax','start'],
+  kariera:  ['start', 'kariera', 'promax'],              // CV, list, wypowiedzenie, urlop, świadectwo
+  hr:       ['kariera', 'biznes', 'promax'],             // umowy: o pracę, zlecenie, dzieło, B2B, NDA
+  najem:    ['kariera', 'biznes', 'promax'],
+  sprzedaz: ['kariera', 'biznes', 'promax'],
+  inne:     ['kariera', 'biznes', 'promax'],             // pełnomocnictwo, wezwanie do zapłaty
+  biznes:   ['biznes', 'promax'],                        // sklep, faktury, biznesplan, SWOT, wspólnicy
 };
 
 const RATE_LIMIT = 25;
@@ -433,7 +433,7 @@ ${truncated}`;
       bump(db, 'paywall_hit', { source: 'no_sub' });
       return res.status(403).json({ error: 'subscription_required' });
     }
-    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera','promax','start'];
+    const requiredPlans = CAT_REQUIRED_PLANS[cat] || ['kariera', 'biznes', 'promax'];
     if (!requiredPlans.includes(sub.plan)) {
       bump(db, 'paywall_hit', { source: 'plan_mismatch' });
       return res.status(403).json({ error: 'Twój pakiet nie obejmuje tej kategorii dokumentów' });

@@ -563,7 +563,7 @@ function renderPreview(){
 /* ── GENERATE ── */
 async function doGenerate(){
   if(window.tryDocPeek && window.tryDocPeek()) return;
-  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax','start'])) return;
+  if(window.checkPlanAccess && !window.checkPlanAccess(['biznes','promax'])) return;
   goTo(2);
   try {
     var prompt=FORM.prompt(wizVals);
@@ -687,7 +687,7 @@ function attachNIPListeners(){
 })();
 </script>
 
-<script defer src="plan-guard.js?v=5"></script>
+<script defer src="plan-guard.js?v=6"></script>
 
 <!-- SEO SECTION -->
 <style>

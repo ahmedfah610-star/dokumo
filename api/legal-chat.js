@@ -477,14 +477,19 @@ export default async function handler(req, res) {
   //  • Kariera / Biznes → 10 / miesiąc
   //  • brak planu / Start → 5 pytań darmowych ŁĄCZNIE (na zawsze)
   const FREE_LIFETIME = 5;
-  const ASSISTANT_MONTHLY = { promax: 100, kariera: 10, biznes: 10 };
+  // Biznes i Pro Max mają Asystenta bez limitu. Nie używamy Infinity, bo
+  // JSON.stringify zamienia je na null i klient nie odróżnia „bez limitu"
+  // od braku danych — wysyłamy jawną flagę bezLimitu.
+  const BEZ_LIMITU = new Set(['biznes', 'promax']);
+  const ASSISTANT_MONTHLY = { kariera: 10 };
+  const bezLimitu = BEZ_LIMITU.has(subPlan);
   const monthlyLimit = ASSISTANT_MONTHLY[subPlan] || 0;
   const usageDocId = uid ? uid.replace(/[\/:.]/g, '_') : null;
 
   // ── GET quota — stan puli bez zużywania pytania ─────────────────────
   if (req.method === 'GET' && action === 'quota') {
     if (!uid) return res.status(401).json({ error: 'Wymagane logowanie' });
-    if (isAdmin) return res.status(200).json({ unlimited: true });
+    if (isAdmin || bezLimitu) return res.status(200).json({ unlimited: true });
     if (monthlyLimit) {
       const used = await readMonthlyUsed(usageDocId);
       return res.status(200).json({ paid: true, freeLeft: Math.max(0, monthlyLimit - used), freeMax: monthlyLimit });
@@ -596,6 +601,9 @@ export default async function handler(req, res) {
   let quotaInfo;
   if (isAdmin) {
     quotaInfo = { unlimited: true };
+  } else if (bezLimitu) {
+    // Bez limitu — pytania liczymy dalej (statystyka), ale nie blokujemy.
+    quotaInfo = { paid: true, unlimited: true };
   } else if (monthlyLimit) {
     const c = await consumeMonthlyQuery(usageDocId, monthlyLimit);
     if (!c.allowed) {
