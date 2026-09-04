@@ -159,12 +159,6 @@ export default async function handler(req, res) {
           email: user.email || email || null,
         };
         if (plan === 'start') subDoc.downloadsLeft = 5;
-        // Trwały ślad akceptacji regulaminu w kasie Stripe. Komunikat przy tym
-        // checkboxie mówi wprost o utracie prawa odstąpienia, więc zaakceptowanie
-        // spełnia warunek z art. 38 ust. 1 pkt 13 u.p.k. Gdy zgody brak, klientowi
-        // przysługuje pełne 14 dni na odstąpienie i tak trzeba go traktować.
-        subDoc.zgodaRegulamin = session.consent?.terms_of_service === 'accepted';
-        subDoc.zgodaRegulaminTs = Timestamp.now();
         const subRef = db.collection('users').doc(user.uid).collection('subscription').doc('current');
         const poprzednia = (await subRef.get()).data()?.stripeSubscriptionId || null;
         await subRef.set(subDoc);
