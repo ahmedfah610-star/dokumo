@@ -444,6 +444,20 @@ function pitNoRelief(annual) {
 
 var PIT0_LIMIT = 85528; // ulga dla młodych — roczny limit
 
+// Roczny limit podstawy składek emerytalnej i rentowej („30-krotność").
+// M.P. 2025 poz. 1206 — na 2026 r. 282 600 zł (prognozowane przeciętne 9420 zł).
+// Powyżej limitu te dwie składki przestają być naliczane; chorobowa,
+// zdrowotna, wypadkowa, FP i FGŚP obowiązują bez ograniczenia.
+var LIMIT_30X = 282600;
+
+// Minimalna podstawa składki zdrowotnej przedsiębiorcy to 75% minimalnego
+// wynagrodzenia (art. 81 ust. 2b ustawy o świadczeniach opieki zdrowotnej,
+// Dz.U. 2025 poz. 1461 t.j.). Na 2026 r.: 0,75 × 4806 zł = 3604,50 zł.
+// Wcześniej liczone od 100% płacy minimalnej, czyli o 108 zł za dużo.
+var ZDROW_MIN_9  = +(0.75 * 4806 * 0.09).toFixed(2);   // skala   → 324,41 zł
+var ZDROW_MIN_49 = +(0.75 * 4806 * 0.049).toFixed(2);  // liniowy → 176,62 zł
+function podstawaEmRe(brutto) { return Math.min(brutto * 12, LIMIT_30X) / 12; }
+
 function pitWithUlga(annualBase) {
   if (pit0) {
     var taxable = Math.max(0, annualBase - PIT0_LIMIT);
@@ -454,24 +468,27 @@ function pitWithUlga(annualBase) {
 
 /* ── UoP ── */
 function calcUoP(brutto) {
-  var zusEm = brutto * 0.0976, zusRe = brutto * 0.015, zusCh = brutto * 0.0245;
+  var pER   = podstawaEmRe(brutto);
+  var zusEm = pER * 0.0976, zusRe = pER * 0.015, zusCh = brutto * 0.0245;
   var zusSum = zusEm + zusRe + zusCh;
   var zdrow  = (brutto - zusSum) * 0.09;
   var taxM   = Math.max(0, Math.round(pitWithUlga((brutto - zusSum - 250) * 12) / 12));
   var netto  = brutto - zusSum - zdrow - taxM;
-  var emp    = brutto * (1 + 0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
+  // Po stronie pracodawcy limit dotyczy tak samo emerytalnej i rentowej.
+  var emp    = brutto + pER * (0.0976 + 0.065) + brutto * (0.0167 + 0.0245 + 0.001);
   return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, tax: taxM, netto, emp };
 }
 
 /* ── UZ ── */
 function calcUZ(brutto) {
-  var zusEm = brutto * 0.0976, zusRe = brutto * 0.015, zusCh = brutto * 0.0245;
+  var pER   = podstawaEmRe(brutto);
+  var zusEm = pER * 0.0976, zusRe = pER * 0.015, zusCh = brutto * 0.0245;
   var zusSum = zusEm + zusRe + zusCh;
   var zdrow  = (brutto - zusSum) * 0.09;
   var kup    = (brutto - zusSum) * 0.20;
   var taxM   = Math.max(0, Math.round(pitWithUlga((brutto - zusSum - kup) * 12) / 12));
   var netto  = brutto - zusSum - zdrow - taxM;
-  var emp    = brutto * (1 + 0.0976 + 0.065 + 0.0167 + 0.0245 + 0.001);
+  var emp    = brutto + pER * (0.0976 + 0.065) + brutto * (0.0167 + 0.0245 + 0.001);
   return { brutto, zusEm, zusRe, zusCh, zusSum, zdrow, kup, tax: taxM, netto, emp };
 }
 
@@ -490,7 +507,7 @@ function calcB2BRyczalt(przychod) {
   var rocznyBase = przychod * 12 - zusStaly * 12;
   var zdrow = rocznyBase <= 60000  ? 498.35
             : rocznyBase <= 300000 ? 830.58
-            :                        1495.44;
+            :                        1495.04;
   // podatek: 12% od przychodu, można odliczyć 50% zdrowotnej od podstawy
   var podstawa = Math.max(0, przychod - zdrow * 0.5);
   var taxM = Math.round(podstawa * 0.12);
@@ -502,7 +519,7 @@ function calcB2BRyczalt(przychod) {
 function calcB2BSkala(przychod) {
   var zusStaly = 1926.77;
   var dochod   = Math.max(0, przychod - zusStaly);
-  var zdrow    = Math.max(432.54, dochod * 0.09);
+  var zdrow    = Math.max(ZDROW_MIN_9, dochod * 0.09);
   var taxM     = Math.max(0, Math.round(pitProgressive(dochod * 12) / 12));
   var netto    = przychod - zusStaly - zdrow - taxM;
   return { brutto: przychod, zusStaly, zdrow, tax: taxM, netto, emp: przychod };
@@ -512,7 +529,7 @@ function calcB2BSkala(przychod) {
 function calcB2B(przychod) {
   var zusStaly = 1926.77;
   var dochod   = Math.max(0, przychod - zusStaly);
-  var zdrow    = Math.max(432.54, dochod * 0.049);
+  var zdrow    = Math.max(ZDROW_MIN_49, dochod * 0.049);
   var zdrowOdlicz = Math.min(zdrow, 1175); // max 14 100 zł/rok = 1 175 zł/mies
   var taxM     = Math.max(0, Math.round((dochod - zdrowOdlicz) * 0.19));
   var netto    = przychod - zusStaly - zdrow - taxM;
@@ -674,8 +691,15 @@ function calculate() {
   rows += brRow('#e5e5e5', brLabel, '', fmt(b), false);
 
   if (contract === 'uop' || contract === 'uz') {
-    rows += brRow('#999', 'Emerytalna (9,76%)',   '9,76%', fmtM(c.zusEm), true);
-    rows += brRow('#aaa', 'Rentowa (1,5%)',        '1,50%', fmtM(c.zusRe), true);
+    // Powyżej rocznego limitu (30-krotność) emerytalna i rentowa nie rosną, więc
+    // etykieta „9,76%" przestaje odpowiadać kwocie — zaznaczamy to wprost.
+    var ponadLimit = b * 12 > LIMIT_30X;
+    var dopisek = ponadLimit
+      ? ' <span style="font-size:.7em;opacity:.6;">limit 30-krotności</span>' : '';
+    rows += brRow('#999', 'Emerytalna (9,76%)' + dopisek,
+                  ponadLimit ? 'do limitu' : '9,76%', fmtM(c.zusEm), true);
+    rows += brRow('#aaa', 'Rentowa (1,5%)' + dopisek,
+                  ponadLimit ? 'do limitu' : '1,50%', fmtM(c.zusRe), true);
     rows += brRow('#b5b5b5', 'Chorobowa (2,45%)' + (contract==='uz'?' <span style="font-size:.7em;opacity:.6;">dobrowolna</span>':''), '2,45%', fmtM(c.zusCh), true);
   }
   if (isB2B(contract)) {
