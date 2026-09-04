@@ -95,6 +95,9 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-
 .plan-features li strong{color:var(--ink);font-weight:700;}
 .plan-features li .ck{color:var(--green);font-weight:800;text-align:center;}
 .plan-features li .no{color:rgba(29,29,31,.25);text-align:center;}
+/* „(Kariera)" / „(Biznes)" przy wykluczeniu — od razu widać, w którym
+   pakiecie dana kategoria jest, zamiast samego „nie ma". */
+.plan-features li em{font-style:normal;color:var(--ink3);white-space:nowrap;}
 
 .plan-btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:.01em;cursor:pointer;transition:transform .15s,box-shadow .2s,opacity .2s;}
 .plan-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,58,237,.28);}
@@ -296,7 +299,7 @@ updateNavAuth();window._renderUNav=updateNavAuth;
   <div class="plan-card" id="card-start">
     <div class="plan-icon">⚡</div>
     <div class="plan-name">Pakiet Start</div>
-    <div class="plan-tagline">CV i dokumenty pracownicze. Bez subskrypcji.</div>
+    <div class="plan-tagline">Tylko CV i dokumenty pracownicze. Bez subskrypcji.</div>
     <div class="plan-price" id="price-start">4,99 zł <span>/ jednorazowo</span></div>
     <div class="plan-quota"><span class="qic">📄</span> 5 dokumentów — płatność jednorazowa</div>
     <hr class="plan-div">
@@ -305,7 +308,8 @@ updateNavAuth();window._renderUNav=updateNavAuth;
       <li><span class="ck">✓</span><span>Wypowiedzenie, wniosek o urlop, świadectwo pracy</span></li>
       <li><span class="ck">✓</span><span>Pliki PDF i Word gotowe do wysłania</span></li>
       <li><span class="ck">✓</span><span>Płacisz raz — bez odnawiania i bez karty w bazie</span></li>
-      <li><span class="no">✕</span><span>Umowy zlecenie, o dzieło, B2B, NDA</span></li>
+      <li><span class="no">✕</span><span>Umowy, najem, sprzedaż, pełnomocnictwa <em>(Kariera)</em></span></li>
+      <li><span class="no">✕</span><span>Regulamin sklepu, RODO, faktury, biznesplan <em>(Biznes)</em></span></li>
       <li><span class="no">✕</span><span>Asystent Prawny i Podatkowy AI</span></li>
     </ul>
     <button class="plan-btn dark" id="btn-start" onclick="kupPakiet('start')">Kup Pakiet Start →</button>
