@@ -114,7 +114,7 @@ export default async function handler(req, res) {
       } catch (_) { aiUsed = null; }
     }
 
-    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit });
+    return res.status(200).json({ active, plan: data.plan, expiresAt: expiresAt?.toISOString() || null, cancelled: data.cancelled || false, downloadsLeft: data.downloadsLeft ?? null, genUsed, genLimit, aiUsed, aiLimit , platnoscNieudana: !!data.platnoscNieudana, platnoscKolejnaProba: data.platnoscKolejnaProba?.toDate?.()?.toISOString() || null });
   }
 
   if (req.method !== 'POST') return res.status(405).end();

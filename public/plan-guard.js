@@ -198,3 +198,48 @@
     };
   })();
 })();
+
+// ── Pasek: nie udało się pobrać płatności ────────────────────────────────
+// Stripe ponawia próbę przez kilkanaście dni, a my dajemy 7 dni karencji.
+// Bez tego komunikatu użytkownik nie ma skąd wiedzieć, że jego dostęp za
+// chwilę wygaśnie z powodu karty, a nie z powodu rezygnacji.
+(function () {
+  function pokazPasekPlatnosci() {
+    if (document.getElementById('pgPayFail')) return;
+    var sub; try { sub = JSON.parse(localStorage.getItem('dokumo_sub')); } catch (e) { return; }
+    if (!sub || !sub.platnoscNieudana) return;
+    try { if (sessionStorage.getItem('dokumo_payfail_zamkniete')) return; } catch (e) {}
+
+    var doKiedy = '';
+    if (sub.expiresAt) {
+      var d = new Date(sub.expiresAt);
+      if (!isNaN(d)) doKiedy = ' Dostęp działa do ' + d.toLocaleDateString('pl-PL',
+        { day: 'numeric', month: 'long' }) + '.';
+    }
+    var el = document.createElement('div');
+    el.id = 'pgPayFail';
+    el.style.cssText = 'position:fixed;left:12px;right:12px;top:12px;z-index:99996;max-width:680px;margin:0 auto;' +
+      'background:#fffbeb;border:1px solid #f59e0b;border-radius:14px;padding:13px 16px;' +
+      'box-shadow:0 12px 40px rgba(120,90,20,.18);font-family:inherit;display:flex;align-items:flex-start;gap:12px';
+    el.innerHTML =
+      '<span style="font-size:1.25rem;line-height:1;flex-shrink:0">💳</span>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:.9rem;font-weight:800;color:#92400e">Nie udało się pobrać płatności</div>' +
+        '<div style="font-size:.8rem;color:#a16207;line-height:1.5;margin-top:2px">' +
+          'Sprawdź, czy karta jest aktualna — spróbujemy jeszcze raz automatycznie.' + doKiedy +
+        '</div>' +
+      '</div>' +
+      '<a href="subskrypcja.html" style="flex-shrink:0;background:#92400e;color:#fff;text-decoration:none;' +
+        'border-radius:10px;padding:9px 14px;font-size:.8rem;font-weight:700;white-space:nowrap">Sprawdź</a>' +
+      '<button id="pgPayFailX" aria-label="Zamknij" style="flex-shrink:0;background:none;border:none;' +
+        'color:#b45309;font-size:1.1rem;cursor:pointer;padding:4px;line-height:1">✕</button>';
+    document.body.appendChild(el);
+    document.getElementById('pgPayFailX').onclick = function () {
+      el.remove();
+      try { sessionStorage.setItem('dokumo_payfail_zamkniete', '1'); } catch (e) {}
+    };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pokazPasekPlatnosci);
+  else pokazPasekPlatnosci();
+  window.pokazPasekPlatnosci = pokazPasekPlatnosci;
+})();

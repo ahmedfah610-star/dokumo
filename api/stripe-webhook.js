@@ -170,7 +170,14 @@ export default async function handler(req, res) {
         }
         if (snap) {
           const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-          await snap.ref.update({ expiresAt: Timestamp.fromDate(expiresAt), cancelled: false });
+          await snap.ref.update({
+            expiresAt: Timestamp.fromDate(expiresAt),
+            cancelled: false,
+            // Płatność przeszła — karencja i ostrzeżenie przestają obowiązywać.
+            platnoscNieudana: false,
+            platnoscNieudanaOd: null,
+            platnoscKolejnaProba: null,
+          });
           // uid odczytujemy ze ścieżki dokumentu: users/{uid}/subscription/current
           console.log('Subscription renewed for uid:', snap.ref.parent.parent?.id || '—');
         }
@@ -181,6 +188,49 @@ export default async function handler(req, res) {
   }
 
   // Anulowanie subskrypcji — natychmiastowe odcięcie dostępu
+  // ── Nieudane odnowienie: karencja zamiast natychmiastowego odcięcia ──
+  // Wygasła karta albo chwilowo zablokowany limit to nie rezygnacja. Stripe
+  // przez kilkanaście dni ponawia próbę pobrania; wcześniej w tym czasie
+  // dostęp po prostu wygasał i płacący klient był odcinany w trakcie
+  // odzyskiwania płatności. Dajemy 7 dni karencji i oznaczamy konto, żeby
+  // aplikacja mogła poprosić o aktualizację karty.
+  if (event.type === 'invoice.payment_failed') {
+    const invoice = event.data.object;
+    const subId = invoice.subscription;
+    if (!subId) return res.status(200).json({ received: true });
+    try {
+      const byId = await db.collectionGroup('subscription')
+        .where('stripeSubscriptionId', '==', subId).limit(1).get();
+      if (!byId.empty) {
+        const ref = byId.docs[0].ref;
+        const dane = byId.docs[0].data();
+        const kolejnaProba = invoice.next_payment_attempt
+          ? Timestamp.fromDate(new Date(invoice.next_payment_attempt * 1000)) : null;
+        // Zdarzenie przychodzi przy KAŻDEJ próbie ponowienia, więc karencję
+        // przyznajemy tylko raz — inaczej każda kolejna próba przedłużałaby
+        // dostęp w nieskończoność.
+        if (dane.platnoscNieudana) {
+          await ref.update({ platnoscKolejnaProba: kolejnaProba });
+          console.log('Kolejna nieudana próba płatności, karencja już trwa:', ref.path);
+        } else {
+          const teraz = Date.now();
+          const obecne = dane.expiresAt?.toDate?.()?.getTime() || teraz;
+          const doKiedy = new Date(Math.max(obecne, teraz + 7 * 24 * 60 * 60 * 1000));
+          await ref.update({
+            expiresAt: Timestamp.fromDate(doKiedy),
+            platnoscNieudana: true,
+            platnoscNieudanaOd: Timestamp.now(),
+            platnoscKolejnaProba: kolejnaProba,
+          });
+          bump(db, 'payment_failed', { plan: dane.plan || 'nieznany' });
+          console.log('Karencja 7 dni po nieudanej płatności:', ref.path);
+        }
+      }
+    } catch (e) {
+      console.error('Obsługa nieudanej płatności nie powiodła się:', e.message);
+    }
+  }
+
   if (event.type === 'customer.subscription.deleted') {
     const sub = event.data.object;
     const customerId = sub.customer;

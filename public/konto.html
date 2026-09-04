@@ -470,6 +470,8 @@ onAuthStateChanged(auth, async user => {
         genLimit: (typeof d.genLimit === 'number' ? d.genLimit : null),
         aiUsed: (typeof d.aiUsed === 'number' ? d.aiUsed : null),
         aiLimit: (typeof d.aiLimit === 'number' ? d.aiLimit : null),
+        platnoscNieudana: !!d.platnoscNieudana,
+        platnoscKolejnaProba: d.platnoscKolejnaProba || null,
       }));
       else localStorage.removeItem('dokumo_sub');
       if (typeof paintKonto === 'function') paintKonto();
