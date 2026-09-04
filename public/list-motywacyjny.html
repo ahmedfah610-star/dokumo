@@ -122,6 +122,12 @@ body{background:var(--bg);font-family:'Figtree',-apple-system,sans-serif;color:v
 /* LAYOUT */
 main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 .lm-wrap{flex:1;display:flex;overflow:hidden;min-height:0;}
+/* Sekcja opisowa poza #lmWrap — kreator bywa ukryty (wizard onboardingowy),
+   a opis, kroki i FAQ mają być widoczne zawsze, tak jak w pozostałych
+   generatorach. Bez tego Google widział tylko pusty ekran ładowania. */
+.lm-tresc-seo{max-width:800px;margin:0 auto;padding:0 1.5rem 48px;}
+.lm-tresc-seo>div{border-top:1px solid var(--border);margin-top:32px;padding:28px 0 8px;}
+@media(max-width:640px){.lm-tresc-seo{padding:0 1rem 40px;}}
 
 /* ── EDITOR ── */
 .lm-editor{width:360px;min-width:300px;overflow-y:auto;border-right:1px solid var(--border);flex-shrink:0;}
@@ -463,44 +469,6 @@ onAuthStateChanged(getAuth(app),async u=>{
 
     </div>
 
-    <!-- SEO: widoczne po przewinięciu panelu edytora, indeksowane przez Google -->
-    <div style="border-top:1px solid var(--border);margin-top:32px;padding:28px 0 8px;">
-      <div style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:16px;">Jak to działa</div>
-      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
-        <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 1</div>
-          <div style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;">Podaj stanowisko i firmę</div>
-          <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">Wpisz nazwę stanowiska i opcjonalnie firmę — AI dobierze ton i słowa kluczowe dopasowane do roli.</div>
-        </div>
-        <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 2</div>
-          <div style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;">AI generuje treść w 60 sekund</div>
-          <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">3 akapity, formalny styl, zero angielskich wtrętów — gotowa treść listu motywacyjnego po polsku.</div>
-        </div>
-        <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
-          <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 3</div>
-          <div style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;">Pobierz PDF</div>
-          <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">Wybierz jeden z 3 szablonów (Nowoczesny, Klasyczny, Elegancki) i pobierz gotowy PDF.</div>
-        </div>
-      </div>
-      <div style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;">Powiązane narzędzia</div>
-      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:28px;">
-        <a href="kreator-cv.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📄 Kreator CV</a>
-        <a href="popraw-cv.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">✨ Popraw CV z AI</a>
-        <a href="hr.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📋 Umowy B2B</a>
-        <a href="wypowiedzenia.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📝 Wypowiedzenie</a>
-        <a href="jak-napisac-cv-2026.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📚 Jak napisać CV</a>
-        <a href="prawo-pracy-2026.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">⚖️ Prawo pracy 2026</a>
-      </div>
-      <div style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:16px;">FAQ — lista motywacyjna</div>
-      <div style="display:flex;flex-direction:column;">
-        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jak napisać list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Dobry list składa się z 3 części: wstęp (dlaczego aplikujesz), środek (osiągnięcia dopasowane do oferty) i zakończenie (zaproszenie do rozmowy). Maksymalnie 1 strona A4, ~300 słów.</div></div>
-        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Co powinien zawierać list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Dane kontaktowe, datę, nagłówek z nazwą stanowiska, 3 akapity treści (motywacja, doświadczenie, podsumowanie) i formułę grzecznościową z podpisem.</div></div>
-        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Ile stron powinien mieć list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Maksymalnie 1 strona A4 — ok. 250–350 słów. Rekruterzy poświęcają na lekturę ok. 30 sekund, więc krótki i konkretny list ma przewagę.</div></div>
-        <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Czy list motywacyjny jest obowiązkowy? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Nie zawsze, ale znacząco zwiększa szanse — 49% rekruterów odrzuca aplikacje bez listu gdy jest wymagany. Nawet niewymagany pomaga się wyróżnić.</div></div>
-        <div class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jaka jest różnica między CV a listem motywacyjnym? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">CV — wykaz doświadczenia i umiejętności (co robiłem/am). List motywacyjny — narracja (dlaczego jestem idealnym kandydatem dla tej firmy). Nie powielaj tych samych treści.</div></div>
-      </div>
-    </div>
 
   </div>
 
@@ -509,6 +477,51 @@ onAuthStateChanged(getAuth(app),async u=>{
     <div class="lm-paper" id="lmPaper" aria-live="polite" aria-label="Podgląd listu motywacyjnego"></div>
   </div>
 
+</div>
+
+
+<!-- SEO: sekcja poza #lmWrap. Wczesniej siedziala w panelu edytora, ktory
+     dla ruchu organicznego nigdy sie nie pokazuje (pokazywany jest wizard),
+     wiec caly opis, kroki i FAQ mial display:none — Google ich nie widzial. -->
+<div class="lm-tresc-seo">
+  <!-- SEO: widoczne po przewinięciu panelu edytora, indeksowane przez Google -->
+  <div style="border-top:1px solid var(--border);margin-top:32px;padding:28px 0 8px;">
+  <h2 style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px;">Jak napisać list motywacyjny w 3 krokach</h2>
+  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
+  <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
+  <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 1</div>
+  <h3 style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;margin-top:0;">Podaj stanowisko i firmę</h3>
+  <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">Wpisz nazwę stanowiska i opcjonalnie firmę — AI dobierze ton i słowa kluczowe dopasowane do roli.</div>
+  </div>
+  <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
+  <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 2</div>
+  <h3 style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;margin-top:0;">AI generuje treść w 60 sekund</h3>
+  <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">3 akapity, formalny styl, zero angielskich wtrętów — gotowa treść listu motywacyjnego po polsku.</div>
+  </div>
+  <div style="background:var(--surface);border-radius:12px;padding:14px 16px;">
+  <div style="font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;">Krok 3</div>
+  <h3 style="font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:3px;margin-top:0;">Pobierz PDF</h3>
+  <div style="font-size:.8rem;color:var(--ink2);line-height:1.5;">Wybierz jeden z 3 szablonów (Nowoczesny, Klasyczny, Elegancki) i pobierz gotowy PDF.</div>
+  </div>
+  </div>
+  <h2 style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:0 0 12px;">Powiązane narzędzia</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:28px;">
+  <a href="kreator-cv.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📄 Kreator CV</a>
+  <a href="popraw-cv.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">✨ Popraw CV z AI</a>
+  <a href="hr.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📋 Umowy B2B</a>
+  <a href="wypowiedzenia.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📝 Wypowiedzenie</a>
+  <a href="jak-napisac-cv-2026.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">📚 Jak napisać CV</a>
+  <a href="prawo-pracy-2026.html" style="font-size:.78rem;font-weight:600;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px;text-decoration:none;">⚖️ Prawo pracy 2026</a>
+  </div>
+  <h2 style="font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:0 0 16px;">List motywacyjny — najczęstsze pytania</h2>
+  <div style="display:flex;flex-direction:column;">
+  <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jak napisać list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Dobry list składa się z 3 części: wstęp (dlaczego aplikujesz), środek (osiągnięcia dopasowane do oferty) i zakończenie (zaproszenie do rozmowy). Maksymalnie 1 strona A4, ~300 słów.</div></div>
+  <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Co powinien zawierać list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Dane kontaktowe, datę, nagłówek z nazwą stanowiska, 3 akapity treści (motywacja, doświadczenie, podsumowanie) i formułę grzecznościową z podpisem.</div></div>
+  <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Ile stron powinien mieć list motywacyjny? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Maksymalnie 1 strona A4 — ok. 250–350 słów. Rekruterzy poświęcają na lekturę ok. 30 sekund, więc krótki i konkretny list ma przewagę.</div></div>
+  <div style="border-bottom:1px solid var(--border);" class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Czy list motywacyjny jest obowiązkowy? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">Nie zawsze, ale znacząco zwiększa szanse — 49% rekruterów odrzuca aplikacje bez listu gdy jest wymagany. Nawet niewymagany pomaga się wyróżnić.</div></div>
+  <div class="lm-faq-item"><button class="lm-faq-q" onclick="toggleLmFaq(this)" aria-expanded="false">Jaka jest różnica między CV a listem motywacyjnym? <span class="lm-faq-chevron">▼</span></button><div class="lm-faq-a">CV — wykaz doświadczenia i umiejętności (co robiłem/am). List motywacyjny — narracja (dlaczego jestem idealnym kandydatem dla tej firmy). Nie powielaj tych samych treści.</div></div>
+  </div>
+  </div>
 </div>
 
 <div class="lm-bar" id="lmBar" style="display:none;">
