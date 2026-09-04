@@ -1520,6 +1520,7 @@ function buildCVHTML(tpl) {
           ${sh(s.title||'')}
           <div style="font-size:11px;color:#555;line-height:1.65">${s.content||''}</div>
         </div>`).join('')}
+        <div data-rodo style="text-align:center;font-size:9px;color:#ccc;border-top:1px solid #f0f0f0;padding-top:8px;margin-top:16px">${L("consent")}</div>
       </div>
     </div>`;
   }
