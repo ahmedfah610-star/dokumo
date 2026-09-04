@@ -159,6 +159,11 @@ export default async function handler(req, res) {
           email: user.email || email || null,
         };
         if (plan === 'start') subDoc.downloadsLeft = 5;
+        // Trwały ślad zgody na rozpoczęcie świadczenia przed upływem terminu
+        // na odstąpienie (art. 38 ust. 1 pkt 13 u.p.k.). Bez zapisanej zgody
+        // konsumentowi przysługuje pełne 14 dni i tak trzeba go traktować.
+        subDoc.zgodaOdstapienie = session.metadata?.zgoda_odstapienie === 'tak';
+        subDoc.zgodaOdstapienieTs = session.metadata?.zgoda_ts || null;
         const subRef = db.collection('users').doc(user.uid).collection('subscription').doc('current');
         const poprzednia = (await subRef.get()).data()?.stripeSubscriptionId || null;
         await subRef.set(subDoc);

@@ -231,6 +231,12 @@ export default async function handler(req, res) {
       customer_email: email || '',
       'metadata[plan]': plan,
       'metadata[uid]': uid,
+      // Ślad zgody z art. 38 ust. 1 pkt 13 ustawy o prawach konsumenta —
+      // bez niej wyłączenie prawa odstąpienia nie działa, a art. 15 ust. 3
+      // każe potwierdzić ją na trwałym nośniku. Zapisujemy przy płatności,
+      // więc zostaje w Stripe razem z całą historią transakcji.
+      'metadata[zgoda_odstapienie]': req.body.zgodaOdstapienie === true ? 'tak' : 'nie',
+      'metadata[zgoda_ts]': new Date().toISOString(),
       success_url: `${origin}/subskrypcja.html?payment_success=1&plan=${plan}`,
       cancel_url: `${origin}/subskrypcja.html`,
     };
