@@ -30,7 +30,7 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Czy AI może odpowiadać na pytania prawne?","acceptedAnswer":{"@type":"Answer","text":"Tak — Asystent udziela informacji ogólnych o polskim prawie i wskazuje konkretne przepisy (artykuł i nazwę ustawy), na których opiera odpowiedź. Nie jest to jednak porada prawna: w złożonych lub spornych sprawach należy skonsultować się z prawnikiem, radcą prawnym lub doradcą podatkowym."}},
-{"@type":"Question","name":"Ile kosztuje Asystent Prawny i Podatkowy?","acceptedAnswer":{"@type":"Answer","text":"Po założeniu darmowego konta możesz zadać 5 pytań bez żadnych opłat. Nielimitowany dostęp do Asystenta jest w pakiecie Pro Max."}},
+{"@type":"Question","name":"Ile kosztuje Asystent Prawny i Podatkowy?","acceptedAnswer":{"@type":"Answer","text":"Po założeniu darmowego konta możesz zadać 5 pytań bez żadnych opłat. Nielimitowany dostęp do Asystenta mają pakiety Biznes i Pro Max, pakiet Kariera obejmuje 10 pytań miesięcznie."}},
 {"@type":"Question","name":"Jakie tematy obejmuje asystent?","acceptedAnswer":{"@type":"Answer","text":"Tryb prawny: umowy (o pracę, zlecenie, o dzieło, B2B, najem), prawa pracownicze, wypowiedzenia, urlopy, prawa konsumenta, RODO. Tryb podatkowy: PIT, CIT, VAT, ZUS, składka zdrowotna, ryczałt, podatek liniowy, koszty firmowe, KSeF i faktury."}},
 {"@type":"Question","name":"Czy mogę wgrać umowę lub fakturę do analizy?","acceptedAnswer":{"@type":"Answer","text":"Tak. Wgraj plik PDF, zdjęcie (JPG/PNG) lub plik tekstowy do 3 MB, a AI przeanalizuje dokument i wskaże najważniejsze postanowienia oraz potencjalne ryzyka."}},
 {"@type":"Question","name":"Skąd asystent bierze przepisy?","acceptedAnswer":{"@type":"Answer","text":"Każda odpowiedź kończy się sekcją z podstawą prawną. Dodatkowo asystent przeszukuje Dziennik Ustaw (api.sejm.gov.pl) i podaje linki do pełnej treści aktów prawnych w systemie ISAP, z oznaczeniem, czy akt nadal obowiązuje."}},
@@ -134,10 +134,19 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-disclaimer{font-size:.78rem;color:var(--t3);max-width:500px;line-height:1.55}
 /* FAQ (SEO + realna pomoc) — pod hero na ekranie powitalnym */
 .ap-faq{max-width:560px;width:100%;margin-top:48px;text-align:left}
+.ap-seo{max-width:560px;width:100%;margin-top:44px;text-align:left;padding-bottom:8px}
+.ap-seo h2{font-size:1.05rem;font-weight:650;letter-spacing:-.02em;color:var(--t1);margin:26px 0 8px}
+.ap-seo h2:first-child{margin-top:0}
+.ap-seo h3{font-size:.9rem;font-weight:650;color:var(--t1);margin:16px 0 5px}
+.ap-seo p{font-size:.86rem;line-height:1.65;color:var(--t2);margin:0 0 10px}
+.ap-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.ap-links a{font-size:.8rem;font-weight:550;color:var(--t1);background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:7px 13px;text-decoration:none}
+.ap-links a:hover{border-color:var(--t3)}
 .ap-faq h2{font-size:1.1rem;font-weight:600;letter-spacing:-.02em;color:var(--t1);margin-bottom:14px;text-align:center}
 .ap-faq details{background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden}
 .ap-faq summary{padding:13px 16px;font-size:.9rem;font-weight:550;color:var(--t1);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .ap-faq summary::-webkit-details-marker{display:none}
+.ap-faq summary h3{display:inline;font-size:inherit;font-weight:inherit;color:inherit;margin:0}
 .ap-faq summary::after{content:'+';color:var(--t3);font-size:1.1rem;flex-shrink:0;transition:transform .18s}
 .ap-faq details[open] summary::after{transform:rotate(45deg)}
 .ap-faq details p{padding:0 16px 14px;font-size:.86rem;color:var(--t2);line-height:1.6;margin:0}
@@ -290,7 +299,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
     <!-- Welcome screen -->
     <div class="ap-welcome" id="welcomeScreen">
       <div class="ap-welcome-ico" id="welcomeIco">⚖️</div>
-      <h1 id="welcomeTitle">Twój <span class="grad">Asystent Prawny</span></h1>
+      <h1 id="welcomeTitle">Zadaj pytanie o <span class="grad">polskie prawo i podatki</span></h1>
       <p id="welcomeSub">Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów i wiele więcej. Odpowiedź z podstawą prawną w kilka sekund.</p>
       <div class="ap-quick-grid" id="quickGrid"></div>
       <p class="ap-disclaimer" id="welcomeDisclaimer">⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.</p>
@@ -299,29 +308,70 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
       <section class="ap-faq" aria-label="Najczęstsze pytania">
         <h2>Najczęstsze pytania</h2>
         <details>
-          <summary>Czy AI może odpowiadać na pytania prawne?</summary>
+          <summary><h3>Czy AI może odpowiadać na pytania prawne?</h3></summary>
           <p>Tak — Asystent udziela informacji ogólnych o polskim prawie i wskazuje konkretne przepisy (artykuł i nazwę ustawy), na których opiera odpowiedź. Nie jest to jednak porada prawna: w złożonych lub spornych sprawach skonsultuj się z prawnikiem, radcą prawnym lub doradcą podatkowym.</p>
         </details>
         <details>
-          <summary>Ile kosztuje Asystent Prawny i Podatkowy?</summary>
-          <p>Po założeniu darmowego konta możesz zadać 5 pytań bez żadnych opłat. Nielimitowany dostęp do Asystenta jest w pakiecie Pro Max.</p>
+          <summary><h3>Ile kosztuje Asystent Prawny i Podatkowy?</h3></summary>
+          <p>Po założeniu darmowego konta możesz zadać 5 pytań bez żadnych opłat. Nielimitowany dostęp do Asystenta mają pakiety Biznes i Pro Max, pakiet Kariera obejmuje 10 pytań miesięcznie.</p>
         </details>
         <details>
-          <summary>Jakie tematy obejmuje asystent?</summary>
+          <summary><h3>Jakie tematy obejmuje asystent?</h3></summary>
           <p>Tryb prawny: umowy (o pracę, zlecenie, o dzieło, B2B, najem), prawa pracownicze, wypowiedzenia, urlopy, prawa konsumenta, RODO. Tryb podatkowy: PIT, CIT, VAT, ZUS, składka zdrowotna, ryczałt, podatek liniowy, koszty firmowe, KSeF i faktury.</p>
         </details>
         <details>
-          <summary>Czy mogę wgrać umowę lub fakturę do analizy?</summary>
+          <summary><h3>Czy mogę wgrać umowę lub fakturę do analizy?</h3></summary>
           <p>Tak. Wgraj plik PDF, zdjęcie (JPG/PNG) lub plik tekstowy do 3 MB, a AI przeanalizuje dokument i wskaże najważniejsze postanowienia oraz potencjalne ryzyka.</p>
         </details>
         <details>
-          <summary>Skąd asystent bierze przepisy?</summary>
+          <summary><h3>Skąd asystent bierze przepisy?</h3></summary>
           <p>Każda odpowiedź kończy się sekcją z podstawą prawną. Dodatkowo asystent przeszukuje Dziennik Ustaw (api.sejm.gov.pl) i podaje linki do pełnej treści aktów prawnych w systemie ISAP, z oznaczeniem, czy akt nadal obowiązuje.</p>
         </details>
         <details>
-          <summary>Czy odpowiedzi AI zastępują prawnika lub księgowego?</summary>
+          <summary><h3>Czy odpowiedzi AI zastępują prawnika lub księgowego?</h3></summary>
           <p>Nie. Asystent pomaga szybko zrozumieć przepisy i przygotować się do rozmowy ze specjalistą, ale w indywidualnych sprawach — zwłaszcza sądowych i złożonych rozliczeniach — zawsze warto potwierdzić odpowiedź u specjalisty. Gotowe dokumenty wygenerujesz w <a href="https://dokumoflow.com/">generatorach Dokumo</a>.</p>
         </details>
+      </section>
+
+      <!-- Sekcja opisowa — bez niej strona miała 169 słów po wyrenderowaniu
+           i nie miała czego rankować: czat jest pusty, dopóki nie zadasz pytania. -->
+      <section class="ap-seo">
+        <h2>Jak działa Asystent Prawny i Podatkowy</h2>
+        <p>Wpisujesz pytanie zwykłym językiem — tak, jak zadałbyś je znajomemu prawnikowi. Asystent odpowiada
+        po polsku, wskazuje konkretny artykuł i nazwę ustawy, a na końcu każdej odpowiedzi dołącza sekcję
+        „Podstawa prawna" z linkami do Dziennika Ustaw. Przepisy pobiera na bieżąco z rejestru Sejmu
+        (api.sejm.gov.pl), więc odsyła do tekstów obowiązujących, a nie do wersji sprzed nowelizacji.</p>
+
+        <h3>Tryb prawny</h3>
+        <p>Umowy o pracę, zlecenie, o dzieło i B2B, okresy wypowiedzenia, urlopy i wnioski urlopowe,
+        świadectwo pracy, najem mieszkania i lokalu, prawa konsumenta, reklamacje i zwroty, RODO
+        i ochrona danych, pełnomocnictwa, wezwania do zapłaty i odsetki ustawowe.</p>
+
+        <h3>Tryb podatkowy</h3>
+        <p>PIT, CIT i VAT, składki ZUS i składka zdrowotna, ryczałt od przychodów ewidencjonowanych,
+        podatek liniowy i skala podatkowa, koszty uzyskania przychodu, limity i progi, KSeF oraz
+        obowiązki związane z fakturowaniem.</p>
+
+        <h3>Analiza dokumentu</h3>
+        <p>Możesz wgrać umowę lub fakturę — PDF, zdjęcie (JPG, PNG) albo plik tekstowy do 3 MB.
+        Asystent przeczyta dokument, streści najważniejsze postanowienia i wskaże zapisy, które
+        mogą działać na Twoją niekorzyść.</p>
+
+        <h2>Czego Asystent nie zastąpi</h2>
+        <p>To narzędzie informacyjne, nie kancelaria. Odpowiedzi opierają się na treści przepisów,
+        ale nie uwzględniają całego kontekstu Twojej sprawy, orzecznictwa w podobnych stanach faktycznych
+        ani terminów procesowych. W sporze sądowym, przy większej kwocie albo gdy sprawa jest
+        nietypowa — skonsultuj się z radcą prawnym, adwokatem lub doradcą podatkowym.</p>
+
+        <h2>Powiązane narzędzia</h2>
+        <div class="ap-links">
+          <a href="hr.html">Generatory umów i dokumentów HR</a>
+          <a href="ecommerce.html">Dokumenty dla sklepu internetowego</a>
+          <a href="kalkulator-wynagrodzen.html">Kalkulator wynagrodzeń</a>
+          <a href="analiza-umowy.html">Analiza umowy AI</a>
+          <a href="wezwanie-do-zaplaty.html">Generator wezwania do zapłaty</a>
+          <a href="artykuly.html">Poradniki i artykuły</a>
+        </div>
       </section>
     </div>
 
@@ -392,7 +442,7 @@ var _mode = 'prawny';
 var MODES = {
   prawny: {
     label: 'Asystent Prawny', icon: '⚖️',
-    title: 'Twój <span class="grad">Asystent Prawny</span>',
+    title: 'Zadaj pytanie o <span class="grad">polskie prawo</span>',
     sub: 'Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów. Odpowiedź z podstawą prawną w kilka sekund.',
     placeholder: 'Zadaj pytanie prawne lub wgraj dokument do analizy…',
     disclaimer: '⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.',
@@ -405,7 +455,7 @@ var MODES = {
   },
   podatkowy: {
     label: 'Asystent Podatkowy', icon: '🧾',
-    title: 'Twój <span class="grad">Asystent Podatkowy</span>',
+    title: 'Zadaj pytanie o <span class="grad">podatki i ZUS</span>',
     sub: 'Zadaj pytanie o podatki i rozliczenia — PIT, VAT, ZUS, ryczałt, JDG, koszty, KSeF, faktury. Odpowiedź z podstawą prawną w kilka sekund.',
     placeholder: 'Zadaj pytanie podatkowe lub wgraj dokument do analizy…',
     disclaimer: '⚠️ Asystent udziela informacji ogólnych — nie jest to porada podatkowa. W indywidualnych sprawach skonsultuj się z księgowym lub doradcą podatkowym.',

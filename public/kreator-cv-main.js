@@ -2213,17 +2213,17 @@ async function downloadCV() {
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
-      if (resp.status === 403 && err.error === 'cv_free_used') {
+      if (resp.status === 403 && (err.error === 'subscription_required' || err.error === 'cv_free_used')) {
         if (overlay) overlay.style.display = 'none';
         if (btn) { btn.innerHTML = origText; btn.disabled = false; }
-        // Modal — darmowe pobranie CV już wykorzystane
+        // Modal — pobranie CV wymaga aktywnego pakietu
         var _ov = document.createElement('div');
         _ov.id = 'pgOverlay';
         _ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center';
         _ov.innerHTML = '<div style="background:#fff;border-radius:18px;padding:2.2rem 2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.25)">' +
           '<div style="font-size:3rem;margin-bottom:.75rem">📄</div>' +
-          '<h2 style="font-size:1.2rem;font-weight:700;color:#1a1a2e;margin:0 0 .5rem">Darmowe pobranie już wykorzystane</h2>' +
-          '<p style="color:#555;font-size:.93rem;line-height:1.5;margin:0 0 1.5rem">Każde konto może pobrać CV <strong>raz za darmo</strong>.<br>Kup pakiet, aby pobierać bez limitu.</p>' +
+          '<h2 style="font-size:1.2rem;font-weight:700;color:#1a1a2e;margin:0 0 .5rem">Pobranie CV wymaga pakietu</h2>' +
+          '<p style="color:#555;font-size:.93rem;line-height:1.5;margin:0 0 1.5rem">Kreator jest darmowy, ale pobranie gotowego pliku wymaga pakietu.<br>Pakiet <strong>Start</strong> to 4,99 zł jednorazowo — 5 pobrań, bez subskrypcji.</p>' +
           '<a href="subskrypcja.html" style="display:block;width:100%;padding:.85rem 1rem;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border-radius:10px;font-size:1rem;font-weight:600;text-decoration:none;margin-bottom:.75rem;box-sizing:border-box">Zobacz plany →</a>' +
           '<button onclick="this.closest(\'#pgOverlay\').remove()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:.88rem">Zamknij</button>' +
           '</div>';

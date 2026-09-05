@@ -47,46 +47,12 @@ export default async function handler(req, res) {
 
   const isCv = req.body?.isCv === true;
 
-  // Brak subskrypcji + CV → darmowy slot 1× per UID (atomowy)
+  // Każde pobranie wymaga aktywnego pakietu — także CV. Wcześniej pierwsze CV
+  // było darmowe (users/{uid}/cvDownloads/free), ale darmowych pobrań już nie ma.
   const subSnap = await db.collection('users').doc(uid).collection('subscription').doc('current').get();
   const hasSub = subSnap.exists && (() => { const exp = subSnap.data().expiresAt?.toDate?.(); return exp && exp > new Date(); })();
-
-  if (!hasSub && isCv) {
-    const freeRef = db.collection('users').doc(uid).collection('cvDownloads').doc('free');
-    try {
-      const { cvDocName, cvDataJson } = req.body || {};
-      await freeRef.create({ usedAt: Timestamp.now(), docName: cvDocName || 'CV' });
-      // Zapisz dokument do users/{uid}/documents żeby było widać co pobrano —
-      // POMIJAMY jesli zawiera PESEL (RODO compliance, user dostaje PDF lokalnie).
-      try {
-        if (hasSensitivePIIInJson(cvDataJson)) {
-          console.log('PII detected in free CV — skip Firestore save for uid', uid.slice(0,8));
-        } else {
-          const docRef = db.collection('users').doc(uid).collection('documents').doc();
-          await docRef.set({
-            id: docRef.id,
-            typeId: 'cv',
-            name: cvDocName || 'CV',
-            text: '',
-            cat: 'kariera',
-            icon: '📋',
-            catLabel: 'Kariera',
-            status: 'generated',
-            isFree: true,
-            cvDataJson: typeof cvDataJson === 'string' && cvDataJson.length <= 500000 ? cvDataJson : '',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          });
-        }
-      } catch(saveErr) {
-        console.error('Free CV doc save error:', saveErr.message);
-      }
-    } catch(createErr) {
-      if (createErr.code === 6) return res.status(403).json({ error: 'cv_free_used' });
-      throw createErr;
-    }
-  } else if (!hasSub && !isCv) {
-    return res.status(403).json({ error: 'Brak aktywnej subskrypcji' });
+  if (!hasSub) {
+    return res.status(403).json({ error: isCv ? 'subscription_required' : 'Brak aktywnej subskrypcji' });
   }
 
   // Start plan — atomowy dekrement downloadsLeft (pula 5 pobrań)
