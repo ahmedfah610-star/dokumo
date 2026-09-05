@@ -472,10 +472,10 @@ export default async function handler(req, res) {
   }
 
   // Model dostępu (miesięczne pule pytań asystenta AI):
-  //  • admin            → bez limitu
-  //  • Pro Max          → 100 / miesiąc
-  //  • Kariera / Biznes → 10 / miesiąc
-  //  • brak planu / Start → 5 pytań darmowych ŁĄCZNIE (na zawsze)
+  //  • admin              → bez limitu
+  //  • Biznes / Pro Max    → bez limitu (główny argument za tymi pakietami)
+  //  • Kariera             → 10 / miesiąc
+  //  • brak planu / Start  → 5 pytań darmowych ŁĄCZNIE (na zawsze, nie co miesiąc)
   const FREE_LIFETIME = 5;
   // Biznes i Pro Max mają Asystenta bez limitu. Nie używamy Infinity, bo
   // JSON.stringify zamienia je na null i klient nie odróżnia „bez limitu"
@@ -597,7 +597,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Pytanie zbyt długie (max 8000 znaków)' });
   }
 
-  // Dostęp: admin bez limitu; Pro Max 100/mies.; Kariera/Biznes 10/mies.; reszta 5 darmowych łącznie.
+  // Dostęp: admin i Biznes/Pro Max bez limitu; Kariera 10/mies.; reszta 5 darmowych łącznie.
   let quotaInfo;
   if (isAdmin) {
     quotaInfo = { unlimited: true };
