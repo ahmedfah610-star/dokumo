@@ -1725,6 +1725,19 @@ function applyAIDuties(i) {
   updateCVPreview();
 }
 
+// Ponizej tej skali tekst CV robi sie za maly do druku (0,75 x 10,5px ~ 7,9px
+// czyli ok. 7,9pt). Dluzsze CV lepiej podzielic na dwie strony niz zmniejszac.
+const MIN_SKALA_CV = 0.75;
+
+// Po zmieszczeniu CV na jednej stronie korzen jest owijany w pudelko strony,
+// wiec parent.firstElementChild przestaje byc korzeniem CV.
+function _cvRoot(kontener) {
+  if (!kontener) return null;
+  const p = kontener.firstElementChild;
+  if (p && p.hasAttribute && p.hasAttribute('data-cv-strona')) return p.firstElementChild;
+  return p;
+}
+
 function _fixCVFullHeight(root) {
   if (!root) return;
 
@@ -1752,12 +1765,34 @@ function _fixCVFullHeight(root) {
   root.style.overflow = 'visible';
   const naturalna = root.scrollHeight;
   if (naturalna > 843) {
-    // CV nie miesci sie na jednej stronie — nie wolno go sciskac. Zostawiamy
-    // naturalny przeplyw, dzieki czemu Chromium dzieli dokument na strony.
     root.style.minHeight = '';
     root.style.maxHeight = 'none';
     root.style.height    = 'auto';
     root.style.overflow  = 'visible';
+
+    // CV powinno miescic sie na jednej stronie. Sama kompresja odstepow tego
+    // nie zalatwia — przy CV o wysokosci 1088px nawet polowienie wszystkich
+    // marginesow odzyskuje tylko 193 z 246 brakujacych pikseli, a dokument
+    // wyglada na scisniety. Skalujemy wiec calosc proporcjonalnie, tak jak
+    // robia to kreatory CV: zmniejsza sie rownomiernie tekst i odstepy,
+    // proporcje zostaja nienaruszone.
+    const skala = 842 / naturalna;
+    if (skala >= MIN_SKALA_CV) {
+      root.style.transformOrigin = 'top left';
+      root.style.transform = 'scale(' + skala + ')';
+      // transform nie zmienia wysokosci w ukladzie, wiec bez pudelka strony
+      // dokument nadal zajmowalby 1088px i wychodzil na druga kartke.
+      const rodzic = root.parentElement;
+      if (rodzic) {
+        const strona = document.createElement('div');
+        strona.setAttribute('data-cv-strona', '');
+        strona.style.cssText = 'width:595px;height:842px;overflow:hidden;background:#fff';
+        rodzic.insertBefore(strona, root);
+        strona.appendChild(root);
+      }
+    }
+    // Ponizej progu zmniejszanie dawaloby tekst nieczytelny w druku —
+    // wtedy uczciwiej podzielic CV na dwie strony.
     return;
   }
 
@@ -2205,7 +2240,7 @@ async function downloadCV() {
     if (typeof updateCVPreview === 'function') updateCVPreview();
   } catch(e) { /* ignore */ }
   // Ensure biznes rebalancing is applied before reading innerHTML for PDF
-  if (cvTemplate === 'biznes' && el && el.firstElementChild) _fixBiznesOverflow(el.firstElementChild);
+  if (cvTemplate === 'biznes' && el && _cvRoot(el)) _fixBiznesOverflow(_cvRoot(el));
 
   // ── BUILD FRESH CV ELEMENT (offscreen) ──
   // Zamiast czytac el.innerHTML (ktore moze byc puste), zawsze buduj
