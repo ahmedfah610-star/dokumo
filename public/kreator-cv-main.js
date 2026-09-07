@@ -1728,9 +1728,39 @@ function applyAIDuties(i) {
 function _fixCVFullHeight(root) {
   if (!root) return;
 
-  // Detect sidebar/horizontal-flex layouts BEFORE modifying root styles
-  const rootStyleStr = root.getAttribute('style') || '';
-  const isHorizFlex = rootStyleStr.includes('display:flex') && !rootStyleStr.includes('flex-direction:column');
+  // Naturalna wysokosc PRZED jakimikolwiek zmianami. Kluczowe: ta funkcja
+  // wtlacza CV w sztywne 842px i robi z korzenia kontener flex. Dzieci flex
+  // maja domyslnie flex-shrink:1, wiec przy dluzszym CV KURCZA sie — tekst
+  // jest malowany poza swoim pudelkiem, a klauzula RODO przypieta
+  // margin-top:auto ladowala na sekcji hobby. Przy szablonie nova CV o
+  // naturalnej wysokosci 1088px bylo sciskane o 246px.
+  // Czesc szablonow ma WLASNE height:842px + overflow:hidden w stylu inline,
+  // przez co scrollHeight klamie — zwraca 842 mimo dluzszej tresci. Zanim
+  // zmierzymy, zdejmujemy te ograniczenia i przywracamy je tylko wtedy, gdy
+  // CV faktycznie miesci sie na jednej stronie.
+  // Uklad rozpoznajemy ZANIM ruszymy style i ze stylu obliczonego, nie z tekstu
+  // atrybutu. Kazdy zapis do root.style przepisuje atrybut i normalizuje go
+  // („display:flex" -> „display: flex"), przez co dopasowanie po tekscie
+  // przestawalo dzialac: szablon z panelem bocznym byl brany za pionowy
+  // i jego kolumny ukladaly sie jedna pod druga.
+  const csRoot = getComputedStyle(root);
+  const isHorizFlex = csRoot.display === 'flex' && !csRoot.flexDirection.startsWith('column');
+
+  root.style.minHeight = '0';
+  root.style.maxHeight = 'none';
+  root.style.height = 'auto';
+  root.style.overflow = 'visible';
+  const naturalna = root.scrollHeight;
+  if (naturalna > 843) {
+    // CV nie miesci sie na jednej stronie — nie wolno go sciskac. Zostawiamy
+    // naturalny przeplyw, dzieki czemu Chromium dzieli dokument na strony.
+    root.style.minHeight = '';
+    root.style.maxHeight = 'none';
+    root.style.height    = 'auto';
+    root.style.overflow  = 'visible';
+    return;
+  }
+
 
   // Ensure full A4 page: height + overflow:hidden so background fills the entire page
   root.style.minHeight = '842px';
@@ -1756,6 +1786,10 @@ function _fixCVFullHeight(root) {
     // Standard vertical layouts
     root.style.display = 'flex';
     root.style.flexDirection = 'column';
+    // Zadne dziecko nie moze byc sciskane w pionie — tekst ma zajmowac tyle,
+    // ile potrzebuje. W ukladach poziomych tego NIE robimy, bo tam
+    // flex-shrink steruje szerokoscia kolumn.
+    for (const ch of root.children) ch.style.flexShrink = '0';
     // Pin the last direct child (consent div) to the bottom
     const last = root.lastElementChild;
     if (last) last.style.marginTop = 'auto';
