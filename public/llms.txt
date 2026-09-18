@@ -1,0 +1,67 @@
+# Dokumo (DokumoFlow)
+
+> Generator dokumentów prawnych i firmowych dla polskiego rynku. Użytkownik
+> wypełnia formularz, a serwis tworzy gotowy dokument w PDF i Word w około
+> minutę. Każdy dokument zawiera podstawę prawną z nazwą ustawy i numerem
+> artykułu. Przepisy weryfikowane są względem Dziennika Ustaw przez API Sejmu
+> (api.sejm.gov.pl), dzięki czemu odwołania wskazują teksty obowiązujące.
+
+Zakres: prawo polskie, stan na 2026 rok. Język dokumentów: polski.
+Dokumenty mają charakter wzorów i nie stanowią porady prawnej.
+
+## Dokumenty dla sklepu internetowego
+
+- [Regulamin sklepu internetowego](https://dokumoflow.com/generator-regulaminu-sklepu.html): regulamin zgodny z ustawą o prawach konsumenta (Dz.U. 2024 poz. 1796), dyrektywą Omnibus oraz art. 8 ust. 3 ustawy o świadczeniu usług drogą elektroniczną (Dz.U. 2024 poz. 1513)
+- [Polityka prywatności i cookies](https://dokumoflow.com/generator-polityki-prywatnosci.html): komplet klauzul z art. 13 RODO oraz zgoda na cookies wg art. 399 ust. 1 pkt 2 Prawa komunikacji elektronicznej (Dz.U. 2024 poz. 1221)
+- [Polityka zwrotów i reklamacji](https://dokumoflow.com/generator-polityki-zwrotow.html): odstąpienie w 14 dni (art. 27 u.p.k.) i niezgodność towaru z umową (art. 43a–43g u.p.k.)
+- [Wszystkie dokumenty e-commerce](https://dokumoflow.com/ecommerce.html)
+
+## Umowy
+
+- [Umowa o pracę](https://dokumoflow.com/generator-umowy-o-prace.html): elementy wymagane art. 29 § 1 Kodeksu pracy (Dz.U. 2025 poz. 277)
+- [Umowa zlecenie](https://dokumoflow.com/generator-umowy-zlecenie.html): minimalna stawka godzinowa 31,40 zł w 2026 r.
+- [Umowa o dzieło](https://dokumoflow.com/generator-umowy-o-dzielo.html): rezultat, odbiór, prawa autorskie i pola eksploatacji
+- [Umowa B2B](https://dokumoflow.com/generator-umowy-b2b.html): z uwzględnieniem znamion stosunku pracy z art. 22 § 1 KP
+- [Umowa NDA](https://dokumoflow.com/generator-nda.html): poufność, kary umowne, okres obowiązywania
+- [Umowa sprzedaży](https://dokumoflow.com/generator-umowy-sprzedazy.html): art. 535–555 Kodeksu cywilnego (Dz.U. 2026 poz. 795)
+- [Umowa wspólników](https://dokumoflow.com/umowa-wspolnikow.html)
+- [Wszystkie umowy i dokumenty kadrowe](https://dokumoflow.com/hr.html)
+
+## Najem
+
+- [Umowa najmu mieszkania](https://dokumoflow.com/umowa-najmu.html): art. 659 i nast. KC oraz ustawa o ochronie praw lokatorów (Dz.U. 2023 poz. 725)
+- [Protokół zdawczo-odbiorczy](https://dokumoflow.com/protokol-zdawczo-odbiorczy.html)
+- [Wypowiedzenie umowy najmu](https://dokumoflow.com/wypowiedzenie-najmu.html): art. 11 ustawy o ochronie praw lokatorów
+
+## Dokumenty pracownicze
+
+- [Wypowiedzenie umowy o pracę](https://dokumoflow.com/generator-wypowiedzenia.html): okresy wypowiedzenia z art. 36 KP, pouczenie o odwołaniu do sądu pracy
+- [Wniosek o urlop](https://dokumoflow.com/generator-wniosku-o-urlop.html): wypoczynkowy, na żądanie, bezpłatny, okolicznościowy
+- [Świadectwo pracy](https://dokumoflow.com/generator-swiadectwa-pracy.html)
+- [Kreator CV](https://dokumoflow.com/kreator-cv.html): 24 szablony, 7 języków, klauzula RODO w trzech wariantach
+- [List motywacyjny](https://dokumoflow.com/list-motywacyjny.html)
+
+## Finanse i firma
+
+- [Faktura VAT](https://dokumoflow.com/faktura.html): z uwzględnieniem KSeF
+- [Wezwanie do zapłaty](https://dokumoflow.com/wezwanie-do-zaplaty.html): odsetki ustawowe z art. 481 § 2 KC, rekompensata 40/70/100 euro
+- [Biznesplan dla banku](https://dokumoflow.com/biznesplan-dla-banku.html)
+- [Analiza SWOT](https://dokumoflow.com/analiza-swot.html)
+- [Pełnomocnictwo](https://dokumoflow.com/generator-pelnomocnictwa.html): art. 98–109 KC
+- [Kalkulator wynagrodzeń](https://dokumoflow.com/kalkulator-wynagrodzen.html): brutto–netto dla umowy o pracę, zlecenia, dzieła i B2B, z limitem 30-krotności (282 600 zł w 2026 r.)
+
+## Narzędzia AI
+
+- [Asystent prawny i podatkowy](https://dokumoflow.com/asystent-prawny.html): odpowiedzi na pytania o polskie prawo i podatki z podstawą prawną i odnośnikami do Dziennika Ustaw
+- [Analiza umowy](https://dokumoflow.com/analiza-umowy.html): wskazuje ryzykowne zapisy i brakujące elementy
+- [Skaner dokumentów](https://dokumoflow.com/skaner-dokumentow.html): wyciąga dane z PDF i zdjęć do tabeli
+
+## Poradniki
+
+- [Wszystkie artykuły](https://dokumoflow.com/artykuly.html): omówienia zmian w prawie pracy, podatkach i e-commerce na 2026 rok
+
+## Informacje o serwisie
+
+- [Regulamin serwisu](https://dokumoflow.com/regulamin.html)
+- [Polityka prywatności serwisu](https://dokumoflow.com/prywatnosc.html)
+- Kontakt: dokumoflow@gmail.com

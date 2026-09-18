@@ -12,4 +12,44 @@ Disallow: /subskrypcja.html
 # API
 Disallow: /api/
 
+# ── Roboty asystentów AI ──
+# Domyślna reguła wyżej i tak je wpuszcza, ale jawny wpis zabezpiecza przed
+# sytuacją, w której ktoś kiedyś zawęzi User-agent: * albo doda regułę
+# blokującą. Rozdzielamy wyszukiwanie od trenowania: OAI-SearchBot buduje
+# indeks, z którego ChatGPT cytuje źródła — jego blokada oznacza, że serwis
+# nie pojawi się w odpowiedziach. GPTBot zbiera dane treningowe.
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Skrócony opis serwisu dla asystentów AI
+# https://dokumoflow.com/llms.txt
+
 Sitemap: https://dokumoflow.com/sitemap.xml
