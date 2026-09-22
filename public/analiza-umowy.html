@@ -495,11 +495,6 @@ body{background:#f5f3ef;margin:0;padding:0;}
   </div>
 </div>
 
-<!-- COOKIE BANNER -->
-<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1714;color:#d6d2cc;font-size:.82rem;padding:14px 20px;z-index:9999;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
-  <span>Używamy plików cookies. <a href="prywatnosc.html" style="color:#7ec8a0;text-decoration:underline;">Dowiedz się więcej</a>.</span>
-  <div style="display:flex;gap:8px;margin-top:8px;"><button onclick="acceptCookies()" style="background:#2d6b52;color:#fff;border:none;padding:9px 20px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;">Akceptuję</button><button onclick="rejectCookies()" style="background:transparent;color:#d6d2cc;border:1px solid rgba(255,255,255,.25);padding:9px 16px;font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;">Odrzuć</button></div>
-</div>
 
 <script>
 // ══ GLOBALS ══
@@ -523,9 +518,6 @@ document.addEventListener('click',()=>{const dd=document.getElementById('navDrop
 document.addEventListener('DOMContentLoaded',()=>updateNavAuth());
 
 // ══ COOKIES ══
-(function(){if(!localStorage.getItem('dokumo_cookies'))document.getElementById('cookieBanner').style.display='flex';})();
-function acceptCookies(){localStorage.setItem('dokumo_cookies','accepted');document.getElementById('cookieBanner').style.display='none';gtag('consent','update',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});}
-function rejectCookies(){localStorage.setItem('dokumo_cookies','rejected');document.getElementById('cookieBanner').style.display='none';}
 
 // ══ FAQ ══
 function toggleFaq(el){const a=el.nextElementSibling;const open=el.classList.toggle('open');a.style.maxHeight=open?a.scrollHeight+'px':'0';}
@@ -888,5 +880,6 @@ function showError(msg){
 <!-- RELATED-ARTICLES-SECTION -->
 
 <script src="asystent-widget.js?v=2" defer></script>
+<script defer src="cookies.js?v=1"></script>
 </body>
 </html>
