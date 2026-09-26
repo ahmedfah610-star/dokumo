@@ -644,6 +644,16 @@ onAuthStateChanged(_cvAuth, async u=>{
 });
 </script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Czy kreator CV jest darmowy?", "acceptedAnswer": {"@type": "Answer", "text": "Tworzenie i podgląd CV nie kosztują nic i nie wymagają konta. Opłata pojawia się dopiero przy pobraniu pliku. Płacisz jednorazowo — nie zapisujemy karty i nie odnawiamy niczego automatycznie."}}, {"@type": "Question", "name": "Czy moje CV przejdzie przez system ATS?", "acceptedAnswer": {"@type": "Answer", "text": "Tak. Pobrany PDF zawiera warstwę tekstową, więc systemy rekrutacyjne odczytują z niego dane. Można też pobrać wersję Word, którą przyjmuje każdy system."}}, {"@type": "Question", "name": "Czy do CV trzeba dodawać zdjęcie?", "acceptedAnswer": {"@type": "Answer", "text": "W Polsce zdjęcie jest zwyczajowe, ale nieobowiązkowe, a w części krajów wręcz odradzane. Kreator pozwala je dodać lub pominąć."}}, {"@type": "Question", "name": "Czy mogę zrobić CV po angielsku lub ukraińsku?", "acceptedAnswer": {"@type": "Answer", "text": "Tak, kreator obsługuje siedem języków. Nazwy sekcji i klauzula zgody tłumaczą się automatycznie po zmianie języka."}}, {"@type": "Question", "name": "Czy dane zapisują się, gdy zamknę stronę?", "acceptedAnswer": {"@type": "Answer", "text": "Robocza wersja zapisuje się w przeglądarce. Po zalogowaniu CV trafia na konto i można do niego wrócić z dowolnego urządzenia."}}, {"@type": "Question", "name": "Ile stron powinno mieć CV?", "acceptedAnswer": {"@type": "Answer", "text": "Przy stażu do dziesięciu lat wystarczy jedna strona. Dwie mają sens przy dłuższym doświadczeniu albo w zawodach, gdzie liczy się lista publikacji lub projektów."}}]}</script>
+<style>
+/* Pasek tytułowy nad edytorem — kreator ma podgląd na żywo, więc pełna
+   sekcja powitalna tylko odsuwałaby narzędzie w dół. Wystarczy widoczny
+   nagłówek, którego strona wcześniej nie miała wcale. */
+.cv-naglowek{padding:22px 24px 18px;border-bottom:1px solid #ececef;background:#fff}
+.cv-naglowek-wrap{max-width:1280px;margin:0 auto}
+.cv-naglowek h1{font-size:clamp(1.35rem,2.6vw,1.75rem);font-weight:800;color:#0f172a;letter-spacing:-.035em;line-height:1.15;margin:0 0 6px}
+.cv-naglowek p{font-size:.92rem;color:#71717a;line-height:1.55;margin:0;max-width:640px}
+@media(max-width:700px){.cv-naglowek{padding:16px 18px 14px}.cv-naglowek p{font-size:.85rem}}
+</style>
 </head>
 <body>
 <a href="#cv-main-content" class="skip-link" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#111;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;text-decoration:none;font-weight:600;">Przejdź do treści</a>
@@ -735,7 +745,6 @@ window.addEventListener('_fbAuthReady', async ()=>{
   .cv-auth-btn-register{padding:5px 8px;font-size:11px;}
 }
 </style>
-<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Kreator CV online – Stwórz profesjonalne CV</h1>
 <div class="cv-app">
 
   <!-- NAV — ciemny pasek -->
@@ -767,6 +776,14 @@ window.addEventListener('_fbAuthReady', async ()=>{
       </div>
     </div>
   </div>
+
+  <!-- NAGŁÓWEK STRONY -->
+  <header class="cv-naglowek">
+    <div class="cv-naglowek-wrap">
+      <h1>Kreator CV online</h1>
+      <p>Wypełniasz formularz po lewej, gotowy dokument A4 widzisz po prawej. 24 szablony i 7 języków, bez zakładania konta.</p>
+    </div>
+  </header>
 
   <!-- MAIN -->
   <main id="cv-main-content" class="cv-main">
