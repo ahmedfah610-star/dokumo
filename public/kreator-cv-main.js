@@ -1968,9 +1968,9 @@ function renderQuickColorPicker() {
   }).join('') +
   `<button title="Domyślny kolor szablonu" onclick="resetColorTheme()"
     style="width:20px;height:20px;border-radius:50%;background:transparent;
-    border:2px dashed ${cvCustomColor ? '#bbb' : '#444'};cursor:pointer;
+    border:2px dashed ${cvCustomColor ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.75)'};cursor:pointer;
     display:flex;align-items:center;justify-content:center;font-size:11px;
-    color:${cvCustomColor ? '#bbb' : '#444'};flex-shrink:0;transition:all 0.15s;line-height:1">↺</button>`;
+    color:${cvCustomColor ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.75)'};flex-shrink:0;transition:all 0.15s;line-height:1">↺</button>`;
 }
 
 function renderColorPicker() {

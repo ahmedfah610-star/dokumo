@@ -43,9 +43,11 @@
         'background:#111827;color:#fff;font-family:inherit;font-size:13.5px;font-weight:500;' +
         'padding:11px 14px;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.28);display:flex;' +
         'align-items:center;gap:12px;max-width:calc(100vw - 32px);animation:dokDraftIn .25s ease';
-      t.innerHTML = '<span>↩️ Przywróciliśmy Twoją roboczą wersję</span>' +
+      // bottom nad dolnym paskiem kreatora, żeby go nie zasłaniać na telefonie
+      t.style.bottom = (window.innerWidth <= 767 ? 88 : 22) + 'px';
+      t.innerHTML = '<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Przywróciliśmy Twoją roboczą wersję</span>' +
         '<button style="background:rgba(255,255,255,.15);border:none;color:#fff;font:inherit;font-size:12.5px;' +
-        'padding:5px 10px;border-radius:8px;cursor:pointer">Zacznij od nowa</button>';
+        'padding:5px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;flex-shrink:0">Zacznij od nowa</button>';
       var st = document.createElement('style');
       st.textContent = '@keyframes dokDraftIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}';
       document.head.appendChild(st);

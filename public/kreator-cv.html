@@ -67,7 +67,7 @@ body { font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sa
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script defer src="kreator-cv-templates.js?v=20260904a"></script>
-<link rel="preload" href="kreator-cv-main.js?v=20260904c" as="script">
+<link rel="preload" href="kreator-cv-main.js?v=20260926a" as="script">
 <style>
 /* Aplikacja zajmuje pierwszy ekran, treść merytoryczna leży pod nią. Blokada
    przewijania musi więc dotyczyć powłoki, nie całej strony — inaczej sekcja
@@ -654,6 +654,137 @@ onAuthStateChanged(_cvAuth, async u=>{
 .cv-naglowek p{font-size:.92rem;color:#71717a;line-height:1.55;margin:0;max-width:640px}
 @media(max-width:700px){.cv-naglowek{padding:16px 18px 14px}.cv-naglowek p{font-size:.85rem}}
 </style>
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   KREATOR CV — przebudowa warstwy wizualnej.
+   Wyłącznie CSS plus przeniesienie nagłówka: formularz i podgląd
+   renderuje kreator-cv-main.js, więc żadna funkcja nie jest ruszana.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Górna belka: logo, tytuł strony i konto w jednym rzędzie ── */
+.cv-nav{
+  background:#fff !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  border-bottom:1px solid #ececef !important; height:58px !important;
+}
+.cv-naglowek{
+  padding:0 !important; border:none !important; background:transparent !important;
+  position:absolute !important; left:50% !important; transform:translateX(-50%) !important;
+  top:0 !important; height:58px !important; display:flex !important; align-items:center !important;
+  pointer-events:none !important; z-index:120 !important;
+}
+.cv-naglowek-wrap{max-width:none !important}
+.cv-naglowek h1{
+  font-size:.95rem !important; font-weight:650 !important; color:#0f172a !important;
+  letter-spacing:-.015em !important; margin:0 !important; white-space:nowrap !important;
+}
+.cv-naglowek p{display:none !important}
+@media(max-width:900px){.cv-naglowek{display:none !important}}
+
+/* ── Kolumna formularza: biel zamiast karty na szarym tle ── */
+.cv-form-col{background:#fff !important; border-right:1px solid #ececef !important}
+
+/* ── Pasek kroków: cienka szyna i numery w jednym rzędzie ── */
+.cvw-header{
+  background:#fff !important; padding:18px 26px 16px !important;
+  border-bottom:1px solid #f1f1f3 !important;
+}
+.cvw-progress-wrap{height:2px !important; background:#ececef !important; border-radius:0 !important}
+.cvw-progress-bar{background:#0f172a !important; border-radius:0 !important}
+.cvw-steps-row{margin-top:14px !important; gap:4px !important}
+.cvw-step-dot{flex-direction:row !important; gap:7px !important; justify-content:center !important}
+.cvw-dot-circle{
+  width:21px !important; height:21px !important; font-size:.62rem !important; font-weight:700 !important;
+  background:#fff !important; color:#a1a1aa !important; border:1.5px solid #e4e4e7 !important;
+  box-shadow:none !important;
+}
+.cvw-step-dot.active .cvw-dot-circle{
+  background:#0f172a !important; color:#fff !important; border-color:#0f172a !important; box-shadow:none !important;
+}
+.cvw-step-dot.done .cvw-dot-circle{
+  background:#fff !important; color:#0f172a !important; border-color:#0f172a !important;
+}
+.cvw-dot-label{
+  font-size:.7rem !important; font-weight:550 !important; color:#a1a1aa !important;
+  max-width:none !important; margin-top:0 !important; text-align:left !important;
+}
+.cvw-step-dot.active .cvw-dot-label{color:#0f172a !important; font-weight:650 !important}
+.cvw-step-dot.done .cvw-dot-label{color:#52525b !important}
+/* Przy ciasnej kolumnie zostaje tylko podpis aktywnego kroku — zamiast
+   sześciu urwanych wyrazów typu „Doświadcz…" */
+/* Sześć podpisów nie mieści się w kolumnie formularza niezależnie od
+   szerokości okna — zamiast sześciu urwanych wyrazów typu „Doświadcz…"
+   zostaje pełny podpis kroku, w którym użytkownik właśnie jest. */
+.cvw-dot-label{display:none !important}
+.cvw-step-dot.active .cvw-dot-label{display:block !important}
+.cvw-step-dot{flex:0 0 auto !important}
+.cvw-step-dot.active{flex:1 1 auto !important}
+.cvw-steps-row{justify-content:flex-start !important; gap:10px !important}
+
+/* ── Sekcje formularza: bez ramek i cieni, oddzielone samą przestrzenią ── */
+.acc-list{background:#fff !important; padding:0 !important}
+.acc-list{gap:0 !important; background:#fff !important}
+.acc-item,.acc-item.open{
+  background:#fff !important; border:none !important; border-bottom:1px solid #f1f1f3 !important;
+  border-radius:0 !important; box-shadow:none !important; margin:0 !important;
+  transform:none !important; overflow:visible !important;
+}
+.acc-item:hover,.acc-item.open:hover{box-shadow:none !important; transform:none !important}
+#accPersonalItem,#accPersonalItem.acc-item,#accPersonalItem.acc-item.open,#accPersonalItem:hover{
+  box-shadow:none !important; border-radius:0 !important; transform:none !important;
+  background:#fff !important; border:none !important; border-bottom:1px solid #f1f1f3 !important;
+}
+.acc-row{padding:18px 26px !important}
+.acc-row:hover{background:#fafafa !important}
+.acc-label{font-size:.95rem !important; font-weight:650 !important; letter-spacing:-.015em !important}
+.acc-body{padding:0 26px 24px !important}
+.acc-btn{
+  width:26px !important; height:26px !important; border-radius:8px !important;
+  background:#f4f4f5 !important; border:none !important; color:#52525b !important;
+}
+.acc-item.open .acc-btn{background:#0f172a !important; color:#fff !important}
+
+/* ── Przyciski nawigacji kreatora ── */
+.cvw-btn-next,.cvw-btn-done{
+  background:#0f172a !important; border-radius:11px !important; font-weight:600 !important;
+  letter-spacing:-.01em !important; box-shadow:none !important;
+}
+.cvw-btn-next:hover,.cvw-btn-done:hover{background:#1e293b !important}
+.cv-auth-btn-register,.cv-nav-dl-btn{
+  background:#0f172a !important; border-color:#0f172a !important; color:#fff !important;
+  box-shadow:none !important;
+}
+.cv-auth-btn-register:hover,.cv-nav-dl-btn:hover{background:#1e293b !important; border-color:#1e293b !important}
+
+/* ── Podgląd: ciemne płótno, żeby kartka A4 odcinała się od tła ── */
+.cv-preview-col{background:#25262b !important}
+.cv-preview-label{
+  background:rgba(37,38,43,.94) !important; color:rgba(255,255,255,.55) !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+}
+.cv-preview-label>span:first-child{
+  text-transform:none !important; letter-spacing:0 !important;
+  font-size:.76rem !important; font-weight:500 !important;
+}
+.cv-preview-doc{box-shadow:0 24px 70px -12px rgba(0,0,0,.5) !important}
+.cv-qcolor-dot,.cv-qcolor-reset{
+  border-color:rgba(255,255,255,.22) !important; background:transparent !important;
+}
+.cv-qcolor-dot:hover{border-color:rgba(255,255,255,.6) !important}
+.cv-zoom-btn{
+  background:rgba(255,255,255,.08) !important; border-color:rgba(255,255,255,.16) !important;
+  color:rgba(255,255,255,.7) !important;
+}
+.cv-zoom-btn:hover{background:rgba(255,255,255,.16) !important}
+#cvZoomLevel{color:rgba(255,255,255,.45) !important}
+.cv-resizer{background:#1a1b1f !important}
+
+/* Na telefonie podgląd wraca na biel — kartka zajmuje całą szerokość */
+@media(max-width:767px){
+  .cv-preview-col{background:#fff !important}
+  .cv-preview-label{background:rgba(255,255,255,.95) !important; color:#71717a !important}
+  .cv-preview-doc{box-shadow:none !important}
+}
+</style>
 </head>
 <body>
 <a href="#cv-main-content" class="skip-link" style="position:absolute;left:-9999px;top:4px;z-index:9999;background:#111;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;text-decoration:none;font-weight:600;">Przejdź do treści</a>
@@ -887,8 +1018,8 @@ window.addEventListener('_fbAuthReady', async ()=>{
 </div>
 
 
-<script defer src="draft.js?v=1"></script>
-<script defer src="kreator-cv-main.js?v=20260904c"></script>
+<script defer src="draft.js?v=2"></script>
+<script defer src="kreator-cv-main.js?v=20260926a"></script>
 
 <script>
 // ── RESIZABLE DIVIDER ──
