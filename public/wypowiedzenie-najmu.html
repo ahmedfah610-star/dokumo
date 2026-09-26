@@ -747,7 +747,7 @@ function downloadSignedPDF(sig1,name1,name2,date1){
   var esc=genText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var sigHtml='<div style="margin-top:44px;padding-top:20px;border-top:1.5px solid #ccc;display:flex;gap:48px;flex-wrap:wrap">'
     +'<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 1</div>'
-    +'<img src="'+sig1+'" style="height:54px;display:block;margin-bottom:6px">'
+    +'<img alt="Podpis" src="'+sig1+'" style="height:54px;display:block;margin-bottom:6px">'
     +'<div style="font-size:10pt;font-weight:700">'+name1+'</div>'
     +'<div style="font-size:9pt;color:#666">'+date1+' · Prosty podpis elektroniczny (eIDAS art. 3 pkt 10)</div></div>'
     +(name2?'<div><div style="font-size:9pt;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Podpis strony 2</div>'

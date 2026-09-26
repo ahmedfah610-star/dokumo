@@ -273,6 +273,12 @@ onAuthStateChanged(getAuth(app),async u=>{
   if(window._onAuthReady) window._onAuthReady();
 });
 </script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Generator Listów Motywacyjnych AI 2026", "description": "Generator listów motywacyjnych AI — stwórz i pobierz PDF w 60 sekund. Wzór 2026 — wpisz stanowisko, AI napisze za Ciebie. Bez rejestracji.", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "offers": {"@type": "Offer", "price": "4.99", "priceCurrency": "PLN"}, "provider": {"@type": "Organization", "name": "DokumoFlow", "url": "https://dokumoflow.com"}, "url": "https://dokumoflow.com/list-motywacyjny.html", "inLanguage": "pl"}
+</script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Jak napisać list motywacyjny?", "acceptedAnswer": {"@type": "Answer", "text": "Dobry list składa się z 3 części: wstęp (dlaczego aplikujesz), środek (osiągnięcia dopasowane do oferty) i zakończenie (zaproszenie do rozmowy). Maksymalnie 1 strona A4, ~300 słów."}}, {"@type": "Question", "name": "Co powinien zawierać list motywacyjny?", "acceptedAnswer": {"@type": "Answer", "text": "Dane kontaktowe, datę, nagłówek z nazwą stanowiska, 3 akapity treści (motywacja, doświadczenie, podsumowanie) i formułę grzecznościową z podpisem."}}, {"@type": "Question", "name": "Ile stron powinien mieć list motywacyjny?", "acceptedAnswer": {"@type": "Answer", "text": "Maksymalnie 1 strona A4 — ok. 250–350 słów. Rekruterzy poświęcają na lekturę ok. 30 sekund, więc krótki i konkretny list ma przewagę."}}, {"@type": "Question", "name": "Czy list motywacyjny jest obowiązkowy?", "acceptedAnswer": {"@type": "Answer", "text": "Nie zawsze, ale znacząco zwiększa szanse — 49% rekruterów odrzuca aplikacje bez listu gdy jest wymagany. Nawet niewymagany pomaga się wyróżnić."}}, {"@type": "Question", "name": "Jaka jest różnica między CV a listem motywacyjnym?", "acceptedAnswer": {"@type": "Answer", "text": "CV — wykaz doświadczenia i umiejętności (co robiłem/am). List motywacyjny — narracja (dlaczego jestem idealnym kandydatem dla tej firmy). Nie powielaj tych samych treści."}}]}
+</script>
 </head>
 <body>
 <a href="#lm-main-content" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;" onfocus="this.style.left='0';this.style.width='auto';this.style.height='auto';" onblur="this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Przejdź do treści</a>
@@ -1100,7 +1106,7 @@ function renderPreview() {
   if (_currentTpl === 'zdjecie') {
     // ── Ze zdjęciem layout ──
     var photoHtml = _letterPhoto
-      ? '<img src="' + _letterPhoto + '" style="width:82px;height:82px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+      ? '<img alt="Zdjęcie kandydata" src="' + _letterPhoto + '" style="width:82px;height:82px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
       : '';
     var contactParts = [];
     var addrParts = [street, [zip,city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
@@ -1147,7 +1153,7 @@ function renderPreview() {
   } else if (_currentTpl === 'elegancki') {
     // ── Elegancki: wyśrodkowany nagłówek, kapitaliki, podwójna linia, złamany złoty akcent ──
     var elePhoto = _letterPhoto
-      ? '<img src="' + _letterPhoto + '" style="width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 14px;">'
+      ? '<img alt="Zdjęcie kandydata" src="' + _letterPhoto + '" style="width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 14px;">'
       : '';
     var eleRcpt = rcptLines();
     html =
@@ -1171,7 +1177,7 @@ function renderPreview() {
   } else if (_currentTpl === 'akcent') {
     // ── Akcent: granatowy kolor przewodni, pasek pod nazwiskiem, sans-serif ──
     var akcPhoto = _letterPhoto
-      ? '<img src="' + _letterPhoto + '" style="width:76px;height:76px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+      ? '<img alt="Zdjęcie kandydata" src="' + _letterPhoto + '" style="width:76px;height:76px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
       : '';
     var akcRcpt = rcptLines();
     html =
@@ -1195,7 +1201,7 @@ function renderPreview() {
   } else if (_currentTpl === 'belka') {
     // ── Executive: ciemna belka nagłówka na całą szerokość ──
     var belkaPhoto = _letterPhoto
-      ? '<img src="' + _letterPhoto + '" style="width:68px;height:68px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.4);">'
+      ? '<img alt="Zdjęcie kandydata" src="' + _letterPhoto + '" style="width:68px;height:68px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.4);">'
       : '';
     var belkaRcpt = rcptLines();
     html =
@@ -1246,7 +1252,7 @@ function renderPreview() {
     var recipientBlock = clsRcpt.length ? '<div style="margin-bottom:18px;">' + clsRcpt.join('<br>') + '</div>' : '';
     var subjectLine2 = pos ? '<div style="margin-bottom:24px;">' + subjTxt() + '</div>' : '';
     var classicPhotoHtml = _letterPhoto
-      ? '<img src="' + _letterPhoto + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-left:16px;">'
+      ? '<img alt="Zdjęcie kandydata" src="' + _letterPhoto + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-left:16px;">'
       : '';
     html =
       '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:12.5px;line-height:1.8;color:#1a1a1a;">' +
