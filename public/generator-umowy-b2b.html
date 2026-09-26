@@ -271,6 +271,45 @@ onAuthStateChanged(getAuth(app),async u=>{
   if(window._renderNav)window._renderNav();
 });
 </script>
+<style>
+/* ── Sekcja sprzedażowa generatora (widoczna tylko na ekranie 1) ── */
+.lp-blok{max-width:1160px;margin:0 auto;padding:80px 24px;}
+.lp-blok-szary{max-width:none;background:#fafafa;border-top:1px solid #f0f0f1;border-bottom:1px solid #f0f0f1;}
+.lp-blok-szary>*{max-width:1160px;margin-left:auto;margin-right:auto;}
+.lp-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:56px;align-items:center;}
+.lp-h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;color:#0f172a;letter-spacing:-.045em;line-height:1.06;margin:0 0 22px;}
+.lp-lead{font-size:clamp(1.02rem,2vw,1.22rem);color:#52525b;line-height:1.6;margin:0 0 12px;max-width:600px;}
+.lp-sub{font-size:.97rem;color:#71717a;line-height:1.6;margin:0 0 34px;max-width:560px;}
+.lp-cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:34px;}
+.lp-cta{display:inline-flex;align-items:center;gap:9px;background:#0f172a;color:#fff;text-decoration:none;padding:15px 28px;border-radius:12px;font-size:.98rem;font-weight:600;letter-spacing:-.01em;transition:background .18s;}
+.lp-cta:hover{background:#1e293b;}
+.lp-cta-sec{display:inline-flex;align-items:center;color:#0f172a;text-decoration:none;padding:15px 18px;font-size:.98rem;font-weight:600;letter-spacing:-.01em;}
+.lp-staty{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid #e4e4e7;padding-top:22px;}
+.lp-staty>div{padding-right:30px;margin-right:30px;border-right:1px solid #e4e4e7;}
+.lp-staty>div:last-child{padding-right:0;margin-right:0;border-right:none;}
+.lp-staty strong{display:block;font-size:1.15rem;font-weight:700;color:#0f172a;letter-spacing:-.02em;line-height:1.2;}
+.lp-staty span{display:block;font-size:.82rem;color:#71717a;margin-top:3px;}
+.lp-wizual{display:flex;justify-content:center;}
+.lp-kartka{width:100%;background:#fff;border:1px solid #e4e4e7;border-radius:14px;box-shadow:0 18px 48px -18px rgba(15,23,42,.22);padding:26px 24px;}
+.lp-kartka-tyt{font-size:.98rem;font-weight:700;color:#0f172a;letter-spacing:-.015em;margin-bottom:5px;}
+.lp-kartka-pod{font-size:.74rem;color:#a1a1aa;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #f1f1f3;}
+.lp-par{margin-bottom:16px;}
+.lp-par b{display:block;font-size:.8rem;font-weight:700;color:#3f3f46;margin-bottom:7px;}
+.lp-par span{display:block;height:6px;border-radius:3px;background:#f1f1f3;margin-bottom:5px;}
+.lp-par span:nth-child(2){width:100%;}
+.lp-par span:nth-child(3){width:88%;}
+.lp-par span:nth-child(4){width:62%;}
+.lp-h2{font-size:clamp(1.7rem,3.4vw,2.2rem);font-weight:800;color:#0f172a;letter-spacing:-.035em;line-height:1.15;margin:0 0 12px;text-align:center;}
+.lp-h2-pod{font-size:1rem;color:#71717a;line-height:1.65;margin:0 auto 40px;max-width:600px;text-align:center;}
+.lp-siatka{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;}
+.lp-karta{background:#fff;border:1px solid #e4e4e7;border-radius:16px;padding:22px;}
+.lp-karta h3{font-size:1rem;font-weight:700;color:#0f172a;letter-spacing:-.015em;margin:0 0 9px;}
+.lp-karta p{font-size:.85rem;color:#71717a;line-height:1.65;margin:0 0 12px;}
+.lp-podstawa{display:inline-block;background:#f4f4f5;border-radius:6px;padding:3px 9px;font-size:.72rem;font-weight:600;color:#52525b;}
+@media(max-width:1000px){.lp-hero-grid{grid-template-columns:1fr;gap:40px;}}
+@media(max-width:760px){.lp-wizual{display:none;}.lp-blok{padding:56px 20px;}}
+@media(max-width:560px){.lp-staty{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;}.lp-staty>div{padding-right:0;margin-right:0;border-right:none;}}
+</style>
 </head>
 <body>
 
@@ -301,6 +340,37 @@ onAuthStateChanged(getAuth(app),async u=>{
 </nav>
 
 <main id="main-content">
+<!-- ══════════════════ HERO (tylko ekran startowy) ══════════════════ -->
+<section class="lp-blok" id="lpHero">
+  <div class="lp-hero-grid">
+    <div>
+      <h1 class="lp-h1">Umowa B2B<br>o współpracy</h1>
+      <p class="lp-lead">Ustalasz zakres usług, rozliczenie i zasady zakończenia współpracy, a generator dopisuje klauzule, które utrzymują umowę po stronie B2B, a nie stosunku pracy.</p>
+      <p class="lp-sub">Dla firmy i freelancera. Pobierzesz w PDF i Word.</p>
+      <div class="lp-cta-row">
+        <a href="#formularz" class="lp-cta" onclick="lpStart(event)">Wypełnij formularz
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#co-zawiera" class="lp-cta-sec">Co zawiera umowa</a>
+      </div>
+      <div class="lp-staty"><div><strong>art. 22 § 1 KP</strong><span>ryzyko przekwalifikowania</span></div><div><strong>PDF i Word</strong><span>edytujesz po pobraniu</span></div><div><strong>2026</strong><span>aktualny stan prawny</span></div></div>
+    </div>
+    <div class="lp-wizual" aria-hidden="true">
+      <div class="lp-kartka">
+        <div class="lp-kartka-tyt">Umowa o świadczenie usług B2B</div>
+        <div class="lp-kartka-pod">Warszawa, 1 października 2026 r.</div>
+        <div class="lp-par"><b>§ 1. Zakres usług</b><span></span><span></span><span></span></div><div class="lp-par"><b>§ 2. Wynagrodzenie i faktury</b><span></span><span></span><span></span></div><div class="lp-par"><b>§ 3. Prawa własności intelektualnej</b><span></span><span></span><span></span></div><div class="lp-par"><b>§ 4. Poufność i wypowiedzenie</b><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-blok lp-blok-szary" id="co-zawiera">
+  <h2 class="lp-h2">Co zawiera umowa B2B</h2>
+  <p class="lp-h2-pod">Największym ryzykiem tej umowy nie jest jej treść, tylko sposób wykonywania — zapisy powinny to ryzyko ograniczać.</p>
+  <div class="lp-siatka"><div class="lp-karta"><h3>Samodzielność wykonawcy</h3><p>Brak sztywnych godzin, wyznaczonego miejsca i bieżącego nadzoru — to trzy cechy, po których ZUS i PIP rozpoznają stosunek pracy.</p><span class="lp-podstawa">Art. 22 § 1 Kodeksu pracy</span></div><div class="lp-karta"><h3>Zakres usług i rozliczenie</h3><p>Opis świadczonych usług, stawka, okres rozliczeniowy oraz termin płatności faktury wraz z odsetkami za opóźnienie.</p><span class="lp-podstawa">Art. 750 Kodeksu cywilnego</span></div><div class="lp-karta"><h3>Własność intelektualna</h3><p>Przeniesienie praw do utworów powstałych przy realizacji umowy wraz z wymienionymi polami eksploatacji.</p><span class="lp-podstawa">Art. 41 ustawy o prawie autorskim</span></div><div class="lp-karta"><h3>Poufność i zakaz konkurencji</h3><p>Zakres informacji poufnych, czas obowiązywania po zakończeniu współpracy i dopuszczalne ograniczenia konkurencji.</p><span class="lp-podstawa">Art. 353(1) Kodeksu cywilnego</span></div></div>
+</section>
+
 <!-- SCREEN 1: FORMULARZ -->
 <section class="screen" id="screen1">
   <div class="form-wrap">
@@ -329,7 +399,7 @@ onAuthStateChanged(getAuth(app),async u=>{
       </div>
       <div class="act-btns">
         <button class="act-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
-        <button class="act-btn secondary" onclick="copyDoc()">📋 Kopiuj tekst</button>
+        <button class="act-btn secondary" onclick="copyDoc()">Kopiuj tekst</button>
         <button class="act-btn secondary" onclick="downloadAs('rtf')">⬇ Pobierz Word (.rtf)</button>
         <button class="act-btn secondary" id="btnSign" onclick="openSignModal()">✍ Podpisz elektronicznie</button>
       </div>
@@ -352,7 +422,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     <p class="success-sub" id="successSub">Twój dokument został wygenerowany i jest gotowy do pobrania.</p>
     <div class="success-btns">
       <button class="suc-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
-      <button class="suc-btn outline" onclick="copyDoc()">📋 Kopiuj</button>
+      <button class="suc-btn outline" onclick="copyDoc()">Kopiuj</button>
       <button class="suc-btn outline" onclick="goTo(0)">+ Nowy dokument</button>
     </div>
     <div class="metrics">
@@ -373,7 +443,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 </section>
 
 <!-- BOTTOM BAR -->
-<div class="bot-bar">
+<div class="bot-bar" id="botBar">
   <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
   <span class="bar-info" id="barInfo">Dokumenty mają charakter pomocniczy — zalecamy weryfikację z doradcą prawnym</span>
   <button class="btn-next hide" id="btnNext" onclick="goNext()">Dalej →</button>
@@ -634,8 +704,40 @@ function goTo(n){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById('screen'+n).classList.add('active');
   mainStep=n; renderNavSteps(); renderBar();
+  lpPokaz(n<=1);
   window.scrollTo(0,0);
 }
+
+// Treść sprzedażowa i SEO towarzyszy tylko ekranowi startowemu.
+function lpPokaz(widoczna){
+  var sel='#lpHero,#co-zawiera,.seo-section,.faq-section,[data-lp]';
+  document.querySelectorAll(sel).forEach(function(e){ e.style.display = widoczna ? '' : 'none'; });
+}
+
+function lpStart(ev){
+  if(ev) ev.preventDefault();
+  var cel=document.querySelector('#main-content .screen.active') || document.querySelector('#main-content .screen');
+  if(cel) cel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Dolny pasek kreatora pojawia się dopiero przy formularzu.
+(function(){
+  function podepnij(){
+    var hero=document.getElementById('lpHero'), bar=document.getElementById('botBar');
+    if(!hero||!bar||!('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(typeof mainStep!=='undefined' && mainStep>1){ bar.style.opacity=''; bar.style.pointerEvents=''; return; }
+        var chowaj = w.isIntersecting && w.intersectionRatio > 0.35;
+        bar.style.transition='opacity .2s';
+        bar.style.opacity = chowaj ? '0' : '';
+        bar.style.pointerEvents = chowaj ? 'none' : '';
+      });
+    }, {threshold:[0,0.35,0.6]}).observe(hero);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',podepnij);
+  else podepnij();
+})();
 
 function goNext(){
   if(mainStep===1){
@@ -887,7 +989,7 @@ selectDoc('b2b');
 .seo-link:hover{border-color:#999;}
 </style>
 <section class="seo-section">
-  <h1 style="font-size:1.7rem;font-weight:800;letter-spacing:-.04em;color:var(--ink);margin-bottom:6px;">Generator Umowy B2B 2026 — Wzór dla Firm i Freelancerów</h1>
+  <h2 style="font-size:1.7rem;font-weight:800;letter-spacing:-.04em;color:var(--ink);margin-bottom:6px;">Generator Umowy B2B 2026 — Wzór dla Firm i Freelancerów</h2>
   <p style="font-size:.88rem;color:var(--ink2);line-height:1.7;margin-bottom:32px;">Generator umowy B2B online zgodny z Kodeksem cywilnym (art. 750 KC). Wygeneruj kompletną umowę z klauzulami <strong>własności intelektualnej</strong>, <strong>poufności</strong> i <strong>zakazu konkurencji</strong> — gotową w 60 sekund. Działa dla firm, JDG i freelancerów współpracujących na zasadach B2B.</p>
   <h2>Jak napisać umowę B2B dla firm i freelancerów?</h2>
   <p>Umowa B2B (business-to-business) reguluje współpracę między firmami lub freelancerami prowadzącymi działalność. Generator Dokumo tworzy kompletną umowę z klauzulami IP, poufności i zakazu konkurencji.</p>
@@ -900,11 +1002,11 @@ selectDoc('b2b');
 <section class="seo-section">
   <h2>Powiązane narzędzia</h2>
   <div class="seo-links">
-    <a href="asystent-prawny.html" class="seo-link">⚖️ Zapytaj Asystenta Prawnego AI</a>
-    <a href="hr.html" class="seo-link">📄 Wszystkie umowy HR</a>
-    <a href="generator-umowy-zlecenie.html" class="seo-link">📋 Generator umowy zlecenie</a>
+    <a href="asystent-prawny.html" class="seo-link">Zapytaj Asystenta Prawnego AI</a>
+    <a href="hr.html" class="seo-link">Wszystkie umowy HR</a>
+    <a href="generator-umowy-zlecenie.html" class="seo-link">Generator umowy zlecenie</a>
     <a href="generator-umowy-o-prace.html" class="seo-link">👥 Generator umowy o pracę</a>
-    <a href="hr.html?doc=nda" class="seo-link">🔒 Generator NDA</a>
+    <a href="hr.html?doc=nda" class="seo-link">Generator NDA</a>
     <a href="faktura.html" class="seo-link">🧾 Generator faktur VAT</a>
   </div>
 </section>
@@ -1073,25 +1175,25 @@ function copySignLink(){
 </script>
 
 <!-- RELATED-ARTICLES-SECTION -->
-<section style="background:#f9fafb;padding:48px 24px;border-top:1px solid #e5e7eb;font-family:'Inter','Figtree',-apple-system,sans-serif;">
+<section data-lp style="background:#f9fafb;padding:48px 24px;border-top:1px solid #e5e7eb;font-family:'Inter','Figtree',-apple-system,sans-serif;">
   <div style="max-width:1120px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:0.72rem;font-weight:700;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">📚 Warto przeczytać</div>
+      <div style="font-size:0.72rem;font-weight:700;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Warto przeczytać</div>
       <h2 style="font-size:1.5rem;font-weight:800;color:#111827;letter-spacing:-0.02em;margin:0;">Powiązane artykuły</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
     <a href="przejscie-na-b2b.html" style="display:flex;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">💼 Przejście na B2B — czy warto?</div>
+      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">Przejście na B2B — czy warto?</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Plusy, minusy, kalkulacja.</div>
       <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:auto;padding-top:10px;">Czytaj artykuł →</div>
     </a>
     <a href="umowa-zlecenie-vs-umowa-o-prace.html" style="display:flex;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">📋 Umowa zlecenie vs o pracę</div>
+      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">Umowa zlecenie vs o pracę</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Różnice prawne i podatkowe.</div>
       <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:auto;padding-top:10px;">Czytaj artykuł →</div>
     </a>
     <a href="koszty-dzialalnosci-2026.html" style="display:flex;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">📊 Koszty działalności 2026</div>
+      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">Koszty działalności 2026</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">ZUS, podatki.</div>
       <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:auto;padding-top:10px;">Czytaj artykuł →</div>
     </a>
