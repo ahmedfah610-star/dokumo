@@ -11,7 +11,7 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-61ETEPHJB7"></script>
 <script>gtag('js',new Date());gtag('config','G-61ETEPHJB7');</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Asystent Prawny i Podatkowy AI | Dokumo</title>
+<title>Asystent prawny AI — zadaj pytanie o prawo i podatki</title>
 <meta name="description" content="Zadaj pytanie prawne lub podatkowe po polsku i otrzymaj odpowiedź AI z podstawą prawną i linkami do ustaw. Umowy, prawo pracy, PIT, VAT, ZUS.">
 <link rel="canonical" href="https://dokumoflow.com/asystent-prawny.html">
 <meta property="og:type" content="website">
@@ -47,7 +47,7 @@ if(localStorage.getItem('dokumo_cookies')==='accepted'){gtag('consent','update',
   --border:rgba(0,0,0,0.08);--border-strong:rgba(0,0,0,0.14);
   --t1:#1d1d1f;--t2:rgba(29,29,31,0.65);--t3:rgba(29,29,31,0.45);
   --acc:#7c3aed;--acc2:#0891b2;
-  --acc-grad:linear-gradient(135deg,#7c3aed 0%,#db2777 50%,#0891b2 100%);
+  --acc-grad:#0f172a;
   --acc-soft:rgba(124,58,237,0.08);
   --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;--mono:'Geist Mono',ui-monospace,monospace;
   --r:16px;--shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
@@ -64,12 +64,12 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-nav{display:flex;align-items:center;gap:12px;padding:0 20px;height:58px;background:rgba(255,255,255,.8);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10}
 .ap-nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:600;font-size:1.02rem;color:var(--t1);letter-spacing:-.02em}
 .ap-nav-logo img{width:24px;height:24px;border-radius:7px;display:block}
-.ap-nav-badge{font-family:var(--mono);background:var(--acc-grad);color:#fff;font-size:.62rem;font-weight:500;padding:3px 8px;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;margin-left:2px}
+.ap-nav-badge{background:var(--bg3);color:var(--t2);font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;margin-left:2px}
 .ap-nav-spacer{flex:1}
-.ap-nav-ql{font-family:var(--mono);font-size:.72rem;color:var(--t2);padding:5px 11px;background:var(--bg3);border:1px solid var(--border);border-radius:100px;letter-spacing:.02em}
+.ap-nav-ql{font-size:.72rem;color:var(--t2);padding:5px 11px;background:var(--bg3);border:1px solid var(--border);border-radius:100px;letter-spacing:.02em}
 .ap-nav-ql strong{color:var(--acc);font-weight:500}
-.ap-nav-login{display:flex;align-items:center;gap:8px;text-decoration:none;font-size:.85rem;font-weight:500;color:#fff;background:var(--acc-grad);padding:8px 16px;border-radius:100px;box-shadow:0 2px 10px rgba(124,58,237,.28);transition:transform .15s,box-shadow .15s}
-.ap-nav-login:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,.36)}
+.ap-nav-login{display:flex;align-items:center;gap:8px;text-decoration:none;font-size:.85rem;font-weight:500;color:#fff;background:var(--acc-grad);padding:8px 16px;border-radius:100px;box-shadow:0 2px 10px rgba(15,23,42,.14);transition:transform .15s,box-shadow .15s}
+.ap-nav-login:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(15,23,42,.14)}
 .ap-nav-user{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--t2);font-weight:500}
 .ap-nav-user img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border)}
 .ap-nav-back{font-size:.82rem;color:var(--t2);text-decoration:none;padding:6px 10px;border-radius:8px;transition:background .15s,color .15s}
@@ -79,12 +79,14 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-layout{display:flex;flex:1;overflow:hidden}
 
 /* ── Sidebar ── */
+body:not(.ma-konto) .ap-sidebar{display:none}
+body:not(.ma-konto) .ap-menu-btn{display:none}
 .ap-sidebar{width:272px;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .ap-sidebar-head{padding:16px 14px 12px}
-.ap-new-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 14px;background:var(--acc-grad);color:#fff;border:none;border-radius:12px;font-family:var(--font);font-size:.9rem;font-weight:500;letter-spacing:-.01em;cursor:pointer;box-shadow:0 2px 12px rgba(124,58,237,.26);transition:transform .15s,box-shadow .15s}
-.ap-new-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.34)}
+.ap-new-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 14px;background:var(--acc-grad);color:#fff;border:none;border-radius:12px;font-family:var(--font);font-size:.9rem;font-weight:500;letter-spacing:-.01em;cursor:pointer;box-shadow:0 2px 12px rgba(15,23,42,.14);transition:transform .15s,box-shadow .15s}
+.ap-new-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,23,42,.14)}
 .ap-new-btn:active{transform:translateY(0)}
-.ap-sidebar-label{font-family:var(--mono);font-size:.66rem;font-weight:500;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;padding:14px 16px 6px}
+.ap-sidebar-label{font-size:.66rem;font-weight:500;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;padding:14px 16px 6px}
 .ap-history{flex:1;overflow-y:auto;padding:2px 8px 12px}
 .ap-hist-item{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border-radius:10px;cursor:pointer;transition:background .14s;position:relative}
 .ap-hist-item:hover{background:var(--bg3)}
@@ -114,15 +116,15 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-modebar{display:flex;gap:8px;justify-content:center;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);flex-shrink:0;z-index:5}
 .ap-mode-pill{font-family:var(--font);font-size:.86rem;font-weight:500;color:var(--t2);background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:7px 16px;cursor:pointer;transition:transform .15s,border-color .15s,color .15s,box-shadow .15s}
 .ap-mode-pill:hover{border-color:var(--border-strong);color:var(--t1)}
-.ap-mode-pill.active{color:#fff;background:var(--acc-grad);border-color:transparent;box-shadow:0 2px 10px rgba(124,58,237,.26)}
+.ap-mode-pill.active{color:#fff;background:var(--acc-grad);border-color:transparent;box-shadow:0 2px 10px rgba(15,23,42,.14)}
 
 /* ── Welcome ── */
 .ap-welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6vh 24px 40px;text-align:center;overflow-y:auto;position:relative}
-.ap-welcome::before{content:'';position:absolute;top:12%;left:50%;transform:translateX(-50%);width:520px;height:320px;max-width:90%;background:radial-gradient(ellipse at center,rgba(124,58,237,.12),rgba(219,39,119,.06) 45%,transparent 70%);filter:blur(20px);pointer-events:none;z-index:0}
+
 .ap-welcome>*{position:relative;z-index:1}
 .ap-welcome-ico{width:76px;height:76px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin:0 auto 20px;border-radius:22px;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(8,145,178,.10));border:1px solid var(--border);box-shadow:var(--shadow)}
 .ap-welcome h1{font-size:2rem;font-weight:600;letter-spacing:-.03em;color:var(--t1);margin-bottom:10px}
-.ap-welcome h1 .grad{background:var(--acc-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ap-welcome h1 .grad{color:var(--t1)}
 .ap-welcome p{font-size:1rem;color:var(--t2);line-height:1.6;max-width:500px;margin-bottom:32px}
 .ap-quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:560px;width:100%;margin-bottom:28px}
 @media(max-width:480px){.ap-quick-grid{grid-template-columns:1fr}}
@@ -157,10 +159,10 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 @keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .ap-msg.user{align-self:flex-end;align-items:flex-end}
 .ap-msg.assistant{align-self:flex-start;align-items:flex-start}
-.ap-msg-role{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin:0 4px 5px;display:flex;align-items:center;gap:6px}
+.ap-msg-role{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin:0 4px 5px;display:flex;align-items:center;gap:6px}
 .ap-msg-role .dot{width:6px;height:6px;border-radius:50%;background:var(--acc-grad)}
 .ap-bubble{padding:14px 18px;border-radius:18px;font-size:.94rem;line-height:1.68;word-break:break-word}
-.ap-msg.user .ap-bubble{background:var(--acc-grad);color:#fff;border-bottom-right-radius:5px;box-shadow:0 4px 16px rgba(124,58,237,.22)}
+.ap-msg.user .ap-bubble{background:var(--acc-grad);color:#fff;border-bottom-right-radius:5px;box-shadow:0 4px 16px rgba(15,23,42,.14)}
 .ap-msg.assistant .ap-bubble{background:var(--bg);border:1px solid var(--border);color:var(--t1);border-bottom-left-radius:5px;box-shadow:var(--shadow)}
 /* Markdown inside bubbles */
 .ap-bubble{line-height:1.55}
@@ -178,22 +180,22 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-bubble .ap-disc{margin-top:9px;padding-top:8px;border-top:1px solid var(--border);font-size:.77rem;color:var(--t3);line-height:1.45}
 /* Related acts */
 .ap-acts{margin-top:12px;display:flex;flex-direction:column;gap:7px;max-width:85%;align-self:flex-start}
-.ap-acts-label,.ap-sugg-label{font-family:var(--mono);font-size:.64rem;font-weight:500;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.ap-acts-label,.ap-sugg-label{font-size:.64rem;font-weight:500;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
 .ap-act-card{display:flex;align-items:flex-start;gap:11px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:11px 13px;text-decoration:none;transition:border-color .15s,box-shadow .15s}
 .ap-act-card:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
-.ap-act-badge{font-family:var(--mono);font-size:.6rem;font-weight:500;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:1px;letter-spacing:.03em;text-transform:uppercase}
+.ap-act-badge{font-size:.6rem;font-weight:500;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:1px;letter-spacing:.03em;text-transform:uppercase}
 .ap-act-badge.force{background:rgba(5,150,105,.12);color:#047857}
 .ap-act-badge.old{background:rgba(225,29,72,.1);color:#be123c}
 .ap-act-badge.jud{background:rgba(124,58,237,.1);color:#6d28d9}
 .ap-act-info{flex:1;min-width:0}
 .ap-act-title{font-size:.82rem;color:var(--t1);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ap-act-date{font-family:var(--mono);font-size:.68rem;color:var(--t3);margin-top:3px}
+.ap-act-date{font-size:.68rem;color:var(--t3);margin-top:3px}
 /* Document suggestions */
 .ap-sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;max-width:85%;align-self:flex-start}
 .ap-sugg-chip{display:inline-flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);color:var(--t1);border-radius:100px;padding:8px 15px;font-size:.83rem;font-weight:500;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
-.ap-sugg-chip:hover{transform:translateY(-1px);border-color:var(--acc);box-shadow:0 2px 10px rgba(124,58,237,.14)}
-.ap-sugg-chip.pref{background:var(--acc-grad);color:#fff;border-color:transparent;box-shadow:0 2px 10px rgba(124,58,237,.24)}
-.ap-sugg-chip.pref:hover{box-shadow:0 4px 16px rgba(124,58,237,.34)}
+.ap-sugg-chip:hover{transform:translateY(-1px);border-color:var(--acc);box-shadow:0 2px 10px rgba(15,23,42,.14)}
+.ap-sugg-chip.pref{background:var(--acc-grad);color:#fff;border-color:transparent;box-shadow:0 2px 10px rgba(15,23,42,.14)}
+.ap-sugg-chip.pref:hover{box-shadow:0 4px 16px rgba(15,23,42,.14)}
 /* Pytania kontynuujące */
 .ap-followups{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;max-width:85%;align-self:flex-start}
 .ap-fu-chip{font-family:var(--font);background:var(--bg3);border:1px solid var(--border);color:var(--t2);border-radius:100px;padding:7px 13px;font-size:.8rem;font-weight:450;cursor:pointer;transition:border-color .15s,color .15s,background .15s;text-align:left}
@@ -205,11 +207,11 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-pw-overlay{position:fixed;inset:0;background:rgba(20,20,28,.55);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
 .ap-pw-overlay.open{display:flex;animation:msgIn .2s ease}
 .ap-pw{background:var(--bg);border:1px solid var(--border);border-radius:22px;width:100%;max-width:440px;padding:30px 28px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.24);animation:modalIn .26s cubic-bezier(.2,.6,.2,1)}
-.ap-pw-ico{width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 16px;border-radius:18px;background:linear-gradient(135deg,rgba(124,58,237,.14),rgba(8,145,178,.12))}
+.ap-pw-ico{width:64px;height:64px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border-radius:18px;background:var(--bg3);border:1px solid var(--border)}
 .ap-pw h2{font-size:1.25rem;font-weight:600;letter-spacing:-.02em;color:var(--t1);margin-bottom:8px}
 .ap-pw p{font-size:.9rem;color:var(--t2);line-height:1.55;margin-bottom:20px}
-.ap-pw-cta{display:block;width:100%;padding:13px;background:var(--acc-grad);color:#fff;border:none;border-radius:12px;font-family:var(--font);font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(124,58,237,.3);transition:transform .15s,box-shadow .15s}
-.ap-pw-cta:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(124,58,237,.4)}
+.ap-pw-cta{display:block;width:100%;padding:13px;background:var(--acc-grad);color:#fff;border:none;border-radius:12px;font-family:var(--font);font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(15,23,42,.14);transition:transform .15s,box-shadow .15s}
+.ap-pw-cta:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(15,23,42,.14)}
 .ap-pw-close{background:none;border:none;color:var(--t3);font-size:.85rem;cursor:pointer;margin-top:12px;padding:4px}
 .ap-pw-close:hover{color:var(--t2)}
 /* Typing indicator */
@@ -223,12 +225,12 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-input-wrap{padding:14px 20px 18px;background:linear-gradient(to top,var(--bg2) 60%,transparent);flex-shrink:0}
 .ap-input-inner{max-width:860px;margin:0 auto}
 .ap-input-row{display:flex;align-items:flex-end;gap:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:18px;padding:10px 10px 10px 16px;transition:border-color .18s,box-shadow .18s;box-shadow:var(--shadow)}
-.ap-input-row:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px rgba(124,58,237,.1),var(--shadow)}
+.ap-input-row:focus-within{border-color:#0f172a;box-shadow:0 0 0 4px rgba(15,23,42,.08),var(--shadow)}
 .ap-input-textarea{flex:1;background:none;border:none;outline:none;font-family:var(--font);font-size:.95rem;color:var(--t1);resize:none;max-height:150px;line-height:1.55;padding:6px 0}
 .ap-input-textarea::placeholder{color:var(--t3)}
 .ap-input-btns{display:flex;gap:7px;align-items:flex-end;flex-shrink:0}
-.ap-btn-send{display:flex;align-items:center;justify-content:center;background:var(--acc-grad);border:none;color:#fff;border-radius:11px;width:44px;height:40px;cursor:pointer;font-size:1.1rem;font-weight:600;transition:transform .15s,box-shadow .15s,opacity .15s;flex-shrink:0;box-shadow:0 2px 10px rgba(124,58,237,.28)}
-.ap-btn-send:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,.36)}
+.ap-btn-send{display:flex;align-items:center;justify-content:center;background:var(--acc-grad);border:none;color:#fff;border-radius:11px;width:44px;height:40px;cursor:pointer;font-size:1.1rem;font-weight:600;transition:transform .15s,box-shadow .15s,opacity .15s;flex-shrink:0;box-shadow:0 2px 10px rgba(15,23,42,.14)}
+.ap-btn-send:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(15,23,42,.14)}
 .ap-btn-send:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
 .ap-btn-attach{display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--t2);border-radius:11px;width:38px;height:40px;cursor:pointer;font-size:1.15rem;transition:background .15s,color .15s;flex-shrink:0;align-self:flex-end}
 .ap-btn-attach:hover{background:var(--acc-soft);color:var(--acc)}
@@ -236,10 +238,10 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 .ap-file-chip{display:flex;align-items:center;gap:9px;background:var(--acc-soft);border:1px solid rgba(124,58,237,.22);border-radius:12px;padding:9px 12px;margin-bottom:9px;animation:msgIn .2s ease}
 .ap-file-ico{font-size:1rem;flex-shrink:0}
 .ap-file-name{font-size:.85rem;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
-.ap-file-size{font-family:var(--mono);font-size:.72rem;color:var(--t3);flex-shrink:0}
+.ap-file-size{font-size:.72rem;color:var(--t3);flex-shrink:0}
 .ap-file-x{margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;font-size:.85rem;padding:3px 6px;border-radius:6px;flex-shrink:0;transition:background .15s,color .15s}
 .ap-file-x:hover{background:rgba(225,29,72,.1);color:#e11d48}
-.ap-input-hint{font-family:var(--mono);font-size:.68rem;color:var(--t3);padding:9px 4px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ap-input-hint{font-size:.68rem;color:var(--t3);padding:9px 4px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ap-input-hint a{color:var(--acc);text-decoration:none}
 .ap-input-hint kbd{font-family:var(--mono);background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:1px 5px;font-size:.92em}
 
@@ -255,6 +257,9 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
 }
 
 </style>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "DokumoFlow", "item": "https://dokumoflow.com"}, {"@type": "ListItem", "position": 2, "name": "Narzędzia AI", "item": "https://dokumoflow.com/artykuly.html"}, {"@type": "ListItem", "position": 3, "name": "Asystent prawny i podatkowy", "item": "https://dokumoflow.com/asystent-prawny.html"}]}
+</script>
 </head>
 <body>
 
@@ -277,7 +282,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
   <!-- Sidebar -->
   <aside class="ap-sidebar" id="sidebar">
     <div class="ap-sidebar-head">
-      <button class="ap-new-btn" onclick="newChat()">✦ Nowa rozmowa</button>
+      <button class="ap-new-btn" onclick="newChat()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nowa rozmowa</button>
     </div>
     <div class="ap-sidebar-label">Historia</div>
     <div class="ap-history" id="chatHistory">
@@ -292,17 +297,16 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
   <main class="ap-main" id="mainArea">
     <!-- Persona switcher -->
     <div class="ap-modebar">
-      <button class="ap-mode-pill active" id="modePillPrawny" onclick="setMode('prawny')">⚖️ Prawny</button>
-      <button class="ap-mode-pill" id="modePillPodatkowy" onclick="setMode('podatkowy')">🧾 Podatkowy</button>
+      <button class="ap-mode-pill active" id="modePillPrawny" onclick="setMode('prawny')">Prawny</button>
+      <button class="ap-mode-pill" id="modePillPodatkowy" onclick="setMode('podatkowy')">Podatkowy</button>
     </div>
 
     <!-- Welcome screen -->
     <div class="ap-welcome" id="welcomeScreen">
-      <div class="ap-welcome-ico" id="welcomeIco">⚖️</div>
-      <h1 id="welcomeTitle">Zadaj pytanie o <span class="grad">polskie prawo i podatki</span></h1>
+            <h1 id="welcomeTitle">Zadaj pytanie o <span class="grad">polskie prawo i podatki</span></h1>
       <p id="welcomeSub">Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów i wiele więcej. Odpowiedź z podstawą prawną w kilka sekund.</p>
       <div class="ap-quick-grid" id="quickGrid"></div>
-      <p class="ap-disclaimer" id="welcomeDisclaimer">⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.</p>
+      <p class="ap-disclaimer" id="welcomeDisclaimer">Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.</p>
 
       <!-- FAQ — widoczna treść odpowiadająca schemie FAQPage -->
       <section class="ap-faq" aria-label="Najczęstsze pytania">
@@ -384,7 +388,7 @@ body{font-family:var(--font);background:var(--bg2);color:var(--t1);-webkit-font-
         <div class="ap-file-chip" id="fileChip" style="display:none"></div>
         <div class="ap-input-row">
           <input type="file" id="fileInput" accept=".pdf,.txt,image/jpeg,image/png,image/gif,image/webp" style="display:none" onchange="onFilePicked(this)">
-          <button class="ap-btn-attach" onclick="document.getElementById('fileInput').click()" title="Wgraj dokument (PDF, obraz lub .txt)">📎</button>
+          <button class="ap-btn-attach" onclick="document.getElementById('fileInput').click()" title="Wgraj dokument (PDF, obraz lub .txt)" aria-label="Wgraj dokument"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
           <textarea class="ap-input-textarea" id="msgInput" placeholder="Zadaj pytanie prawne lub wgraj dokument do analizy…" rows="1"
             onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
           <div class="ap-input-btns">
@@ -414,11 +418,13 @@ onAuthStateChanged(getAuth(app), async u => {
     document.getElementById('navUserArea').innerHTML =
       `<div class="ap-nav-user"><img src="${u.photoURL||'https://ui-avatars.com/api/?name='+encodeURIComponent(u.displayName||'U')+'&size=56'}" alt=""><span>${(u.displayName||u.email||'').split(' ')[0]}</span></div>`;
     document.getElementById('sidebarLoginHint').style.display = 'none';
+    document.body.classList.add('ma-konto');
     loadHistory();
     loadQuota();
   } else {
     window._fbToken = null;
     window._firebaseUser = null;
+    document.body.classList.remove('ma-konto');
     document.getElementById('navUserArea').innerHTML =
       `<a href="konto.html?return=/asystent-prawny.html" class="ap-nav-login">Zaloguj się</a>`;
     document.getElementById('chatHistory').innerHTML =
@@ -445,7 +451,7 @@ var MODES = {
     title: 'Zadaj pytanie o <span class="grad">polskie prawo</span>',
     sub: 'Zadaj pytanie o polskie prawo — umowy, prawa pracownicze, działalność gospodarczą, najem, konsumentów. Odpowiedź z podstawą prawną w kilka sekund.',
     placeholder: 'Zadaj pytanie prawne lub wgraj dokument do analizy…',
-    disclaimer: '⚠️ Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.',
+    disclaimer: 'Asystent udziela informacji ogólnych — nie jest to porada prawna. W złożonych sprawach skonsultuj się z prawnikiem.',
     cards: [
       ['Wypowiedzenie umowy o pracę', 'Ile wynosi okres wypowiedzenia i jak go liczyć?'],
       ['Umowa zlecenie a ZUS', 'Kiedy zlecenie jest ozusowane i jakie obowiązki ma zleceniodawca?'],
@@ -458,7 +464,7 @@ var MODES = {
     title: 'Zadaj pytanie o <span class="grad">podatki i ZUS</span>',
     sub: 'Zadaj pytanie o podatki i rozliczenia — PIT, VAT, ZUS, ryczałt, JDG, koszty, KSeF, faktury. Odpowiedź z podstawą prawną w kilka sekund.',
     placeholder: 'Zadaj pytanie podatkowe lub wgraj dokument do analizy…',
-    disclaimer: '⚠️ Asystent udziela informacji ogólnych — nie jest to porada podatkowa. W indywidualnych sprawach skonsultuj się z księgowym lub doradcą podatkowym.',
+    disclaimer: 'Asystent udziela informacji ogólnych — nie jest to porada podatkowa. W indywidualnych sprawach skonsultuj się z księgowym lub doradcą podatkowym.',
     cards: [
       ['Ryczałt czy podatek liniowy', 'Jaka forma opodatkowania będzie dla mnie najkorzystniejsza na JDG?'],
       ['Składka zdrowotna 2026', 'Jak liczy się składkę zdrowotną przy działalności gospodarczej?'],
@@ -470,7 +476,6 @@ var MODES = {
 
 function renderWelcome() {
   var m = MODES[_mode] || MODES.prawny;
-  document.getElementById('welcomeIco').textContent = m.icon;
   document.getElementById('welcomeTitle').innerHTML = m.title;
   document.getElementById('welcomeSub').textContent = m.sub;
   document.getElementById('welcomeDisclaimer').textContent = m.disclaimer;
@@ -662,7 +667,7 @@ function appendExtras(wrap, extras) {
   if (extras.relatedJudgments && extras.relatedJudgments.length) {
     var judDiv = document.createElement('div');
     judDiv.className = 'ap-acts';
-    judDiv.innerHTML = '<div class="ap-acts-label">⚖️ Powiązane orzeczenia sądów</div>' +
+    judDiv.innerHTML = '<div class="ap-acts-label">Powiązane orzeczenia sądów</div>' +
       extras.relatedJudgments.slice(0, 3).map(function(j) {
         return '<a class="ap-act-card" href="' + escHtml(j.url) + '" target="_blank" rel="noopener">' +
           '<span class="ap-act-badge jud">' + escHtml(j.courtLabel || 'Sąd') + '</span>' +
@@ -674,7 +679,7 @@ function appendExtras(wrap, extras) {
   if (extras.suggestions && extras.suggestions.length) {
     var suggDiv = document.createElement('div');
     suggDiv.className = 'ap-sugg';
-    suggDiv.innerHTML = '<div class="ap-sugg-label" style="width:100%">✦ Wygeneruj gotowy dokument</div>' +
+    suggDiv.innerHTML = '<div class="ap-sugg-label" style="width:100%">Wygeneruj gotowy dokument</div>' +
       extras.suggestions.map(function(s) {
         var label = s.prefilled ? 'Przygotuj: ' + s.label + ' ⚡' : s.label;
         var title = s.prefilled ? ' title="Formularz zostanie wypełniony danymi z rozmowy"' : '';
@@ -1036,7 +1041,7 @@ if (window.location.search.includes('return')) {
 <!-- Modal paywalla — po wykorzystaniu 5 darmowych pytań -->
 <div class="ap-pw-overlay" id="pwOverlay">
   <div class="ap-pw" role="dialog" aria-label="Wykorzystano darmowe pytania">
-    <div class="ap-pw-ico">🔒</div>
+    <div class="ap-pw-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
     <h2>Wykorzystano darmowe pytania</h2>
     <p id="pwText">Masz za sobą 5 darmowych pytań do Asystenta. Dalej dostępny jest w pakiecie <b>Pro Max</b> — bez limitu pytań, z analizą umów i pełnym dostępem do generatorów.</p>
     <a class="ap-pw-cta" href="subskrypcja.html">Kup Pro Max →</a>
