@@ -5,6 +5,7 @@ import { hasSensitivePII } from '../lib/pii.js';
 import { bump } from '../lib/analytics.js';
 import { maPrawaNabyte } from '../lib/plany.js';
 import { kategoriaDokumentu } from '../lib/katalog.js';
+import { PLACA_MIN, STAWKA_GODZINOWA, TERMIN_ZAPLATY_B2B } from '../lib/stawki.js';
 
 if (!getApps().length) {
   initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -218,9 +219,25 @@ export default async function handler(req, res) {
       return res.status(503).json({ error: 'Chwilowy problem z serwerem.' });
     }
 
-    const truncated = contractText.slice(0, 30000);
+    // Analiza umowy nie zużywa miesięcznej puli dokumentów, więc bez osobnego
+    // limitu jedna subskrypcja Start (4,99 zł, ważna 365 dni) pozwalałaby na
+    // nieograniczoną liczbę wywołań modelu. Limit godzinowy nie dotknie
+    // realnego użytkownika, a odcina zautomatyzowane nadużycie.
+    let rollbackAnaliza = null;
+    try {
+      rollbackAnaliza = await tryReserveSlot(contractUid, 'analizaUmowy', 10);
+      if (!rollbackAnaliza)
+        return res.status(429).json({ error: 'Przekroczono limit analiz (10 na godzinę). Spróbuj ponownie później.' });
+    } catch { /* fail-open przy błędzie Firestore */ }
+
+    // Limit wejścia modelu. Dłuższa umowa jest obcinana, więc trzeba o tym
+    // powiedzieć wprost — inaczej użytkownik dostaje ocenę części dokumentu
+    // w przekonaniu, że dotyczy całości.
+    const LIMIT_ZNAKOW = 30000;
+    const obciete = contractText.length > LIMIT_ZNAKOW;
+    const truncated = contractText.slice(0, LIMIT_ZNAKOW);
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'Brak klucza API' });
+    if (!apiKey) { if (rollbackAnaliza) rollbackAnaliza(); return res.status(500).json({ error: 'Brak klucza API' }); }
 
     const userPrompt = `Przeanalizuj poniższą polską umowę i zwróć wyniki jako JSON.
 
@@ -243,9 +260,9 @@ Zwróć TYLKO JSON, żadnego tekstu przed ani po. Format:
 }
 
 NAJPIERW ustal typ umowy i dobierz kryteria WYŁĄCZNIE właściwe dla tego typu:
-- umowa o pracę: elementy art. 29 §1 KP, min. wynagrodzenie 4806 zł brutto (2026), okres wypowiedzenia wg art. 36 KP;
-- umowa zlecenie/o świadczenie usług: min. stawka godzinowa 31,40 zł (2026), ewidencja godzin, wypowiedzenie art. 746 KC;
-- umowa B2B: znamiona stosunku pracy (art. 22 §1 KP — podporządkowanie, sztywne godziny), NIP stron, termin płatności;
+- umowa o pracę: elementy art. 29 §1 KP, min. wynagrodzenie ${PLACA_MIN} zł brutto, okres wypowiedzenia wg art. 36 KP;
+- umowa zlecenie/o świadczenie usług: min. stawka godzinowa ${String(STAWKA_GODZINOWA).replace('.', ',')} zł, ewidencja godzin, wypowiedzenie art. 746 KC;
+- umowa B2B: znamiona stosunku pracy (art. 22 §1 KP — podporządkowanie, sztywne godziny), NIP stron, termin płatności (ustawowy próg ${TERMIN_ZAPLATY_B2B} dni);
 - umowa o dzieło: rezultat (art. 627 KC), odbiór, prawa autorskie i pola eksploatacji;
 - sprzedaż/najem/NDA/inne: kryteria właściwe danej instytucji KC.
 NIE stosuj wymogów Kodeksu pracy do umów cywilnoprawnych i odwrotnie.
@@ -269,7 +286,6 @@ ${truncated}`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
         body: JSON.stringify({
-          // Analiza prawna umowy — płatna funkcja o wysokiej stawce błędu; mocniejszy model
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 6000,
           system: 'Odpowiadasz wyłącznie poprawnym JSON bez żadnych dodatkowych komentarzy.',
@@ -281,9 +297,9 @@ ${truncated}`;
         signal: AbortSignal.timeout(55000)
       });
       const data = await r.json();
-      if (data.error) return res.status(500).json({ error: data.error.message });
+      if (data.error) { if (rollbackAnaliza) rollbackAnaliza(); return res.status(500).json({ error: data.error.message }); }
       const rawText = data.content?.[0]?.text || '';
-      if (!rawText) return res.status(500).json({ error: 'Pusta odpowiedź AI' });
+      if (!rawText) { if (rollbackAnaliza) rollbackAnaliza(); return res.status(500).json({ error: 'Pusta odpowiedź AI' }); }
 
       let result;
       try {
@@ -300,12 +316,15 @@ ${truncated}`;
         result = JSON.parse(match ? match[0] : cleaned);
         if (!Array.isArray(result.issues)) throw new Error('Brak issues');
       } catch(parseErr) {
+        if (rollbackAnaliza) rollbackAnaliza();
         console.error('JSON parse error:', parseErr.message, '| raw snippet:', rawText.slice(0, 300));
         return res.status(500).json({ error: 'Błąd parsowania wyników — spróbuj ponownie' });
       }
 
+      if (obciete) result.truncated = true;
       return res.status(200).json(result);
     } catch (e) {
+      if (rollbackAnaliza) rollbackAnaliza();
       return res.status(500).json({
         error: e.name === 'TimeoutError'
           ? 'Analiza trwała zbyt długo — spróbuj z krótszą umową.'
