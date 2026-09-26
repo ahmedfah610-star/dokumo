@@ -1776,8 +1776,45 @@ function _fixCVFullHeight(root) {
     // wyglada na scisniety. Skalujemy wiec calosc proporcjonalnie, tak jak
     // robia to kreatory CV: zmniejsza sie rownomiernie tekst i odstepy,
     // proporcje zostaja nienaruszone.
-    const skala = 842 / naturalna;
-    if (skala >= MIN_SKALA_CV) {
+    //
+    // scale() dziala na OBU osiach, a my poprawiamy tylko wysokosc. Przy
+    // skali 0.773 dokument o szerokosci 595px renderowal sie na 460px i po
+    // prawej zostawalo 135px bieli — w gotowym PDF wychodzilo 66%
+    // wykorzystania szerokosci. Dlatego przed skalowaniem POSZERZAMY korzen
+    // do 595/skala: po zmniejszeniu wraca dokladnie do 595px i wypelnia
+    // kartke. Szerszy uklad lamie tekst na mniejszej liczbie linii, wiec
+    // naturalna wysokosc spada i skala bywa lagodniejsza — liczymy ja wiec
+    // iteracyjnie, az sie ustabilizuje.
+    // Poszerzenie zmienia lamanie tekstu, wiec wysokosc zalezy od skali i
+    // proste podstawianie sie nie zbiega — potrafi oscylowac i zostawic
+    // bialy pas u dolu. Szukamy wiec najwiekszej skali, przy ktorej
+    // przeskalowana tresc jeszcze miesci sie na stronie. Wysokosc po
+    // przeskalowaniu rosnie monotonicznie ze skala, wiec wystarczy
+    // wyszukiwanie binarne.
+    const SZER = 595;
+    const wysokoscPrzy = function (s) {
+      root.style.width = (SZER / s) + 'px';
+      void root.offsetHeight;
+      return root.scrollHeight * s;
+    };
+    let dol = MIN_SKALA_CV, gora = 1, skala = MIN_SKALA_CV;
+    if (wysokoscPrzy(1) <= 842) {
+      skala = 1;
+    } else {
+      for (let i = 0; i < 9; i++) {
+        const sr = (dol + gora) / 2;
+        if (wysokoscPrzy(sr) <= 842) { skala = sr; dol = sr; } else { gora = sr; }
+        if (gora - dol < 0.002) break;
+      }
+      if (wysokoscPrzy(MIN_SKALA_CV) > 842) skala = 0; // nie da sie zmiescic czytelnie
+    }
+
+    if (skala >= 1) {
+      // Po poszerzeniu CV zmiescilo sie bez zmniejszania — zdejmujemy
+      // prowizoryczna szerokosc i idziemy sciezka dla krotkiego CV.
+      root.style.width = '';
+    } else if (skala >= MIN_SKALA_CV) {
+      root.style.width = (SZER / skala) + 'px';
       root.style.transformOrigin = 'top left';
       root.style.transform = 'scale(' + skala + ')';
       // transform nie zmienia wysokosci w ukladzie, wiec bez pudelka strony
@@ -1790,10 +1827,14 @@ function _fixCVFullHeight(root) {
         rodzic.insertBefore(strona, root);
         strona.appendChild(root);
       }
+      return;
+    } else {
+      root.style.width = '';
+      return;
     }
-    // Ponizej progu zmniejszanie dawaloby tekst nieczytelny w druku —
-    // wtedy uczciwiej podzielic CV na dwie strony.
-    return;
+    // Pozostale przypadki (skala ponizej progu czytelnosci, skala w normie)
+    // wrocily juz wyzej. Tutaj docieramy tylko wtedy, gdy po poszerzeniu CV
+    // zmiescilo sie bez zmniejszania — obsluguje je sciezka dla krotkiego CV.
   }
 
 

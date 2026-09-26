@@ -111,13 +111,24 @@ export default async function handler(req, res) {
     .replace(/\s(href|src)\s*=\s*(["'])\s*(javascript|data:text\/html):/gi, ' $1=$2blocked:')
     .replace(/max-height\s*:\s*842px/gi, 'max-height:none');
 
+  // Globalny reset `* { margin:0; padding:0 }` kasowal odstepy, ktorych
+  // strona kreatora NIE kasuje — ten sam CV renderowal sie w PDF nizszy niz
+  // w podgladzie (916 zamiast 1053 px). Skalowanie do jednej strony liczone
+  // jest w przegladarce uzytkownika, wiec po takim scisnieciu tresc konczyla
+  // sie w 83% wysokosci kartki i pod spodem zostawal bialy pas.
+  // Dla CV zostawiamy wiec tylko zerowanie marginesow dokumentu, zeby
+  // srodowisko renderowania bylo identyczne z podgladem.
+  const reset = isCv
+    ? `html, body { margin: 0 !important; padding: 0 !important; }`
+    : `* { margin: 0; padding: 0; box-sizing: border-box; }`;
+
   const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=595">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  ${reset}
   html, body { width: 595px !important; max-width: 595px !important; margin: 0 !important; padding: 0 !important; }
   body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 </style>
