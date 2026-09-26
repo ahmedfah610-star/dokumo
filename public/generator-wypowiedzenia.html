@@ -258,9 +258,47 @@ onAuthStateChanged(getAuth(app),async u=>{
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Ile wynosi okres wypowiedzenia umowy o pracę?", "acceptedAnswer": {"@type": "Answer", "text": "Okres wypowiedzenia zależy od stażu pracy u danego pracodawcy. Przy umowie na czas nieokreślony: 2 tygodnie przy stażu poniżej 6 miesięcy, 1 miesiąc przy stażu od 6 miesięcy do 3 lat, 3 miesiące przy stażu powyżej 3 lat. Przy umowie na czas określony obowiązuje takie samo uzależnienie od stażu (art. 36 §1 KP)."}}, {"@type": "Question", "name": "Czy wypowiedzenie musi być złożone na piśmie?", "acceptedAnswer": {"@type": "Answer", "text": "Tak, wypowiedzenie umowy o pracę powinno być złożone na piśmie. Pracodawca jest zobowiązany do podania przyczyny wypowiedzenia w przypadku umowy na czas nieokreślony. Pracownik nie musi uzasadniać swojej decyzji o rozwiązaniu umowy."}}, {"@type": "Question", "name": "Jak napisać wypowiedzenie umowy o pracę krok po kroku?", "acceptedAnswer": {"@type": "Answer", "text": "Prawidłowe wypowiedzenie powinno zawierać: datę i miejsce sporządzenia, dane pracownika i pracodawcy, oświadczenie o wypowiedzeniu z powołaniem właściwego artykułu Kodeksu Pracy (art. 30 §1 KP), datę zakończenia stosunku pracy z uwzględnieniem okresu wypowiedzenia oraz podpis. Pracodawca przy umowie na czas nieokreślony musi podać przyczynę. Generator Dokumo automatycznie wypełnia wszystkie wymagane pola."}}, {"@type": "Question", "name": "Czym różni się wypowiedzenie od rozwiązania umowy za porozumieniem?", "acceptedAnswer": {"@type": "Answer", "text": "Przy wypowiedzeniu umowa rozwiązuje się po upływie okresu wypowiedzenia, a pracodawca przy umowie na czas nieokreślony musi podać przyczynę. Przy rozwiązaniu za porozumieniem stron obie strony uzgadniają datę zakończenia stosunku pracy — może to być natychmiastowe lub w dowolnym terminie, bez konieczności podawania przyczyny."}}, {"@type": "Question", "name": "Kiedy pracodawca może zwolnić pracownika dyscyplinarnie?", "acceptedAnswer": {"@type": "Answer", "text": "Pracodawca może rozwiązać umowę bez zachowania okresu wypowiedzenia tylko w przypadku ciężkiego naruszenia podstawowych obowiązków pracowniczych (art. 52 §1 pkt 1 KP), popełnienia przez pracownika przestępstwa uniemożliwiającego dalsze zatrudnienie (pkt 2) lub utraty uprawnień niezbędnych do wykonywania pracy (pkt 3). Pracownik ma prawo odwołać się do sądu pracy w terminie 21 dni."}}, {"@type": "Question", "name": "Co dzieje się po złożeniu wypowiedzenia?", "acceptedAnswer": {"@type": "Answer", "text": "Po złożeniu wypowiedzenia pracownik jest zobowiązany do przepracowania okresu wypowiedzenia, chyba że pracodawca zwolni go z tego obowiązku. Pracodawca może udzielić urlopu wypoczynkowego w czasie wypowiedzenia. Pracownik ma prawo do odwołania się do sądu pracy w terminie 21 dni od doręczenia pisma (art. 264 §1 KP)."}}]}
 </script>
+<style>
+/* ── Sekcja sprzedażowa generatora (widoczna tylko na ekranie 1) ── */
+.lp-blok{max-width:1160px;margin:0 auto;padding:80px 24px;}
+.lp-blok-szary{max-width:none;background:#fafafa;border-top:1px solid #f0f0f1;border-bottom:1px solid #f0f0f1;}
+.lp-blok-szary>*{max-width:1160px;margin-left:auto;margin-right:auto;}
+.lp-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:56px;align-items:center;}
+.lp-h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;color:#0f172a;letter-spacing:-.045em;line-height:1.06;margin:0 0 22px;}
+.lp-lead{font-size:clamp(1.02rem,2vw,1.22rem);color:#52525b;line-height:1.6;margin:0 0 12px;max-width:600px;}
+.lp-sub{font-size:.97rem;color:#71717a;line-height:1.6;margin:0 0 34px;max-width:560px;}
+.lp-cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:34px;}
+.lp-cta{display:inline-flex;align-items:center;gap:9px;background:#0f172a;color:#fff;text-decoration:none;padding:15px 28px;border-radius:12px;font-size:.98rem;font-weight:600;letter-spacing:-.01em;transition:background .18s;}
+.lp-cta:hover{background:#1e293b;}
+.lp-cta-sec{display:inline-flex;align-items:center;color:#0f172a;text-decoration:none;padding:15px 18px;font-size:.98rem;font-weight:600;letter-spacing:-.01em;}
+.lp-staty{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid #e4e4e7;padding-top:22px;}
+.lp-staty>div{padding-right:30px;margin-right:30px;border-right:1px solid #e4e4e7;}
+.lp-staty>div:last-child{padding-right:0;margin-right:0;border-right:none;}
+.lp-staty strong{display:block;font-size:1.15rem;font-weight:700;color:#0f172a;letter-spacing:-.02em;line-height:1.2;}
+.lp-staty span{display:block;font-size:.82rem;color:#71717a;margin-top:3px;}
+.lp-wizual{display:flex;justify-content:center;}
+.lp-kartka{width:100%;background:#fff;border:1px solid #e4e4e7;border-radius:14px;box-shadow:0 18px 48px -18px rgba(15,23,42,.22);padding:26px 24px;}
+.lp-kartka-tyt{font-size:.98rem;font-weight:700;color:#0f172a;letter-spacing:-.015em;margin-bottom:5px;}
+.lp-kartka-pod{font-size:.74rem;color:#a1a1aa;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #f1f1f3;}
+.lp-par{margin-bottom:16px;}
+.lp-par b{display:block;font-size:.8rem;font-weight:700;color:#3f3f46;margin-bottom:7px;}
+.lp-par span{display:block;height:6px;border-radius:3px;background:#f1f1f3;margin-bottom:5px;}
+.lp-par span:nth-child(2){width:100%;}
+.lp-par span:nth-child(3){width:88%;}
+.lp-par span:nth-child(4){width:62%;}
+.lp-h2{font-size:clamp(1.7rem,3.4vw,2.2rem);font-weight:800;color:#0f172a;letter-spacing:-.035em;line-height:1.15;margin:0 0 12px;text-align:center;}
+.lp-h2-pod{font-size:1rem;color:#71717a;line-height:1.65;margin:0 auto 40px;max-width:600px;text-align:center;}
+.lp-siatka{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;}
+.lp-karta{background:#fff;border:1px solid #e4e4e7;border-radius:16px;padding:22px;}
+.lp-karta h3{font-size:1rem;font-weight:700;color:#0f172a;letter-spacing:-.015em;margin:0 0 9px;}
+.lp-karta p{font-size:.85rem;color:#71717a;line-height:1.65;margin:0 0 12px;}
+.lp-podstawa{display:inline-block;background:#f4f4f5;border-radius:6px;padding:3px 9px;font-size:.72rem;font-weight:600;color:#52525b;}
+@media(max-width:1000px){.lp-hero-grid{grid-template-columns:1fr;gap:40px;}}
+@media(max-width:760px){.lp-wizual{display:none;}.lp-blok{padding:56px 20px;}}
+@media(max-width:560px){.lp-staty{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;}.lp-staty>div{padding-right:0;margin-right:0;border-right:none;}}
+</style>
 </head>
 <body>
-<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Generator Wypowiedzenia Umowy o Pracę 2026 — Wzór PDF</h1>
 <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;background:#111;color:#fff;padding:8px 16px;border-radius:0 0 8px 8px;font-size:.85rem;font-weight:700;text-decoration:none;">Przejdź do treści</a>
 
 <!-- NAV -->
@@ -291,6 +329,37 @@ onAuthStateChanged(getAuth(app),async u=>{
 </nav>
 
 <main id="main-content">
+<!-- ══════════════════ HERO (tylko ekran startowy) ══════════════════ -->
+<section class="lp-blok" id="lpHero">
+  <div class="lp-hero-grid">
+    <div>
+      <h1 class="lp-h1">Wypowiedzenie<br>umowy o pracę</h1>
+      <p class="lp-lead">Wypełniasz dane stron i wskazujesz tryb rozwiązania umowy, a generator dobiera właściwy okres wypowiedzenia i dopisuje pouczenie o odwołaniu do sądu pracy.</p>
+      <p class="lp-sub">Dla pracownika i dla pracodawcy. Pobierzesz w PDF i Word.</p>
+      <div class="lp-cta-row">
+        <a href="#formularz" class="lp-cta" onclick="lpStart(event)">Wypełnij formularz
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#co-zawiera" class="lp-cta-sec">Co zawiera dokument</a>
+      </div>
+      <div class="lp-staty"><div><strong>art. 36 KP</strong><span>okres wg stażu</span></div><div><strong>PDF i Word</strong><span>edytujesz po pobraniu</span></div><div><strong>2026</strong><span>aktualny stan prawny</span></div></div>
+    </div>
+    <div class="lp-wizual" aria-hidden="true">
+      <div class="lp-kartka">
+        <div class="lp-kartka-tyt">Wypowiedzenie umowy o pracę</div>
+        <div class="lp-kartka-pod">Kraków, 1 października 2026 r.</div>
+        <div class="lp-par"><b>Dane pracownika i pracodawcy</b><span></span><span></span><span></span></div><div class="lp-par"><b>Oświadczenie o wypowiedzeniu</b><span></span><span></span><span></span></div><div class="lp-par"><b>Okres i data rozwiązania</b><span></span><span></span><span></span></div><div class="lp-par"><b>Pouczenie o odwołaniu</b><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-blok lp-blok-szary" id="co-zawiera">
+  <h2 class="lp-h2">Co znajdzie się w dokumencie</h2>
+  <p class="lp-h2-pod">Wypowiedzenie bez jednego z tych elementów bywa kwestionowane przed sądem pracy.</p>
+  <div class="lp-siatka"><div class="lp-karta"><h3>Właściwy okres wypowiedzenia</h3><p>Dwa tygodnie, miesiąc albo trzy miesiące — generator dobiera termin na podstawie stażu pracy u tego pracodawcy i liczy datę rozwiązania umowy.</p><span class="lp-podstawa">Art. 36 § 1 Kodeksu pracy</span></div><div class="lp-karta"><h3>Wskazanie trybu rozwiązania</h3><p>Za wypowiedzeniem, za porozumieniem stron albo bez wypowiedzenia — każdy tryb ma inną podstawę i inne skutki dla pracownika.</p><span class="lp-podstawa">Art. 30 § 1 Kodeksu pracy</span></div><div class="lp-karta"><h3>Przyczyna wypowiedzenia</h3><p>Przy umowie na czas nieokreślony pracodawca musi podać przyczynę. Pracownik nie musi uzasadniać swojej decyzji.</p><span class="lp-podstawa">Art. 30 § 4 Kodeksu pracy</span></div><div class="lp-karta"><h3>Pouczenie o odwołaniu</h3><p>Informacja o prawie wniesienia odwołania do sądu pracy i o terminie 21 dni na jego złożenie.</p><span class="lp-podstawa">Art. 264 § 1 Kodeksu pracy</span></div></div>
+</section>
+
 <!-- SCREEN 1: FORMULARZ -->
 <section class="screen" id="screen1">
   <div class="form-wrap">
@@ -319,7 +388,7 @@ onAuthStateChanged(getAuth(app),async u=>{
       </div>
       <div class="act-btns">
         <button class="act-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
-        <button class="act-btn secondary" onclick="copyDoc()">📋 Kopiuj tekst</button>
+        <button class="act-btn secondary" onclick="copyDoc()">Kopiuj tekst</button>
         <button class="act-btn secondary" onclick="downloadAs('rtf')">⬇ Pobierz Word (.rtf)</button>
         <button class="act-btn secondary" onclick="downloadAs('txt')">⬇ Pobierz TXT</button>
       </div>
@@ -335,7 +404,7 @@ onAuthStateChanged(getAuth(app),async u=>{
     <p class="success-sub" id="successSub">Twój dokument został wygenerowany i jest gotowy do pobrania.</p>
     <div class="success-btns">
       <button class="suc-btn primary" onclick="downloadAs('pdf')">⬇ Pobierz PDF</button>
-      <button class="suc-btn outline" onclick="copyDoc()">📋 Kopiuj</button>
+      <button class="suc-btn outline" onclick="copyDoc()">Kopiuj</button>
       <button class="suc-btn outline" onclick="goTo(0)">+ Nowy dokument</button>
     </div>
     <div class="metrics">
@@ -358,7 +427,7 @@ onAuthStateChanged(getAuth(app),async u=>{
 </main>
 
 <!-- BOTTOM BAR -->
-<div class="bot-bar">
+<div class="bot-bar" id="botBar">
   <button class="btn-back hide" id="btnBack" onclick="goBack()">← Wróć</button>
   <span class="bar-info" id="barInfo">Dokumenty mają charakter pomocniczy — zalecamy weryfikację z doradcą prawnym</span>
   <button class="btn-next hide" id="btnNext" onclick="goNext()">Dalej →</button>
@@ -582,8 +651,40 @@ function goTo(n){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById('screen'+n).classList.add('active');
   mainStep=n; renderNavSteps(); renderBar();
+  lpPokaz(n<=1);
   window.scrollTo(0,0);
 }
+
+// Treść sprzedażowa i SEO towarzyszy tylko ekranowi startowemu.
+function lpPokaz(widoczna){
+  var sel='#lpHero,#co-zawiera,.seo-section,.faq-section,[data-lp]';
+  document.querySelectorAll(sel).forEach(function(e){ e.style.display = widoczna ? '' : 'none'; });
+}
+
+function lpStart(ev){
+  if(ev) ev.preventDefault();
+  var cel=document.querySelector('#main-content .screen.active') || document.querySelector('#main-content .screen');
+  if(cel) cel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Dolny pasek kreatora pojawia się dopiero przy formularzu.
+(function(){
+  function podepnij(){
+    var hero=document.getElementById('lpHero'), bar=document.getElementById('botBar');
+    if(!hero||!bar||!('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(typeof mainStep!=='undefined' && mainStep>1){ bar.style.opacity=''; bar.style.pointerEvents=''; return; }
+        var chowaj = w.isIntersecting && w.intersectionRatio > 0.35;
+        bar.style.transition='opacity .2s';
+        bar.style.opacity = chowaj ? '0' : '';
+        bar.style.pointerEvents = chowaj ? 'none' : '';
+      });
+    }, {threshold:[0,0.35,0.6]}).observe(hero);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',podepnij);
+  else podepnij();
+})();
 
 function validateStep(){
   var step=FORMS[selDoc].steps[subStep];
@@ -857,12 +958,12 @@ selectDoc('wypowiedzenie');
 <section class="seo-section">
   <h2>Powiązane narzędzia</h2>
   <div class="seo-links">
-    <a href="asystent-prawny.html" class="seo-link">⚖️ Zapytaj Asystenta Prawnego AI</a>
-    <a href="wypowiedzenia.html" class="seo-link">📄 Dokumenty pracownicze</a>
-    <a href="generator-swiadectwa-pracy.html" class="seo-link">📋 Generator świadectwa pracy</a>
+    <a href="asystent-prawny.html" class="seo-link">Zapytaj Asystenta Prawnego AI</a>
+    <a href="wypowiedzenia.html" class="seo-link">Dokumenty pracownicze</a>
+    <a href="generator-swiadectwa-pracy.html" class="seo-link">Generator świadectwa pracy</a>
     <a href="generator-wniosku-o-urlop.html" class="seo-link">🏖️ Generator wniosku o urlop</a>
-    <a href="hr.html" class="seo-link">📄 Umowy B2B i NDA</a>
-    <a href="prawo-pracy-2026.html" class="seo-link">⚖️ Prawo pracy 2026</a>
+    <a href="hr.html" class="seo-link">Umowy B2B i NDA</a>
+    <a href="prawo-pracy-2026.html" class="seo-link">Prawo pracy 2026</a>
     <a href="kalkulator-wynagrodzen.html" class="seo-link">🧮 Kalkulator wynagrodzeń</a>
   </div>
 </section>
@@ -911,15 +1012,15 @@ function toggleFaq(btn) {
 </script>
 
 <!-- RELATED-ARTICLES-SECTION -->
-<section style="background:#f9fafb;padding:48px 24px;border-top:1px solid #e5e7eb;font-family:'Inter','Figtree',-apple-system,sans-serif;">
+<section data-lp style="background:#f9fafb;padding:48px 24px;border-top:1px solid #e5e7eb;font-family:'Inter','Figtree',-apple-system,sans-serif;">
   <div style="max-width:1120px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:0.72rem;font-weight:700;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">📚 Warto przeczytać</div>
+      <div style="font-size:0.72rem;font-weight:700;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Warto przeczytać</div>
       <h2 style="font-size:1.5rem;font-weight:800;color:#111827;letter-spacing:-0.02em;margin:0;">Powiązane artykuły</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
     <a href="wypowiedzenie-umowy-o-prace-2026.html" style="display:flex;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">✋ Wypowiedzenie umowy o pracę 2026</div>
+      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">Wypowiedzenie umowy o pracę 2026</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Okresy, przyczyna, odprawa, kara grzywny.</div>
       <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:auto;padding-top:10px;">Czytaj artykuł →</div>
     </a>
@@ -929,7 +1030,7 @@ function toggleFaq(btn) {
       <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:auto;padding-top:10px;">Czytaj artykuł →</div>
     </a>
     <a href="prawo-pracy-2026.html" style="display:flex;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">⚖️ Prawo pracy 2026</div>
+      <div style="font-size:0.95rem;font-weight:700;color:#111827;margin-bottom:6px;line-height:1.35;">Prawo pracy 2026</div>
       <div style="font-size:0.82rem;color:#6b7280;line-height:1.5;">Zmiany w Kodeksie pracy.</div>
       <div style="font-size:0.75rem;color:#7c3aed;font-weight:600;margin-top:auto;padding-top:10px;">Czytaj artykuł →</div>
     </a>
